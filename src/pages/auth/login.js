@@ -53,7 +53,9 @@ const Page = () => {
       });
       console.log("res", res)
       if(!res.error) {
-        router.push("/");
+        if (typeof window !== "undefined") {
+          window.location.replace("/");  
+        }
       } else {
         helpers.setStatus({ success: false });
         helpers.setErrors({ submit: res.error });
