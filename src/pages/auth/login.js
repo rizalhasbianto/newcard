@@ -68,7 +68,7 @@ useEffect(() => {
         password: values.password,
         callbackUrl
       });
-
+      console.log("res", res)
       if(!res.error) {
         router.push(res.url);
       } else {
