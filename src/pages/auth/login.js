@@ -46,7 +46,7 @@ const Page = () => {
     onSubmit: async (values, helpers) => {
       const callbackUrl = "/"
       const res = await signIn("credentials", {
-        redirect: false,
+        redirect: true,
         email: values.email,
         password: values.password,
         callbackUrl
@@ -56,7 +56,7 @@ const Page = () => {
         //if (typeof window !== "undefined") {
         //  window.location.replace("/");  
         //}
-        router.push("/")
+        //router.push("/")
       } else {
         helpers.setStatus({ success: false });
         helpers.setErrors({ submit: res.error });
