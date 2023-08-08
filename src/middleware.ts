@@ -7,7 +7,10 @@ export async function middleware(req: NextRequest) {
   const isPathProtected = protectedPaths?.some((path) => pathname == path);
   const res = NextResponse.next();
   if (isPathProtected) {
-    const token = await getToken({ req });
+    const token = await getToken({
+      req: req,
+      secret: process.env.SECRET,
+    });
     console.log("token", token)
     if (!token) {
       const url = new URL(`/auth/login`, req.url);

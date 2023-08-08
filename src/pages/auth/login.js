@@ -69,13 +69,9 @@ const Page = () => {
     []
   );
 
-  const handleSkip = useCallback(
-    () => {
-      auth.skip();
-      router.push('/');
-    },
-    [auth, router]
-  );
+  const handleSkip = () => {
+    router.push('/');
+  }
 
   return (
     <>
@@ -186,6 +182,12 @@ const Page = () => {
                 >
                   Continue
                 </Button>
+                <Button
+                  fullWidth
+                  size="large"
+                  sx={{ mt: 3 }}
+                  onClick={handleSkip}
+                >skip</Button>
                 <Alert
                   color="primary"
                   severity="info"
