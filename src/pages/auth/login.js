@@ -1,12 +1,14 @@
-import { useCallback, useState } from 'react';
+import { useCallback, useState, useEffect } from 'react';
 import Head from 'next/head';
 import NextLink from 'next/link';
+import { useRouter } from 'next/router';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import {
   Alert,
   Box,
   Button,
+  FormHelperText,
   Link,
   Stack,
   Tab,
@@ -14,10 +16,14 @@ import {
   TextField,
   Typography
 } from '@mui/material';
+import { useAuth } from 'src/hooks/use-auth';
 import { Layout as AuthLayout } from 'src/layouts/auth/layout';
+import {ClientRequest} from 'src/lib/ClientRequest'
 import { signIn } from "next-auth/react";
 
 const Page = () => {
+  const router = useRouter();
+  const auth = useAuth();
   const [method, setMethod] = useState('email');
 
   const formik = useFormik({
@@ -47,9 +53,10 @@ const Page = () => {
       });
 
       if(!res.error) {
-        if (typeof window !== "undefined") {
-          window.location.replace("/");  
-        }
+        //if (typeof window !== "undefined") {
+        //  window.location.replace("/");  
+        //}
+        router.push("/")
       } else {
         helpers.setStatus({ success: false });
         helpers.setErrors({ submit: res.error });
