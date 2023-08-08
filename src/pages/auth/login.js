@@ -26,23 +26,6 @@ const Page = () => {
   const auth = useAuth();
   const [method, setMethod] = useState('email');
 
-
-  const fetchStores = async () => {
-    try {
-        const orders = await ClientRequest("/api/mongodb-connect", "POST", {
-          type:"GET",
-          collection: "user",
-        })
-        console.log("orders", orders)
-    } catch (error) {
-        console.log(error)
-    }
-}
-useEffect(() => {
-  fetchStores()
-  console.log("node change  ")
-}, []);
-
   const formik = useFormik({
     initialValues: {
       email: 'demo@devias.io',

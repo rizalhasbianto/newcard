@@ -11,7 +11,6 @@ export async function middleware(req: NextRequest) {
     console.log("token", token)
     if (!token) {
       const url = new URL(`/auth/login`, req.url);
-      url.searchParams.set("callbackUrl", pathname);
       return NextResponse.redirect(url);
     }
   }
