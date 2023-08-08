@@ -174,12 +174,6 @@ const Page = () => {
                 >
                   Continue
                 </Button>
-                <Button
-                  fullWidth
-                  size="large"
-                  sx={{ mt: 3 }}
-                  onClick={handleSkip}
-                >skip</Button>
                 <Alert
                   color="primary"
                   severity="info"
