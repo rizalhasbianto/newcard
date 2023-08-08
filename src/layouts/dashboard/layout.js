@@ -3,7 +3,6 @@ import { usePathname } from 'next/navigation';
 import { styled } from '@mui/material/styles';
 import { SideNav } from './side-nav';
 import { TopNav } from './top-nav';
-import { useSession } from "next-auth/react"
 
 const SIDE_NAV_WIDTH = 280;
 

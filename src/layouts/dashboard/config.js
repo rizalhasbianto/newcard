@@ -1,4 +1,5 @@
 import ChartBarIcon from '@heroicons/react/24/solid/ChartBarIcon';
+import NewsPaperIcon from '@heroicons/react/24/solid/NewsPaperIcon';
 import CogIcon from '@heroicons/react/24/solid/CogIcon';
 import LockClosedIcon from '@heroicons/react/24/solid/LockClosedIcon';
 import ShoppingBagIcon from '@heroicons/react/24/solid/ShoppingBagIcon';
@@ -15,6 +16,15 @@ export const items = [
     icon: (
       <SvgIcon fontSize="small">
         <ChartBarIcon />
+      </SvgIcon>
+    )
+  },
+  {
+    title: 'Qoutes',
+    path: '/quotes',
+    icon: (
+      <SvgIcon fontSize="small">
+        <NewsPaperIcon />
       </SvgIcon>
     )
   },
