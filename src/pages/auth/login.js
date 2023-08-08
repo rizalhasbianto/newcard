@@ -70,7 +70,7 @@ useEffect(() => {
       });
       console.log("res", res)
       if(!res.error) {
-        router.push(res.url);
+        router.push("/");
       } else {
         helpers.setStatus({ success: false });
         helpers.setErrors({ submit: res.error });
