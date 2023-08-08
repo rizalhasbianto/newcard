@@ -1,70 +1,80 @@
-// ** Next Import
-import Link from 'next/link'
+import Head from 'next/head';
+import NextLink from 'next/link';
+import ArrowLeftIcon from '@heroicons/react/24/solid/ArrowLeftIcon';
+import { Box, Button, Container, SvgIcon, Typography } from '@mui/material';
 
-// ** MUI Components
-import Button from '@mui/material/Button'
-import { styled } from '@mui/material/styles'
-import Typography from '@mui/material/Typography'
-import Box from '@mui/material/Box'
-
-// ** Layout Import
-import BlankLayout from 'src/@core/layouts/BlankLayout'
-
-// ** Demo Imports
-import FooterIllustrations from 'src/views/pages/misc/FooterIllustrations'
-
-// ** Styled Components
-const BoxWrapper = styled(Box)(({ theme }) => ({
-  [theme.breakpoints.down('md')]: {
-    width: '90vw'
-  }
-}))
-
-const Img = styled('img')(({ theme }) => ({
-  marginBottom: theme.spacing(10),
-  [theme.breakpoints.down('lg')]: {
-    height: 450,
-    marginTop: theme.spacing(10)
-  },
-  [theme.breakpoints.down('md')]: {
-    height: 400
-  },
-  [theme.breakpoints.up('lg')]: {
-    marginTop: theme.spacing(13)
-  }
-}))
-
-const TreeIllustration = styled('img')(({ theme }) => ({
-  left: 0,
-  bottom: '5rem',
-  position: 'absolute',
-  [theme.breakpoints.down('lg')]: {
-    bottom: 0
-  }
-}))
-
-const Error404 = () => {
-  return (
-    <Box className='content-center'>
-      <Box sx={{ p: 5, display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center' }}>
-        <BoxWrapper>
-          <Typography variant='h1'>404</Typography>
-          <Typography variant='h5' sx={{ mb: 1, fontSize: '1.5rem !important' }}>
-            Page Not Found ⚠️
+const Page = () => (
+  <>
+    <Head>
+      <title>
+        404 | Devias Kit
+      </title>
+    </Head>
+    <Box
+      component="main"
+      sx={{
+        alignItems: 'center',
+        display: 'flex',
+        flexGrow: 1,
+        minHeight: '100%'
+      }}
+    >
+      <Container maxWidth="md">
+        <Box
+          sx={{
+            alignItems: 'center',
+            display: 'flex',
+            flexDirection: 'column'
+          }}
+        >
+          <Box
+            sx={{
+              mb: 3,
+              textAlign: 'center'
+            }}
+          >
+            <img
+              alt="Under development"
+              src="/assets/errors/error-404.png"
+              style={{
+                display: 'inline-block',
+                maxWidth: '100%',
+                width: 400
+              }}
+            />
+          </Box>
+          <Typography
+            align="center"
+            sx={{ mb: 3 }}
+            variant="h3"
+          >
+            404: The page you are looking for isn’t here
           </Typography>
-          <Typography variant='body2'>We couldn&prime;t find the page you are looking for.</Typography>
-        </BoxWrapper>
-        <Img height='487' alt='error-illustration' src='/images/pages/404.png' />
-        <Link passHref href='/'>
-          <Button component='a' variant='contained' sx={{ px: 5.5 }}>
-            Back to Home
+          <Typography
+            align="center"
+            color="text.secondary"
+            variant="body1"
+          >
+            You either tried some shady route or you came here by mistake.
+            Whichever it is, try using the navigation
+          </Typography>
+          <Button
+            component={NextLink}
+            href="/"
+            startIcon={(
+              <SvgIcon fontSize="small">
+                <ArrowLeftIcon />
+              </SvgIcon>
+            )}
+            sx={{ mt: 3 }}
+            variant="contained"
+          >
+            Go back to dashboard
           </Button>
-        </Link>
-      </Box>
-      <FooterIllustrations image={<TreeIllustration alt='tree' src='/images/pages/tree.png' />} />
+        </Box>
+      </Container>
     </Box>
-  )
-}
-Error404.getLayout = page => <BlankLayout>{page}</BlankLayout>
+  </>
+);
 
-export default Error404
+export default Page;

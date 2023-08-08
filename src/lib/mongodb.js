@@ -1,6 +1,6 @@
 import { MongoClient } from 'mongodb'
 
-const uri = "mongodb+srv://rizalhasbianto:Uq6U22nZNjFzs6iE@kud.zyi0cnj.mongodb.net/?retryWrites=true&w=majority"
+const uri = process.env.MONGODB_URI
 
 const options = {
   useUnifiedTopology: true,
