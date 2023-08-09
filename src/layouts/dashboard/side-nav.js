@@ -134,7 +134,7 @@ export const SideNav = (props) => {
             color="neutral.100"
             variant="subtitle2"
           >
-            skrach.co
+            skratch.co
           </Typography>
           <Typography
             color="neutral.500"

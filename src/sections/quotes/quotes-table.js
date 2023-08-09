@@ -81,12 +81,12 @@ export const QuotesTable = (props) => {
             <TableBody>
               {items.map((quote) => {
                 const isSelected = selected.includes(quote.id);
-                const lastUpdate = format(quote.lastUpdate, 'dd/MM/yyyy');
+                const lastUpdate = format(new Date(2014, 1, 11), 'dd/MM/yyyy');
 
                 return (
                   <TableRow
                     hover
-                    key={quote.id}
+                    key={quote._id}
                     selected={isSelected}
                   >
                     <TableCell padding="checkbox">
@@ -103,7 +103,7 @@ export const QuotesTable = (props) => {
                     </TableCell>
                     <TableCell>
                       <Typography variant="subtitle2">
-                        #{quote.id}
+                        #{quote._id}
                       </Typography>
                     </TableCell>
                     <TableCell>
