@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react';
+import { useCallback, useState, useMemo } from 'react';
 import {
   Box,
   Button,
@@ -9,11 +9,13 @@ import {
   Divider,
   TextField,
   MenuItem,
-  Select,
+  ListItemText,
+  Typography,
   Unstable_Grid2 as Grid
 } from '@mui/material';
 
 import { companySample } from 'src/data/company'
+import { SearchProduct } from './search-product'
 
 const states = [
   {
@@ -36,8 +38,8 @@ const states = [
 
 export const QuotesForm = () => {
   const [values, setValues] = useState({
-    companyName: 'donato.LC',
-    shipTo: 'wareHouse',
+    companyName: '',
+    shipTo: '',
     lineItem: [
       {
         variantId: "324234324",
@@ -56,19 +58,31 @@ export const QuotesForm = () => {
     status: "open"
   });
 
-  const [location, setLocation] = useState([])
+  const [companyName, setCompanyName] = useState("")
+  const [shipTo, setShipTo] = useState("")
+  const [shipToList, setShipToList] = useState([])
+  const [location, setLocation] = useState("")
 
   const handleChange = useCallback(
-    (event) => {
-      setValues((prevState) => ({
-        ...prevState,
-        [event.target.name]: event.target.value
-      }));
-
+    (event, data) => {
       if (event.target.name === "companyName") {
-        const locationList = companySample.find((company) => company.name === event.target.value)
-        setLocation(locationList.shipTo)
+        setCompanyName(event.target.value)
+        if(!event.target.value) {
+          setShipToList([])
+          setShipTo("")
+          setLocation("")
+          return
+        }
+        const shipToList = companySample.find((company) => company.name === event.target.value)
+        setShipTo(shipToList.shipTo[0].locationName)
+        setShipToList(shipToList.shipTo)
+        setLocation(shipToList.shipTo[0].location)
+      } else {
+        setShipTo(event.target.value)
+        const locationList = data.find((ship) => ship.locationName === event.target.value)
+        setLocation(locationList.location)
       }
+
     },
     []
   );
@@ -87,57 +101,9 @@ export const QuotesForm = () => {
       onSubmit={handleSubmit}
     >
       <Card>
-        <CardContent sx={{ pt: 0 }}>
-          <Grid
-            xs={12}
-            md={6}
-          >
-           <Select
-           fullWidth
-          labelId="demo-simple-select-helper-label"
-          id="demo-simple-select-helper"
-          value={"age"}
-          label="Age"
-          onChange={handleChange}
-        >
-          <MenuItem value="">
-            <em>None</em>
-          </MenuItem>
-          <MenuItem value={10}>Ten</MenuItem>
-          <MenuItem value={20}>Twenty</MenuItem>
-          <MenuItem value={30}>Thirty</MenuItem>
-        </Select>
-          </Grid>
-          <Grid
-            xs={12}
-            md={6}
-          >
-            <TextField
-              fullWidth
-              label="Ship To"
-              name="shipTo"
-              onChange={handleChange}
-              required
-              select
-              SelectProps={{ native: true }}
-              value={values.state}
-            >
-              {location.map((option) => (
-                <option
-                  key={option.locationName}
-                  value={option.locationName}
-                >
-                  {option.locationName}
-                </option>
-              ))}
-            </TextField>
-          </Grid>
-        </CardContent>
-      </Card>
-      <Card>
         <CardHeader
-          subheader="The information can be edited"
-          title="Profile"
+          subheader="Please choose a company"
+          title="Company Options"
         />
         <CardContent sx={{ pt: 0 }}>
           <Box sx={{ m: -1.5 }}>
@@ -150,14 +116,27 @@ export const QuotesForm = () => {
                 md={6}
               >
                 <TextField
+                  id="companyName"
+                  name="companyName"
+                  label="Company"
+                  value={companyName}
+                  select
                   fullWidth
-                  helperText="Please specify the first name"
-                  label="First name"
-                  name="firstName"
-                  onChange={handleChange}
                   required
-                  value={values.firstName}
-                />
+                  onChange={handleChange}
+                >
+                  <MenuItem value="">
+                    <em>None</em>
+                  </MenuItem>
+                  {companySample.map((option) => (
+                    <MenuItem
+                      key={option.name}
+                      value={option.name}
+                    >
+                      {option.name}
+                    </MenuItem>
+                  ))}
+                </TextField>
               </Grid>
               <Grid
                 xs={12}
@@ -165,82 +144,105 @@ export const QuotesForm = () => {
               >
                 <TextField
                   fullWidth
-                  label="Last name"
-                  name="lastName"
-                  onChange={handleChange}
-                  required
-                  value={values.lastName}
-                />
-              </Grid>
-              <Grid
-                xs={12}
-                md={6}
-              >
-                <TextField
-                  fullWidth
-                  label="Email Address"
-                  name="email"
-                  onChange={handleChange}
-                  required
-                  value={values.email}
-                />
-              </Grid>
-              <Grid
-                xs={12}
-                md={6}
-              >
-                <TextField
-                  fullWidth
-                  label="Phone Number"
-                  name="phone"
-                  onChange={handleChange}
-                  type="number"
-                  value={values.phone}
-                />
-              </Grid>
-              <Grid
-                xs={12}
-                md={6}
-              >
-                <TextField
-                  fullWidth
-                  label="Country"
-                  name="country"
-                  onChange={handleChange}
-                  required
-                  value={values.country}
-                />
-              </Grid>
-              <Grid
-                xs={12}
-                md={6}
-              >
-                <TextField
-                  fullWidth
-                  label="Select State"
-                  name="state"
-                  onChange={handleChange}
+                  label="Ship To"
+                  name="shipTo"
+                  onChange={(e) => handleChange(e, shipToList)}
                   required
                   select
-                  SelectProps={{ native: true }}
-                  value={values.state}
+                  value={shipTo ?? " "}
+                  defaultValue={shipTo ?? ""}
                 >
-                  {states.map((option) => (
-                    <option
-                      key={option.value}
-                      value={option.value}
-                    >
-                      {option.label}
-                    </option>
+                  {!companyName &&
+                    <MenuItem value="">
+                      <em>Please select company first</em>
+                    </MenuItem>
+                  }
+                  {shipToList.map((option) => (
+                    <MenuItem
+                    key={option.locationName}
+                    value={option.locationName}
+                  >
+                      {option.locationName}
+                      </MenuItem>
                   ))}
                 </TextField>
               </Grid>
             </Grid>
           </Box>
         </CardContent>
+        {
+          location &&
+          <>
+          <CardHeader
+          subheader="Selected address based on company location"
+          title="Selected Address"
+        />
+        <CardContent sx={{ pt: 0 }}>
+          <Box sx={{ m: -1.5 }}>
+            <Grid
+              container
+              spacing={3}
+            >
+              <Grid
+                xs={12}
+                md={6}
+              >
+                <ListItemText 
+                primary="Shipping" 
+                secondary= {
+                  <>
+                    <Typography
+                    sx={{ display: 'inline' }}
+                    component="span"
+                    variant="body2"
+                    color="text.primary"
+                  >
+                    {location.address}
+                    </Typography>
+                    <Typography
+                    sx={{ display: 'inline' }}
+                    component="span"
+                    variant="body2"
+                    color="text.primary"
+                  >
+                    {location.city} {location.state}, {location.zip}
+                    </Typography>
+                    <Typography
+                    sx={{ display: 'inline' }}
+                    component="span"
+                    variant="body2"
+                    color="text.primary"
+                  >
+                    United States
+                    </Typography>
+                    </>
+                } />
+              </Grid>
+              <Grid
+                xs={12}
+                md={6}
+              >
+                <ListItemText primary="Billing" secondary="Jan 9, 2014" />
+              </Grid>
+            </Grid>
+          </Box>
+        </CardContent>
+          </>
+        }
+      </Card>
+      <Card>
+        <CardHeader
+          subheader="The information can be edited"
+          title="Profile"
+        />
+        <CardContent sx={{ pt: 0 }}>
+          <Box sx={{ m: -1.5 }}>
+            <SearchProduct />
+          </Box>
+        </CardContent>
         <Divider />
         <CardActions sx={{ justifyContent: 'flex-end' }}>
-          <Button variant="contained">
+          <Button variant="contained" onClick={handleSubmit}>
             Save details
           </Button>
         </CardActions>
