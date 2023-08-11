@@ -1,126 +1,104 @@
-import { Fragment, useState, useEffect } from 'react';
+import * as React from 'react';
+import Box from '@mui/material/Box';
 import TextField from '@mui/material/TextField';
 import Autocomplete from '@mui/material/Autocomplete';
-import CircularProgress from '@mui/material/CircularProgress';
-
-function sleep(delay = 0) {
-  return new Promise((resolve) => {
-    setTimeout(resolve, delay);
-  });
-}
+import Grid from '@mui/material/Grid';
+import Typography from '@mui/material/Typography';
+import parse from 'autosuggest-highlight/parse';
+import { debounce } from '@mui/material/utils';
+import { ClientRequest } from 'src/lib/ClientRequest'
 
 export const SearchProduct = () => {
-    const [open, setOpen] = useState(false);
-    const [options, setOptions] = useState([]);
-    const loading = open && options.length === 0;
-  
-    useEffect(() => {
-      let active = true;
-  
-      if (!loading) {
-        return undefined;
+  const [value, setValue] = React.useState(null);
+  const [inputValue, setInputValue] = React.useState('');
+  const [options, setOptions] = React.useState([]);
+
+  const getOptions = async (active, value) => {
+    const data = await ClientRequest(
+      "/api/shopify/get-product",
+      "POST",
+      {search:inputValue}
+      )
+    if (active) {
+      let newOptions = [];
+
+      if (value) {
+        newOptions = [value];
       }
-  
-      (async () => {
-        await sleep(1e3); // For demo purposes.
-  
-        if (active) {
-          setOptions([...topFilms]);
-        }
-      })();
-  
-      return () => {
-        active = false;
-      };
-    }, [loading]);
-  
-    useEffect(() => {
-      if (!open) {
-        setOptions([]);
+
+      if (data) {
+        newOptions = [...newOptions, ...data.newData.data.products.edges];
       }
-    }, [open]);
+
+      setOptions(newOptions);
+    }
+    return data
+  }
+  React.useEffect( () => {
+    let active = true;
+
+    if (inputValue === '') {
+      setOptions(value ? [value] : []);
+      return undefined;
+    }
+
+    getOptions(active, value);
+
+    return () => {
+      active = false;
+    };
+  }, [value, inputValue]);
   
     return (
       <Autocomplete
-        id="asynchronous-demo"
-        sx={{ width: 300 }}
-        open={open}
-        onOpen={() => {
-          setOpen(true);
-        }}
-        onClose={() => {
-          setOpen(false);
-        }}
-        isOptionEqualToValue={(option, value) => option.title === value.title}
-        getOptionLabel={(option) => option.title}
-        options={options}
-        loading={loading}
-        renderInput={(params) => (
-          <TextField
-            {...params}
-            label="Asynchronous"
-            InputProps={{
-              ...params.InputProps,
-              endAdornment: (
-                <Fragment>
-                  {loading ? <CircularProgress color="inherit" size={20} /> : null}
-                  {params.InputProps.endAdornment}
-                </Fragment>
-              ),
-            }}
-          />
-        )}
-      />
+      id="google-map-demo"
+      sx={{ width: 300 }}
+      getOptionLabel={(option) =>
+        typeof option.node.handle === 'string' ? option.node.handle : option.node.handle
+      }
+      filterOptions={(x) => x}
+      options={options}
+      autoComplete
+      includeInputInList
+      filterSelectedOptions
+      value={value}
+      noOptionsText="No locations"
+      onChange={(event, newValue) => {
+        setOptions(newValue ? [newValue, ...options] : options);
+        setValue(newValue);
+      }}
+      onInputChange={(event, newInputValue) => {
+        setInputValue(newInputValue);
+      }}
+      renderInput={(params) => (
+        <TextField 
+          {...params}
+          label="Add a location"
+          fullWidth 
+        />
+      )}
+      renderOption={(props, option) => {
+        return (
+          <li {...props}>
+            <Grid 
+              container 
+              alignItems="center"
+            >
+              <Grid 
+                item 
+                sx={{ width: 'calc(100% - 44px)', wordWrap: 'break-word' }}
+              >
+                <Typography 
+                  variant="body2" 
+                  color="text.secondary"
+                >
+                  {option.node.title}
+                </Typography>
+              </Grid>
+            </Grid>
+          </li>
+        );
+      }}
+    />
     );
   }
-
-  // Top films as rated by IMDb users. http://www.imdb.com/chart/top
-const topFilms = [
-    { title: 'The Shawshank Redemption', year: 1994 },
-    { title: 'The Godfather', year: 1972 },
-    { title: 'The Godfather: Part II', year: 1974 },
-    { title: 'The Dark Knight', year: 2008 },
-    { title: '12 Angry Men', year: 1957 },
-    { title: "Schindler's List", year: 1993 },
-    { title: 'Pulp Fiction', year: 1994 },
-    {
-      title: 'The Lord of the Rings: The Return of the King',
-      year: 2003,
-    },
-    { title: 'The Good, the Bad and the Ugly', year: 1966 },
-    { title: 'Fight Club', year: 1999 },
-    {
-      title: 'The Lord of the Rings: The Fellowship of the Ring',
-      year: 2001,
-    },
-    {
-      title: 'Star Wars: Episode V - The Empire Strikes Back',
-      year: 1980,
-    },
-    { title: 'Forrest Gump', year: 1994 },
-    { title: 'Inception', year: 2010 },
-    {
-      title: 'The Lord of the Rings: The Two Towers',
-      year: 2002,
-    },
-    { title: "One Flew Over the Cuckoo's Nest", year: 1975 },
-    { title: 'Goodfellas', year: 1990 },
-    { title: 'The Matrix', year: 1999 },
-    { title: 'Seven Samurai', year: 1954 },
-    {
-      title: 'Star Wars: Episode IV - A New Hope',
-      year: 1977,
-    },
-    { title: 'City of God', year: 2002 },
-    { title: 'Se7en', year: 1995 },
-    { title: 'The Silence of the Lambs', year: 1991 },
-    { title: "It's a Wonderful Life", year: 1946 },
-    { title: 'Life Is Beautiful', year: 1997 },
-    { title: 'The Usual Suspects', year: 1995 },
-    { title: 'Léon: The Professional', year: 1994 },
-    { title: 'Spirited Away', year: 2001 },
-    { title: 'Saving Private Ryan', year: 1998 },
-    { title: 'Once Upon a Time in the West', year: 1968 },
-    { title: 'American History X', year: 1998 },
-    { title: 'Interstellar', year: 2014 },
-  ];

@@ -78,8 +78,8 @@ export const QuotesForm = () => {
         setShipToList(shipToList.shipTo)
         setLocation(shipToList.shipTo[0].location)
       } else {
-        setShipTo(event.target.value)
         const locationList = data.find((ship) => ship.locationName === event.target.value)
+        setShipTo(event.target.value)
         setLocation(locationList.location)
       }
 
@@ -222,7 +222,10 @@ export const QuotesForm = () => {
                 xs={12}
                 md={6}
               >
-                <ListItemText primary="Billing" secondary="Jan 9, 2014" />
+                <ListItemText 
+                  primary="Billing" 
+                  secondary="Jan 9, 2014" 
+                />
               </Grid>
             </Grid>
           </Box>
@@ -242,7 +245,10 @@ export const QuotesForm = () => {
         </CardContent>
         <Divider />
         <CardActions sx={{ justifyContent: 'flex-end' }}>
-          <Button variant="contained" onClick={handleSubmit}>
+          <Button 
+            variant="contained" 
+            onClick={handleSubmit}
+          >
             Save details
           </Button>
         </CardActions>
