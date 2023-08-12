@@ -13,6 +13,10 @@ export default async function createCheckoutHandler(req, res) {
               id
               title
               handle
+              options {
+                name
+                values
+              }
             }
           }
         }

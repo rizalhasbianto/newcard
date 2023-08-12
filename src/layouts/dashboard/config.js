@@ -7,6 +7,8 @@ import UserIcon from '@heroicons/react/24/solid/UserIcon';
 import UserPlusIcon from '@heroicons/react/24/solid/UserPlusIcon';
 import UsersIcon from '@heroicons/react/24/solid/UsersIcon';
 import XCircleIcon from '@heroicons/react/24/solid/XCircleIcon';
+import PencilSquareIcon from '@heroicons/react/24/solid/PencilSquareIcon';
+import PuzzlePieceIcon from '@heroicons/react/24/solid/PuzzlePieceIcon';
 import { SvgIcon } from '@mui/material';
 
 export const items = [
@@ -17,7 +19,7 @@ export const items = [
       <SvgIcon fontSize="small">
         <ChartBarIcon />
       </SvgIcon>
-    )
+    ),
   },
   {
     title: 'Qoutes',
@@ -26,7 +28,27 @@ export const items = [
       <SvgIcon fontSize="small">
         <NewspaperIcon />
       </SvgIcon>
-    )
+    ),
+    subMenu: [
+      {
+        title: 'Add new quote',
+        path: '/quotes/add-quote',
+        icon: (
+          <SvgIcon fontSize="small">
+            <PencilSquareIcon />
+          </SvgIcon>
+        ),
+      },
+      {
+        title: 'Add new template',
+        path: '/quotes/add-template',
+        icon: (
+          <SvgIcon fontSize="small">
+            <PuzzlePieceIcon />
+          </SvgIcon>
+        ),
+      },
+    ]
   },
   {
     title: 'Customers',

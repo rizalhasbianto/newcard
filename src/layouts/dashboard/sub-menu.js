@@ -1,32 +1,14 @@
-import { useState } from 'react';
 import NextLink from 'next/link';
 import PropTypes from 'prop-types';
 import { Box, ButtonBase } from '@mui/material';
-import { SubMenu } from './sub-menu'
 
-export const SideNavItem = (props) => {
-  const { active = false, disabled, external, icon, path, title, subMenu } = props;
-  const [ hoverMenu, setHoverMenu] = useState("")
+export const SubMenu = (props) => {
+  const { active, external, icon, path, title } = props;
 
-  const linkProps = path
-    ? external
-      ? {
-        component: 'a',
-        href: path,
-        target: '_blank'
-      }
-      : {
-        component: NextLink,
-        href: path
-      }
-    : {};
-
-  function handleHover(title) {
-    console.log("button hover", title)
-  }
+  const linkProps = path 
 
   return (
-    <li>
+    <>
       <ButtonBase
         sx={{
           alignItems: 'center',
@@ -36,17 +18,14 @@ export const SideNavItem = (props) => {
           pl: '16px',
           pr: '16px',
           py: '6px',
+          ml: '20px',
           textAlign: 'left',
           width: '100%',
-          ...(active && {
-            backgroundColor: 'rgba(255, 255, 255, 0.04)'
-          }),
           '&:hover': {
             backgroundColor: 'rgba(255, 255, 255, 0.04)'
           }
         }}
         {...linkProps}
-        onMouseOver={() => setHoverMenu(title)}
       >
         {icon && (
           <Box
@@ -78,41 +57,16 @@ export const SideNavItem = (props) => {
             ...(active && {
               color: 'common.white'
             }),
-            ...(disabled && {
-              color: 'neutral.500'
-            })
           }}
         >
           {title}
         </Box>
       </ButtonBase>
-      {subMenu && active &&
-        <Box
-          sx={{
-            mb: '10px',
-            borderBottom: 1,
-            pt: '10px',
-            pb: '10px',
-            borderColor: '#243046'
-          }}
-        > {
-            subMenu?.map((sub, i) =>
-              <SubMenu
-                key={i}
-                icon={sub.icon}
-                path={sub.path}
-                title={sub.title}
-              />
-
-            )
-          }
-        </Box>
-      }
-    </li>
+    </>
   );
 };
 
-SideNavItem.propTypes = {
+SubMenu.propTypes = {
   active: PropTypes.bool,
   disabled: PropTypes.bool,
   external: PropTypes.bool,

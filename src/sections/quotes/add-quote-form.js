@@ -16,48 +16,9 @@ import {
 
 import { companySample } from 'src/data/company'
 import { SearchProduct } from './search-product'
-
-const states = [
-  {
-    value: 'alabama',
-    label: 'Alabama'
-  },
-  {
-    value: 'new-york',
-    label: 'New York'
-  },
-  {
-    value: 'san-francisco',
-    label: 'San Francisco'
-  },
-  {
-    value: 'los-angeles',
-    label: 'Los Angeles'
-  }
-];
+import StickyHeadTable from './table-form'
 
 export const QuotesForm = () => {
-  const [values, setValues] = useState({
-    companyName: '',
-    shipTo: '',
-    lineItem: [
-      {
-        variantId: "324234324",
-        qty: "5"
-      },
-      {
-        variantId: "324234324",
-        qty: "5"
-      },
-    ],
-    quoteInfo: {
-      totalPrice: "5000",
-      totalItem: "7",
-      cat: "custom"
-    },
-    status: "open"
-  });
-
   const [companyName, setCompanyName] = useState("")
   const [shipTo, setShipTo] = useState("")
   const [shipToList, setShipToList] = useState([])
@@ -67,7 +28,7 @@ export const QuotesForm = () => {
     (event, data) => {
       if (event.target.name === "companyName") {
         setCompanyName(event.target.value)
-        if(!event.target.value) {
+        if (!event.target.value) {
           setShipToList([])
           setShipTo("")
           setLocation("")
@@ -109,7 +70,7 @@ export const QuotesForm = () => {
           <Box sx={{ m: -1.5 }}>
             <Grid
               container
-              spacing={3}
+              spacing={1}
             >
               <Grid
                 xs={12}
@@ -159,94 +120,93 @@ export const QuotesForm = () => {
                   }
                   {shipToList.map((option) => (
                     <MenuItem
-                    key={option.locationName}
-                    value={option.locationName}
-                  >
+                      key={option.locationName}
+                      value={option.locationName}
+                    >
                       {option.locationName}
-                      </MenuItem>
+                    </MenuItem>
                   ))}
                 </TextField>
               </Grid>
             </Grid>
           </Box>
-        </CardContent>
-        {
-          location &&
-          <>
-          <CardHeader
-          subheader="Selected address based on company location"
-          title="Selected Address"
-        />
-        <CardContent sx={{ pt: 0 }}>
-          <Box sx={{ m: -1.5 }}>
-            <Grid
-              container
-              spacing={3}
-            >
+          {
+            location &&
+            <Box sx={{ m: -1.5 }}>
               <Grid
-                xs={12}
-                md={6}
+                container
+                spacing={3}
               >
-                <ListItemText 
-                primary="Shipping" 
-                secondary= {
-                  <>
-                    <Typography
-                    sx={{ display: 'inline' }}
-                    component="span"
-                    variant="body2"
-                    color="text.primary"
-                  >
-                    {location.address}
-                    </Typography>
-                    <Typography
-                    sx={{ display: 'inline' }}
-                    component="span"
-                    variant="body2"
-                    color="text.primary"
-                  >
-                    {location.city} {location.state}, {location.zip}
-                    </Typography>
-                    <Typography
-                    sx={{ display: 'inline' }}
-                    component="span"
-                    variant="body2"
-                    color="text.primary"
-                  >
-                    United States
-                    </Typography>
-                    </>
-                } />
+                <Grid
+                  xs={12}
+                  md={6}
+                >
+                  <ListItemText
+                    primary="Shipping"
+                    secondary={
+                      <>
+                        <Typography
+                          sx={{ display: 'inline' }}
+                          component="span"
+                          variant="body2"
+                          color="text.primary"
+                        >
+                          {location.address}
+                        </Typography>
+                        <Typography
+                          sx={{ display: 'inline' }}
+                          component="span"
+                          variant="body2"
+                          color="text.primary"
+                        >
+                          {location.city} {location.state}, {location.zip}
+                        </Typography>
+                        <Typography
+                          sx={{ display: 'inline' }}
+                          component="span"
+                          variant="body2"
+                          color="text.primary"
+                        >
+                          United States
+                        </Typography>
+                      </>
+                    } />
+                </Grid>
+                <Grid
+                  xs={12}
+                  md={6}
+                >
+                  <ListItemText
+                    primary="Billing"
+                    secondary="Jan 9, 2014"
+                  />
+                </Grid>
               </Grid>
-              <Grid
-                xs={12}
-                md={6}
-              >
-                <ListItemText 
-                  primary="Billing" 
-                  secondary="Jan 9, 2014" 
-                />
-              </Grid>
-            </Grid>
-          </Box>
+            </Box>
+          }
         </CardContent>
-          </>
-        }
       </Card>
       <Card>
         <CardHeader
           subheader="The information can be edited"
-          title="Profile"
+          title="Add quotes Item"
         />
-        <CardContent sx={{ pt: 0 }}>
+        <CardContent sx={{ pt: 0, pb: 0 }}>
           <Box sx={{ m: -1.5 }}>
             <SearchProduct />
           </Box>
         </CardContent>
+        <CardHeader
+          subheader="The information can be edited"
+          title="Selected Products"
+        />
+        <CardContent sx={{ pt: 0 }}>
+          <StickyHeadTable />
+        </CardContent>
         <Divider />
         <CardActions sx={{ justifyContent: 'flex-end' }}>
-          <Button 
-            variant="contained" 
+          <Button
+            variant="contained"
             onClick={handleSubmit}
           >
             Save details
