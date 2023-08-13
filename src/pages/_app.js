@@ -10,6 +10,7 @@ import { createTheme } from 'src/theme';
 import { createEmotionCache } from 'src/utils/create-emotion-cache';
 import 'simplebar-react/dist/simplebar.min.css';
 import { SessionProvider } from "next-auth/react"
+import 'src/style/custom-style.css'
 
 const clientSideEmotionCache = createEmotionCache();
 

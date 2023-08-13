@@ -17,6 +17,26 @@ export default async function createCheckoutHandler(req, res) {
                 name
                 values
               }
+              variants(first: 100) {
+                edges {
+                  node {
+                    id
+                    title
+                    sku
+                    currentlyNotInStock
+                    price {
+                      amount
+                    }
+                    selectedOptions {
+                      name
+                      value
+                    }
+                    image {
+                      url
+                    }
+                  }
+                }
+              }
             }
           }
         }

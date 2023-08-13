@@ -17,17 +17,14 @@ import {
 } from '@mui/material';
 
 export default function OptionsComponent(props) {
-    const [alignment, setAlignment] = useState('web');
-    const handleChange = (event, newAlignment) => {
-        setAlignment(newAlignment);
-    };
+
     return (
         <Grid
             container
             alignItems="center"
         >
             {
-                props?.options?.map((opt) => {
+                props?.options?.map((opt,i) => {
                     return (
                         <Grid
                             xs={12}
@@ -43,9 +40,9 @@ export default function OptionsComponent(props) {
                             </Typography>
                             <ToggleButtonGroup
                                 color="primary"
-                                value={alignment}
+                                value={opt.name+":"+props.selectedOpt[opt.name]}
                                 exclusive
-                                onChange={handleChange}
+                                onChange={props.handleChange}
                                 aria-label="Options"
                                 sx={{
                                     display: 'block'
@@ -55,7 +52,7 @@ export default function OptionsComponent(props) {
                                     return (
 
                                         <ToggleButton
-                                            value={item}
+                                            value={opt.name + ":" + item}
                                             key={opt.name + "-" + item}
                                             sx={{
                                                 display: 'inline-block'

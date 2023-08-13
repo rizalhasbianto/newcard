@@ -5,7 +5,6 @@ export const QuotesSearch = () => (
   <Card sx={{ p: 2 }}>
     <OutlinedInput
       defaultValue=""
-      fullWidth
       placeholder="Search quote"
       startAdornment={(
         <InputAdornment position="start">
