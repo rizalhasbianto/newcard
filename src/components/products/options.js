@@ -28,7 +28,7 @@ export default function OptionsComponent(props) {
                     return (
                         <Grid
                             xs={12}
-                            key={opt.name}
+                            key={i}
                             sx={{
                                 pt: 0
                             }}
@@ -48,12 +48,12 @@ export default function OptionsComponent(props) {
                                     display: 'block'
                                 }}
                             >
-                                {opt.values.map((item) => {
+                                {opt.values.map((item,index) => {
                                     return (
 
                                         <ToggleButton
                                             value={opt.name + ":" + item}
-                                            key={opt.name + "-" + item}
+                                            key={index}
                                             sx={{
                                                 display: 'inline-block'
                                             }}

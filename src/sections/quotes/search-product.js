@@ -9,14 +9,7 @@ import OptionsComponent from 'src/components/products/options'
 import {
   Box,
   Button,
-  Card,
-  CardActions,
-  CardContent,
-  CardHeader,
-  Divider,
   TextField,
-  MenuItem,
-  ListItemText,
   Typography,
   Unstable_Grid2 as Grid
 } from '@mui/material';
@@ -29,30 +22,32 @@ export const SearchProduct = () => {
   const [selectedOptions, setSelectedOptions] = useState("");
 
   const getOptions = async (active, value) => {
-    const data = await ClientRequest(
-      "/api/shopify/get-product",
-      "POST",
-      { search: inputValue }
-    )
     if (active) {
+      const data = await ClientRequest(
+        "/api/shopify/get-product",
+        "POST",
+        { search: inputValue }
+      )
+
       let newOptions = [];
 
       if (value) {
         newOptions = [value];
       }
-
+      console.log("data", data)
       if (data) {
-        newOptions = [...newOptions, ...data.newData.data.products.edges];
-        const selectedVar = data.newData.data.products.edges[0].node.variants.edges[0].node;
-        const selectedOpt = selectedVar.selectedOptions.reduce((acc,curr)=> (acc[curr.name]=curr.value,acc),{});
-        setSelectedVariant(selectedVar)
-        setSelectedOptions(selectedOpt)
+        const dataProd = data.newData.data.products.edges
+        if(dataProd.length > 0) {
+          newOptions = [...newOptions, ...data.newData.data.products.edges];
+          const selectedVar = dataProd[0].node.variants.edges[0].node;
+          const selectedOpt = selectedVar.selectedOptions.reduce((acc,curr)=> (acc[curr.name]=curr.value,acc),{});
+          setSelectedVariant(selectedVar)
+          setSelectedOptions(selectedOpt)
+        }
       }
 
       setProductSearch(newOptions);
     }
-
-    return data
   }
 
   const handleChange = (event, newSingleOption) => {
@@ -69,19 +64,6 @@ export const SearchProduct = () => {
     });
     setSelectedOptions(newSelectedOptions);
     setSelectedVariant(newSelecetdVariant?.node)
-
-    const arr = [
-      {
-        name: "test1",
-        val: "val1"
-      },
-      {
-        name: "test2",
-        val: "val2"
-      }
-    ];
-    const res = arr.reduce((acc,curr)=> (acc[curr.name]=curr.val,acc),{});
-    console.log(res)
   };
 
   useEffect(() => {
@@ -89,6 +71,8 @@ export const SearchProduct = () => {
 
     if (inputValue === '') {
       setProductSearch(value ? [value] : []);
+      setSelectedVariant(value ? [value] : "")
+      setSelectedOptions(value ? [value] : "")
       return undefined;
     }
 
@@ -127,7 +111,7 @@ export const SearchProduct = () => {
           value={value}
           noOptionsText="No product found!"
           onChange={(event, newValue) => {
-            setProductSearch(newValue ? [newValue, ...productSearch] : options);
+            setProductSearch(newValue ? [newValue, ...productSearch] : productSearch);
             setValue(newValue);
           }}
           onInputChange={(event, newInputValue) => {
