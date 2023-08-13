@@ -31,8 +31,8 @@ export default async function createCheckoutHandler(req, res) {
                       name
                       value
                     }
-                    image {
-                      url
+                    image{
+                      url: url(transform: { maxWidth: 270})
                     }
                   }
                 }
@@ -42,6 +42,6 @@ export default async function createCheckoutHandler(req, res) {
         }
     }`;
 
-    const getProd = await callShopify(query);
+  const getProd = await callShopify(query);
   res.status(200).json({ newData: getProd })
 }

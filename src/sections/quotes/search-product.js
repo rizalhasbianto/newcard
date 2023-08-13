@@ -162,10 +162,11 @@ export const SearchProduct = () => {
               >
                 
         <Image
-        src={selectedVariant.image.url}
+        src={selectedVariant.image.url} 
         fill={true}
         alt="Picture of the author"
         className='shopify-fill'
+        sizes="270 640 750"
       />
               </Grid>
               <Grid
