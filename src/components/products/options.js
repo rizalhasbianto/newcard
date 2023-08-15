@@ -45,7 +45,8 @@ export default function OptionsComponent(props) {
                                 onChange={props.handleChange}
                                 aria-label="Options"
                                 sx={{
-                                    display: 'block'
+                                    display: 'block',
+                                    mt: '5px'
                                 }}
                             >
                                 {opt.values.map((item,index) => {
@@ -55,7 +56,9 @@ export default function OptionsComponent(props) {
                                             value={opt.name + ":" + item}
                                             key={index}
                                             sx={{
-                                                display: 'inline-block'
+                                                display: 'inline-block',
+                                                fontSize: '11px',
+                                                padding: '5px'
                                             }}
                                         >
                                             {item}

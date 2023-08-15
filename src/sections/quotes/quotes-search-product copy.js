@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import Autocomplete from '@mui/material/Autocomplete';
 import parse from 'autosuggest-highlight/parse';
 import { debounce } from '@mui/material/utils';
@@ -14,14 +14,16 @@ import {
   Unstable_Grid2 as Grid
 } from '@mui/material';
 
-export const SearchProduct = () => {
+export const SearchProduct = ({quotesList, setQuotesList}) => {
   const [value, setValue] = useState(null);
   const [inputValue, setInputValue] = useState('');
   const [productSearch, setProductSearch] = useState([]);
   const [selectedVariant, setSelectedVariant] = useState("");
   const [selectedOptions, setSelectedOptions] = useState("");
+  const [selectedQuantity, setSelectedQuantity] = useState(1);
 
   const getOptions = async (active, value) => {
+
     if (active) {
       const data = await ClientRequest(
         "/api/shopify/get-product",
@@ -34,15 +36,11 @@ export const SearchProduct = () => {
       if (value) {
         newOptions = [value];
       }
-      console.log("data", data)
+      
       if (data) {
         const dataProd = data.newData.data.products.edges
-        if(dataProd.length > 0) {
+        if (dataProd.length > 0) {
           newOptions = [...newOptions, ...data.newData.data.products.edges];
-          const selectedVar = dataProd[0].node.variants.edges[0].node;
-          const selectedOpt = selectedVar.selectedOptions.reduce((acc,curr)=> (acc[curr.name]=curr.value,acc),{});
-          setSelectedVariant(selectedVar)
-          setSelectedOptions(selectedOpt)
         }
       }
 
@@ -50,12 +48,14 @@ export const SearchProduct = () => {
     }
   }
 
-  const handleChange = (event, newSingleOption) => {
+  const handleChange = useCallback (
+    (event, newSingleOption) => {
     const getSelectedOption = newSingleOption.split(":")
     const newSelectedOptions = {
       ...selectedOptions,
       [getSelectedOption[0]]: getSelectedOption[1]
     }
+    console.log("value", value)
     const variants = value.node.variants.edges
     const newSelecetdVariant = variants.find((variant) => {
       return variant.node.selectedOptions.every((selectedOption) => {
@@ -64,7 +64,16 @@ export const SearchProduct = () => {
     });
     setSelectedOptions(newSelectedOptions);
     setSelectedVariant(newSelecetdVariant?.node)
-  };
+    setSelectedQuantity(1)
+  }, []
+  )
+
+  const handleAddQuote = useCallback (
+    () => {
+      const oldQuote = [...quotesList]
+      
+    }, []
+  )
 
   useEffect(() => {
     let active = true;
@@ -77,11 +86,20 @@ export const SearchProduct = () => {
     }
 
     getOptions(active, value);
-    console.log("value", value)
+    
     return () => {
       active = false;
     };
-  }, [value, inputValue]);
+  }, [inputValue]);
+
+  useEffect(() => {
+    if(!value) return undefined;
+
+    const selectedVar = value.node.variants.edges[0].node;
+    const selectedOpt = selectedVar.selectedOptions.reduce((acc, curr) => (acc[curr.name] = curr.value, acc), {});
+    setSelectedVariant(selectedVar)
+    setSelectedOptions(selectedOpt)
+  }, [value]);
 
   return (
     <Grid
@@ -99,7 +117,7 @@ export const SearchProduct = () => {
         </Typography>
         <Autocomplete
           id="google-map-demo"
-          sx={{ width: '100%' }}
+          sx={{ width: '100%', mb: '20px', mt: '5px' }}
           getOptionLabel={(option) =>
             typeof option.node.title === 'string' ? option.node.title : option.node.title
           }
@@ -147,6 +165,16 @@ export const SearchProduct = () => {
             );
           }}
         />
+        <OptionsComponent
+          options={value?.node.options}
+          handleChange={handleChange}
+          selectedOpt={selectedOptions}
+        />
+      </Grid>
+      <Grid
+        xs={12}
+        md={6}
+      >
         {selectedVariant &&
           <Box>
             <Grid
@@ -160,14 +188,14 @@ export const SearchProduct = () => {
                   position: "relative"
                 }}
               >
-                
-        <Image
-        src={selectedVariant.image.url} 
-        fill={true}
-        alt="Picture of the author"
-        className='shopify-fill'
-        sizes="270 640 750"
-      />
+
+                <Image
+                  src={selectedVariant.image.url}
+                  fill={true}
+                  alt="Picture of the author"
+                  className='shopify-fill'
+                  sizes="270 640 750"
+                />
               </Grid>
               <Grid
                 xs={12}
@@ -188,22 +216,30 @@ export const SearchProduct = () => {
                 >
                   Sku: {selectedVariant.sku}
                 </Typography>
-                <Button variant="contained">Add to Quote List</Button>
+                <TextField 
+                  id="qtySingle" 
+                  label="Quantity" 
+                  variant="outlined" 
+                  InputProps={{ inputProps: { min: 1 } }}
+                  type="number"
+                  value={selectedQuantity}
+                  sx={{
+                    mt: '10px',
+                    mb: '10px'
+                  }}
+                  onChange={(event) => {
+                    setSelectedQuantity(event.target.value);
+                  }}
+                />
+                <Button 
+                  variant="contained"
+                  onClick={handleAddQuote}
+                >Add to Quote List</Button>
               </Grid>
             </Grid>
 
           </Box>
         }
-      </Grid>
-      <Grid
-        xs={12}
-        md={6}
-      >
-        <OptionsComponent
-          options={value?.node.options}
-          handleChange={handleChange}
-          selectedOpt={selectedOptions}
-        />
       </Grid>
     </Grid>
   );

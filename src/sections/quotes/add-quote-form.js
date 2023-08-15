@@ -15,14 +15,15 @@ import {
 } from '@mui/material';
 
 import { companySample } from 'src/data/company'
-import { SearchProduct } from './search-product'
+import { SearchProduct } from './quotes-search-product'
 import StickyHeadTable from './table-form'
 
 export const QuotesForm = () => {
-  const [companyName, setCompanyName] = useState("")
-  const [shipTo, setShipTo] = useState("")
-  const [shipToList, setShipToList] = useState([])
-  const [location, setLocation] = useState("")
+  const [companyName, setCompanyName] = useState("");
+  const [shipTo, setShipTo] = useState("");
+  const [shipToList, setShipToList] = useState([]);
+  const [location, setLocation] = useState("");
+  const [quotesList, setQuotesList] = useState([]);
 
   const handleChange = useCallback(
     (event, data) => {
@@ -193,7 +194,7 @@ export const QuotesForm = () => {
         />
         <CardContent sx={{ pt: 0, pb: 0 }}>
           <Box sx={{ m: -1.5 }}>
-            <SearchProduct />
+            <SearchProduct quotesList={quotesList} setQuotesList={setQuotesList}/>
           </Box>
         </CardContent>
         <CardHeader
@@ -201,7 +202,7 @@ export const QuotesForm = () => {
           title="Selected Products"
         />
         <CardContent sx={{ pt: 0 }}>
-          <StickyHeadTable />
+          <StickyHeadTable quotesList={quotesList}/>
         </CardContent>
         <Divider />
         <CardActions sx={{ justifyContent: 'flex-end' }}>
