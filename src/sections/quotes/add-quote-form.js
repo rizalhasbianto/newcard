@@ -1,4 +1,5 @@
 import { useCallback, useState, useMemo } from 'react';
+import { ClientRequest } from 'src/lib/ClientRequest'
 import {
   Box,
   Button,
@@ -16,7 +17,7 @@ import {
 
 import { companySample } from 'src/data/company'
 import { SearchProduct } from './quotes-search-product'
-import StickyHeadTable from './table-form'
+import StickyHeadTable from './quotes-selected-products'
 
 export const QuotesForm = () => {
   const [companyName, setCompanyName] = useState("");
@@ -50,10 +51,29 @@ export const QuotesForm = () => {
   );
 
   const handleSubmit = useCallback(
-    (event) => {
+    async (event) => {
       event.preventDefault();
+      const countSubtotal = quotesList.reduce((n, { total }) => n + total, 0)
+      const tax = (countSubtotal * 0.1).toFixed(2)
+      const total = Number(countSubtotal) + Number(tax)
+      const res = await ClientRequest(
+        "/api/quotes/create-quote",
+        "POST",
+        { 
+          company : {
+            name: companyName,
+            shipTo: shipTo
+          },
+          quotesList: quotesList,
+          quoteInfo : {
+            total: total,
+            item: quotesList.length
+          },
+          status: "open"
+        }
+      )
     },
-    []
+    [quotesList, shipTo, companyName]
   );
 
   return (

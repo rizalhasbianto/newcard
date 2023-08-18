@@ -13,7 +13,8 @@ import {
   TablePagination,
   TableRow,
   Typography,
-  SvgIcon
+  SvgIcon,
+  Grid
 } from '@mui/material';
 import PencilIcon from '@heroicons/react/24/solid/PencilIcon';
 import TrashIcon from '@heroicons/react/24/solid/TrashIcon';
@@ -37,7 +38,7 @@ export const QuotesTable = (props) => {
 
   const selectedSome = (selected.length > 0) && (selected.length < items.length);
   const selectedAll = (items.length > 0) && (selected.length === items.length);
-
+  console.log("items", items)
   return (
     <Card>
       <Scrollbar>
@@ -112,25 +113,21 @@ export const QuotesTable = (props) => {
                         direction="row"
                         spacing={2}
                       >
-                        <Avatar src={quote.shipTo.avatar}>
-                          {getInitials(quote.shipTo.company)}
+                        {quote.company.avatar &&
+                        <Avatar src={quote.company.avatar}>
+                          {getInitials(quote.company.company)}
                         </Avatar>
+                        }
                         <Stack
                           alignItems="left"
                           direction="column"
                           spacing={0}
                         >
                           <Typography variant="subtitle2">
-                            {quote.shipTo.company}
+                            {quote.company.name}
                           </Typography>
                           <Typography variant="subtitle2">
-                            {quote.shipTo.city}
-                          </Typography>
-                          <Typography variant="subtitle2">
-                            {quote.shipTo.zip}
-                          </Typography>
-                          <Typography variant="subtitle2">
-                            {quote.shipTo.phone}
+                            {quote.company.shipTo}
                           </Typography>
                         </Stack>
                       </Stack>
@@ -146,9 +143,6 @@ export const QuotesTable = (props) => {
                         </Typography>
                         <Typography variant="subtitle2">
                           Number of Item: {quote.quoteInfo.item}
-                        </Typography>
-                        <Typography variant="subtitle2">
-                          Category: {quote.quoteInfo.cat}
                         </Typography>
                       </Stack>
                     </TableCell>

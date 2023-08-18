@@ -6,6 +6,8 @@ import { debounce } from '@mui/material/utils';
 import Image from 'next/image'
 import { ClientRequest } from 'src/lib/ClientRequest'
 import OptionsComponent from 'src/components/products/options'
+import AlertDialog from 'src/components/alert-dialog'
+import { usePopover } from 'src/hooks/use-popover';
 import {
   Box,
   Button,
@@ -21,6 +23,7 @@ export const SearchProduct = ({quotesList, setQuotesList}) => {
   const [selectedVariant, setSelectedVariant] = useState("");
   const [selectedOptions, setSelectedOptions] = useState("");
   const [selectedQuantity, setSelectedQuantity] = useState(1);
+  const modalPopUp = usePopover();
 
   const getOptions = async (active, value) => {
 
@@ -40,7 +43,7 @@ export const SearchProduct = ({quotesList, setQuotesList}) => {
       if (data) {
         const dataProd = data.newData.data.products.edges
         if (dataProd.length > 0) {
-          newOptions = [...newOptions, ...data.newData.data.products.edges];
+          newOptions = [...newOptions, ...dataProd];
         }
       }
 
@@ -67,11 +70,33 @@ export const SearchProduct = ({quotesList, setQuotesList}) => {
 
   const handleAddQuote = useCallback (
     () => {
+      if(selectedVariant.currentlyNotInStock) {
+        modalPopUp.handleContent(
+          "Out Of Stock",
+          "Unfortunately, the following item(s) that you ordered are now out-of-stock!"
+        );
+        modalPopUp.handleOpen();
+        return
+      }
+      
+      const findProdOnList = quotesList.findIndex((prod) => prod.variant.sku === selectedVariant.sku)
+      if(findProdOnList >= 0) {
+        const totalQty = parseInt(quotesList[findProdOnList].qty) + parseInt(selectedQuantity)
+        quotesList[findProdOnList].qty = totalQty
+        quotesList[findProdOnList].total = totalQty * quotesList[findProdOnList].variant.price.amount
+        const oldQuote = [...quotesList]
+        setQuotesList(oldQuote)
+        return
+      } 
+
       const oldQuote = [...quotesList]
       const newQuote = {
+        productName: value.node.title,
         variant: selectedVariant,
-        qty: selectedQuantity
+        qty: selectedQuantity,
+        total: selectedQuantity * selectedVariant.price.amount
       }
+      console.log("newQuote", newQuote)
       oldQuote.push(newQuote)
       setQuotesList(oldQuote)
     }
@@ -79,14 +104,13 @@ export const SearchProduct = ({quotesList, setQuotesList}) => {
 
   useEffect(() => {
     let active = true;
-
     if (inputValue === '') {
       setProductSearch(value ? [value] : []);
       setSelectedVariant(value ? [value] : "")
       setSelectedOptions(value ? [value] : "")
       return undefined;
     }
-
+    
     getOptions(active, value);
     
     return () => {
@@ -96,7 +120,6 @@ export const SearchProduct = ({quotesList, setQuotesList}) => {
 
   useEffect(() => {
     if(!value) return undefined;
-
     const selectedVar = value.node.variants.edges[0].node;
     const selectedOpt = selectedVar.selectedOptions.reduce((acc, curr) => (acc[curr.name] = curr.value, acc), {});
     setSelectedVariant(selectedVar)
@@ -104,6 +127,13 @@ export const SearchProduct = ({quotesList, setQuotesList}) => {
   }, [value]);
 
   return (
+    <>
+    <AlertDialog 
+      title = {modalPopUp.message.title}
+      content = {modalPopUp.message.content}
+      open = {modalPopUp.open}
+      handleClose = {modalPopUp.handleClose}
+    />
     <Grid
       container
       spacing={3}
@@ -141,7 +171,6 @@ export const SearchProduct = ({quotesList, setQuotesList}) => {
             <TextField
               {...params}
               label="Type for start search"
-              fullwidth={true}
             />
           )}
           renderOption={(props, option) => {
@@ -211,7 +240,7 @@ export const SearchProduct = ({quotesList, setQuotesList}) => {
                 <Typography
                   variant="body2"
                 >
-                  Stock: {selectedVariant.currentlyNotInStock ? "In stock" : "Out of stock"}
+                  Stock: {selectedVariant.currentlyNotInStock ? "Out of stock" : "In stock"}
                 </Typography>
                 <Typography
                   variant="body2"
@@ -245,5 +274,6 @@ export const SearchProduct = ({quotesList, setQuotesList}) => {
         }
       </Grid>
     </Grid>
+    </>
   );
 }
