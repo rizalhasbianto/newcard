@@ -62,7 +62,7 @@ export default function StickyHeadTable({ quotesList }) {
 
   useEffect(() => {
 
-    const countSubtotal = quotesList.reduce((n, { total }) => n + total, 0)
+    const countSubtotal = (quotesList.reduce((n, { total }) => n + total, 0)).toFixed(2)
     const tax = (countSubtotal * 0.1).toFixed(2)
     const total = Number(countSubtotal) + Number(tax)
     setTotal({

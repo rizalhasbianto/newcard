@@ -1,6 +1,6 @@
 import { callShopify } from 'src/lib/shopify'
 
-export default async function createCheckoutHandler(req, res) {
+export default async function getProducts(req, res) {
     const searchTerm = req.body?.search
     const query = `{
         products(first: 100, query: "title:${searchTerm}*") {

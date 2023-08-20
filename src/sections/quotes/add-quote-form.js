@@ -15,6 +15,9 @@ import {
   Unstable_Grid2 as Grid
 } from '@mui/material';
 
+import LoadingButton from '@mui/lab/LoadingButton';
+import SaveIcon from '@mui/icons-material/Save';
+
 import { companySample } from 'src/data/company'
 import { SearchProduct } from './quotes-search-product'
 import StickyHeadTable from './quotes-selected-products'
@@ -25,6 +28,7 @@ export const QuotesForm = () => {
   const [shipToList, setShipToList] = useState([]);
   const [location, setLocation] = useState("");
   const [quotesList, setQuotesList] = useState([]);
+  const [loading, setLoading] = useState(false);
 
   const handleChange = useCallback(
     (event, data) => {
@@ -53,6 +57,7 @@ export const QuotesForm = () => {
   const handleSubmit = useCallback(
     async (event) => {
       event.preventDefault();
+      setLoading(true)
       const countSubtotal = quotesList.reduce((n, { total }) => n + total, 0)
       const tax = (countSubtotal * 0.1).toFixed(2)
       const total = Number(countSubtotal) + Number(tax)
@@ -72,6 +77,25 @@ export const QuotesForm = () => {
           status: "open"
         }
       )
+
+
+      if(!res) return
+
+      // Create draft order at shopify
+      const lineItems = quotesList.map((list) => {
+        return (
+          `{
+            variantId: "${list.variant.id}",
+            quantity: ${list.qty}
+          }`
+        )
+      })
+
+      const sendToShopify = await ClientRequest(
+        "/api/shopify/draft-order-create",
+        "POST", {lineItems})
+      if(!sendToShopify || sendToShopify.createDraft.errors) return
+      setLoading(false)
     },
     [quotesList, shipTo, companyName]
   );
@@ -214,7 +238,10 @@ export const QuotesForm = () => {
         />
         <CardContent sx={{ pt: 0, pb: 0 }}>
           <Box sx={{ m: -1.5 }}>
-            <SearchProduct quotesList={quotesList} setQuotesList={setQuotesList}/>
+            <SearchProduct 
+              quotesList={quotesList} 
+              setQuotesList={setQuotesList}
+            />
           </Box>
         </CardContent>
         <CardHeader
@@ -226,12 +253,17 @@ export const QuotesForm = () => {
         </CardContent>
         <Divider />
         <CardActions sx={{ justifyContent: 'flex-end' }}>
-          <Button
-            variant="contained"
-            onClick={handleSubmit}
-          >
+
+            <LoadingButton
+          color="primary"
+          onClick={handleSubmit}
+          loading={loading}
+          loadingPosition="start"
+          startIcon={<SaveIcon />}
+          variant="contained"
+        >
             Save details
-          </Button>
+          </LoadingButton>
         </CardActions>
       </Card>
     </form>

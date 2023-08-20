@@ -5,6 +5,6 @@ export default async function createQuote(req, res) {
     const db = client.db(process.env.DB_NAME);
     const collection = "quotes"
     const bodyObject = req.body;
-    let myPost = await db.collection(collection).insertOne(bodyObject);
-    res.json({ status: 200, data: "success" });
+    const sendQuote = await db.collection(collection).insertOne(bodyObject);
+    res.json({ status: 200, data: sendQuote });
 }

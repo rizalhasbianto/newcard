@@ -98,7 +98,7 @@ export const SideNavItem = (props) => {
         > {
             subMenu?.map((sub, i) =>
               <SubMenu
-                key={i}
+                key={"sub-"+i}
                 icon={sub.icon}
                 path={sub.path}
                 title={sub.title}
