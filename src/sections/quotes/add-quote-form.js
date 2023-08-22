@@ -49,7 +49,6 @@ export const QuotesForm = () => {
         setShipTo(event.target.value)
         setLocation(locationList.location)
       }
-
     },
     []
   );
@@ -79,7 +78,10 @@ export const QuotesForm = () => {
         }
       )
 
-      if(!mongoRes) return
+      if(!mongoRes) {
+        console.log("error", mongoRes)
+        return
+      } 
 
       // Create draft order at shopify
       const lineItems = quotesList.map((list) => {

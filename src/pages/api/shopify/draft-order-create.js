@@ -2,7 +2,6 @@ import { adminAPi } from 'src/lib/shopify'
 
 export default async function createDraftOrder(req, res) {
     const bodyObject = req.body;
-    console.log("line", bodyObject.lineItems)
     const query = `
     mutation {
         draftOrderCreate(input: {
