@@ -7,7 +7,7 @@ const Page = () => (
   <>
     <Head>
       <title>
-        Add new quote | Devias Kit
+        Add new quote | Skratch
       </title>
     </Head>
     <Box

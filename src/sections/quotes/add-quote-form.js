@@ -61,7 +61,8 @@ export const QuotesForm = () => {
       const countSubtotal = quotesList.reduce((n, { total }) => n + total, 0)
       const tax = (countSubtotal * 0.1).toFixed(2)
       const total = Number(countSubtotal) + Number(tax)
-      const res = await ClientRequest(
+
+      const mongoRes = await ClientRequest(
         "/api/quotes/create-quote",
         "POST",
         { 
@@ -77,9 +78,7 @@ export const QuotesForm = () => {
           status: "open"
         }
       )
-
-
-      if(!res) return
+      if(!mongoRes) return
 
       // Create draft order at shopify
       const lineItems = quotesList.map((list) => {
