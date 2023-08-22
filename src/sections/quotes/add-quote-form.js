@@ -78,6 +78,7 @@ export const QuotesForm = () => {
           status: "open"
         }
       )
+
       if(!mongoRes) return
 
       // Create draft order at shopify
@@ -93,7 +94,10 @@ export const QuotesForm = () => {
       const sendToShopify = await ClientRequest(
         "/api/shopify/draft-order-create",
         "POST", {lineItems})
-      if(!sendToShopify || sendToShopify.createDraft.errors) return
+      if(!sendToShopify || sendToShopify.createDraft.errors) {
+        console.log("error", sendToShopify)
+        return
+      }
       setLoading(false)
     },
     [quotesList, shipTo, companyName]
