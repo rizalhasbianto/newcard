@@ -12,13 +12,11 @@ import { QuotesSearch } from 'src/sections/quotes/quotes-search';
 import { applyPagination } from 'src/utils/apply-pagination';
 import { ClientRequest } from 'src/lib/ClientRequest'
 
-import clientPromise from "src/lib/mongodb";
-
 const Page = (props) => {
-  const { data, count } = props
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [quotesData, setQuotesData] = useState([]);
+  const [count, setCount] = useState(0)
 
   const getQuotesData = useMemo(async () => {
     const res = await ClientRequest(
@@ -34,6 +32,7 @@ const Page = (props) => {
       return
     }
     setQuotesData(res.data.quote)
+    setCount(res.data.count)
   }, [page, rowsPerPage])
 
   const handlePageChange = useCallback(
@@ -140,24 +139,5 @@ Page.getLayout = (page) => (
     {page}
   </DashboardLayout>
 );
-
-export async function getServerSideProps() {
-  try {
-    const client = await clientPromise;
-    const db = client.db(process.env.DB_NAME);
-
-    const getData = await db.collection("quotes").find().limit(10).toArray();
-    const numberOfDoc = await db.collection("quotes").estimatedDocumentCount();
-
-    return {
-      props: {
-        data: JSON.parse(JSON.stringify(getData)),
-        count: numberOfDoc
-      },
-    };
-  } catch (e) {
-    console.error(e);
-  }
-}
 
 export default Page;
