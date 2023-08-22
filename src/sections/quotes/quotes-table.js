@@ -32,8 +32,7 @@ export const QuotesTable = (props) => {
     selected = []
   } = props;
 
-  const selectedSome = (selected.length > 0) && (selected.length < items.length);
-  const selectedAll = (items.length > 0) && (selected.length === items.length);
+  const listNumber = page * 10;
 
   return (
     <Card>
@@ -65,7 +64,7 @@ export const QuotesTable = (props) => {
               </TableRow>
             </TableHead>
             <TableBody>
-              {items.map((quote) => {
+              {items.map((quote,index) => {
                 const isSelected = selected.includes(quote.id);
                 const lastUpdate = format(new Date(2014, 1, 11), 'dd/MM/yyyy');
 
@@ -76,16 +75,9 @@ export const QuotesTable = (props) => {
                     selected={isSelected}
                   >
                     <TableCell padding="checkbox">
-                      <Checkbox
-                        checked={isSelected}
-                        onChange={(event) => {
-                          if (event.target.checked) {
-                            onSelectOne?.(quote.id);
-                          } else {
-                            onDeselectOne?.(quote.id);
-                          }
-                        }}
-                      />
+                      <Typography variant="subtitle2">
+                        {index + listNumber + 1}
+                      </Typography>
                     </TableCell>
                     <TableCell>
                       <Typography variant="subtitle2">
