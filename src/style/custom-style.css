@@ -1,3 +1,7 @@
 .shopify-fill {
     object-fit: contain;
 }
+.opt-list {
+    margin-right: 10px;
+    text-decoration: underline;
+}

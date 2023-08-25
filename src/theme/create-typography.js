@@ -34,6 +34,9 @@ export const createTypography = () => {
       fontWeight: 500,
       lineHeight: 1.57
     },
+    error: {
+      color: 'red'
+    },
     overline: {
       fontSize: '0.75rem',
       fontWeight: 600,

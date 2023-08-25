@@ -34,6 +34,9 @@ export default async function getProducts(req, res) {
                     image{
                       url: url(transform: { maxWidth: 270})
                     }
+                    product {
+                      id
+                    }
                   }
                 }
               }

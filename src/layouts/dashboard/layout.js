@@ -19,7 +19,8 @@ const LayoutContainer = styled('div')({
   display: 'flex',
   flex: '1 1 auto',
   flexDirection: 'column',
-  width: '100%'
+  width: '100%',
+  background: '#f2f2f3'
 });
 
 export const Layout = (props) => {

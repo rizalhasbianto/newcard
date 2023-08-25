@@ -1,67 +1,34 @@
 import { useEffect, useState, useCallback } from 'react';
-import Paper from '@mui/material/Paper';
-import Table from '@mui/material/Table';
-import TableBody from '@mui/material/TableBody';
-import TableCell from '@mui/material/TableCell';
-import TableContainer from '@mui/material/TableContainer';
-import TableHead from '@mui/material/TableHead';
-import TablePagination from '@mui/material/TablePagination';
-import TableRow from '@mui/material/TableRow';
 import {
   Typography,
   Box,
+  Paper,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TablePagination,
+  TableRow,
   Unstable_Grid2 as Grid
 } from '@mui/material';
-import Image from 'next/image'
 import { Container } from '@mui/system';
-
-const columns = [
-  {
-    id: 'productname',
-    label: 'Product Name',
-    minWidth: 170,
-    align: 'center'
-  },
-  {
-    id: 'qty',
-    label: 'Quantity',
-    minWidth: 100,
-    align: 'center'
-  },
-  {
-    id: 'availability',
-    label: 'Availability',
-    minWidth: 170,
-    align: 'center'
-  },
-  {
-    id: 'size',
-    label: 'Price',
-    minWidth: 170,
-    align: 'center'
-  },
-  {
-    id: 'density',
-    label: 'Total',
-    minWidth: 170,
-    align: 'center'
-  },
-  {
-    id: 'action',
-    label: 'action',
-    minWidth: 170,
-    align: 'center'
-  },
-];
-
+import { columns } from 'src/data/selected-prod-column'
+import { usePopover } from 'src/hooks/use-popover';
+import ProductModal from 'src/components/products/product-modal'
+import OptionsComponent from 'src/components/products/options'
+import ProductionList from 'src/components/quotes/quote-product-list'
+import EditProductItem from 'src/components/quotes/quote-edit-product'
 
 export default function StickyHeadTable({ quotesList }) {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [total, setTotal] = useState(10);
+  const [editProduct, setEditProduct] = useState("");
+  const [editProductIndex, setEditProductIndex] = useState(false);
+  const modalPopUp = usePopover();
 
   useEffect(() => {
-
     const countSubtotal = (quotesList.reduce((n, { total }) => n + total, 0)).toFixed(2)
     const tax = (countSubtotal * 0.1).toFixed(2)
     const total = Number(countSubtotal) + Number(tax)
@@ -72,21 +39,48 @@ export default function StickyHeadTable({ quotesList }) {
     })
   }, [quotesList]);
 
+  const handleChangePage = useCallback(
+    (event, value) => {
+      setPage(value);
+    },
+    []
+  );
 
-  const handleChangePage = (event, newPage) => {
-    setPage(newPage);
-  };
+  const handleChangeRowsPerPage = useCallback(
+    (event) => {
+      setPage(0)
+      setRowsPerPage(event.target.value);
+    },
+    []
+  );
 
-  const handleChangeRowsPerPage = (event) => {
-    setRowsPerPage(+event.target.value);
-    setPage(0);
-  };
+  const handleOpenProd = useCallback(
+    (item) => {
+      const productId = item.product.id
+      modalPopUp.handleGetProduct(productId);
+      modalPopUp.handleOpen();
+    },
+    [modalPopUp]
+  );
 
-
+  const handleEditProd = useCallback(
+    (item, index) => {
+      const productId = item.product.id
+      modalPopUp.handleGetProduct(productId);
+      console.log("modalPopUp.productData", modalPopUp.productData)
+      setEditProductIndex(index)
+    },
+    [modalPopUp]
+  );
 
   return (
     <Paper sx={{ width: '100%', overflow: 'hidden' }}>
-      <TableContainer sx={{ maxHeight: 440 }}>
+      <ProductModal
+        content={modalPopUp.productData}
+        open={modalPopUp.open}
+        handleClose={modalPopUp.handleClose}
+      />
+      <TableContainer sx={{ maxHeight: 600 }}>
         <Table stickyHeader aria-label="sticky table">
           <TableHead>
             <TableRow>
@@ -105,90 +99,20 @@ export default function StickyHeadTable({ quotesList }) {
               .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
               .map((quote, index) => {
                 return (
-                  <TableRow hover role="checkbox" tabIndex={-1} key={index}>
-                    <TableCell>
-                      <Typography variant='subtitle2'>{quote.productName}</Typography>
-                      <Grid container>
-                        <Grid
-                          xs={12}
-                          md={4}
-                          sx={{
-                            position: "relative"
-                          }}
-                        >
-                          <Image
-                            src={quote.variant.image.url}
-                            fill={true}
-                            alt="Picture of the author"
-                            className='shopify-fill'
-                            sizes="270 640 750"
-                          />
-                        </Grid>
-                        <Grid
-                          xs={12}
-                          md={8}
-                        >
-                          {quote.variant.selectedOptions.map((opt) => {
-                            return (
-                              <Typography
-                                key={opt.name}
-                                variant="body3"
-                                sx={{
-                                  display: "inline-block",
-                                  whiteSpace: "nowrap"
-                                }}
-                              >
-                                {opt.name} : {opt.value}
-                              </Typography>
-                            )
-                          })}
-                        </Grid>
-                      </Grid>
-                    </TableCell>
-                    <TableCell>
-                      <Typography
-                        variant="body2"
-                        sx={{
-                          textAlign: "center"
-                        }}
-                      >
-                        {quote.qty}
-                      </Typography>
-                    </TableCell>
-                    <TableCell>
-                      <Typography
-                        variant="body2"
-                        sx={{
-                          textAlign: "center"
-                        }}
-                      >
-                        {quote.variant.currentlyNotInStock ? "Out of Stock" : "In Stock"}
-                      </Typography>
-                    </TableCell>
-                    <TableCell>
-                      <Typography
-                        variant="body2"
-                        sx={{
-                          textAlign: "center"
-                        }}
-                      >
-                        ${quote.variant.price.amount}
-                      </Typography>
-                    </TableCell>
-                    <TableCell>
-                      <Typography
-                        variant="body2"
-                        sx={{
-                          textAlign: "center"
-                        }}
-                      >
-                        ${quote.total}
-                      </Typography>
-                    </TableCell>
-                    <TableCell>
-                      action
-                    </TableCell>
-                  </TableRow>
+                  modalPopUp.productData && editProductIndex === index ?
+                    <EditProductItem
+                      quote={quote}
+                      productData={modalPopUp.productData}
+                      key={index + 1}
+                    />
+                    :
+                    <ProductionList
+                      quote={quote}
+                      handleOpenProd={handleOpenProd}
+                      handleEditProd={handleEditProd}
+                      key={index + 1}
+                      index={index}
+                    />
                 );
               })}
           </TableBody>

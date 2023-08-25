@@ -16,7 +16,7 @@ import {
   Unstable_Grid2 as Grid
 } from '@mui/material';
 
-export const SearchProduct = ({ quotesList, setQuotesList }) => {
+export const EditProduct = ({ quotesList, setQuotesList }) => {
   const [value, setValue] = useState(null);
   const [inputValue, setInputValue] = useState('');
   const [productSearch, setProductSearch] = useState([]);
@@ -65,6 +65,7 @@ export const SearchProduct = ({ quotesList, setQuotesList }) => {
     });
     setSelectedOptions(newSelectedOptions);
     setSelectedVariant(newSelecetdVariant?.node)
+    setSelectedQuantity(1)
   };
 
   const handleAddQuote = useCallback(
@@ -120,9 +121,7 @@ export const SearchProduct = ({ quotesList, setQuotesList }) => {
   useEffect(() => {
     if (!value) return undefined;
     const selectedVar = value.node.variants.edges[0].node;
-    console.log("selectedVar", selectedVar)
     const selectedOpt = selectedVar.selectedOptions.reduce((acc, curr) => (acc[curr.name] = curr.value, acc), {});
-    console.log("selectedOpt", selectedOpt)
     setSelectedVariant(selectedVar)
     setSelectedOptions(selectedOpt)
   }, [value]);
