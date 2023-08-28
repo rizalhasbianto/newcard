@@ -23,6 +23,21 @@ export function createComponents(config) {
         }
       }
     },
+    MuiStack: {
+      variants: [
+        {
+          props: { variant: 'alert' },
+          style: {
+            position: 'fixed',
+            top: '20%',
+            right: '0',
+            maxWidth: '500px',
+            zIndex: '3',
+            cursor: 'pointer'
+          },
+        }
+      ]
+    },
     MuiButton: {
       styleOverrides: {
         root: {

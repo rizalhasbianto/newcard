@@ -12,14 +12,20 @@ import PencilIcon from '@heroicons/react/24/solid/PencilIcon';
 import TrashIcon from '@heroicons/react/24/solid/TrashIcon';
 import EyeIcon from '@heroicons/react/24/solid/EyeIcon';
 
-export default function ProductionList(props) {
-    const { quote, key, handleOpenProd, handleEditProd, index } = props
+export default function QuoteLineItem(props) {
+    const { 
+        quote, 
+        handleOpenProd, 
+        handleEditLineitem, 
+        handleDeleteProd,
+        index 
+    } = props
     return (
         <TableRow
             hover
             role="checkbox"
             tabIndex={-1}
-            key={key}
+            key={index+1}
         >
             <TableCell>
                 <Typography variant='subtitle2'>{quote.productName}</Typography>
@@ -50,7 +56,7 @@ export default function ProductionList(props) {
                                         key={opt.name}
                                         variant="body3"
                                         sx={{
-                                            display: "inline-block",
+                                            display: "block",
                                             whiteSpace: "nowrap"
                                         }}
                                     >
@@ -120,7 +126,7 @@ export default function ProductionList(props) {
                         color="action"
                         fontSize="small"
                         sx={{ "&:hover": { color: "#1c2536", cursor: "pointer" } }}
-                        onClick={() => handleEditProd(quote.variant, index)}
+                        onClick={() => handleEditLineitem(quote.variant, index)}
                     >
                         <PencilIcon />
                     </SvgIcon>

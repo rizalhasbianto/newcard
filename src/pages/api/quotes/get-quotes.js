@@ -6,7 +6,7 @@ export default async function getQuotes(req, res) {
     const collection = "quotes";
     const bodyObject = req.body;
     const skip = ((bodyObject.page + 1)* bodyObject.postPerPage) - bodyObject.postPerPage;
-    const data = await db.collection(collection).find({}).skip(skip).limit(bodyObject.postPerPage).toArray();
+    const data = await db.collection(collection).find({}).sort({_id:-1}).skip(skip).limit(bodyObject.postPerPage).toArray();
     const numberOfDoc =  await db.collection(collection).estimatedDocumentCount();
     const resData = {
         quote: data,

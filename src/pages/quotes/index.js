@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useMemo, useState, useEffect } from 'react';
 import Head from 'next/head';
 import Link from 'next/link'
 import ArrowDownOnSquareIcon from '@heroicons/react/24/solid/ArrowDownOnSquareIcon';
@@ -18,7 +18,7 @@ const Page = (props) => {
   const [quotesData, setQuotesData] = useState([]);
   const [count, setCount] = useState(0)
 
-  const getQuotesData = useMemo(async () => {
+  const getQuotesData = useCallback(async () => {
     const res = await ClientRequest(
       "/api/quotes/get-quotes",
       "POST",
@@ -33,14 +33,18 @@ const Page = (props) => {
     }
     setQuotesData(res.data.quote)
     setCount(res.data.count)
-  }, [page, rowsPerPage])
+  },[page, rowsPerPage])
+
+  useEffect(() => {
+    getQuotesData()
+  }, [getQuotesData]);
 
   const handlePageChange = useCallback(
     (event, value) => {
       setPage(value);
-      getQuotesData
+      getQuotesData()
     },
-    []
+    [getQuotesData]
   );
 
   const handleRowsPerPageChange = useCallback(

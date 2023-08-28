@@ -6,55 +6,93 @@ import {
     SvgIcon,
     TableRow,
     TableCell,
+    TextField,
     Unstable_Grid2 as Grid
 } from '@mui/material';
 import Image from 'next/image'
-import PencilIcon from '@heroicons/react/24/solid/PencilIcon';
-import TrashIcon from '@heroicons/react/24/solid/TrashIcon';
+import ArchiveBoxIcon from '@heroicons/react/24/solid/ArchiveBoxIcon';
+import ArchiveBoxXMarkIcon from '@heroicons/react/24/solid/ArchiveBoxXMarkIcon';
 import EyeIcon from '@heroicons/react/24/solid/EyeIcon';
 import OptionsComponent from 'src/components/products/options'
 import { minHeight } from '@mui/system';
+import SaveIcon from '@mui/icons-material/Save';
+import CancelIcon from '@mui/icons-material/Cancel';
 
 export default function EditProductItem(props) {
     const {
         quote,
         productData,
-        key
+        index,
+        setQuotesList,
+        quotesList,
+        setEditProductIndex
     } = props
-    console.log("quote", quote)
-    console.log("productData", productData)
     const [img, setImg] = useState(quote.variant.image.url)
     const [selectedVariant, setSelectedVariant] = useState(quote.variant);
     const [selectedOptions, setSelectedOptions] = useState(quote.variant.selectedOptions.reduce((acc, curr) => (acc[curr.name] = curr.value, acc), {}));
     const [selectedQuantity, setSelectedQuantity] = useState(quote.qty);
+    const [total, setTotal] = useState(quote.total);
     console.log("selectedOptions", selectedOptions)
-    const handleChangeOptions = (event, newSingleOption) => {
-        console.log("newSingleOption", newSingleOption)
-        const getSelectedOption = newSingleOption.split(":")
-        const newSelectedOptions = {
-            ...selectedOptions,
-            [getSelectedOption[0]]: getSelectedOption[1]
-        }
-        const variants = productData.data.variants.edges
-        const newSelecetdVariant = variants.find((variant) => {
-            return variant.node.selectedOptions.every((selectedOption) => {
-                return newSelectedOptions[selectedOption.name] === selectedOption.value;
+    const handleChangeOptions = useCallback(
+        (event, newSingleOption) => {
+            const getSelectedOption = newSingleOption.split(":")
+            const newSelectedOptions = {
+                ...selectedOptions,
+                [getSelectedOption[0]]: getSelectedOption[1]
+            }
+            const variants = productData.data.variants.edges
+            const newSelecetdVariant = variants.find((variant) => {
+                return variant.node.selectedOptions.every((selectedOption) => {
+                    return newSelectedOptions[selectedOption.name] === selectedOption.value;
+                });
             });
-        });
-        console.log("newSelectedOptions", newSelectedOptions)
-        setSelectedOptions(newSelectedOptions);
-        setSelectedVariant(newSelecetdVariant?.node)
-        setImg(newSelecetdVariant?.node.image.url)
-    };
+            setSelectedOptions(newSelectedOptions);
+            setSelectedVariant(newSelecetdVariant?.node)
+            setImg(newSelecetdVariant?.node.image.url)
+        }, [productData, selectedOptions]);
+
+    const handleSaveLineItem = useCallback(
+        () => {
+            const newQuotesList = quotesList.map((lineItem, i) => {
+                if (i === index) {
+                    const newLineItem = {
+                        productName: quote.productName,
+                        qty: selectedQuantity,
+                        total: total,
+                        variant: selectedVariant
+                    }
+                    return newLineItem;
+                } else {
+                    return lineItem;
+                }
+            });
+            setQuotesList(newQuotesList)
+            setEditProductIndex("")
+        }, [
+        selectedVariant,
+        quotesList,
+        quote,
+        selectedQuantity,
+        total,
+        index,
+        setQuotesList,
+        setEditProductIndex
+    ])
+
+    const handleCancel = useCallback(
+        () => {
+            setEditProductIndex("")
+        }
+    ,[setEditProductIndex])
 
     return (
         <TableRow
             hover
             role="checkbox"
             tabIndex={-1}
-            key={key}
+            key={"edit" - index}
         >
-            <TableCell sx={{minWidth: "250px"}}>
+            <TableCell sx={{ minWidth: "250px" }}>
                 <Typography variant='subtitle2'>{quote.productName}</Typography>
                 <Grid container>
                     <Grid
@@ -86,14 +124,22 @@ export default function EditProductItem(props) {
                 </Grid>
             </TableCell>
             <TableCell>
-                <Typography
-                    variant="body2"
+                <TextField
+                    id="qtySingle"
+                    label="Quantity"
+                    variant="outlined"
+                    InputProps={{ inputProps: { min: 1 } }}
+                    type="number"
                     sx={{
-                        textAlign: "center"
+                        mt: '10px',
+                        mb: '10px'
                     }}
-                >
-                    {quote.qty}
-                </Typography>
+                    value={selectedQuantity}
+                    onChange={(event) => {
+                        setSelectedQuantity(event.target.value);
+                        setTotal((event.target.value * quote.variant.price.amount).toFixed(2))
+                    }}
+                />
             </TableCell>
             <TableCell >
                 <Typography
@@ -122,7 +168,7 @@ export default function EditProductItem(props) {
                         textAlign: "right"
                     }}
                 >
-                    ${quote.total}
+                    ${total}
                 </Typography>
             </TableCell>
             <TableCell>
@@ -135,8 +181,17 @@ export default function EditProductItem(props) {
                         color="action"
                         fontSize="small"
                         sx={{ "&:hover": { color: "#1c2536", cursor: "pointer" } }}
+                        onClick={handleSaveLineItem}
                     >
-                        <EyeIcon />
+                        <SaveIcon />
+                    </SvgIcon>
+                    <SvgIcon
+                        color="action"
+                        fontSize="small"
+                        sx={{ "&:hover": { color: "#1c2536", cursor: "pointer" } }}
+                        onClick={handleCancel}
+                    >
+                        <CancelIcon />
                     </SvgIcon>
                 </Stack>
             </TableCell>

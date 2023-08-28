@@ -95,7 +95,6 @@ export const SearchProduct = ({ quotesList, setQuotesList }) => {
         qty: selectedQuantity,
         total: selectedQuantity * selectedVariant.price.amount
       }
-      console.log("newQuote", newQuote)
       oldQuote.push(newQuote)
       setQuotesList(oldQuote)
     }

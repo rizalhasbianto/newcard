@@ -6,7 +6,8 @@ export default async function createDraftOrder(req, res) {
     mutation {
         draftOrderCreate(input: {
             email: "donato@gmail.com",
-            lineItems: [${bodyObject.lineItems}]
+            lineItems: [${bodyObject.lineItems}],
+            poNumber: "${bodyObject.poNumber}"
         }) {
           draftOrder {
             id

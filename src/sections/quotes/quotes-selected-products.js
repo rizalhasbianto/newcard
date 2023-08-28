@@ -16,22 +16,20 @@ import { Container } from '@mui/system';
 import { columns } from 'src/data/selected-prod-column'
 import { usePopover } from 'src/hooks/use-popover';
 import ProductModal from 'src/components/products/product-modal'
-import OptionsComponent from 'src/components/products/options'
-import ProductionList from 'src/components/quotes/quote-product-list'
-import EditProductItem from 'src/components/quotes/quote-edit-product'
+import Lineitem from 'src/components/quotes/quote-line-item'
+import EditProductItem from 'src/components/quotes/edit-line-item'
 
-export default function StickyHeadTable({ quotesList }) {
+export default function LineItemQuotes({ quotesList, setQuotesList }) {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [total, setTotal] = useState(10);
-  const [editProduct, setEditProduct] = useState("");
-  const [editProductIndex, setEditProductIndex] = useState(false);
+  const [editProductIndex, setEditProductIndex] = useState("");
   const modalPopUp = usePopover();
 
   useEffect(() => {
-    const countSubtotal = (quotesList.reduce((n, { total }) => n + total, 0)).toFixed(2)
+    const countSubtotal = (quotesList.reduce((n, { total }) => n + Number(total), 0)).toFixed(2)
     const tax = (countSubtotal * 0.1).toFixed(2)
-    const total = Number(countSubtotal) + Number(tax)
+    const total = (Number(countSubtotal) + Number(tax)).toFixed(2)
     setTotal({
       subTotal: countSubtotal,
       tax,
@@ -63,12 +61,22 @@ export default function StickyHeadTable({ quotesList }) {
     [modalPopUp]
   );
 
-  const handleEditProd = useCallback(
+  const handleEditLineitem = useCallback(
     (item, index) => {
       const productId = item.product.id
       modalPopUp.handleGetProduct(productId);
-      console.log("modalPopUp.productData", modalPopUp.productData)
       setEditProductIndex(index)
+    },
+    [modalPopUp]
+  );
+
+  const handleDeleteProd = useCallback(
+    (index) => {
+      setQuotesList(
+        quotesList.filter((a,i) =>
+          i !== index
+        )
+      )
     },
     [modalPopUp]
   );
@@ -103,15 +111,20 @@ export default function StickyHeadTable({ quotesList }) {
                     <EditProductItem
                       quote={quote}
                       productData={modalPopUp.productData}
+                      index={index}
                       key={index + 1}
+                      quotesList={quotesList}
+                      setQuotesList={setQuotesList}
+                      setEditProductIndex={setEditProductIndex}
                     />
                     :
-                    <ProductionList
+                    <Lineitem
                       quote={quote}
                       handleOpenProd={handleOpenProd}
-                      handleEditProd={handleEditProd}
-                      key={index + 1}
+                      handleEditLineitem={handleEditLineitem}
+                      handleDeleteProd={handleDeleteProd}
                       index={index}
+                      key={index + 1}
                     />
                 );
               })}

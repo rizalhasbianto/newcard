@@ -2,16 +2,14 @@ import { useCallback, useState, useMemo } from 'react';
 import { ClientRequest } from 'src/lib/ClientRequest'
 import {
   Box,
-  Button,
   Card,
   CardActions,
   CardContent,
   CardHeader,
   Divider,
-  TextField,
-  MenuItem,
-  ListItemText,
-  Typography,
+  Alert,
+  Stack,
+  Slide,
   Unstable_Grid2 as Grid
 } from '@mui/material';
 
@@ -20,7 +18,7 @@ import SaveIcon from '@mui/icons-material/Save';
 
 import { SearchProduct } from './quotes-search-product'
 import QuoteSelectCompany from './quote-select-company'
-import StickyHeadTable from './quotes-selected-products'
+import LineItemQuotes from './quotes-selected-products'
 
 export const QuotesForm = () => {
   const [companyName, setCompanyName] = useState("");
@@ -29,65 +27,104 @@ export const QuotesForm = () => {
   const [location, setLocation] = useState("");
   const [quotesList, setQuotesList] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [toastMessage, setToastMessage] = useState(null)
+  const [toastStatus, setToastStatus] = useState(false);
 
-  const handleSubmit = useCallback(
-    async (event) => {
-      event.preventDefault();
-      setLoading(true)
-      const countSubtotal = quotesList.reduce((n, { total }) => n + total, 0)
-      const tax = (countSubtotal * 0.1).toFixed(2)
-      const total = Number(countSubtotal) + Number(tax)
-
-      const mongoRes = await ClientRequest(
-        "/api/quotes/create-quote",
-        "POST",
-        {
-          company: {
-            name: companyName,
-            shipTo: shipTo
-          },
-          quotesList: quotesList,
-          quoteInfo: {
-            total: total,
-            item: quotesList.length
-          },
-          status: "open"
-        }
-      )
-
-      if (!mongoRes) {
-        console.log("error", mongoRes)
-        return
+  const saveToMongoDb = useCallback(async () => {
+    const countSubtotal = quotesList.reduce((n, { total }) => n + total, 0)
+    const tax = (countSubtotal * 0.1).toFixed(2)
+    const total = Number(countSubtotal) + Number(tax)
+    const today = new Date()
+    const mongoRes = await ClientRequest(
+      "/api/quotes/create-quote",
+      "POST",
+      {
+        company: {
+          name: companyName,
+          shipTo: shipTo
+        },
+        quotesList: quotesList,
+        quoteInfo: {
+          total: total,
+          item: quotesList.length
+        },
+        status: "open",
+        createdAt: today,
+        updatedAt: ""
       }
+    )
+    return mongoRes
+  }, [companyName, quotesList, shipTo])
 
-      // Create draft order at shopify
+  const syncToShopify = useCallback(
+    async (mongoReponse) => {
       const lineItems = quotesList.map((list) => {
         return (
           `{
-            variantId: "${list.variant.id}",
-            quantity: ${list.qty}
-          }`
+          variantId: "${list.variant.id}",
+          quantity: ${list.qty}
+        }`
         )
       })
-
       const sendToShopify = await ClientRequest(
         "/api/shopify/draft-order-create",
-        "POST", { lineItems })
-      if (!sendToShopify || sendToShopify.createDraft.errors) {
-        console.log("error", sendToShopify)
+        "POST", {
+        lineItems,
+        poNumber: mongoReponse?.data.insertedId
+      })
+      return sendToShopify
+    }, [quotesList])
+
+  const handleSubmit = useCallback(
+    async () => {
+      setLoading(true)
+
+      // Create new quote at mongo 
+      const mongoReponse = await saveToMongoDb()
+      if (!mongoReponse) {
+        setToastStatus(true)
+        setToastMessage("Error save to DB!")
+        setLoading(false)
+        return
+      }
+      console.log("should be stop")
+      // Create draft order at shopify
+      const shopifyResponse = await syncToShopify(mongoReponse)
+      if (!shopifyResponse || shopifyResponse.createDraft.errors) {
+        setToastStatus(true)
+        setToastMessage("Error sync to Shopify! saved as Draft")
+        setLoading(false)
         return
       }
       setLoading(false)
     },
-    [quotesList, shipTo, companyName]
+    [saveToMongoDb, syncToShopify]
   );
 
   return (
     <form
       autoComplete="off"
       noValidate
-      onSubmit={handleSubmit}
     >
+      <Stack
+        variant={"alert"}
+        spacing={2}
+        onClick={() => setToastStatus(false)}
+      >
+        <Slide
+          direction="left"
+          in={toastStatus}
+          mountOnEnter
+          unmountOnExit
+        >
+          <Alert
+            severity="error"
+            variant="filled"
+          >
+            {toastMessage}
+          </Alert>
+        </Slide>
+      </Stack>
       <Card sx={{ mb: 2 }}>
         <CardHeader
           subheader="Please choose a company"
@@ -131,14 +168,26 @@ export const QuotesForm = () => {
             title="Selected Products"
           />
           <CardContent sx={{ pt: 0 }}>
-            <StickyHeadTable quotesList={quotesList} />
+            <LineItemQuotes
+              quotesList={quotesList}
+              setQuotesList={setQuotesList}
+            />
           </CardContent>
           <Divider />
           <CardActions sx={{ justifyContent: 'flex-end' }}>
-
             <LoadingButton
               color="primary"
-              onClick={handleSubmit}
+              onClick={() => handleSubmit("template")}
+              loading={loading}
+              loadingPosition="start"
+              startIcon={<SaveIcon />}
+              variant="contained"
+            >
+              Save As Template
+            </LoadingButton>
+            <LoadingButton
+              color="primary"
+              onClick={() => handleSubmit("draft")}
               loading={loading}
               loadingPosition="start"
               startIcon={<SaveIcon />}
@@ -148,7 +197,7 @@ export const QuotesForm = () => {
             </LoadingButton>
             <LoadingButton
               color="primary"
-              onClick={handleSubmit}
+              onClick={() => handleSubmit("publish")}
               loading={loading}
               loadingPosition="start"
               startIcon={<SaveIcon />}
@@ -158,7 +207,7 @@ export const QuotesForm = () => {
             </LoadingButton>
             <LoadingButton
               color="primary"
-              onClick={handleSubmit}
+              onClick={() => handleSubmit("invoice")}
               loading={loading}
               loadingPosition="start"
               startIcon={<SaveIcon />}
