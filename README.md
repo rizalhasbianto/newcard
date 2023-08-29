@@ -9,7 +9,7 @@
 > course [Next.js](https://github.com/vercel/next.js/?ref=devias-io) to boost your app development
 > process!
 
-## Demo
+## Demo test
 
 - [Dashboard Page](https://material-kit-react.devias.io)
 - [Companies Page](https://material-kit-react.devias.io/companies)
