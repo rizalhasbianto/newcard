@@ -1,24 +1,25 @@
-import { useCallback, useState, useMemo } from 'react';
-import { ClientRequest } from 'src/lib/ClientRequest'
+import { useCallback, useState } from 'react';
+
+import LoadingButton from '@mui/lab/LoadingButton';
+import SaveIcon from '@mui/icons-material/Save';
 import {
   Box,
   Card,
   CardActions,
   CardContent,
   CardHeader,
-  Divider,
-  Alert,
-  Stack,
-  Slide,
-  Unstable_Grid2 as Grid
+  Divider
 } from '@mui/material';
-
-import LoadingButton from '@mui/lab/LoadingButton';
-import SaveIcon from '@mui/icons-material/Save';
 
 import { SearchProduct } from './quotes-search-product'
 import QuoteSelectCompany from './quote-select-company'
 import LineItemQuotes from './quotes-selected-products'
+import { saveQuoteButton } from 'src/data/save-quote-button'
+
+import { useToast } from 'src/hooks/use-toast'
+import Toast from 'src/components/toast'
+import { saveQuoteToMongoDb, updateQuoteToMongoDb } from 'src/hooks/use-mongo'
+import { syncQuoteToShopify, sendDraftOrderByShopify } from 'src/hooks/use-shopify'
 
 export const QuotesForm = () => {
   const [companyName, setCompanyName] = useState("");
@@ -26,105 +27,135 @@ export const QuotesForm = () => {
   const [shipToList, setShipToList] = useState([]);
   const [location, setLocation] = useState("");
   const [quotesList, setQuotesList] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [toastMessage, setToastMessage] = useState(null)
-  const [toastStatus, setToastStatus] = useState(false);
+  const [buttonloading, setButtonLoading] = useState("");
+  const toastUp = useToast();
 
-  const saveToMongoDb = useCallback(async () => {
-    const countSubtotal = quotesList.reduce((n, { total }) => n + total, 0)
-    const tax = (countSubtotal * 0.1).toFixed(2)
-    const total = Number(countSubtotal) + Number(tax)
-    const today = new Date()
-    const mongoRes = await ClientRequest(
-      "/api/quotes/create-quote",
-      "POST",
-      {
-        company: {
-          name: companyName,
-          shipTo: shipTo
-        },
-        quotesList: quotesList,
-        quoteInfo: {
-          total: total,
-          item: quotesList.length
-        },
-        status: "open",
-        createdAt: today,
-        updatedAt: ""
+  const handleTemplate = useCallback(
+    () => {
+      setButtonLoading("")
+      toastUp.handleStatus("success")
+      toastUp.handleMessage("Line item saved to template!!!")
+    }, [toastUp]
+  )
+
+  const handleDraft = useCallback(
+    async () => {
+      const mongoReponse = await saveQuoteToMongoDb(companyName, shipTo, quotesList, "draft")
+      if (!mongoReponse) { // error when save data to mongo
+        toastUp.handleStatus("error")
+        toastUp.handleMessage("Error save to DB!")
+        setButtonLoading(false)
+        return
       }
-    )
-    return mongoRes
-  }, [companyName, quotesList, shipTo])
+      setButtonLoading("")
+      toastUp.handleStatus("success")
+      toastUp.handleMessage("Quote saved as draft!!!")
+    }, [companyName, quotesList, shipTo, toastUp]
+  )
 
-  const syncToShopify = useCallback(
-    async (mongoReponse) => {
-      const lineItems = quotesList.map((list) => {
-        return (
-          `{
-          variantId: "${list.variant.id}",
-          quantity: ${list.qty}
-        }`
-        )
-      })
-      const sendToShopify = await ClientRequest(
-        "/api/shopify/draft-order-create",
-        "POST", {
-        lineItems,
-        poNumber: mongoReponse?.data.insertedId
-      })
-      return sendToShopify
-    }, [quotesList])
+  const handlePublish = useCallback(
+    async (status) => {
+      const mongoReponse = await saveQuoteToMongoDb(companyName, shipTo, quotesList, "open")
+      if (!mongoReponse) { // error when save data to mongo
+        toastUp.handleStatus("error")
+        toastUp.handleMessage("Error save to DB!")
+        setButtonLoading(false)
+        return
+      }
+
+      const shopifyResponse = await syncQuoteToShopify(mongoReponse, quotesList, status)
+      if (!shopifyResponse || shopifyResponse.createDraft.errors) { // error when sync data to shopify
+        toastUp.handleStatus("warning")
+        toastUp.handleMessage("Error sync to Shopify! saved as Draft")
+        setButtonLoading("")
+        return
+      }
+
+      const quoteId = mongoReponse?.data.insertedId;
+      const draftOrderId = shopifyResponse.createDraft.data.draftOrderCreate.draftOrder.id
+      const updateQuoteAtMongo = await updateQuoteToMongoDb(quoteId, draftOrderId)
+      if (!updateQuoteAtMongo) { // error when update data to mongo
+        toastUp.handleStatus("error")
+        toastUp.handleMessage("Error save to DB! please try publish again")
+        setButtonLoading(false)
+        return
+      }
+
+      setButtonLoading("")
+      toastUp.handleStatus("success")
+      toastUp.handleMessage("Quote has been published!!!")
+    }, [companyName, quotesList, shipTo, toastUp]
+  )
+
+  const handleInvoice = useCallback(
+    async (status) => {
+      const mongoReponse = await saveQuoteToMongoDb(companyName, shipTo, quotesList, "open")
+      if (!mongoReponse) { // error when save data to mongo
+        toastUp.handleStatus("error")
+        toastUp.handleMessage("Error save to DB!")
+        setButtonLoading(false)
+        return
+      }
+
+      const shopifyResponse = await syncQuoteToShopify(mongoReponse, quotesList, status)
+      if (!shopifyResponse || shopifyResponse.createDraft.errors) { // error when sync data to shopify
+        toastUp.handleStatus("warning")
+        toastUp.handleMessage("Error sync to Shopify! saved as Draft")
+        setButtonLoading("")
+        return
+      }
+
+      const quoteId = mongoReponse?.data.insertedId;
+      const draftOrderId = shopifyResponse.createDraft.data.draftOrderCreate.draftOrder.id
+      const updateQuoteAtMongo = await updateQuoteToMongoDb(quoteId, draftOrderId)
+      if (!updateQuoteAtMongo) { // error when update data to mongo
+        toastUp.handleStatus("error")
+        toastUp.handleMessage("Error save to DB! please try publish again")
+        setButtonLoading(false)
+        return
+      }
+
+      const sendInvoice = await sendDraftOrderByShopify("rizalhasbianto@gmail.com", draftOrderId)
+      if (!sendInvoice || sendInvoice.sendDraft.errors) { // error when send invoice
+        toastUp.handleStatus("error")
+        toastUp.handleMessage("Error send invoice! quote saved as open")
+        setButtonLoading(false)
+        return
+      }
+
+      setButtonLoading("")
+      toastUp.handleStatus("success")
+      toastUp.handleMessage("Invoice sent!!!")
+    }, [companyName, quotesList, shipTo, toastUp]
+  )
 
   const handleSubmit = useCallback(
-    async () => {
-      setLoading(true)
-
-      // Create new quote at mongo 
-      const mongoReponse = await saveToMongoDb()
-      if (!mongoReponse) {
-        setToastStatus(true)
-        setToastMessage("Error save to DB!")
-        setLoading(false)
-        return
+    (type) => {
+      if(type === "template") {
+        handleTemplate()
       }
-      console.log("should be stop")
-      // Create draft order at shopify
-      const shopifyResponse = await syncToShopify(mongoReponse)
-      if (!shopifyResponse || shopifyResponse.createDraft.errors) {
-        setToastStatus(true)
-        setToastMessage("Error sync to Shopify! saved as Draft")
-        setLoading(false)
-        return
+      if(type === "draft") {
+        handleDraft()
       }
-      setLoading(false)
-    },
-    [saveToMongoDb, syncToShopify]
-  );
+      if(type === "publish") {
+        handlePublish()
+      }
+      if(type === "invoice") {
+        handleInvoice()
+      }
+    },[]
+  )
 
   return (
     <form
       autoComplete="off"
       noValidate
     >
-      <Stack
-        variant={"alert"}
-        spacing={2}
-        onClick={() => setToastStatus(false)}
-      >
-        <Slide
-          direction="left"
-          in={toastStatus}
-          mountOnEnter
-          unmountOnExit
-        >
-          <Alert
-            severity="error"
-            variant="filled"
-          >
-            {toastMessage}
-          </Alert>
-        </Slide>
-      </Stack>
+      <Toast
+        toastStatus={toastUp.toastStatus}
+        handleStatus={toastUp.handleStatus}
+        toastMessage={toastUp.toastMessage}
+      />
       <Card sx={{ mb: 2 }}>
         <CardHeader
           subheader="Please choose a company"
@@ -175,46 +206,23 @@ export const QuotesForm = () => {
           </CardContent>
           <Divider />
           <CardActions sx={{ justifyContent: 'flex-end' }}>
-            <LoadingButton
-              color="primary"
-              onClick={() => handleSubmit("template")}
-              loading={loading}
-              loadingPosition="start"
-              startIcon={<SaveIcon />}
-              variant="contained"
-            >
-              Save As Template
-            </LoadingButton>
-            <LoadingButton
-              color="primary"
-              onClick={() => handleSubmit("draft")}
-              loading={loading}
-              loadingPosition="start"
-              startIcon={<SaveIcon />}
-              variant="contained"
-            >
-              Save As Draft
-            </LoadingButton>
-            <LoadingButton
-              color="primary"
-              onClick={() => handleSubmit("publish")}
-              loading={loading}
-              loadingPosition="start"
-              startIcon={<SaveIcon />}
-              variant="contained"
-            >
-              Publish
-            </LoadingButton>
-            <LoadingButton
-              color="primary"
-              onClick={() => handleSubmit("invoice")}
-              loading={loading}
-              loadingPosition="start"
-              startIcon={<SaveIcon />}
-              variant="contained"
-            >
-              Send Invoice
-            </LoadingButton>
+            {
+              saveQuoteButton.map((button) => {
+                return (
+                  <LoadingButton
+                    color="primary"
+                    onClick={() => handleSubmit(button.action)}
+                    loading={buttonloading === button.action ? true : false}
+                    loadingPosition="start"
+                    startIcon={<SaveIcon />}
+                    variant="contained"
+                    key={button.action}
+                  >
+                    {button.title}
+                  </LoadingButton>
+                )
+              })
+            }
           </CardActions>
         </Card>
       }

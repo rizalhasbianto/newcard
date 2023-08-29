@@ -12,5 +12,6 @@ export default async function getQuotes(req, res) {
         quote: data,
         count:numberOfDoc
     }
+    console.log("data", data)
     res.json({ status: 200, data: resData });
 }

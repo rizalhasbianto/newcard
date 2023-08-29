@@ -53,18 +53,18 @@ export const info = withAlphas({
 
 export const warning = withAlphas({
   lightest: '#FFFAEB',
-  light: '#FEF0C7',
-  main: '#F79009',
-  dark: '#B54708',
+  light: '#ffb74d',
+  main: '#ffa726',
+  dark: '#f57c00',
   darkest: '#7A2E0E',
   contrastText: '#FFFFFF'
 });
 
 export const error = withAlphas({
   lightest: '#FEF3F2',
-  light: '#FEE4E2',
-  main: '#F04438',
-  dark: '#B42318',
+  light: '#e57373',
+  main: '#f44336',
+  dark: '#d32f2f',
   darkest: '#7A271A',
   contrastText: '#FFFFFF'
 });
