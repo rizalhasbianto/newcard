@@ -104,7 +104,7 @@ export const QuotesForm = () => {
         setButtonLoading("")
         return
       }
-
+      console.log("shopifyResponse", shopifyResponse)
       const quoteId = mongoReponse?.data.insertedId;
       const draftOrderId = shopifyResponse.createDraft.data.draftOrderCreate.draftOrder.id
       const updateQuoteAtMongo = await updateQuoteToMongoDb(quoteId, draftOrderId)
