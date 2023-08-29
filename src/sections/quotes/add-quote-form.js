@@ -104,7 +104,6 @@ export const QuotesForm = () => {
         setButtonLoading("")
         return
       }
-      console.log("shopifyResponse", shopifyResponse)
       const quoteId = mongoReponse?.data.insertedId;
       const draftOrderId = shopifyResponse.createDraft.data.draftOrderCreate.draftOrder.id
       const updateQuoteAtMongo = await updateQuoteToMongoDb(quoteId, draftOrderId)
@@ -143,7 +142,7 @@ export const QuotesForm = () => {
       if(type === "invoice") {
         handleInvoice()
       }
-    },[]
+    },[handleDraft, handleInvoice, handlePublish, handleTemplate]
   )
 
   return (
