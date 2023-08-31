@@ -19,8 +19,8 @@ export default function Toast(props) {
           unmountOnExit
         >
           <Alert
-            severity={toastStatus&& toastStatus}
-            color={toastStatus&& toastStatus}
+            severity={toastStatus ? toastStatus : "success"}
+            color={toastStatus ? toastStatus : "success"}
           >
             {toastMessage}
           </Alert>

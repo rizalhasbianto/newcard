@@ -40,7 +40,7 @@ export const SearchProduct = ({ quotesList, setQuotesList }) => {
         newOptions = [value];
       }
 
-      if (data) {
+      if (data && data.newData.data) {
         const dataProd = data.newData.data.products.edges
         if (dataProd.length > 0) {
           newOptions = [...newOptions, ...dataProd];

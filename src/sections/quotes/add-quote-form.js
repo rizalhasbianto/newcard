@@ -8,11 +8,14 @@ import {
   CardActions,
   CardContent,
   CardHeader,
-  Divider
+  Divider,
+  Button,
+  Unstable_Grid2 as Grid
 } from '@mui/material';
 
 import { SearchProduct } from './quotes-search-product'
 import QuoteSelectCompany from './quote-select-company'
+import AddCompany from '../companies/company-add'
 import LineItemQuotes from './quotes-selected-products'
 import { saveQuoteButton } from 'src/data/save-quote-button'
 
@@ -28,6 +31,7 @@ export const QuotesForm = () => {
   const [location, setLocation] = useState("");
   const [quotesList, setQuotesList] = useState([]);
   const [buttonloading, setButtonLoading] = useState("");
+  const [addNewCompany, setAddNewCompany] = useState(false);
   const toastUp = useToast();
 
   const handleTemplate = useCallback(
@@ -74,7 +78,7 @@ export const QuotesForm = () => {
       const quoteId = mongoReponse?.data.insertedId;
       const draftOrderId = shopifyResponse.createDraft.data.draftOrderCreate.draftOrder.id
       const updateQuoteAtMongo = await updateQuoteToMongoDb(quoteId, draftOrderId)
-      if (!updateQuoteAtMongo) { // error when update data to mongo
+      if (updateQuoteAtMongo.modifiedCount === 0) { // error when update data to mongo
         toastUp.handleStatus("error")
         toastUp.handleMessage("Error save to DB! please try publish again")
         setButtonLoading(false)
@@ -89,7 +93,7 @@ export const QuotesForm = () => {
 
   const handleInvoice = useCallback(
     async (status) => {
-      const mongoReponse = await saveQuoteToMongoDb(companyName, shipTo, quotesList, "open")
+      const mongoReponse = await saveQuoteToMongoDb(companyName, shipTo, quotesList, "sent invoice")
       if (!mongoReponse) { // error when save data to mongo
         toastUp.handleStatus("error")
         toastUp.handleMessage("Error save to DB!")
@@ -130,19 +134,20 @@ export const QuotesForm = () => {
 
   const handleSubmit = useCallback(
     (type) => {
-      if(type === "template") {
+      setButtonLoading(type)
+      if (type === "template") {
         handleTemplate()
       }
-      if(type === "draft") {
+      if (type === "draft") {
         handleDraft()
       }
-      if(type === "publish") {
+      if (type === "publish") {
         handlePublish()
       }
-      if(type === "invoice") {
+      if (type === "invoice") {
         handleInvoice()
       }
-    },[handleDraft, handleInvoice, handlePublish, handleTemplate]
+    }, [handleDraft, handleInvoice, handlePublish, handleTemplate]
   )
 
   return (
@@ -156,22 +161,59 @@ export const QuotesForm = () => {
         toastMessage={toastUp.toastMessage}
       />
       <Card sx={{ mb: 2 }}>
-        <CardHeader
-          subheader="Please choose a company"
-          title="Company Options"
-        />
+        <Grid
+          container
+          justify="flex-end"
+          alignItems="center"
+        >
+          <Grid
+            xs={6}
+            md={6}
+            sx={{
+              padding:0
+            }}
+          >
+            <CardHeader
+              subheader="Please choose a company"
+              title="Company Options"
+            />
+          </Grid>
+          <Grid
+            xs={6}
+            md={6}
+            sx={{
+              textAlign: "right",
+              paddingRight: "25px"
+            }}
+          >
+            <Button 
+            variant="outlined"
+            onClick={() => setAddNewCompany(true)}
+            >
+              Add New Company
+            </Button>
+          </Grid>
+        </Grid>
         <CardContent sx={{ pt: 0 }}>
           <Box sx={{ m: -1.5 }}>
-            <QuoteSelectCompany
-              location={location}
-              shipToList={shipToList}
-              shipTo={shipTo}
-              companyName={companyName}
-              setShipToList={setShipToList}
-              setLocation={setLocation}
-              setShipTo={setShipTo}
-              setCompanyName={setCompanyName}
+            { addNewCompany ?
+            <AddCompany
+            setAddNewCompany={setAddNewCompany}
             />
+              :
+              
+                <QuoteSelectCompany
+                location={location}
+                shipToList={shipToList}
+                shipTo={shipTo}
+                companyName={companyName}
+                setShipToList={setShipToList}
+                setLocation={setLocation}
+                setShipTo={setShipTo}
+                setCompanyName={setCompanyName}
+              />
+            }
+            
           </Box>
         </CardContent>
       </Card>

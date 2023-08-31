@@ -64,7 +64,7 @@ export const QuotesTable = (props) => {
               </TableRow>
             </TableHead>
             <TableBody>
-              {items.map((quote,index) => {
+              {items && items.map((quote,index) => {
                 const isSelected = selected.includes(quote.id);
                 const lastUpdate = format(new Date(2014, 1, 11), 'dd/MM/yyyy');
 
@@ -90,7 +90,7 @@ export const QuotesTable = (props) => {
                         direction="row"
                         spacing={2}
                       >
-                        {quote.company.avatar &&
+                        {quote.company?.avatar &&  
                         <Avatar src={quote.company.avatar}>
                           {getInitials(quote.company.company)}
                         </Avatar>
@@ -101,10 +101,10 @@ export const QuotesTable = (props) => {
                           spacing={0}
                         >
                           <Typography variant="subtitle2">
-                            {quote.company.name}
+                            {quote.company?.name}
                           </Typography>
                           <Typography variant="subtitle2">
-                            {quote.company.shipTo}
+                            {quote.company?.shipTo}
                           </Typography>
                         </Stack>
                       </Stack>
@@ -116,10 +116,10 @@ export const QuotesTable = (props) => {
                         spacing={1}
                       >
                         <Typography variant="subtitle2">
-                          Total: ${quote.quoteInfo.total}
+                          Total: ${quote.quoteInfo?.total}
                         </Typography>
                         <Typography variant="subtitle2">
-                          Number of Item: {quote.quoteInfo.item}
+                          Number of Item: {quote.quoteInfo?.item}
                         </Typography>
                       </Stack>
                     </TableCell>

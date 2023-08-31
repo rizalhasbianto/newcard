@@ -145,6 +145,9 @@ export function createComponents(config) {
         input: {
           '&::placeholder': {
             opacity: 1
+          },
+          '&::label': {
+            opacity: 1
           }
         }
       }
@@ -230,6 +233,12 @@ export function createComponents(config) {
           fontSize: 14,
           fontWeight: 500,
           lineHeight: '24px',
+          '&::placeholder': {
+            opacity: 1
+          },
+          '&::label': {
+            opacity: 1
+          }
         },
         notchedOutline: {
           borderColor: palette.neutral[200],
@@ -245,20 +254,42 @@ export function createComponents(config) {
         root: {
           fontSize: 14,
           fontWeight: 500,
+          opacity: 1,
           [`&.${inputLabelClasses.filled}`]: {
-            transform: 'translate(12px, 18px) scale(1)'
+            transform: 'translate(12px, 18px) scale(1)',
+            opacity: 1
           },
           [`&.${inputLabelClasses.shrink}`]: {
             [`&.${inputLabelClasses.standard}`]: {
-              transform: 'translate(0, -1.5px) scale(0.85)'
+              transform: 'translate(0, -1.5px) scale(0.85)',
+              opacity: 1
             },
             [`&.${inputLabelClasses.filled}`]: {
-              transform: 'translate(12px, 6px) scale(0.85)'
+              transform: 'translate(12px, 6px) scale(0.85)',
+              opacity: 1
             },
             [`&.${inputLabelClasses.outlined}`]: {
-              transform: 'translate(14px, -9px) scale(0.85)'
+              transform: 'translate(14px, -9px) scale(0.85)',
+              opacity: 1
             }
           }
+        }
+      }
+    },
+    MuiDivider: {
+      styleOverrides: {
+        root: {
+          fontWeight: "600",
+          color: palette.primary.main,
+          fontSize: "17px",
+          '&::before': {
+            width: '0%',
+            borderTop: 'thin solid #fff'
+          },
+          '&::after': {
+            borderTop: 'thin solid #fff'
+          },
+
         }
       }
     },
