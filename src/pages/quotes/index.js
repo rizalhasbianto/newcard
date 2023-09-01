@@ -18,7 +18,7 @@ const Page = (props) => {
   const [quotesData, setQuotesData] = useState([]);
   const [count, setCount] = useState(0)
 
-  const getQuotesData = useCallback(async () => {
+  const getQuotesData = useCallback(async (page, rowsPerPage) => {
     const res = await ClientRequest(
       "/api/quotes/get-quotes",
       "POST",
@@ -33,26 +33,28 @@ const Page = (props) => {
     }
     setQuotesData(res.data.quote)
     setCount(res.data.count)
-  },[page, rowsPerPage])
+  },[])
 
   useEffect(() => {
-    getQuotesData()
-  }, [getQuotesData]);
+    getQuotesData(page, rowsPerPage)
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const handlePageChange = useCallback(
     (event, value) => {
       setPage(value);
-      getQuotesData()
+      getQuotesData(value, rowsPerPage)
     },
-    [getQuotesData]
+    [getQuotesData, rowsPerPage]
   );
 
   const handleRowsPerPageChange = useCallback(
     (event) => {
-      setPage(0)
+      setPage(0);
       setRowsPerPage(event.target.value);
+      getQuotesData(page, event.target.value);
     },
-    []
+    [getQuotesData, page]
   );
 
   return (
@@ -108,7 +110,10 @@ const Page = (props) => {
                 </Stack>
               </Stack>
               <div>
-                <Link href="/quotes/add-quote" passHref>
+                <Link 
+                  href="/quotes/add-quote" 
+                  passHref
+                >
                   <Button
                     startIcon={(
                       <SvgIcon fontSize="small">
