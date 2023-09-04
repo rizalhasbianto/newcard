@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import {
     Box,
     Button,
@@ -21,6 +21,9 @@ import BookmarkBorderIcon from '@mui/icons-material/BookmarkBorder';
 import BookmarkIcon from '@mui/icons-material/Bookmark';
 import { MuiFileInput } from 'mui-file-input'
 import { usaState } from 'src/data/state-usa'
+import { useFormik, ErrorMessage } from 'formik';
+import * as Yup from 'yup';
+import Image from 'next/image'
 
 export default function AddCompany(props) {
     const { setAddNewCompany } = props
@@ -28,26 +31,91 @@ export default function AddCompany(props) {
     const [preview, setPreview] = useState();
     const [state, setState] = useState();
     const [country, setCountry] = useState("USA");
+    const [fileError, setFileError] = useState(false);
     const newUsaState = usaState.map((st) => {
         return ({
-            label: st.name
+            label: st.name,
+            name: st.name
         })
     })
-    function handleChange(newFile) {
+    const phoneRegExp = /^((\\+[1-9]{1,4}[ \\-]*)|(\\([0-9]{2,3}\\)[ \\-]*)|([0-9]{2,4})[ \\-]*)*?[0-9]{3,4}?[ \\-]*[0-9]{3,4}?$/
+
+    const formik = useFormik({
+        initialValues: {
+            companyName: "",
+            companyAbout: "",
+            companyPhoto: "",
+            companyShippingLocation: "",
+            countryName: "",
+            stateName: "",
+            attentionLocation: "",
+            addressLocation: "",
+            cityLocation: "",
+            postalLocation: "",
+            phoneLocation: "",
+            contactFirstName: "",
+            contactLastName: "",
+            contactEmail: "",
+            submit: null
+        },
+        validationSchema: Yup.object({
+            companyName: Yup.string().max(255).required('This field is required'),
+            companyAbout: Yup.string().max(1000).required('This field is required'),
+            companyPhoto: Yup.string().max(255).required('This field is required'),
+            companyShippingLocation: Yup.string().max(255).required('This field is required'),
+            stateName: Yup.object().required('This field is required'),
+            attentionLocation: Yup.string().max(255).required('This field is required'),
+            addressLocation: Yup.string().max(255).required('This field is required'),
+            cityLocation: Yup.string().max(255).required('This field is required'),
+            postalLocation: Yup.number().max(255).required('This field is required'),
+            phoneLocation: Yup.string().matches(phoneRegExp, 'Phone number is not valid').required('This field is required'),
+            contactFirstName: Yup.string().max(255).required('This field is required'),
+            contactLastName: Yup.string().max(255).required('This field is required'),
+            contactEmail: Yup
+                .string()
+                .email('Must be a valid email')
+                .max(255)
+                .required('Email is required')
+        }),
+        onSubmit: async (values, helpers) => {
+            console.log("values", values)
+        }
+    });
+
+    const handleChange = (event) => {
+        console.log("e", event.target.value)
+        const email = event.target.value;
+        setFormData({
+            email: email
+        });
+    }
+    function handleChangeFile(newFile) {
         if (!newFile) {
             setFile();
             setPreview();
             return
         }
-        setFile(newFile);
-        setPreview(URL.createObjectURL(newFile));
+        if (newFile.size < 200000) {
+            setFile(newFile);
+            setPreview(URL.createObjectURL(newFile));
+        } else {
+            setFileError(true)
+        }
+        console.log("newFile", newFile)
+    }
+    const handleSubmit = (e) => {
+        e.preventDefault()
+        console.log("event form", e)
     }
     return (
-        <>
+        <form
+            noValidate
+            onSubmit={formik.handleSubmit}
+        >
             <Stack
-            sx={{
-                marginBottom: "30px"
-            }}>
+                sx={{
+                    marginBottom: "30px"
+                }}>
                 <Grid container>
                     <Grid
                         xs={12}
@@ -61,10 +129,15 @@ export default function AddCompany(props) {
                     >
                         <TextField
                             id="company-name"
-                            name="company-name"
+                            name="companyName"
                             label="Company Name"
                             variant="outlined"
                             fullWidth
+                            onBlur={formik.handleBlur}
+                            onChange={formik.handleChange}
+                            value={formik.values.companyName}
+                            error={!!(formik.touched.companyName && formik.errors.companyName)}
+                            helperText={formik.touched.companyName && formik.errors.companyName}
                         />
                     </Grid>
                     <Grid
@@ -73,28 +146,55 @@ export default function AddCompany(props) {
                     >
                         <TextField
                             id="company-about"
-                            name="company-about"
+                            name="companyAbout"
                             label="Company about"
                             variant="outlined"
                             fullWidth
                             multiline
                             maxRows={3}
+                            onBlur={formik.handleBlur}
+                            onChange={formik.handleChange}
+                            value={formik.values.companyAbout}
+                            error={!!(formik.touched.companyAbout && formik.errors.companyAbout)}
+                            helperText={formik.touched.companyAbout && formik.errors.companyAbout}
                         />
                     </Grid>
                     <Grid
                         xs={12}
-                        md={4}
+                        md={file ? 3 : 4}
                     >
                         <MuiFileInput
                             value={file}
-                            onChange={handleChange}
+                            onChange={handleChangeFile}
                             variant="outlined"
-                            label="Please choose Photo max 1mb"
+                            name="companyPhoto"
+                            label="Please choose Photo max 200kb"
                             inputProps={{ accept: '.png, .jpeg, .jpg' }}
                             getInputText={(value) => value ? file.name : ''}
                             fullWidth
+                            className={file ? "selected_file" : "empty"}
+                            helperText={fileError && "Image size is above 200kb"}
+                            error={fileError}
                         />
                     </Grid>
+                    {file &&
+                        <Grid
+                            xs={12}
+                            md={1}
+                        >
+                            <Box>
+                                <div className="preview-wrap">
+                                    <Image
+                                        src={preview}
+                                        fill={true}
+                                        alt="Picture of the author"
+                                        className='shopify-fill'
+                                        sizes="270 640 750"
+                                    />
+                                </div>
+                            </Box>
+                        </Grid>
+                    }
                     <Grid
                         xs={12}
                         md={1}
@@ -107,9 +207,9 @@ export default function AddCompany(props) {
                 </Grid>
             </Stack>
             <Stack
-            sx={{
-                marginBottom: "30px"
-            }}>
+                sx={{
+                    marginBottom: "30px"
+                }}>
                 <Grid container>
                     <Grid
                         xs={12}
@@ -123,10 +223,15 @@ export default function AddCompany(props) {
                     >
                         <TextField
                             id="company-shipping-location"
-                            name="company-shipping-location"
+                            name="companyShippingLocation"
                             label="Shipping Location Name"
                             variant="outlined"
                             fullWidth
+                            onBlur={formik.handleBlur}
+                            onChange={formik.handleChange}
+                            value={formik.values.companyShippingLocation}
+                            error={!!(formik.touched.companyShippingLocation && formik.errors.companyShippingLocation)}
+                            helperText={formik.touched.companyShippingLocation && formik.errors.companyShippingLocation}
                         />
                     </Grid>
                     <Grid
@@ -135,7 +240,7 @@ export default function AddCompany(props) {
                     >
                         <TextField
                             id="country-name"
-                            name="country-name"
+                            name="countryName"
                             label="Country"
                             value={country}
                             select
@@ -154,11 +259,24 @@ export default function AddCompany(props) {
                     >
                         <Autocomplete
                             disablePortal
-                            id="combo-box-demo"
+                            id="state"
+                            name="stateName"
                             options={newUsaState}
                             fullWidth
-                            renderInput={(params) => <TextField {...params}
-                                label="State" />}
+                            isOptionEqualToValue={(option, value) => option.name === value.name}
+                            renderInput={(params) =>
+                                <TextField
+                                    {...params}
+                                    label="State"
+                                    error={!!(formik.touched.stateName && formik.errors.stateName)}
+                                    helperText={formik.touched.stateName && formik.errors.stateName}
+                                />
+                            }
+                            onChange={(event, newValue) => {
+                                formik.setFieldValue("stateName", newValue)
+                              }}
+                            onBlur={() => formik.setTouched({ ["stateName"]: true })}
+                            value={formik.values.stateName}
                         />
                     </Grid>
                     <Grid
@@ -167,10 +285,15 @@ export default function AddCompany(props) {
                     >
                         <TextField
                             id="attention-location"
-                            name="attention-location"
+                            name="attentionLocation"
                             label="Attention"
                             variant="outlined"
                             fullWidth
+                            onBlur={formik.handleBlur}
+                            onChange={formik.handleChange}
+                            value={formik.values.attentionLocation}
+                            error={!!(formik.touched.attentionLocation && formik.errors.attentionLocation)}
+                            helperText={formik.touched.attentionLocation && formik.errors.attentionLocation}
                         />
                     </Grid>
                     <Grid
@@ -179,10 +302,15 @@ export default function AddCompany(props) {
                     >
                         <TextField
                             id="address-location"
-                            name="address-location"
+                            name="addressLocation"
                             label="Address"
                             variant="outlined"
                             fullWidth
+                            onBlur={formik.handleBlur}
+                            onChange={formik.handleChange}
+                            value={formik.values.addressLocation}
+                            error={!!(formik.touched.addressLocation && formik.errors.addressLocation)}
+                            helperText={formik.touched.addressLocation && formik.errors.addressLocation}
                         />
                     </Grid>
                     <Grid
@@ -191,10 +319,15 @@ export default function AddCompany(props) {
                     >
                         <TextField
                             id="city-location"
-                            name="city-location"
+                            name="cityLocation"
                             label="City"
                             variant="outlined"
                             fullWidth
+                            onBlur={formik.handleBlur}
+                            onChange={formik.handleChange}
+                            value={formik.values.cityLocation}
+                            error={!!(formik.touched.cityLocation && formik.errors.cityLocation)}
+                            helperText={formik.touched.cityLocation && formik.errors.cityLocation}
                         />
                     </Grid>
                     <Grid
@@ -203,10 +336,15 @@ export default function AddCompany(props) {
                     >
                         <TextField
                             id="postal-location"
-                            name="postal-location"
+                            name="postalLocation"
                             label="Postal"
                             variant="outlined"
                             fullWidth
+                            onBlur={formik.handleBlur}
+                            onChange={formik.handleChange}
+                            value={formik.values.postalLocation}
+                            error={!!(formik.touched.postalLocation && formik.errors.postalLocation)}
+                            helperText={formik.touched.postalLocation && formik.errors.postalLocation}
                         />
                     </Grid>
                     <Grid
@@ -215,10 +353,15 @@ export default function AddCompany(props) {
                     >
                         <TextField
                             id="phone-location"
-                            name="phone-location"
+                            name="phoneLocation"
                             label="Phone"
                             variant="outlined"
                             fullWidth
+                            onBlur={formik.handleBlur}
+                            onChange={formik.handleChange}
+                            value={formik.values.phoneLocation}
+                            error={!!(formik.touched.phoneLocation && formik.errors.phoneLocation)}
+                            helperText={formik.touched.phoneLocation && formik.errors.phoneLocation}
                         />
                     </Grid>
                 </Grid>
@@ -237,10 +380,15 @@ export default function AddCompany(props) {
                     >
                         <TextField
                             id="contact-first-name"
-                            name="contact-first-name"
+                            name="contactFirstName"
                             label="First Name"
                             variant="outlined"
                             fullWidth
+                            onBlur={formik.handleBlur}
+                            onChange={formik.handleChange}
+                            value={formik.values.contactFirstName}
+                            error={!!(formik.touched.contactFirstName && formik.errors.contactFirstName)}
+                            helperText={formik.touched.contactFirstName && formik.errors.contactFirstName}
                         />
                     </Grid>
                     <Grid
@@ -249,10 +397,15 @@ export default function AddCompany(props) {
                     >
                         <TextField
                             id="contact-last-name"
-                            name="contact-last-name"
+                            name="contactLastName"
                             label="Last Name"
                             variant="outlined"
                             fullWidth
+                            onBlur={formik.handleBlur}
+                            onChange={formik.handleChange}
+                            value={formik.values.contactLastName}
+                            error={!!(formik.touched.contactLastName && formik.errors.contactLastName)}
+                            helperText={formik.touched.contactLastName && formik.errors.contactLastName}
                         />
                     </Grid>
                     <Grid
@@ -261,11 +414,16 @@ export default function AddCompany(props) {
                     >
                         <TextField
                             id="contact-email"
-                            name="contact-email"
+                            name="contactEmail"
                             label="Email"
                             variant="outlined"
-                            type={"email"}
                             fullWidth
+                            onBlur={formik.handleBlur}
+                            onChange={formik.handleChange}
+                            type="email"
+                            value={formik.values.contactEmail}
+                            error={!!(formik.touched.contactEmail && formik.errors.contactEmail)}
+                            helperText={formik.touched.contactEmail && formik.errors.contactEmail}
                         />
                     </Grid>
                     <CardActions sx={{ justifyContent: 'flex-end' }}>
@@ -286,12 +444,13 @@ export default function AddCompany(props) {
                             loadingPosition="start"
                             startIcon={<SaveIcon />}
                             variant="contained"
+                            type="submit"
                         >
                             Save
                         </LoadingButton>
                     </CardActions>
                 </Grid>
             </Stack>
-        </>
+        </form>
     )
 }

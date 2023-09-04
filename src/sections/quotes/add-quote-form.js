@@ -151,10 +151,7 @@ export const QuotesForm = () => {
   )
 
   return (
-    <form
-      autoComplete="off"
-      noValidate
-    >
+    <>
       <Toast
         toastStatus={toastUp.toastStatus}
         handleStatus={toastUp.handleStatus}
@@ -267,6 +264,6 @@ export const QuotesForm = () => {
           </CardActions>
         </Card>
       }
-    </form>
+    </>
   );
 };

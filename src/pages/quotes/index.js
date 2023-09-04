@@ -52,9 +52,9 @@ const Page = (props) => {
     (event) => {
       setPage(0);
       setRowsPerPage(event.target.value);
-      getQuotesData(page, event.target.value);
+      getQuotesData(0, event.target.value);
     },
-    [getQuotesData, page]
+    [getQuotesData]
   );
 
   return (

@@ -222,10 +222,17 @@ export function createComponents(config) {
               boxShadow: `${palette.primary.main} 0 0 0 0px`
             }
           },
+          [`&.${outlinedInputClasses.error}`]: {
+            backgroundColor: 'transparent',
+            [`& .${outlinedInputClasses.notchedOutline}`]: {
+              borderColor: palette.primary.main,
+              boxShadow: `${palette.primary.main} 0 0 0 0px`
+            }
+          },
           [`&.${filledInputClasses.error}`]: {
             [`& .${outlinedInputClasses.notchedOutline}`]: {
               borderColor: palette.error.main,
-              boxShadow: `${palette.error.main} 0 0 0 2px`
+              boxShadow: `${palette.error.main} 0 0 0 0px`
             }
           }
         },
