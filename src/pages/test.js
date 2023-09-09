@@ -11,8 +11,8 @@ const Home = () => {
     }, [])
 
     const socketInitializer = async () => {
-        await fetch('/api/socket');
-        socket = io()
+        await fetch('https://b2b-data-real-time.hellomuto.repl.co/socket');
+        socket = io("https://b2b-data-real-time.hellomuto.repl.co/");
 
         socket.on('connect', () => {
             console.log('connected')
