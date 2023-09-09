@@ -24,13 +24,28 @@ import { usaState } from 'src/data/state-usa'
 import { useFormik, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
 import Image from 'next/image'
+import {
+    addCompanyToMongo,
+    checkComapanyName,
+    checkUserEmail,
+    registerUser
+} from 'src/hooks/use-mongo'
 
 export default function AddCompany(props) {
-    const { setAddNewCompany } = props
+    const { 
+        setAddNewCompany, 
+        toastUp,
+        setShipToList,
+        setLocation,
+        setShipTo,
+        setCompanyName,
+        refreshList,
+        setRefreshList
+    } = props
+
     const [file, setFile] = useState();
     const [preview, setPreview] = useState();
-    const [state, setState] = useState();
-    const [country, setCountry] = useState("USA");
+    const [loadSave, setLoadSave] = useState(false);
     const [fileError, setFileError] = useState(false);
     const newUsaState = usaState.map((st) => {
         return ({
@@ -44,9 +59,8 @@ export default function AddCompany(props) {
         initialValues: {
             companyName: "",
             companyAbout: "",
-            companyPhoto: "",
             companyShippingLocation: "",
-            countryName: "",
+            countryName: "USA",
             stateName: "",
             attentionLocation: "",
             addressLocation: "",
@@ -61,13 +75,13 @@ export default function AddCompany(props) {
         validationSchema: Yup.object({
             companyName: Yup.string().max(255).required('This field is required'),
             companyAbout: Yup.string().max(1000).required('This field is required'),
-            companyPhoto: Yup.string().max(255).required('This field is required'),
             companyShippingLocation: Yup.string().max(255).required('This field is required'),
+            countryName: Yup.string().max(255).required('This field is required'),
             stateName: Yup.object().required('This field is required'),
             attentionLocation: Yup.string().max(255).required('This field is required'),
             addressLocation: Yup.string().max(255).required('This field is required'),
             cityLocation: Yup.string().max(255).required('This field is required'),
-            postalLocation: Yup.number().max(255).required('This field is required'),
+            postalLocation: Yup.number().required('This field is required'),
             phoneLocation: Yup.string().matches(phoneRegExp, 'Phone number is not valid').required('This field is required'),
             contactFirstName: Yup.string().max(255).required('This field is required'),
             contactLastName: Yup.string().max(255).required('This field is required'),
@@ -78,7 +92,70 @@ export default function AddCompany(props) {
                 .required('Email is required')
         }),
         onSubmit: async (values, helpers) => {
-            console.log("values", values)
+            setLoadSave(true)
+            if (file) {
+                values.companyPhoto = file.base64File
+            }
+
+            let submitCondition = true
+            const checkCompanyName = await checkComapanyName(values.companyName)
+            console.log("checkCompanyName", checkCompanyName)
+            if (checkCompanyName.status !== 200 || checkCompanyName.data.company.length > 0) {
+                submitCondition = false
+                formik.setErrors({ companyName: "Is already taken" })
+                toastUp.handleStatus("error")
+                toastUp.handleMessage("Error company name is already taken!")
+                setLoadSave(false)
+            }
+
+            const checkUser = await checkUserEmail(values.contactEmail)
+            if (checkUser.status !== 200 || checkUser.data.length > 0) {
+                submitCondition = false
+                formik.setErrors({ contactEmail: "Is already taken" })
+                toastUp.handleStatus("error")
+                toastUp.handleMessage("Error email is already taken!")
+                setLoadSave(false)
+            }
+            if (submitCondition) {
+                const resSaveData = await addCompanyToMongo(values)
+                if (resSaveData.status !== 200) {
+                    console.log("create company error")
+                    toastUp.handleStatus("error")
+                    toastUp.handleMessage("Error when create company!")
+                    setLoadSave(false)
+                    return
+                }
+
+                const resAddUser = await registerUser(values, resSaveData.data.insertedId)
+                if (resAddUser.status !== 200) {
+                    console.log("create user error")
+                    toastUp.handleStatus("error")
+                    toastUp.handleMessage("Error when create user!")
+                    setLoadSave(false)
+                    return
+                }
+
+                setLoadSave(false)
+                toastUp.handleStatus("success")
+                toastUp.handleMessage("Company added, sent user invite!")
+                setRefreshList(refreshList + 1)
+                const shipToSelected= [{
+                        locationName: values.companyShippingLocation,
+                        location: {
+                            attention:values.attentionLocation,
+                            address: values.addressLocation,
+                            city: values.cityLocation,
+                            state: values.stateName.name,
+                            zip: values.postalLocation,
+                        },
+                        default: true
+                    }]
+                setCompanyName(values.companyName)
+                setShipTo(values.companyShippingLocation)
+                setShipToList(shipToSelected)
+                setLocation(shipToSelected[0].location)
+                setAddNewCompany()
+            }
         }
     });
 
@@ -89,24 +166,43 @@ export default function AddCompany(props) {
             email: email
         });
     }
-    function handleChangeFile(newFile) {
+
+    const convertToBase64 = (file) => {
+        return new Promise((resolve, reject) => {
+            const fileReader = new FileReader();
+            fileReader.readAsDataURL(file);
+            fileReader.onload = () => {
+                resolve(fileReader.result);
+            };
+            fileReader.onerror = (error) => {
+                reject(error);
+            };
+        });
+    };
+
+    async function handleChangeFile(newFile) {
         if (!newFile) {
             setFile();
             setPreview();
             return
         }
         if (newFile.size < 200000) {
-            setFile(newFile);
+            const base64Img = await convertToBase64(newFile)
+            setFile({ photo: newFile, base64File: base64Img });
             setPreview(URL.createObjectURL(newFile));
+            setFileError(false)
         } else {
             setFileError(true)
         }
         console.log("newFile", newFile)
     }
-    const handleSubmit = (e) => {
-        e.preventDefault()
-        console.log("event form", e)
+
+    const checkComapanyNameTest = (e) => {
+        console.log("company name", e)
     }
+
+
+
     return (
         <form
             noValidate
@@ -164,13 +260,13 @@ export default function AddCompany(props) {
                         md={file ? 3 : 4}
                     >
                         <MuiFileInput
-                            value={file}
+                            value={file?.photo}
                             onChange={handleChangeFile}
                             variant="outlined"
                             name="companyPhoto"
                             label="Please choose Photo max 200kb"
                             inputProps={{ accept: '.png, .jpeg, .jpg' }}
-                            getInputText={(value) => value ? file.name : ''}
+                            getInputText={(value) => value ? file.photo.name : ''}
                             fullWidth
                             className={file ? "selected_file" : "empty"}
                             helperText={fileError && "Image size is above 200kb"}
@@ -242,11 +338,11 @@ export default function AddCompany(props) {
                             id="country-name"
                             name="countryName"
                             label="Country"
-                            value={country}
+                            value={formik.values.countryName}
                             select
                             fullWidth
                             required
-                            onChange={(e) => setCountry(e.target.value)}
+                            onChange={(e) => formik.setValues({ countryName: e.target.value })}
                         >
                             <MenuItem value="USA">
                                 <em>USA</em>
@@ -263,7 +359,7 @@ export default function AddCompany(props) {
                             name="stateName"
                             options={newUsaState}
                             fullWidth
-                            isOptionEqualToValue={(option, value) => option.name === value.name}
+                            isOptionEqualToValue={() => { return (true) }}
                             renderInput={(params) =>
                                 <TextField
                                     {...params}
@@ -274,7 +370,7 @@ export default function AddCompany(props) {
                             }
                             onChange={(event, newValue) => {
                                 formik.setFieldValue("stateName", newValue)
-                              }}
+                            }}
                             onBlur={() => formik.setTouched({ ["stateName"]: true })}
                             value={formik.values.stateName}
                         />
@@ -440,7 +536,7 @@ export default function AddCompany(props) {
                         <LoadingButton
                             color="primary"
                             //onClick={() => handleSubmit()}
-                            loading={false}
+                            loading={loadSave}
                             loadingPosition="start"
                             startIcon={<SaveIcon />}
                             variant="contained"

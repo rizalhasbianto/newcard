@@ -10,6 +10,5 @@ export default async function createQuote(req, res) {
         {_id : new ObjectId(bodyObject.quoteId)},
         {$set :{"draftOrderId" : bodyObject.draftOrderId}}
     );
-    console.log("sendQuote", sendQuote)
     res.json({ status: 200, data: sendQuote });
 }

@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react';
+import { useCallback, useState, useEffect } from 'react';
 
 import LoadingButton from '@mui/lab/LoadingButton';
 import SaveIcon from '@mui/icons-material/Save';
@@ -21,22 +21,28 @@ import { saveQuoteButton } from 'src/data/save-quote-button'
 
 import { useToast } from 'src/hooks/use-toast'
 import Toast from 'src/components/toast'
-import { saveQuoteToMongoDb, updateQuoteToMongoDb } from 'src/hooks/use-mongo'
+import { 
+  saveQuoteToMongoDb, 
+  updateQuoteToMongoDb, 
+  getCompanies 
+} from 'src/hooks/use-mongo'
 import { syncQuoteToShopify, sendDraftOrderByShopify } from 'src/hooks/use-shopify'
 
 export const QuotesForm = () => {
+  const [companies, setCompanies] = useState([]);
   const [companyName, setCompanyName] = useState("");
   const [shipTo, setShipTo] = useState("");
   const [shipToList, setShipToList] = useState([]);
-  const [location, setLocation] = useState("");
+  const [location, setLocation] = useState();
   const [quotesList, setQuotesList] = useState([]);
-  const [buttonloading, setButtonLoading] = useState("");
+  const [buttonloading, setButtonLoading] = useState();
   const [addNewCompany, setAddNewCompany] = useState(false);
+  const [refreshList, setRefreshList] = useState(0);
   const toastUp = useToast();
 
   const handleTemplate = useCallback(
     () => {
-      setButtonLoading("")
+      setButtonLoading()
       toastUp.handleStatus("success")
       toastUp.handleMessage("Line item saved to template!!!")
     }, [toastUp]
@@ -51,7 +57,7 @@ export const QuotesForm = () => {
         setButtonLoading(false)
         return
       }
-      setButtonLoading("")
+      setButtonLoading()
       toastUp.handleStatus("success")
       toastUp.handleMessage("Quote saved as draft!!!")
     }, [companyName, quotesList, shipTo, toastUp]
@@ -71,7 +77,7 @@ export const QuotesForm = () => {
       if (!shopifyResponse || shopifyResponse.createDraft.errors) { // error when sync data to shopify
         toastUp.handleStatus("warning")
         toastUp.handleMessage("Error sync to Shopify! saved as Draft")
-        setButtonLoading("")
+        setButtonLoading()
         return
       }
 
@@ -85,7 +91,7 @@ export const QuotesForm = () => {
         return
       }
 
-      setButtonLoading("")
+      setButtonLoading()
       toastUp.handleStatus("success")
       toastUp.handleMessage("Quote has been published!!!")
     }, [companyName, quotesList, shipTo, toastUp]
@@ -105,7 +111,7 @@ export const QuotesForm = () => {
       if (!shopifyResponse || shopifyResponse.createDraft.errors) { // error when sync data to shopify
         toastUp.handleStatus("warning")
         toastUp.handleMessage("Error sync to Shopify! saved as Draft")
-        setButtonLoading("")
+        setButtonLoading()
         return
       }
       const quoteId = mongoReponse?.data.insertedId;
@@ -126,7 +132,7 @@ export const QuotesForm = () => {
         return
       }
 
-      setButtonLoading("")
+      setButtonLoading()
       toastUp.handleStatus("success")
       toastUp.handleMessage("Invoice sent!!!")
     }, [companyName, quotesList, shipTo, toastUp]
@@ -150,6 +156,15 @@ export const QuotesForm = () => {
     }, [handleDraft, handleInvoice, handlePublish, handleTemplate]
   )
 
+  const getCompaniesData = useCallback(async(page, rowsPerPage) => {
+    const companyList = await getCompanies(page, rowsPerPage)
+    setCompanies(companyList.data.company)
+  },[])
+
+  useEffect(() => {
+    getCompaniesData(0, 50)
+  }, [getCompaniesData, refreshList]);
+
   return (
     <>
       <Toast
@@ -167,7 +182,7 @@ export const QuotesForm = () => {
             xs={6}
             md={6}
             sx={{
-              padding:0
+              padding: 0
             }}
           >
             <CardHeader
@@ -183,9 +198,9 @@ export const QuotesForm = () => {
               paddingRight: "25px"
             }}
           >
-            <Button 
-            variant="outlined"
-            onClick={() => setAddNewCompany(true)}
+            <Button
+              variant="outlined"
+              onClick={() => setAddNewCompany(true)}
             >
               Add New Company
             </Button>
@@ -193,13 +208,21 @@ export const QuotesForm = () => {
         </Grid>
         <CardContent sx={{ pt: 0 }}>
           <Box sx={{ m: -1.5 }}>
-            { addNewCompany ?
-            <AddCompany
-            setAddNewCompany={setAddNewCompany}
-            />
+            {addNewCompany ?
+              <AddCompany
+                setAddNewCompany={setAddNewCompany}
+                toastUp={toastUp}
+                setShipToList={setShipToList}
+                setLocation={setLocation}
+                setShipTo={setShipTo}
+                setCompanyName={setCompanyName}
+                setRefreshList={setRefreshList}
+                refreshList={refreshList}
+              />
               :
-              
-                <QuoteSelectCompany
+
+              <QuoteSelectCompany
+                companies={companies}
                 location={location}
                 shipToList={shipToList}
                 shipTo={shipTo}
@@ -210,7 +233,7 @@ export const QuotesForm = () => {
                 setCompanyName={setCompanyName}
               />
             }
-            
+
           </Box>
         </CardContent>
       </Card>

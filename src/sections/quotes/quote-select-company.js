@@ -6,10 +6,10 @@ import {
     Typography,
     Unstable_Grid2 as Grid
 } from '@mui/material';
-import { companySample } from 'src/data/company'
 
 export default function QuoteSelectCompany(props) {
     const {
+        companies,
         location,
         shipToList,
         shipTo,
@@ -30,7 +30,7 @@ export default function QuoteSelectCompany(props) {
                     setLocation("")
                     return
                 }
-                const shipToList = companySample.find((company) => company.name === event.target.value)
+                const shipToList = companies.find((company) => company.name === event.target.value)
                 setShipTo(shipToList.shipTo[0].locationName)
                 setShipToList(shipToList.shipTo)
                 setLocation(shipToList.shipTo[0].location)
@@ -40,7 +40,7 @@ export default function QuoteSelectCompany(props) {
                 setLocation(locationList.location)
             }
         },
-        []
+        [companies, setCompanyName, setLocation, setShipTo, setShipToList]
     );
 
     return (
@@ -66,7 +66,7 @@ export default function QuoteSelectCompany(props) {
                         <MenuItem value="">
                             <em>None</em>
                         </MenuItem>
-                        {companySample.map((option) => (
+                        {companies.map((option) => (
                             <MenuItem
                                 key={option.name}
                                 value={option.name}

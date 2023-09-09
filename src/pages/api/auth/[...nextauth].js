@@ -31,7 +31,7 @@ export const authOptions = {
                 const client = await clientPromise;
                 const db = client.db(process.env.DB_NAME);
                 const response = await db.collection("user").find({ email: email }).limit(10).toArray();
-                console.log("email", response);
+
                 if (response.length === 0) {
                     console.log("there is no user with that username");
                     throw new Error("User with that email is not found");
