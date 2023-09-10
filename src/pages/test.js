@@ -34,7 +34,7 @@ const Home = () => {
             socket.emit('input-change', newChat)
         }
     }
-console.log("chat", chat)
+
     return (
         <>
             <input

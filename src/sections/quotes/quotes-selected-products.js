@@ -78,7 +78,7 @@ export default function LineItemQuotes({ quotesList, setQuotesList }) {
         )
       )
     },
-    [modalPopUp]
+    [quotesList, setQuotesList]
   );
 
   return (

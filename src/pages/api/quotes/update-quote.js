@@ -8,7 +8,7 @@ export default async function createQuote(req, res) {
     const bodyObject = req.body;
     const sendQuote = await db.collection(collection).updateOne(
         {_id : new ObjectId(bodyObject.quoteId)},
-        {$set :{"draftOrderId" : bodyObject.draftOrderId}}
+        {$set :bodyObject.data}
     );
     res.json({ status: 200, data: sendQuote });
 }

@@ -1,5 +1,20 @@
 import { ClientRequest } from 'src/lib/ClientRequest'
 
+export const getQuotesData =
+    async (page, rowsPerPage, query, sort) => {
+        const quotesRes = await ClientRequest(
+            "/api/quotes/get-quotes",
+            "POST",
+            {
+                page: page,
+                postPerPage: rowsPerPage,
+                query: query,
+                sort: sort
+            }
+        )
+
+        return quotesRes
+    }
 export const saveQuoteToMongoDb =
     async (companyName, shipTo, quotesList, status) => {
         const countSubtotal = quotesList.reduce((n, { total }) => n + total, 0)
@@ -10,16 +25,44 @@ export const saveQuoteToMongoDb =
             "/api/quotes/create-quote",
             "POST",
             {
+                quoteId: quoteId,
+                data: {
+                    company: {
+                        name: companyName,
+                        shipTo: shipTo
+                    },
+                    quotesList: quotesList || [],
+                    quoteInfo: {
+                        total: total,
+                        item: quotesList.length
+                    },
+                    status: status,
+                    createdAt: today,
+                    updatedAt: "",
+                    DraftOrderId: ""
+                }
+            }
+        )
+        return mongoRes
+    }
+
+export const addNewQuoteToMongoDb =
+    async () => {
+        const today = new Date()
+        const mongoRes = await ClientRequest(
+            "/api/quotes/create-quote",
+            "POST",
+            {
                 company: {
-                    name: companyName,
-                    shipTo: shipTo
+                    name: "",
+                    shipTo: ""
                 },
-                quotesList: quotesList,
+                quotesList: [],
                 quoteInfo: {
-                    total: total,
-                    item: quotesList.length
+                    total: "",
+                    item: 0
                 },
-                status: status,
+                status: "new",
                 createdAt: today,
                 updatedAt: "",
                 DraftOrderId: ""
@@ -28,14 +71,28 @@ export const saveQuoteToMongoDb =
         return mongoRes
     }
 
-export const updateQuoteToMongoDb =
+export const updateOrderIdQuoteToMongoDb =
     async (quoteId, draftOrderId) => {
         const mongoRes = await ClientRequest(
             "/api/quotes/create-quote",
             "POST",
             {
                 quoteId: quoteId,
-                draftOrderId: draftOrderId
+                data: {
+                    draftOrderId: draftOrderId
+                }
+            }
+        )
+        return mongoRes
+    }
+
+export const deleteQuoteFromMongo =
+    async (quoteId) => {
+        const mongoRes = await ClientRequest(
+            "/api/quotes/delete-quote",
+            "POST",
+            {
+                quoteId: quoteId
             }
         )
         return mongoRes
@@ -50,7 +107,7 @@ export const getCompanies = async (page, rowsPerPage) => {
             postPerPage: rowsPerPage
         }
     )
-    
+
     return comapanyRes
 }
 

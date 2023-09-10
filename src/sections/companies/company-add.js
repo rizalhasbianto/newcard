@@ -29,7 +29,7 @@ import {
     checkComapanyName,
     checkUserEmail,
     registerUser
-} from 'src/hooks/use-mongo'
+} from 'src/service/use-mongo'
 
 export default function AddCompany(props) {
     const { 
@@ -100,7 +100,7 @@ export default function AddCompany(props) {
             let submitCondition = true
             const checkCompanyName = await checkComapanyName(values.companyName)
             console.log("checkCompanyName", checkCompanyName)
-            if (checkCompanyName.status !== 200 || checkCompanyName.data.company.length > 0) {
+            if (!checkCompanyName || checkCompanyName.data.company.length > 0) {
                 submitCondition = false
                 formik.setErrors({ companyName: "Is already taken" })
                 toastUp.handleStatus("error")
@@ -109,7 +109,7 @@ export default function AddCompany(props) {
             }
 
             const checkUser = await checkUserEmail(values.contactEmail)
-            if (checkUser.status !== 200 || checkUser.data.length > 0) {
+            if (!checkUser || checkUser.data.length > 0) {
                 submitCondition = false
                 formik.setErrors({ contactEmail: "Is already taken" })
                 toastUp.handleStatus("error")
@@ -118,7 +118,7 @@ export default function AddCompany(props) {
             }
             if (submitCondition) {
                 const resSaveData = await addCompanyToMongo(values)
-                if (resSaveData.status !== 200) {
+                if (!resSaveData) {
                     console.log("create company error")
                     toastUp.handleStatus("error")
                     toastUp.handleMessage("Error when create company!")
@@ -127,7 +127,7 @@ export default function AddCompany(props) {
                 }
 
                 const resAddUser = await registerUser(values, resSaveData.data.insertedId)
-                if (resAddUser.status !== 200) {
+                if (!resAddUser) {
                     console.log("create user error")
                     toastUp.handleStatus("error")
                     toastUp.handleMessage("Error when create user!")
@@ -158,14 +158,6 @@ export default function AddCompany(props) {
             }
         }
     });
-
-    const handleChange = (event) => {
-        console.log("e", event.target.value)
-        const email = event.target.value;
-        setFormData({
-            email: email
-        });
-    }
 
     const convertToBase64 = (file) => {
         return new Promise((resolve, reject) => {

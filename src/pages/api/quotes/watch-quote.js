@@ -24,7 +24,7 @@ export default async function createQuote(req, res) {
         console.log("next", next)
       });
 
-      await changeStream.close();    
+    await changeStream.close();    
     console.log("closed the change stream");
     res.json({ status: 200, data: "test" });
 }

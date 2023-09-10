@@ -23,12 +23,13 @@ import { useToast } from 'src/hooks/use-toast'
 import Toast from 'src/components/toast'
 import { 
   saveQuoteToMongoDb, 
-  updateQuoteToMongoDb, 
+  updateOrderIdQuoteToMongoDb, 
   getCompanies 
-} from 'src/hooks/use-mongo'
-import { syncQuoteToShopify, sendDraftOrderByShopify } from 'src/hooks/use-shopify'
+} from 'src/service/use-mongo'
+import { syncQuoteToShopify, sendDraftOrderByShopify } from 'src/service/use-shopify'
 
-export const QuotesForm = () => {
+export const QuotesForm = (props) => {
+  const { tabContent } = props
   const [companies, setCompanies] = useState([]);
   const [companyName, setCompanyName] = useState("");
   const [shipTo, setShipTo] = useState("");
@@ -83,7 +84,7 @@ export const QuotesForm = () => {
 
       const quoteId = mongoReponse?.data.insertedId;
       const draftOrderId = shopifyResponse.createDraft.data.draftOrderCreate.draftOrder.id
-      const updateQuoteAtMongo = await updateQuoteToMongoDb(quoteId, draftOrderId)
+      const updateQuoteAtMongo = await updateOrderIdQuoteToMongoDb(quoteId, draftOrderId)
       if (updateQuoteAtMongo.modifiedCount === 0) { // error when update data to mongo
         toastUp.handleStatus("error")
         toastUp.handleMessage("Error save to DB! please try publish again")
@@ -116,7 +117,7 @@ export const QuotesForm = () => {
       }
       const quoteId = mongoReponse?.data.insertedId;
       const draftOrderId = shopifyResponse.createDraft.data.draftOrderCreate.draftOrder.id
-      const updateQuoteAtMongo = await updateQuoteToMongoDb(quoteId, draftOrderId)
+      const updateQuoteAtMongo = await updateOrderIdQuoteToMongoDb(quoteId, draftOrderId)
       if (!updateQuoteAtMongo) { // error when update data to mongo
         toastUp.handleStatus("error")
         toastUp.handleMessage("Error save to DB! please try publish again")
@@ -158,12 +159,24 @@ export const QuotesForm = () => {
 
   const getCompaniesData = useCallback(async(page, rowsPerPage) => {
     const companyList = await getCompanies(page, rowsPerPage)
+    if (!companyList) {
+      console.log("error get quotes data!")
+      return
+    }
     setCompanies(companyList.data.company)
   },[])
 
   useEffect(() => {
     getCompaniesData(0, 50)
-  }, [getCompaniesData, refreshList]);
+  }, [getCompaniesData, refreshList]); 
+
+  useEffect(() => {
+    if(tabContent) {
+      setCompanyName(tabContent.company.name)
+      setShipTo(tabContent.company.shipTo)
+      setQuotesList(tabContent.quotesList)
+    }
+  }, [tabContent]); 
 
   return (
     <>

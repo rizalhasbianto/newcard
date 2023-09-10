@@ -306,13 +306,17 @@ export function createComponents(config) {
           fontSize: 14,
           fontWeight: 500,
           lineHeight: 1.71,
-          minWidth: 'auto',
+          minWidth: '100px',
           paddingLeft: 0,
           paddingRight: 0,
           textTransform: 'none',
+          opacity: 0.5,
           '& + &': {
             marginLeft: 24
-          }
+          },
+          '&.Mui-selected': {
+            opacity: 1,
+          },
         }
       }
     },

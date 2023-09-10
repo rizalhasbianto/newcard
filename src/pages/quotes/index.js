@@ -8,9 +8,11 @@ import { Box, Button, Container, Stack, SvgIcon, Typography } from '@mui/materia
 import { useSelection } from 'src/hooks/use-selection';
 import { Layout as DashboardLayout } from 'src/layouts/dashboard/layout';
 import { QuotesTable } from 'src/sections/quotes/quotes-table';
+import { QuotesTab } from 'src/sections/quotes/quotes-tab';
 import { QuotesSearch } from 'src/sections/quotes/quotes-search';
 import { applyPagination } from 'src/utils/apply-pagination';
 import { ClientRequest } from 'src/lib/ClientRequest'
+import { getQuotesData } from 'src/service/use-mongo'
 
 const Page = (props) => {
   const [page, setPage] = useState(0);
@@ -18,43 +20,36 @@ const Page = (props) => {
   const [quotesData, setQuotesData] = useState([]);
   const [count, setCount] = useState(0)
 
-  const getQuotesData = useCallback(async (page, rowsPerPage) => {
-    const res = await ClientRequest(
-      "/api/quotes/get-quotes",
-      "POST",
-      {
-        page: page,
-        postPerPage: rowsPerPage
-      }
-    )
-    if (res.status != 200) {
-      console.log("fetch quotes error!")
+  const reqQuotesData = async(page, rowsPerPage) => {
+    const resQuotes = await getQuotesData(page, rowsPerPage)
+    if (!resQuotes) {
+      console.log("error get quotes data!")
       return
     }
-    setQuotesData(res.data.quote)
-    setCount(res.data.count)
-  },[])
+    setQuotesData(resQuotes.data.quote)
+    setCount(resQuotes.data.count)
+  }
 
   useEffect(() => {
-    getQuotesData(page, rowsPerPage)
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    reqQuotesData(page, rowsPerPage)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handlePageChange = useCallback(
-    (event, value) => {
+    async (event, value) => {
       setPage(value);
-      getQuotesData(value, rowsPerPage)
+      reqQuotesData(value, rowsPerPage)
     },
-    [getQuotesData, rowsPerPage]
+    [rowsPerPage]
   );
 
   const handleRowsPerPageChange = useCallback(
-    (event) => {
+    async (event) => {
       setPage(0);
       setRowsPerPage(event.target.value);
-      getQuotesData(0, event.target.value);
+      reqQuotesData(0, event.target.value);
     },
-    [getQuotesData]
+    []
   );
 
   return (
@@ -110,8 +105,8 @@ const Page = (props) => {
                 </Stack>
               </Stack>
               <div>
-                <Link 
-                  href="/quotes/add-quote" 
+                <Link
+                  href="/quotes/add-quote"
                   passHref
                 >
                   <Button
