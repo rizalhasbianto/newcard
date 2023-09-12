@@ -16,13 +16,19 @@ export const getQuotesData =
         return quotesRes
     }
 export const saveQuoteToMongoDb =
-    async (companyName, shipTo, quotesList, status) => {
+    async (
+        companyName,
+        shipTo,
+        quotesList,
+        status,
+        quoteId
+    ) => {
         const countSubtotal = quotesList.reduce((n, { total }) => n + total, 0)
         const tax = (countSubtotal * 0.1).toFixed(2)
         const total = Number(countSubtotal) + Number(tax)
         const today = new Date()
         const mongoRes = await ClientRequest(
-            "/api/quotes/create-quote",
+            "/api/quotes/update-quote",
             "POST",
             {
                 quoteId: quoteId,

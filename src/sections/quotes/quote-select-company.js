@@ -14,10 +14,12 @@ export default function QuoteSelectCompany(props) {
         shipToList,
         shipTo,
         companyName,
+        companyContact,
         setShipToList,
         setLocation,
         setShipTo,
-        setCompanyName
+        setCompanyName,
+        setCompanyContact
     } = props
 
     const handleChange = useCallback(
@@ -30,17 +32,19 @@ export default function QuoteSelectCompany(props) {
                     setLocation("")
                     return
                 }
-                const shipToList = companies.find((company) => company.name === event.target.value)
-                setShipTo(shipToList.shipTo[0].locationName)
-                setShipToList(shipToList.shipTo)
-                setLocation(shipToList.shipTo[0].location)
+                const selectedCompany = companies.find((company) => company.name === event.target.value)
+                console.log("companies", companies)
+                setShipTo(selectedCompany.shipTo[0].locationName)
+                setCompanyContact(selectedCompany.contact[0])
+                setShipToList(selectedCompany.shipTo)
+                setLocation(selectedCompany.shipTo[0].location)
             } else {
                 const locationList = data.find((ship) => ship.locationName === event.target.value)
                 setShipTo(event.target.value)
                 setLocation(locationList.location)
             }
         },
-        [companies, setCompanyName, setLocation, setShipTo, setShipToList]
+        [companies, setCompanyContact, setCompanyName, setLocation, setShipTo, setShipToList]
     );
 
     return (
@@ -106,58 +110,84 @@ export default function QuoteSelectCompany(props) {
                     </TextField>
                 </Grid>
             </Grid>
-            {
-                location &&
+            <Grid
+                container
+                spacing={1}
+            >
                 <Grid
-                    container
-                    spacing={3}
+                    xs={12}
+                    md={6}
                 >
-                    <Grid
-                        xs={12}
-                        md={6}
-                    >
-                        <ListItemText
-                            primary="Shipping"
-                            secondary={
-                                <>
-                                    <Typography
-                                        sx={{ display: 'inline' }}
-                                        component="span"
-                                        variant="body2"
-                                        color="text.primary"
-                                    >
-                                        {location.address}
-                                    </Typography>
-                                    <Typography
-                                        sx={{ display: 'inline' }}
-                                        component="span"
-                                        variant="body2"
-                                        color="text.primary"
-                                    >
-                                        {location.city} {location.state}, {location.zip}
-                                    </Typography>
-                                    <Typography
-                                        sx={{ display: 'inline' }}
-                                        component="span"
-                                        variant="body2"
-                                        color="text.primary"
-                                    >
-                                        United States
-                                    </Typography>
-                                </>
-                            } />
-                    </Grid>
-                    <Grid
-                        xs={12}
-                        md={6}
-                    >
-                        <ListItemText
-                            primary="Billing"
-                            secondary="Jan 9, 2014"
-                        />
-                    </Grid>
+                    {companyName &&
+                        <Grid
+                            container
+                            spacing={1}
+                        >
+                            <Grid
+                                xs={12}
+                                md={6}
+                            >
+                                <ListItemText
+                                    primary="Email"
+                                    secondary={companyContact.email}
+                                />
+                            </Grid>
+                            <Grid
+                                xs={12}
+                                md={6}
+                            >
+                                <ListItemText
+                                    primary="Name"
+                                    secondary={companyContact.name}
+                                />
+                            </Grid>
+                        </Grid>
+                    }
                 </Grid>
-            }
+                {
+                    location &&
+                    <Grid
+                        container
+                        spacing={3}
+                    >
+                        <Grid
+                            xs={12}
+                            md={12}
+                        >
+                            <ListItemText
+                                primary="Shipping Address"
+                                secondary={
+                                    <>
+                                        <Typography
+                                            sx={{ display: 'inline' }}
+                                            component="span"
+                                            variant="body2"
+                                            color="text.primary"
+                                        >
+                                            {location.address + " "}
+                                        </Typography>
+                                        <Typography
+                                            sx={{ display: 'inline' }}
+                                            component="span"
+                                            variant="body2"
+                                            color="text.primary"
+                                        >
+                                            {location.city} {location.state}, {location.zip + " "}
+                                        </Typography>
+                                        <Typography
+                                            sx={{ display: 'inline' }}
+                                            component="span"
+                                            variant="body2"
+                                            color="text.primary"
+                                        >
+                                            United States
+                                        </Typography>
+                                    </>
+                                } />
+                        </Grid>
+                    </Grid>
+                }
+            </Grid>
         </>
     )
 }

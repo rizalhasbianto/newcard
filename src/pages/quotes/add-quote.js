@@ -8,13 +8,14 @@ import {
   Tabs,
   Tab,
   IconButton,
+  Slide,
   Unstable_Grid2 as Grid
 } from '@mui/material';
 import LoadingButton from '@mui/lab/LoadingButton';
 import AddIcon from '@mui/icons-material/Add';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { Layout as DashboardLayout } from 'src/layouts/dashboard/layout';
-import { QuotesForm } from 'src/sections/quotes/add-quote-form';
+import { QuotesForm } from 'src/sections/quotes/quote-form';
 import { getQuotesData } from 'src/service/use-mongo'
 import { addNewQuoteToMongoDb, deleteQuoteFromMongo } from 'src/service/use-mongo'
 
@@ -25,8 +26,12 @@ const Page = () => {
   const [tabContent, setTabContent] = useState();
 
   const handleChange = useCallback((event, newValue) => {
-    setTabIndex(newValue);
-    setTabContent(quotesData[newValue])
+    setLoading(true)
+    setTimeout(() => {
+      setTabIndex(newValue);
+      setTabContent(quotesData[newValue])
+      setLoading(false)
+    }, 500);
   }, [quotesData]
   );
 
@@ -41,7 +46,6 @@ const Page = () => {
     setQuotesData(resQuotes.data.quote)
     setTabContent(resQuotes.data.quote[0])
     setLoading(false)
-    setTabIndex(0)
   }
 
   useEffect(() => {
@@ -58,6 +62,7 @@ const Page = () => {
         return
       }
       reqQuotesData(0, 50)
+      setTabIndex(0)
     }, []
   )
 
@@ -69,9 +74,9 @@ const Page = () => {
         setLoading(false)
         return
       }
+      setTabIndex(0)  
       reqQuotesData(0, 50)
-      console.log("deleteRes", deleteRes)
-    },[]
+    }, []
   )
 
   return (
@@ -101,7 +106,7 @@ const Page = () => {
                 loadingPosition="start"
                 startIcon={<AddIcon />}
                 variant="outlined"
-              ></LoadingButton>
+              >Add</LoadingButton>
               <Tabs
                 value={tabIndex}
                 onChange={handleChange}
@@ -123,9 +128,9 @@ const Page = () => {
                           >
                             <Grid md={3}>
                               {tabIndex === i ? (
-                                <DeleteIcon onClick={() => handleDeleteQuote(quote._id)}/>
+                                <DeleteIcon onClick={() => handleDeleteQuote(quote._id)} />
                               ) : (
-                                <DeleteIcon sx={{opacity:0}}/>
+                                <DeleteIcon sx={{ opacity: 0 }} />
                               )}
 
                             </Grid>
@@ -149,7 +154,10 @@ const Page = () => {
 
               </Tabs>
             </Stack>
-            <div>
+            <Slide
+              in={!loading ? true : false}
+              direction="right"
+            >
               <Grid
                 container
                 spacing={3}
@@ -159,10 +167,13 @@ const Page = () => {
                   md={12}
                   lg={12}
                 >
-                  <QuotesForm tabContent={tabContent} />
+                  <QuotesForm
+                    tabContent={tabContent}
+                    reqQuotesData={reqQuotesData}
+                  />
                 </Grid>
               </Grid>
-            </div>
+            </Slide>
           </Stack>
         </Container>
       </Box>

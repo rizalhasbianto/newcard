@@ -1,7 +1,7 @@
 import { ClientRequest } from 'src/lib/ClientRequest'
 
 export const syncQuoteToShopify =
-    async (mongoReponse,quotesList, status) => {
+    async (mongoReponse,quotesList) => {
         const lineItems = quotesList.map((list) => {
             return (
                 `{
@@ -19,7 +19,7 @@ export const syncQuoteToShopify =
         return sendToShopify
     }
 
-    export const sendDraftOrderByShopify =
+    export const sendInvoiceByShopify =
     async (email,id) => {
         const sendToShopify = await ClientRequest(
             "/api/shopify/draft-order-send",

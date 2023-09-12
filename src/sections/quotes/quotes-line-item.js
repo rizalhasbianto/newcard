@@ -10,8 +10,14 @@ import {
   TableHead,
   TablePagination,
   TableRow,
+  Button,
+  TextField,
+  MenuItem,
+  InputAdornment,
+  Tooltip,
   Unstable_Grid2 as Grid
 } from '@mui/material';
+import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
 import { Container } from '@mui/system';
 import { columns } from 'src/data/selected-prod-column'
 import { usePopover } from 'src/hooks/use-popover';
@@ -25,17 +31,30 @@ export default function LineItemQuotes({ quotesList, setQuotesList }) {
   const [total, setTotal] = useState(10);
   const [editProductIndex, setEditProductIndex] = useState("");
   const modalPopUp = usePopover();
+  const [discountType, setDiscountType] = useState("")
+  const [discountAmount, setDiscountAmount] = useState("")
+  const [discount, setDiscount] = useState()
 
   useEffect(() => {
     const countSubtotal = (quotesList.reduce((n, { total }) => n + Number(total), 0)).toFixed(2)
+    let discountCalc = 0
+    if (discount) {
+      if (discount.type === "fixed") {
+        discountCalc = discount.amount
+      } else {
+        const discountInPrice = countSubtotal * (discount.amount / 100)
+        discountCalc = (countSubtotal - discountInPrice).toFixed(2)
+      }
+    }
+
     const tax = (countSubtotal * 0.1).toFixed(2)
-    const total = (Number(countSubtotal) + Number(tax)).toFixed(2)
+    const total = ((Number(countSubtotal) + Number(tax)).toFixed(2)) - discountCalc
     setTotal({
       subTotal: countSubtotal,
       tax,
       total
     })
-  }, [quotesList]);
+  }, [quotesList, discount]);
 
   const handleChangePage = useCallback(
     (event, value) => {
@@ -73,13 +92,27 @@ export default function LineItemQuotes({ quotesList, setQuotesList }) {
   const handleDeleteProd = useCallback(
     (index) => {
       setQuotesList(
-        quotesList.filter((a,i) =>
+        quotesList.filter((a, i) =>
           i !== index
         )
       )
     },
     [quotesList, setQuotesList]
   );
+
+  const handleDiscount = useCallback(
+    (event) => {
+      setDiscount({
+        type: discountType,
+        amount: discountAmount
+      })
+    }, [discountAmount, discountType]
+  )
+  const handleDeleteDiscount = useCallback(
+    (event) => {
+      setDiscount()
+    }, []
+  )
 
   return (
     <Paper sx={{ width: '100%', overflow: 'hidden' }}>
@@ -141,6 +174,64 @@ export default function LineItemQuotes({ quotesList, setQuotesList }) {
         >
           <Box
             sx={{
+              width: "100%",
+              padding: "20px 0"
+            }}>
+            <Grid
+              container
+              spacing={2}
+              direction="row"
+              justifyContent="flex-start"
+              alignItems="center"
+            >
+              <Grid md={3}>
+                <TextField
+                  id="discountType"
+                  name="discountType"
+                  label="Type"
+                  variant="outlined"
+                  select
+                  fullWidth
+                  value={discountType}
+                  onChange={(e) => setDiscountType(e.target.value)}
+                >
+                  <MenuItem value="fixed">
+                    <em>Fixed($)</em>
+                  </MenuItem>
+                  <MenuItem value="percent">
+                    <em>Percent(%)</em>
+                  </MenuItem>
+                </TextField>
+              </Grid>
+              <Grid md={3}>
+                <TextField
+                  id="discountAmount"
+                  name="discountAmount"
+                  label="Amount"
+                  variant="outlined"
+                  fullWidth
+                  value={discountAmount}
+                  onChange={(e) => setDiscountAmount(e.target.value)}
+                  InputProps={{
+                    endAdornment:
+                      <InputAdornment position="end">
+                        {discountType === "fixed" ? "$" : "%"}
+                      </InputAdornment>,
+                  }}
+                />
+              </Grid>
+              <Grid md={3}>
+                <Button
+                  variant="outlined"
+                  onClick={handleDiscount}
+                >
+                  Add discount
+                </Button>
+              </Grid>
+            </Grid>
+          </Box>
+          <Box
+            sx={{
               width: "300px",
             }}>
             <Grid
@@ -150,6 +241,14 @@ export default function LineItemQuotes({ quotesList, setQuotesList }) {
                 md={6}
               >
                 <Typography>Subtotal:</Typography>
+                {
+                  discount ?
+                    (
+                      <Typography>Discount:</Typography>
+                    ) : (
+                      ""
+                    )
+                }
                 <Typography>Shipping:</Typography>
                 <Typography>Tax:</Typography>
                 <Typography
@@ -166,6 +265,25 @@ export default function LineItemQuotes({ quotesList, setQuotesList }) {
                 md={6}
               >
                 <Typography>${total.subTotal}</Typography>
+                {
+                  discount ?
+                    (
+                      <Tooltip
+                        title={
+                          <DeleteForeverIcon 
+                          fontSize="small"
+                          onClick={handleDeleteDiscount}
+                          />
+                        }
+                        placement="right"
+                        arrow
+                      >
+                        <Typography>{discountType === "fixed" ? "$" : "%"}{discountAmount}</Typography>
+                      </Tooltip>
+                    ) : (
+                      ""
+                    )
+                }
                 <Typography>count later</Typography>
                 <Typography>${total.tax}</Typography>
                 <Typography

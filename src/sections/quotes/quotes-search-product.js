@@ -147,55 +147,89 @@ export const SearchProduct = ({ quotesList, setQuotesList }) => {
           >
             Product search
           </Typography>
-          <Autocomplete
-            id="google-map-demo"
-            sx={{ width: '100%', mb: '20px', mt: '5px' }}
-            getOptionLabel={(option) =>
-              typeof option.node.title === 'string' ? option.node.title : option.node.title
-            }
-            filterOptions={(x) => x}
-            options={productSearch}
-            autoComplete
-            includeInputInList
-            filterSelectedOptions
-            value={value}
-            noOptionsText="No product found!"
-            onChange={(event, newValue) => {
-              setProductSearch(newValue ? [newValue, ...productSearch] : productSearch);
-              setValue(newValue);
-            }}
-            onInputChange={(event, newInputValue) => {
-              setInputValue(newInputValue);
-            }}
-            renderInput={(params) => (
-              <TextField
-                {...params}
-                label="Type for start search"
-              />
-            )}
-            renderOption={(props, option) => {
-              return (
-                <li {...props}>
-                  <Grid
-                    container
-                    alignItems="left"
-                  >
-                    <Grid
-                      item
-                      sx={{ width: 'calc(100% - 44px)', wordWrap: 'break-word' }}
-                    >
-                      <Typography
-                        variant="body2"
-                        color="text.secondary"
+          <Grid container>
+            <Grid md={10}>
+              <Autocomplete
+                id="google-map-demo"
+                sx={{ width: '100%', mb: '20px', mt: '5px' }}
+                getOptionLabel={(option) =>
+                  typeof option.node.title === 'string' ? option.node.title : option.node.title
+                }
+                filterOptions={(x) => x}
+                options={productSearch}
+                autoComplete
+                includeInputInList
+                filterSelectedOptions
+                value={value}
+                noOptionsText="No product found!"
+                onChange={(event, newValue) => {
+                  setProductSearch(newValue ? [newValue, ...productSearch] : productSearch);
+                  setValue(newValue);
+                }}
+                onInputChange={(event, newInputValue) => {
+                  setInputValue(newInputValue);
+                }}
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    label="Type for start search"
+                  />
+                )}
+                renderOption={(props, option) => {
+                  return (
+                    <li {...props}>
+                      <Grid
+                        container
+                        spacing={2}
+                        sx={{
+                          width: "100%",
+                          height: "50px",
+                          marginBottom: "5px"
+                        }}
                       >
-                        {option.node.title}
-                      </Typography>
-                    </Grid>
-                  </Grid>
-                </li>
-              );
-            }}
-          />
+                        <Grid
+                          md={2}
+                          sx={{
+                            position: "relative"
+                          }}
+                        >
+                          <Image
+                            src={option.node.variants.edges[0].node.image.url}
+                            fill={true}
+                            alt="Picture of the author"
+                            className='shopify-fill'
+                            sizes="270 640 750"
+                          />
+                        </Grid>
+                        <Grid
+                          md={10}
+                        >
+                          <Typography
+                            variant="body2"
+                            color="text.secondary"
+                          >
+                            {option.node.title}
+                          </Typography>
+                        </Grid>
+                      </Grid>
+                    </li>
+                  );
+                }}
+              />
+            </Grid>
+            <Grid md={2}>
+              <Button 
+              variant='outlined'
+              sx={{
+                height:"54px",
+                position:"relative",
+                top:"5px"
+              }}
+              >
+                Browse
+              </Button>
+            </Grid>
+          </Grid>
           <OptionsComponent
             options={value?.node.options}
             handleChange={handleChange}

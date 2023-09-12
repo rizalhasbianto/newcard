@@ -12,33 +12,36 @@ import {
   Button,
   Unstable_Grid2 as Grid
 } from '@mui/material';
+import { useTheme } from '@mui/material/styles';
 
 import { SearchProduct } from './quotes-search-product'
 import QuoteSelectCompany from './quote-select-company'
 import AddCompany from '../companies/company-add'
-import LineItemQuotes from './quotes-selected-products'
+import LineItemQuotes from './quotes-line-item'
 import { saveQuoteButton } from 'src/data/save-quote-button'
 
 import { useToast } from 'src/hooks/use-toast'
 import Toast from 'src/components/toast'
-import { 
-  saveQuoteToMongoDb, 
-  updateOrderIdQuoteToMongoDb, 
-  getCompanies 
+import {
+  saveQuoteToMongoDb,
+  updateOrderIdQuoteToMongoDb,
+  getCompanies
 } from 'src/service/use-mongo'
-import { syncQuoteToShopify, sendDraftOrderByShopify } from 'src/service/use-shopify'
+import { syncQuoteToShopify, sendInvoiceByShopify } from 'src/service/use-shopify'
 
 export const QuotesForm = (props) => {
-  const { tabContent } = props
+  const { tabContent, reqQuotesData } = props;
   const [companies, setCompanies] = useState([]);
   const [companyName, setCompanyName] = useState("");
   const [shipTo, setShipTo] = useState("");
   const [shipToList, setShipToList] = useState([]);
+  const [companyContact, setCompanyContact] = useState([]);
   const [location, setLocation] = useState();
   const [quotesList, setQuotesList] = useState([]);
   const [buttonloading, setButtonLoading] = useState();
   const [addNewCompany, setAddNewCompany] = useState(false);
   const [refreshList, setRefreshList] = useState(0);
+  const [quoteId, setQuoteId] = useState();
   const toastUp = useToast();
 
   const handleTemplate = useCallback(
@@ -49,32 +52,31 @@ export const QuotesForm = (props) => {
     }, [toastUp]
   )
 
-  const handleDraft = useCallback(
-    async () => {
-      const mongoReponse = await saveQuoteToMongoDb(companyName, shipTo, quotesList, "draft")
+  const handleSubmit = useCallback(
+    async (type) => {
+      setButtonLoading(type)
+      if (type === "template") {
+        handleTemplate()
+        return
+      }
+
+      const mongoReponse = await saveQuoteToMongoDb(companyName, shipTo, quotesList, type, quoteId)
       if (!mongoReponse) { // error when save data to mongo
         toastUp.handleStatus("error")
         toastUp.handleMessage("Error save to DB!")
         setButtonLoading(false)
-        return
       }
-      setButtonLoading()
-      toastUp.handleStatus("success")
-      toastUp.handleMessage("Quote saved as draft!!!")
-    }, [companyName, quotesList, shipTo, toastUp]
-  )
 
-  const handlePublish = useCallback(
-    async (status) => {
-      const mongoReponse = await saveQuoteToMongoDb(companyName, shipTo, quotesList, "open")
-      if (!mongoReponse) { // error when save data to mongo
-        toastUp.handleStatus("error")
-        toastUp.handleMessage("Error save to DB!")
+      reqQuotesData(0,50)
+      
+      if (type === "draft") {
+        toastUp.handleStatus("success")
+        toastUp.handleMessage("Quote saved as draft!!!")
         setButtonLoading(false)
         return
       }
 
-      const shopifyResponse = await syncQuoteToShopify(mongoReponse, quotesList, status)
+      const shopifyResponse = await syncQuoteToShopify(mongoReponse, quotesList)
       if (!shopifyResponse || shopifyResponse.createDraft.errors) { // error when sync data to shopify
         toastUp.handleStatus("warning")
         toastUp.handleMessage("Error sync to Shopify! saved as Draft")
@@ -82,51 +84,24 @@ export const QuotesForm = (props) => {
         return
       }
 
-      const quoteId = mongoReponse?.data.insertedId;
       const draftOrderId = shopifyResponse.createDraft.data.draftOrderCreate.draftOrder.id
-      const updateQuoteAtMongo = await updateOrderIdQuoteToMongoDb(quoteId, draftOrderId)
-      if (updateQuoteAtMongo.modifiedCount === 0) { // error when update data to mongo
+      const updateQuoteAtMongoRes = await updateOrderIdQuoteToMongoDb(quoteId, quoteId)
+      if (!updateQuoteAtMongoRes || updateQuoteAtMongoRes.modifiedCount === 0) { // error when update data to mongo
         toastUp.handleStatus("error")
         toastUp.handleMessage("Error save to DB! please try publish again")
         setButtonLoading(false)
         return
       }
 
-      setButtonLoading()
-      toastUp.handleStatus("success")
-      toastUp.handleMessage("Quote has been published!!!")
-    }, [companyName, quotesList, shipTo, toastUp]
-  )
-
-  const handleInvoice = useCallback(
-    async (status) => {
-      const mongoReponse = await saveQuoteToMongoDb(companyName, shipTo, quotesList, "sent invoice")
-      if (!mongoReponse) { // error when save data to mongo
-        toastUp.handleStatus("error")
-        toastUp.handleMessage("Error save to DB!")
+      if (type === "publish") {
+        toastUp.handleStatus("success")
+        toastUp.handleMessage("Quote has been published!!!")
         setButtonLoading(false)
         return
       }
 
-      const shopifyResponse = await syncQuoteToShopify(mongoReponse, quotesList, status)
-      if (!shopifyResponse || shopifyResponse.createDraft.errors) { // error when sync data to shopify
-        toastUp.handleStatus("warning")
-        toastUp.handleMessage("Error sync to Shopify! saved as Draft")
-        setButtonLoading()
-        return
-      }
-      const quoteId = mongoReponse?.data.insertedId;
-      const draftOrderId = shopifyResponse.createDraft.data.draftOrderCreate.draftOrder.id
-      const updateQuoteAtMongo = await updateOrderIdQuoteToMongoDb(quoteId, draftOrderId)
-      if (!updateQuoteAtMongo) { // error when update data to mongo
-        toastUp.handleStatus("error")
-        toastUp.handleMessage("Error save to DB! please try publish again")
-        setButtonLoading(false)
-        return
-      }
-
-      const sendInvoice = await sendDraftOrderByShopify("rizalhasbianto@gmail.com", draftOrderId)
-      if (!sendInvoice || sendInvoice.sendDraft.errors) { // error when send invoice
+      const sendInvoiceRes = await sendInvoiceByShopify("rizalhasbianto@gmail.com", draftOrderId)
+      if (!sendInvoiceRes || sendInvoiceRes.sendDraft.errors) { // error when send invoice
         toastUp.handleStatus("error")
         toastUp.handleMessage("Error send invoice! quote saved as open")
         setButtonLoading(false)
@@ -136,47 +111,44 @@ export const QuotesForm = (props) => {
       setButtonLoading()
       toastUp.handleStatus("success")
       toastUp.handleMessage("Invoice sent!!!")
-    }, [companyName, quotesList, shipTo, toastUp]
+
+    }, [companyName, handleTemplate, quoteId, quotesList, reqQuotesData, shipTo, toastUp]
   )
 
-  const handleSubmit = useCallback(
-    (type) => {
-      setButtonLoading(type)
-      if (type === "template") {
-        handleTemplate()
-      }
-      if (type === "draft") {
-        handleDraft()
-      }
-      if (type === "publish") {
-        handlePublish()
-      }
-      if (type === "invoice") {
-        handleInvoice()
-      }
-    }, [handleDraft, handleInvoice, handlePublish, handleTemplate]
-  )
-
-  const getCompaniesData = useCallback(async(page, rowsPerPage) => {
+  const getCompaniesData = useCallback(async (page, rowsPerPage) => {
     const companyList = await getCompanies(page, rowsPerPage)
     if (!companyList) {
       console.log("error get quotes data!")
       return
     }
     setCompanies(companyList.data.company)
-  },[])
+  }, [])
 
   useEffect(() => {
     getCompaniesData(0, 50)
-  }, [getCompaniesData, refreshList]); 
+  }, [getCompaniesData, refreshList]);
 
   useEffect(() => {
-    if(tabContent) {
+    if (tabContent && companies.length !== 0) {
+      if(tabContent.company.name) {
+        const selectedCompany = companies.find((company) => company.name === tabContent.company.name)
+        const selectedLocation = selectedCompany.shipTo.find((ship) => ship.locationName === tabContent.company.shipTo)
+        setShipToList(selectedCompany.shipTo)
+        setLocation(selectedLocation.location)
+        setCompanyContact(selectedCompany.contact[0])
+      } else {
+        setShipToList([])
+        setCompanyContact()
+        setLocation()
+      }
+      
       setCompanyName(tabContent.company.name)
       setShipTo(tabContent.company.shipTo)
       setQuotesList(tabContent.quotesList)
+      setQuoteId(tabContent._id)
     }
-  }, [tabContent]); 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [tabContent]);
 
   return (
     <>
@@ -240,10 +212,12 @@ export const QuotesForm = (props) => {
                 shipToList={shipToList}
                 shipTo={shipTo}
                 companyName={companyName}
+                companyContact={companyContact}
                 setShipToList={setShipToList}
                 setLocation={setLocation}
                 setShipTo={setShipTo}
                 setCompanyName={setCompanyName}
+                setCompanyContact={setCompanyContact}
               />
             }
 
