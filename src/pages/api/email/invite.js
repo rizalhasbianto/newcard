@@ -1,10 +1,12 @@
 var nodemailer = require('nodemailer');
 var fs = require('fs');
 import path from 'path'
+import Handlebars from "handlebars";
 
 export default async function addCompany(req, res) {
+    const bodyObject = req.body;
 
-    var readHTMLFile = function (paths, callback) {
+    const readHTMLFile = function (paths, callback) {
         fs.readFile(paths, { encoding: 'utf-8' }, function (err, html) {
             if (err) {
                 callback(err);
@@ -15,7 +17,7 @@ export default async function addCompany(req, res) {
         });
     };
 
-    var transporter = nodemailer.createTransport({
+    const transporter = nodemailer.createTransport({
         host: 'smtp.gmail.com',
         port: 465,
         secure: true,
@@ -25,19 +27,25 @@ export default async function addCompany(req, res) {
         }
     });
     const postsDirectory = path.join(process.cwd(), 'public')
-console.log("path", postsDirectory)
-    readHTMLFile(postsDirectory + '/email/forgotpass.html', function (err, html) {
+
+    readHTMLFile(postsDirectory + '/email/welcome.html', function (err, html) {
         if (err) {
             console.log('error reading file', err);
             res.json({ status: 400, data: err });
             return;
         }
-        var template = html;
-        var mailOptions = {
+        const template = Handlebars.compile(html);
+        const data = {
+            name: bodyObject.name,
+            email: bodyObject.email,
+            userId: bodyObject.userId
+        }
+        const htmlEmail = template(data);
+        const mailOptions = {
             from: 'rizalhasbianto@gmail.com',
-            to: 'rizalhasbiantopay@gmail.com',
-            subject: 'Sending Email using Node.js',
-            html: template
+            to: data.email,
+            subject: 'Welcome email for set password',
+            html: htmlEmail
         };
 
         transporter.sendMail(mailOptions, function (error, info) {

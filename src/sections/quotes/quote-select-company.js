@@ -129,7 +129,7 @@ export default function QuoteSelectCompany(props) {
                             >
                                 <ListItemText
                                     primary="Email"
-                                    secondary={companyContact.email}
+                                    secondary={companyContact?.email}
                                 />
                             </Grid>
                             <Grid
@@ -138,7 +138,7 @@ export default function QuoteSelectCompany(props) {
                             >
                                 <ListItemText
                                     primary="Name"
-                                    secondary={companyContact.name}
+                                    secondary={companyContact?.name}
                                 />
                             </Grid>
                         </Grid>

@@ -26,14 +26,15 @@ import * as Yup from 'yup';
 import Image from 'next/image'
 import {
     addCompanyToMongo,
-    checkComapanyName,
+    checkCompanyName,
     checkUserEmail,
-    registerUser
+    registerUser,
+    inviteUser
 } from 'src/service/use-mongo'
 
 export default function AddCompany(props) {
-    const { 
-        setAddNewCompany, 
+    const {
+        setAddNewCompany,
         toastUp,
         setShipToList,
         setLocation,
@@ -98,9 +99,8 @@ export default function AddCompany(props) {
             }
 
             let submitCondition = true
-            const checkCompanyName = await checkComapanyName(values.companyName)
-            console.log("checkCompanyName", checkCompanyName)
-            if (!checkCompanyName || checkCompanyName.data.company.length > 0) {
+            const resCheckCompanyName = await checkCompanyName(values.companyName)
+            if (!resCheckCompanyName || resCheckCompanyName.data.company.length > 0) {
                 submitCondition = false
                 formik.setErrors({ companyName: "Is already taken" })
                 toastUp.handleStatus("error")
@@ -117,20 +117,26 @@ export default function AddCompany(props) {
                 setLoadSave(false)
             }
             if (submitCondition) {
-                const resSaveData = await addCompanyToMongo(values)
-                if (!resSaveData) {
-                    console.log("create company error")
+                const resSaveCompany = await addCompanyToMongo(values)
+                if (!resSaveCompany) {
                     toastUp.handleStatus("error")
                     toastUp.handleMessage("Error when create company!")
                     setLoadSave(false)
                     return
                 }
 
-                const resAddUser = await registerUser(values, resSaveData.data.insertedId)
+                const resAddUser = await registerUser(values, resSaveCompany.data.insertedId)
                 if (!resAddUser) {
-                    console.log("create user error")
                     toastUp.handleStatus("error")
                     toastUp.handleMessage("Error when create user!")
+                    setLoadSave(false)
+                    return
+                }
+
+                const resInvite = await inviteUser(values, resAddUser.data.insertedId)
+                if (!resInvite && resInvite.status !== 200) {
+                    toastUp.handleStatus("warning")
+                    toastUp.handleMessage("Company added, sent user invite failed!")
                     setLoadSave(false)
                     return
                 }
@@ -139,17 +145,17 @@ export default function AddCompany(props) {
                 toastUp.handleStatus("success")
                 toastUp.handleMessage("Company added, sent user invite!")
                 setRefreshList(refreshList + 1)
-                const shipToSelected= [{
-                        locationName: values.companyShippingLocation,
-                        location: {
-                            attention:values.attentionLocation,
-                            address: values.addressLocation,
-                            city: values.cityLocation,
-                            state: values.stateName.name,
-                            zip: values.postalLocation,
-                        },
-                        default: true
-                    }]
+                const shipToSelected = [{
+                    locationName: values.companyShippingLocation,
+                    location: {
+                        attention: values.attentionLocation,
+                        address: values.addressLocation,
+                        city: values.cityLocation,
+                        state: values.stateName.name,
+                        zip: values.postalLocation,
+                    },
+                    default: true
+                }]
                 setCompanyName(values.companyName)
                 setShipTo(values.companyShippingLocation)
                 setShipToList(shipToSelected)

@@ -155,7 +155,7 @@ export const addCompanyToMongo =
         return mongoRes
     }
 
-export const checkComapanyName =
+export const checkCompanyName =
     async (companyData) => {
         const mongoRes = await ClientRequest(
             "/api/company/get-companies",
@@ -163,7 +163,7 @@ export const checkComapanyName =
             {
                 type: "check",
                 query: {
-                    companyName: companyData
+                    name: companyData
                 }
             }
         )
@@ -176,7 +176,20 @@ export const checkUserEmail =
             "/api/auth/check-user",
             "POST",
             {
-                email: email
+                email: email,
+                type: "email"
+            }
+        )
+        return mongoRes
+    }
+export const findUserById =
+    async (userId) => {
+        const mongoRes = await ClientRequest(
+            "/api/auth/check-user",
+            "POST",
+            {
+                id: userId,
+                type: "id"
             }
         )
         return mongoRes
@@ -197,6 +210,33 @@ export const registerUser =
                     companyName: userData.companyName
                 },
                 status: "invite"
+            }
+        )
+        return mongoRes
+    }
+
+export const inviteUser =
+    async (userData, userId) => {
+        const mongoRes = await ClientRequest(
+            "/api/email/invite",
+            "POST",
+            {
+                name: userData.contactFirstName + " " + userData.contactLastName,
+                email: userData.contactEmail,
+                userId: userId
+            }
+        )
+        return mongoRes
+    }
+
+export const updatePassword =
+    async (newPassword, userId) => {
+        const mongoRes = await ClientRequest(
+            "/api/auth/update-password",
+            "POST",
+            {
+                newPassword: newPassword,
+                userId: userId
             }
         )
         return mongoRes

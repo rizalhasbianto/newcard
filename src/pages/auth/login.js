@@ -185,7 +185,21 @@ const Page = () => {
                   sx={{ mt: 3 }}
                 >
                   <div>
-                    You can use <b>jane@abc.com</b> and password <b>Password123!</b>
+                  <Typography
+                  color="text.secondary"
+                  variant="body2"
+                >
+                  Forgot password?
+                  &nbsp;
+                  <Link
+                    component={NextLink}
+                    href="/auth/login"
+                    underline="hover"
+                    variant="subtitle2"
+                  >
+                    click here!
+                  </Link>
+                </Typography>
                   </div>
                 </Alert>
               </form>
