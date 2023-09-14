@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState, useEffect } from 'react';
+import { useCallback, useRef, useState, useEffect } from 'react';
 import Head from 'next/head';
 import {
   Box,
@@ -24,6 +24,7 @@ const Page = () => {
   const [tabIndex, setTabIndex] = useState(0);
   const [loading, setLoading] = useState(false);
   const [tabContent, setTabContent] = useState();
+  const slideRef = useRef(null);
 
   const handleChange = useCallback((event, newValue) => {
     setLoading(true)
@@ -94,7 +95,13 @@ const Page = () => {
         }}
       >
         <Container maxWidth="lg">
-          <Stack spacing={3}>
+          <Stack 
+          spacing={3} 
+          ref={slideRef} 
+          sx={{
+            overflow: "hidden"
+          }}
+          >
             <Stack
               spacing={1}
               direction={"row"}
@@ -157,6 +164,7 @@ const Page = () => {
             <Slide
               in={!loading ? true : false}
               direction="right"
+              container={slideRef.current}
             >
               <Grid
                 container

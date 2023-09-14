@@ -2,6 +2,7 @@ import { useCallback, useState, useEffect } from 'react';
 import Head from 'next/head';
 import NextLink from 'next/link';
 import { useRouter } from 'next/router';
+import { useSession } from "next-auth/react"
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import {
@@ -16,13 +17,12 @@ import {
   TextField,
   Typography
 } from '@mui/material';
-import { useAuth } from 'src/hooks/use-auth';
 import { Layout as AuthLayout } from 'src/layouts/auth/layout';
 import { signIn } from "next-auth/react";
 
 const Page = () => {
   const router = useRouter();
-  const auth = useAuth();
+  const { status } = useSession();
   const [method, setMethod] = useState('email');
 
   const formik = useFormik({
@@ -70,11 +70,19 @@ const Page = () => {
     []
   );
 
+  useEffect(() => {
+    if (status === "authenticated") {
+      router.push('/')
+      return
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [status]);
+
   return (
     <>
       <Head>
         <title>
-          Login | Devias Kit
+          Login | Skratch
         </title>
       </Head>
       <Box

@@ -1,3 +1,5 @@
+import { useCallback, useState, useEffect } from 'react';
+import { deleteQuoteFromMongo } from 'src/service/use-mongo'
 import PropTypes from 'prop-types';
 import { format } from 'date-fns';
 import {
@@ -20,6 +22,8 @@ import PencilIcon from '@heroicons/react/24/solid/PencilIcon';
 import TrashIcon from '@heroicons/react/24/solid/TrashIcon';
 import { Scrollbar } from 'src/components/scrollbar';
 import { getInitials } from 'src/utils/get-initials';
+import { usePopover } from 'src/hooks/use-popover';
+import AlertConfirm from 'src/components/alert-confirm'
 
 export const QuotesTable = (props) => {
   const {
@@ -32,10 +36,49 @@ export const QuotesTable = (props) => {
     selected = []
   } = props;
 
+  const [deleteQuoteId, setDeleteQuoteId] = useState()
+
   const listNumber = page * 10;
+  const modalPopUp = usePopover();
+
+  const handleDelete = useCallback(
+    async(quoteId) => {
+      setDeleteQuoteId(quoteId)
+      modalPopUp.handleContent(
+        "Are you sure?",
+        "This permanent delete, can not undo!"
+      );
+      modalPopUp.handleOpen();
+
+      if(modalPopUp.agree) {
+        console.log("quoteId", quoteId)
+      }
+    },[modalPopUp]
+  )
+
+  const continueDelete = async() => {
+    const deleteRes = await deleteQuoteFromMongo(deleteQuoteId)
+    modalPopUp.handleClose();
+    onPageChange(1,page)
+    modalPopUp.handleContinue(false)
+  }
+
+  useEffect(() => {
+    //if(modalPopUp.agree) {
+    //  continueDelete()
+    //}
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [modalPopUp.agree]);
 
   return (
     <Card>
+      <AlertConfirm
+      title={modalPopUp.message.title}
+      content={modalPopUp.message.content}
+      open={modalPopUp.open}
+      handleClose={modalPopUp.handleClose}
+      handleContinue={modalPopUp.handleContinue}
+      />
       <Scrollbar>
         <Box sx={{ minWidth: 800 }}>
           <Table>
@@ -148,6 +191,7 @@ export const QuotesTable = (props) => {
                         <SvgIcon
                           color="action"
                           fontSize="small"
+                          onClick={() => handleDelete(quote._id)}
                         >
                           <TrashIcon />
                         </SvgIcon>

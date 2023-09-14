@@ -1,33 +1,34 @@
+import { useCallback, useEffect, useState } from 'react';
 import Head from 'next/head';
 import NextLink from 'next/link';
 import { useRouter } from 'next/router';
+import { useSession } from "next-auth/react"
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import { Box, Button, Link, Stack, TextField, Typography } from '@mui/material';
 import { Layout as AuthLayout } from 'src/layouts/auth/layout';
-import { useCallback, useEffect, useState } from 'react';
 import { findUserById, updatePassword } from 'src/service/use-mongo'
 
 const Page = () => {
   const router = useRouter();
   const { id } = router.query;
+  const { status } = useSession()
   const [errorUser, setErrorUser] = useState()
   const [successUpdate, setSuccessUpdate] = useState()
-
   const getUser = useCallback(
     async (id) => {
       if (id) {
         const resUser = await findUserById(id)
         if (!resUser) {
-          setErrorUser("Error get user")
+          setErrorUser("Error get user!")
           return
         }
         if (resUser.data.length === 0) {
-          setErrorUser("User not found")
+          setErrorUser("User not found!")
           return
         }
         if (resUser.data[0].password !== "") {
-          setErrorUser("User already have password")
+          setErrorUser("User already have password!")
           return
         }
       }
@@ -35,8 +36,12 @@ const Page = () => {
   )
 
   useEffect(() => {
+    if (status === "authenticated") {
+      setErrorUser("You are loged in!")
+      return
+    }
     getUser(id)
-  }, [getUser, id]);
+  }, [getUser, id, status]);
 
   const formik = useFormik({
     initialValues: {
@@ -118,6 +123,15 @@ const Page = () => {
                 color="error.main"
               >
                 {errorUser}
+              </Typography>
+            }
+            {successUpdate &&
+
+              <Typography
+                variant="body2"
+                color="success.main"
+              >
+                Your new password has been set!
               </Typography>
             }
             {!errorUser && !successUpdate &&

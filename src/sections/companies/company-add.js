@@ -41,7 +41,7 @@ export default function AddCompany(props) {
         setShipTo,
         setCompanyName,
         refreshList,
-        setRefreshList
+        setRefreshList,
     } = props
 
     const [file, setFile] = useState();
@@ -144,7 +144,7 @@ export default function AddCompany(props) {
                 setLoadSave(false)
                 toastUp.handleStatus("success")
                 toastUp.handleMessage("Company added, sent user invite!")
-                setRefreshList(refreshList + 1)
+                
                 const shipToSelected = [{
                     locationName: values.companyShippingLocation,
                     location: {
@@ -156,11 +156,13 @@ export default function AddCompany(props) {
                     },
                     default: true
                 }]
+                
                 setCompanyName(values.companyName)
                 setShipTo(values.companyShippingLocation)
                 setShipToList(shipToSelected)
                 setLocation(shipToSelected[0].location)
-                setAddNewCompany()
+                setAddNewCompany(false)
+                setRefreshList(refreshList + 1)
             }
         }
     });
@@ -210,7 +212,10 @@ export default function AddCompany(props) {
                 sx={{
                     marginBottom: "30px"
                 }}>
-                <Grid container>
+                <Grid 
+                container 
+                spacing={2}
+                >
                     <Grid
                         xs={12}
                         md={12}
@@ -304,7 +309,7 @@ export default function AddCompany(props) {
                 sx={{
                     marginBottom: "30px"
                 }}>
-                <Grid container>
+                <Grid container spacing={2}>
                     <Grid
                         xs={12}
                         md={12}
@@ -461,7 +466,7 @@ export default function AddCompany(props) {
                 </Grid>
             </Stack>
             <Stack>
-                <Grid container>
+                <Grid container spacing={2}>
                     <Grid
                         xs={12}
                         md={12}

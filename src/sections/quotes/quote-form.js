@@ -1,5 +1,4 @@
 import { useCallback, useState, useEffect } from 'react';
-
 import LoadingButton from '@mui/lab/LoadingButton';
 import SaveIcon from '@mui/icons-material/Save';
 import {
@@ -10,6 +9,7 @@ import {
   CardHeader,
   Divider,
   Button,
+  Collapse,
   Unstable_Grid2 as Grid
 } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
@@ -67,8 +67,8 @@ export const QuotesForm = (props) => {
         setButtonLoading(false)
       }
 
-      reqQuotesData(0,50)
-      
+      reqQuotesData(0, 50)
+
       if (type === "draft") {
         toastUp.handleStatus("success")
         toastUp.handleMessage("Quote saved as draft!!!")
@@ -130,7 +130,7 @@ export const QuotesForm = (props) => {
 
   useEffect(() => {
     if (tabContent && companies.length !== 0) {
-      if(tabContent.company.name) {
+      if (tabContent.company.name) {
         const selectedCompany = companies.find((company) => company.name === tabContent.company.name)
         const selectedLocation = selectedCompany.shipTo.find((ship) => ship.locationName === tabContent.company.shipTo)
         setShipToList(selectedCompany.shipTo)
@@ -141,13 +141,13 @@ export const QuotesForm = (props) => {
         setCompanyContact()
         setLocation()
       }
-      
+
       setCompanyName(tabContent.company.name)
       setShipTo(tabContent.company.shipTo)
       setQuotesList(tabContent.quotesList)
       setQuoteId(tabContent._id)
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tabContent]);
 
   return (
@@ -193,19 +193,7 @@ export const QuotesForm = (props) => {
         </Grid>
         <CardContent sx={{ pt: 0 }}>
           <Box sx={{ m: -1.5 }}>
-            {addNewCompany ?
-              <AddCompany
-                setAddNewCompany={setAddNewCompany}
-                toastUp={toastUp}
-                setShipToList={setShipToList}
-                setLocation={setLocation}
-                setShipTo={setShipTo}
-                setCompanyName={setCompanyName}
-                setRefreshList={setRefreshList}
-                refreshList={refreshList}
-              />
-              :
-
+            <Collapse in={addNewCompany ? false : true}>
               <QuoteSelectCompany
                 companies={companies}
                 location={location}
@@ -219,12 +207,23 @@ export const QuotesForm = (props) => {
                 setCompanyName={setCompanyName}
                 setCompanyContact={setCompanyContact}
               />
-            }
-
+            </Collapse>
+            <Collapse in={addNewCompany}>
+              <AddCompany
+                setAddNewCompany={setAddNewCompany}
+                toastUp={toastUp}
+                setShipToList={setShipToList}
+                setLocation={setLocation}
+                setShipTo={setShipTo}
+                setCompanyName={setCompanyName}
+                setRefreshList={setRefreshList}
+                refreshList={refreshList}
+              />
+            </Collapse>
           </Box>
         </CardContent>
       </Card>
-      {companyName &&
+      <Collapse in={companyName ? true : false}>
         <Card sx={{ mb: 2 }}>
           <CardHeader
             subheader="The information can be edited"
@@ -239,8 +238,8 @@ export const QuotesForm = (props) => {
             </Box>
           </CardContent>
         </Card>
-      }
-      {companyName && quotesList.length > 0 &&
+      </Collapse>
+      <Collapse in={companyName && quotesList.length > 0 ? true : false}>
         <Card>
           <CardHeader
             subheader="The information can be edited"
@@ -273,7 +272,7 @@ export const QuotesForm = (props) => {
             }
           </CardActions>
         </Card>
-      }
+      </Collapse>
     </>
   );
 };

@@ -4,10 +4,11 @@ import { ClientRequest } from 'src/lib/ClientRequest'
 export function usePopover() {
   const anchorRef = useRef(null);
   const [open, setOpen] = useState(false);
+  const [agree, setAgree] = useState(false);
   const [message, setMessage] = useState('');
   const [productData, setProductData] = useState('');
 
-  const handleOpen = useCallback(() => {
+  const handleOpen = useCallback(() => { 
     setOpen(true);
   }, []);
 
@@ -25,6 +26,10 @@ export function usePopover() {
       title,
       content
     });
+  }, []);
+
+  const handleContinue = useCallback((agree) => {
+    setAgree(agree)
   }, []);
 
   const handleGetProduct = useCallback( async(productId, index) => {
@@ -59,8 +64,10 @@ export function usePopover() {
     handleToggle,
     handleContent,
     handleGetProduct,
+    handleContinue,
     open,
     message,
-    productData
+    productData,
+    agree
   };
 }

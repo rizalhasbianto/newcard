@@ -21,7 +21,7 @@ const Page = (props) => {
   const [count, setCount] = useState(0)
 
   const reqQuotesData = async(page, rowsPerPage) => {
-    const resQuotes = await getQuotesData(page, rowsPerPage)
+    const resQuotes = await getQuotesData(page, rowsPerPage, { status: { $nin: [ "new", "draft" ] } }) 
     if (!resQuotes) {
       console.log("error get quotes data!")
       return
@@ -37,6 +37,8 @@ const Page = (props) => {
 
   const handlePageChange = useCallback(
     async (event, value) => {
+      console.log("value", value)
+      console.log("event", event)
       setPage(value);
       reqQuotesData(value, rowsPerPage)
     },

@@ -1,5 +1,6 @@
 import { useCallback } from 'react';
 import { useRouter } from 'next/navigation';
+import { signOut } from "next-auth/react"
 import PropTypes from 'prop-types';
 import { Box, Divider, MenuItem, MenuList, Popover, Typography } from '@mui/material';
 import { useAuth } from 'src/hooks/use-auth';
@@ -12,10 +13,10 @@ export const AccountPopover = (props) => {
   const handleSignOut = useCallback(
     () => {
       onClose?.();
-      auth.signOut();
+      signOut();
       router.push('/auth/login');
     },
-    [onClose, auth, router]
+    [onClose, router]
   );
 
   return (
