@@ -1,4 +1,5 @@
 import { useCallback, useState, useEffect } from 'react';
+import Link from 'next/link'
 import { deleteQuoteFromMongo } from 'src/service/use-mongo'
 import PropTypes from 'prop-types';
 import { format } from 'date-fns';
@@ -42,7 +43,7 @@ export const QuotesTable = (props) => {
   const modalPopUp = usePopover();
 
   const handleDelete = useCallback(
-    async(quoteId) => {
+    async (quoteId) => {
       setDeleteQuoteId(quoteId)
       modalPopUp.handleContent(
         "Are you sure?",
@@ -50,34 +51,33 @@ export const QuotesTable = (props) => {
       );
       modalPopUp.handleOpen();
 
-      if(modalPopUp.agree) {
+      if (modalPopUp.agree) {
         console.log("quoteId", quoteId)
       }
-    },[modalPopUp]
+    }, [modalPopUp]
   )
 
-  const continueDelete = async() => {
-    const deleteRes = await deleteQuoteFromMongo(deleteQuoteId)
-    modalPopUp.handleClose();
-    onPageChange(1,page)
-    modalPopUp.handleContinue(false)
+  const continueDelete = async () => {
+    const resDelete = await deleteQuoteFromMongo(deleteQuoteId)
+    if (!resDelete) {
+      modalPopUp.handleContent(
+        "Error Delete",
+        "Error when deleting the quote, Please try again later!"
+      );
+      return
+    }
+    modalPopUp.handleClose()
+    onPageChange(1, page)
   }
-
-  useEffect(() => {
-    //if(modalPopUp.agree) {
-    //  continueDelete()
-    //}
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [modalPopUp.agree]);
 
   return (
     <Card>
       <AlertConfirm
-      title={modalPopUp.message.title}
-      content={modalPopUp.message.content}
-      open={modalPopUp.open}
-      handleClose={modalPopUp.handleClose}
-      handleContinue={modalPopUp.handleContinue}
+        title={modalPopUp.message.title}
+        content={modalPopUp.message.content}
+        open={modalPopUp.open}
+        handleClose={modalPopUp.handleClose}
+        handleContinue={continueDelete}
       />
       <Scrollbar>
         <Box sx={{ minWidth: 800 }}>
@@ -107,7 +107,7 @@ export const QuotesTable = (props) => {
               </TableRow>
             </TableHead>
             <TableBody>
-              {items && items.map((quote,index) => {
+              {items && items.map((quote, index) => {
                 const isSelected = selected.includes(quote.id);
                 const lastUpdate = format(new Date(2014, 1, 11), 'dd/MM/yyyy');
 
@@ -133,10 +133,10 @@ export const QuotesTable = (props) => {
                         direction="row"
                         spacing={2}
                       >
-                        {quote.company?.avatar &&  
-                        <Avatar src={quote.company.avatar}>
-                          {getInitials(quote.company.company)}
-                        </Avatar>
+                        {quote.company?.avatar &&
+                          <Avatar src={quote.company.avatar}>
+                            {getInitials(quote.company.company)}
+                          </Avatar>
                         }
                         <Stack
                           alignItems="left"
@@ -182,14 +182,21 @@ export const QuotesTable = (props) => {
                         direction="row"
                         spacing={1}
                       >
-                        <SvgIcon
-                          color="action"
-                          fontSize="small"
+                        <Link
+                          href={`/quotes/edit-quote?quoteId=${quote._id}`}
+                          passHref
                         >
-                          <PencilIcon />
-                        </SvgIcon>
+                          <SvgIcon
+                            className="action"
+                            color="action"
+                            fontSize="small"
+                          >
+                            <PencilIcon />
+                          </SvgIcon>
+                        </Link>
                         <SvgIcon
-                          color="action"
+                          className="action"
+                          color="error"
                           fontSize="small"
                           onClick={() => handleDelete(quote._id)}
                         >

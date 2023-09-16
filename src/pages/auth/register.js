@@ -25,7 +25,7 @@ const Page = () => {
   const [shipTo, setShipTo] = useState("");
   const [shipToList, setShipToList] = useState([]);
   const [location, setLocation] = useState();
-  const [addNewCompany, setAddNewCompany] = useState(false);
+  const [addNewCompany, setAddNewCompany] = useState(true);
   const [refreshList, setRefreshList] = useState(0);
 
   const router = useRouter();
@@ -39,7 +39,7 @@ const Page = () => {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [status]);
-
+console.log("addNewCompany", addNewCompany)
   return (
     <>
       <Head>
@@ -91,12 +91,12 @@ const Page = () => {
               </Link>
             </Typography>
           </Stack>
-          <Collapse in={addNewCompany}>
+          <Collapse in={addNewCompany ? false : true}>
             <Typography variant="subtitle1" color="text.secondary">
               Thanks for registering, please check your contact email for set password!
             </Typography>
           </Collapse>
-          <Collapse in={addNewCompany ? false : true}>
+          <Collapse in={addNewCompany}>
             <AddCompany
               setAddNewCompany={setAddNewCompany}
               toastUp={toastUp}

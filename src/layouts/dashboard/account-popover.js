@@ -1,22 +1,17 @@
 import { useCallback } from 'react';
-import { useRouter } from 'next/navigation';
 import { signOut } from "next-auth/react"
 import PropTypes from 'prop-types';
 import { Box, Divider, MenuItem, MenuList, Popover, Typography } from '@mui/material';
-import { useAuth } from 'src/hooks/use-auth';
 
 export const AccountPopover = (props) => {
   const { anchorEl, onClose, open } = props;
-  const router = useRouter();
-  const auth = useAuth();
 
   const handleSignOut = useCallback(
     () => {
       onClose?.();
-      signOut();
-      router.push('/auth/login');
+      signOut({ callbackUrl: '/auth/login' })
     },
-    [onClose, router]
+    [onClose]
   );
 
   return (

@@ -99,23 +99,32 @@ export default function AddCompany(props) {
             }
 
             let submitCondition = true
+            let errorFields = {}
             const resCheckCompanyName = await checkCompanyName(values.companyName)
-            if (!resCheckCompanyName || resCheckCompanyName.data.company.length > 0) {
+            const checkUser = await checkUserEmail(values.contactEmail)
+            
+            if (!resCheckCompanyName || !checkUser) {
                 submitCondition = false
-                formik.setErrors({ companyName: "Is already taken" })
                 toastUp.handleStatus("error")
-                toastUp.handleMessage("Error company name is already taken!")
+                toastUp.handleMessage("Error checking to database!")
                 setLoadSave(false)
             }
 
-            const checkUser = await checkUserEmail(values.contactEmail)
-            if (!checkUser || checkUser.data.length > 0) {
-                submitCondition = false
-                formik.setErrors({ contactEmail: "Is already taken" })
-                toastUp.handleStatus("error")
-                toastUp.handleMessage("Error email is already taken!")
-                setLoadSave(false)
+            if (resCheckCompanyName.data.company.length > 0) {
+                errorFields.companyName = "Is already taken"
             }
+
+            if (checkUser.data.length > 0) {
+                errorFields.contactEmail = "Is already taken, have account? please login"
+            }
+
+            if(Object.keys(errorFields).length !== 0) {
+                submitCondition = false
+                formik.setErrors(errorFields);
+                setLoadSave(false)
+                return
+            }
+
             if (submitCondition) {
                 const resSaveCompany = await addCompanyToMongo(values)
                 if (!resSaveCompany) {

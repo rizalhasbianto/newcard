@@ -10,3 +10,7 @@
     height: 50px;
     position: relative;
 }
+
+.action {
+    cursor: pointer;
+}

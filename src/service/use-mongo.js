@@ -172,11 +172,11 @@ export const checkCompanyName =
 
 export const checkUserEmail =
     async (email) => {
-        const mongoRes = await ClientRequest(
+        const mongoRes = await ClientRequest( 
             "/api/auth/check-user",
             "POST",
             {
-                email: email,
+                query: {email: email},
                 type: "email"
             }
         )
@@ -188,7 +188,7 @@ export const findUserById =
             "/api/auth/check-user",
             "POST",
             {
-                id: userId,
+                query:{id: userId},
                 type: "id"
             }
         )
@@ -209,7 +209,8 @@ export const registerUser =
                     companyId: companyId,
                     companyName: userData.companyName
                 },
-                status: "invite"
+                status: "invite",
+                role: "customer"
             }
         )
         return mongoRes

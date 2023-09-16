@@ -12,7 +12,6 @@ import {
   Collapse,
   Unstable_Grid2 as Grid
 } from '@mui/material';
-import { useTheme } from '@mui/material/styles';
 
 import { SearchProduct } from './quotes-search-product'
 import QuoteSelectCompany from './quote-select-company'
