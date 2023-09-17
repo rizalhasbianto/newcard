@@ -8,11 +8,11 @@ export const saveQuoteButton = [
         action: "draft"
     },
     {
-        title: "Publish",
-        action: "publish"
+        title: "Open",
+        action: "open"
     },
     {
         title: "Send Invoice",
-        action: "invoice"
+        action: "invoiced"
     },
 ]

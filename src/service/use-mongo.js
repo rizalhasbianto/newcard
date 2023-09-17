@@ -1,7 +1,7 @@
 import { ClientRequest } from 'src/lib/ClientRequest'
 
 export const getQuotesData =
-    async (page, rowsPerPage, query, sort) => {
+    async (page, rowsPerPage, query, sort, type) => {
         const quotesRes = await ClientRequest(
             "/api/quotes/get-quotes",
             "POST",
@@ -9,7 +9,8 @@ export const getQuotesData =
                 page: page,
                 postPerPage: rowsPerPage,
                 query: query,
-                sort: sort
+                sort: sort,
+                type:type ? type : "any"
             }
         )
 
@@ -80,7 +81,7 @@ export const addNewQuoteToMongoDb =
 export const updateOrderIdQuoteToMongoDb =
     async (quoteId, draftOrderId) => {
         const mongoRes = await ClientRequest(
-            "/api/quotes/create-quote",
+            "/api/quotes/update-quote",
             "POST",
             {
                 quoteId: quoteId,

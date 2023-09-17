@@ -100,12 +100,7 @@ console.log("addNewCompany", addNewCompany)
             <AddCompany
               setAddNewCompany={setAddNewCompany}
               toastUp={toastUp}
-              setShipToList={setShipToList}
-              setLocation={setLocation}
-              setShipTo={setShipTo}
-              setCompanyName={setCompanyName}
-              setRefreshList={setRefreshList}
-              refreshList={refreshList}
+              getSelectedVal={false}
             />
           </Collapse>
         </Box>

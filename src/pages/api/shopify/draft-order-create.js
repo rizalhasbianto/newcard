@@ -5,7 +5,7 @@ export default async function createDraftOrder(req, res) {
     const query = `
     mutation {
         draftOrderCreate(input: {
-            email: "jon@skratch.co",
+            email: "${bodyObject.customerEmail}",
             lineItems: [${bodyObject.lineItems}],
             poNumber: "${bodyObject.poNumber}"
         }) {

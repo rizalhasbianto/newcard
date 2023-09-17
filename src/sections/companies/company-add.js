@@ -36,12 +36,14 @@ export default function AddCompany(props) {
     const {
         setAddNewCompany,
         toastUp,
+        getSelectedVal,
+        setCompanies,
         setShipToList,
         setLocation,
         setShipTo,
         setCompanyName,
-        refreshList,
-        setRefreshList,
+        getCompanies,
+        setCompanyContact
     } = props
 
     const [file, setFile] = useState();
@@ -165,13 +167,24 @@ export default function AddCompany(props) {
                     },
                     default: true
                 }]
-                
-                setCompanyName(values.companyName)
-                setShipTo(values.companyShippingLocation)
-                setShipToList(shipToSelected)
-                setLocation(shipToSelected[0].location)
+
+                if(getSelectedVal) {
+                    const page = 0,
+                    rowsPerPage=50
+                    const newCompaniesData = await getCompanies(page, rowsPerPage)
+                    
+                    setCompanies(newCompaniesData.data.company)
+                    setCompanyName(values.companyName)
+                    setShipTo(values.companyShippingLocation)
+                    setShipToList(shipToSelected)
+                    setLocation(shipToSelected[0].location)
+                    setCompanyContact({
+                        email:values.contactEmail,
+                        name:values.contactFirstName + " " + values.contactLastName
+                    })
+                }
+
                 setAddNewCompany(false)
-                setRefreshList(refreshList + 1)
             }
         }
     });
@@ -205,12 +218,6 @@ export default function AddCompany(props) {
         }
         console.log("newFile", newFile)
     }
-
-    const checkComapanyNameTest = (e) => {
-        console.log("company name", e)
-    }
-
-
 
     return (
         <form

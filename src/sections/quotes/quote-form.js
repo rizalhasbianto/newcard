@@ -39,7 +39,6 @@ export const QuotesForm = (props) => {
   const [quotesList, setQuotesList] = useState([]);
   const [buttonloading, setButtonLoading] = useState();
   const [addNewCompany, setAddNewCompany] = useState(false);
-  const [refreshList, setRefreshList] = useState(0);
   const [quoteId, setQuoteId] = useState();
   const toastUp = useToast();
 
@@ -66,16 +65,15 @@ export const QuotesForm = (props) => {
         setButtonLoading(false)
       }
 
-      reqQuotesData(0, 50)
-
       if (type === "draft") {
         toastUp.handleStatus("success")
         toastUp.handleMessage("Quote saved as draft!!!")
+        reqQuotesData(0, 50)
         setButtonLoading(false)
         return
       }
 
-      const shopifyResponse = await syncQuoteToShopify(mongoReponse, quotesList)
+      const shopifyResponse = await syncQuoteToShopify(quoteId, quotesList, companyContact.email)
       if (!shopifyResponse || shopifyResponse.createDraft.errors) { // error when sync data to shopify
         toastUp.handleStatus("warning")
         toastUp.handleMessage("Error sync to Shopify! saved as Draft")
@@ -84,7 +82,7 @@ export const QuotesForm = (props) => {
       }
 
       const draftOrderId = shopifyResponse.createDraft.data.draftOrderCreate.draftOrder.id
-      const updateQuoteAtMongoRes = await updateOrderIdQuoteToMongoDb(quoteId, quoteId)
+      const updateQuoteAtMongoRes = await updateOrderIdQuoteToMongoDb(quoteId, draftOrderId)
       if (!updateQuoteAtMongoRes || updateQuoteAtMongoRes.modifiedCount === 0) { // error when update data to mongo
         toastUp.handleStatus("error")
         toastUp.handleMessage("Error save to DB! please try publish again")
@@ -92,14 +90,15 @@ export const QuotesForm = (props) => {
         return
       }
 
-      if (type === "publish") {
+      if (type === "open") {
         toastUp.handleStatus("success")
         toastUp.handleMessage("Quote has been published!!!")
+        reqQuotesData(0, 50)
         setButtonLoading(false)
         return
       }
 
-      const sendInvoiceRes = await sendInvoiceByShopify("rizalhasbianto@gmail.com", draftOrderId)
+      const sendInvoiceRes = await sendInvoiceByShopify(draftOrderId)
       if (!sendInvoiceRes || sendInvoiceRes.sendDraft.errors) { // error when send invoice
         toastUp.handleStatus("error")
         toastUp.handleMessage("Error send invoice! quote saved as open")
@@ -107,30 +106,26 @@ export const QuotesForm = (props) => {
         return
       }
 
+      reqQuotesData(0, 50)
       setButtonLoading()
       toastUp.handleStatus("success")
       toastUp.handleMessage("Invoice sent!!!")
 
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [companyName, handleTemplate, quoteId, quotesList, reqQuotesData, shipTo, toastUp]
   )
 
   const getCompaniesData = useCallback(async (page, rowsPerPage) => {
     const companyList = await getCompanies(page, rowsPerPage)
+
     if (!companyList) {
       console.log("error get quotes data!")
       return
     }
-    setCompanies(companyList.data.company)
-  }, [])
 
-  useEffect(() => {
-    getCompaniesData(0, 50)
-  }, [getCompaniesData, refreshList]);
-
-  useEffect(() => {
-    if (tabContent && companies.length !== 0) {
+    if (tabContent) {
       if (tabContent.company.name) {
-        const selectedCompany = companies.find((company) => company.name === tabContent.company.name)
+        const selectedCompany = companyList.data.company.find((company) => company.name === tabContent.company.name)
         const selectedLocation = selectedCompany.shipTo.find((ship) => ship.locationName === tabContent.company.shipTo)
         setShipToList(selectedCompany.shipTo)
         setLocation(selectedLocation.location)
@@ -146,8 +141,15 @@ export const QuotesForm = (props) => {
       setQuotesList(tabContent.quotesList)
       setQuoteId(tabContent._id)
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [tabContent]);
+
+    setCompanies(companyList.data.company)
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
+  useEffect(() => {
+    getCompaniesData(0, 50)
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <>
@@ -211,12 +213,14 @@ export const QuotesForm = (props) => {
               <AddCompany
                 setAddNewCompany={setAddNewCompany}
                 toastUp={toastUp}
+                getSelectedVal={true}
+                setCompanies={setCompanies}
                 setShipToList={setShipToList}
                 setLocation={setLocation}
                 setShipTo={setShipTo}
                 setCompanyName={setCompanyName}
-                setRefreshList={setRefreshList}
-                refreshList={refreshList}
+                getCompanies={getCompanies}
+                setCompanyContact={setCompanyContact}
               />
             </Collapse>
           </Box>
@@ -225,7 +229,7 @@ export const QuotesForm = (props) => {
       <Collapse in={companyName ? true : false}>
         <Card sx={{ mb: 2 }}>
           <CardHeader
-            subheader="The information can be edited"
+            subheader="Product search"
             title="Add quotes Item"
           />
           <CardContent sx={{ pt: 0, pb: 0 }}>

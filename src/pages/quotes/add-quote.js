@@ -7,7 +7,6 @@ import {
   Typography,
   Tabs,
   Tab,
-  IconButton,
   Slide,
   Unstable_Grid2 as Grid
 } from '@mui/material';
@@ -46,6 +45,7 @@ const Page = () => {
     }
     setQuotesData(resQuotes.data.quote)
     setTabContent(resQuotes.data.quote[0])
+    setTabIndex(0)
     setLoading(false)
   }
 
@@ -63,7 +63,6 @@ const Page = () => {
         return
       }
       reqQuotesData(0, 50)
-      setTabIndex(0)
     }, []
   )
 
@@ -75,7 +74,6 @@ const Page = () => {
         setLoading(false)
         return
       }
-      setTabIndex(0)  
       reqQuotesData(0, 50)
     }, []
   )
@@ -95,94 +93,117 @@ const Page = () => {
         }}
       >
         <Container maxWidth="lg">
-          <Stack 
-          spacing={3} 
-          ref={slideRef} 
-          sx={{
-            overflow: "hidden"
-          }}
-          >
-            <Stack
-              spacing={1}
-              direction={"row"}
-            >
-              <LoadingButton
-                color="primary"
-                onClick={handleAddQuote}
-                loading={loading}
-                loadingPosition="start"
-                startIcon={<AddIcon />}
-                variant="outlined"
-              >Add</LoadingButton>
-              <Tabs
-                value={tabIndex}
-                onChange={handleChange}
-                variant="scrollable"
-                scrollButtons
-                allowScrollButtonsMobile
-                aria-label="scrollable force tabs example"
-                direction="left"
+          {quotesData.length === 0 ?
+            (
+              <Stack
+                spacing={1}
+                direction={"row"}
+                alignItems={"center"}
+                justifyContent={"center"}
               >
-                {
-                  quotesData.map((quote, i) => {
-                    return (
-                      <Tab
-                        label={
-                          <Grid
-                            container
-                            alignItems="center"
-                            spacing={2}
-                          >
-                            <Grid md={3}>
-                              {tabIndex === i ? (
-                                <DeleteIcon onClick={() => handleDeleteQuote(quote._id)} />
-                              ) : (
-                                <DeleteIcon sx={{ opacity: 0 }} />
-                              )}
-
-                            </Grid>
-                            <Grid md={9}>
-                              <Typography variant='subtitle1'>
-                                {quote.company.name || "New Quote"}
-                              </Typography>
-                              <Typography variant='subtitle1'>
-                                #{quote._id.slice(-4)}
-                              </Typography>
-                            </Grid>
-
-                          </Grid>
-                        }
-                        iconPosition="start"
-                        key={i + 1}
-                      />
-                    )
-                  })
-                }
-
-              </Tabs>
-            </Stack>
-            <Slide
-              in={!loading ? true : false}
-              direction="right"
-              container={slideRef.current}
-            >
-              <Grid
-                container
+                <Typography variant='subtitle1'>
+                  Start new quote 
+                </Typography>
+                <LoadingButton
+                    color="primary"
+                    onClick={handleAddQuote}
+                    loading={loading}
+                    loadingPosition="start"
+                    startIcon={<AddIcon />}
+                    variant="outlined"
+                  >Add</LoadingButton>
+              </Stack>
+            ) : (
+              <Stack
                 spacing={3}
+                ref={slideRef}
+                sx={{
+                  overflow: "hidden"
+                }}
               >
-                <Grid
-                  xs={12}
-                  md={12}
-                  lg={12}
+                <Stack
+                  spacing={1}
+                  direction={"row"}
                 >
-                  <QuotesForm
-                    tabContent={tabContent}
-                    reqQuotesData={reqQuotesData}
-                  />
-                </Grid>
-              </Grid>
-            </Slide>
-          </Stack>
+                  <LoadingButton
+                    color="primary"
+                    onClick={handleAddQuote}
+                    loading={loading}
+                    loadingPosition="start"
+                    startIcon={<AddIcon />}
+                    variant="outlined"
+                  >Add</LoadingButton>
+                  <Tabs
+                    value={tabIndex}
+                    onChange={handleChange}
+                    variant="scrollable"
+                    scrollButtons
+                    allowScrollButtonsMobile
+                    aria-label="scrollable force tabs example"
+                    direction="left"
+                  >
+                    {
+                      quotesData.map((quote, i) => {
+                        return (
+                          <Tab
+                            label={
+                              <Grid
+                                container
+                                alignItems="center"
+                                spacing={2}
+                              >
+                                <Grid md={3}>
+                                  {tabIndex === i ? (
+                                    <DeleteIcon onClick={() => handleDeleteQuote(quote._id)} />
+                                  ) : (
+                                    <DeleteIcon sx={{ opacity: 0 }} />
+                                  )}
+
+                                </Grid>
+                                <Grid md={9}>
+                                  <Typography variant='subtitle1'>
+                                    {quote.company.name || "New Quote"}
+                                  </Typography>
+                                  <Typography variant='subtitle1'>
+                                    #{quote._id.slice(-4)}
+                                  </Typography>
+                                </Grid>
+
+                              </Grid>
+                            }
+                            iconPosition="start"
+                            key={i + 1}
+                          />
+                        )
+                      })
+                    }
+
+                  </Tabs>
+                </Stack>
+                <Slide
+                  in={!loading ? true : false}
+                  direction="right"
+                  container={slideRef.current}
+                >
+                  <Grid
+                    container
+                    spacing={3}
+                  >
+                    <Grid
+                      xs={12}
+                      md={12}
+                      lg={12}
+                    >
+                      <QuotesForm
+                        tabContent={tabContent}
+                        reqQuotesData={reqQuotesData}
+                      />
+                    </Grid>
+                  </Grid>
+                </Slide>
+              </Stack>
+            )
+          }
         </Container>
       </Box>
     </>

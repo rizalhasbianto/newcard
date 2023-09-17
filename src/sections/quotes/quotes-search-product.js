@@ -3,6 +3,7 @@ import { useEffect, useState, useCallback } from 'react';
 import Autocomplete from '@mui/material/Autocomplete';
 import parse from 'autosuggest-highlight/parse';
 import { debounce } from '@mui/material/utils';
+import Link from 'next/link'
 import Image from 'next/image'
 import { ClientRequest } from 'src/lib/ClientRequest'
 import OptionsComponent from 'src/components/products/options'
@@ -119,9 +120,7 @@ export const SearchProduct = ({ quotesList, setQuotesList }) => {
   useEffect(() => {
     if (!value) return undefined;
     const selectedVar = value.node.variants.edges[0].node;
-    console.log("selectedVar", selectedVar)
     const selectedOpt = selectedVar.selectedOptions.reduce((acc, curr) => (acc[curr.name] = curr.value, acc), {});
-    console.log("selectedOpt", selectedOpt)
     setSelectedVariant(selectedVar)
     setSelectedOptions(selectedOpt)
   }, [value]);
@@ -134,6 +133,108 @@ export const SearchProduct = ({ quotesList, setQuotesList }) => {
         open={modalPopUp.open}
         handleClose={modalPopUp.handleClose}
       />
+      <Grid container>
+        <Grid md={6}>
+          <Autocomplete
+            id="google-map-demo"
+            sx={{ width: '100%', mb: '20px', mt: '5px' }}
+            getOptionLabel={(option) =>
+              typeof option.node.title === 'string' ? option.node.title : option.node.title
+            }
+            filterOptions={(x) => x}
+            options={productSearch}
+            autoComplete
+            includeInputInList
+            filterSelectedOptions
+            value={value}
+            noOptionsText="No product found!"
+            onChange={(event, newValue) => {
+              setProductSearch(newValue ? [newValue, ...productSearch] : productSearch);
+              setValue(newValue);
+            }}
+            onInputChange={(event, newInputValue) => {
+              setInputValue(newInputValue);
+            }}
+            renderInput={(params) => (
+              <TextField
+                {...params}
+                label="Type for start search"
+              />
+            )}
+            renderOption={(props, option) => {
+              return (
+                <li {...props}>
+                  <Grid
+                    container
+                    spacing={2}
+                    sx={{
+                      width: "100%",
+                      height: "50px",
+                      marginBottom: "5px"
+                    }}
+                  >
+                    <Grid
+                      md={2}
+                      sx={{
+                        position: "relative"
+                      }}
+                    >
+                      <Image
+                        src={option.node.variants.edges[0].node.image.url}
+                        fill={true}
+                        alt="Picture of the author"
+                        className='shopify-fill'
+                        sizes="270 640 750"
+                      />
+                    </Grid>
+                    <Grid
+                      md={10}
+                    >
+                      <Typography
+                        variant="body2"
+                        color="text.secondary"
+                      >
+                        {option.node.title}
+                      </Typography>
+                    </Grid>
+                  </Grid>
+                </li>
+              );
+            }}
+          />
+        </Grid>
+        <Grid md={3}>
+          <Button
+            variant='outlined'
+            fullWidth
+            sx={{
+              height: "54px",
+              position: "relative",
+              top: "5px"
+            }}
+          >
+            Quick Add
+          </Button>
+        </Grid>
+        <Grid md={3}>
+        <Link
+                  href="/products"
+                  passHref
+                >
+          <Button
+            variant='outlined'
+            fullWidth
+            sx={{
+              height: "54px",
+              position: "relative",
+              top: "5px"
+            }}
+          >
+            Browse
+          </Button>
+          </Link>
+        </Grid>
+      </Grid>
       <Grid
         container
         spacing={3}
@@ -142,94 +243,6 @@ export const SearchProduct = ({ quotesList, setQuotesList }) => {
           xs={12}
           md={5}
         >
-          <Typography
-            variant="body2"
-          >
-            Product search
-          </Typography>
-          <Grid container>
-            <Grid md={10}>
-              <Autocomplete
-                id="google-map-demo"
-                sx={{ width: '100%', mb: '20px', mt: '5px' }}
-                getOptionLabel={(option) =>
-                  typeof option.node.title === 'string' ? option.node.title : option.node.title
-                }
-                filterOptions={(x) => x}
-                options={productSearch}
-                autoComplete
-                includeInputInList
-                filterSelectedOptions
-                value={value}
-                noOptionsText="No product found!"
-                onChange={(event, newValue) => {
-                  setProductSearch(newValue ? [newValue, ...productSearch] : productSearch);
-                  setValue(newValue);
-                }}
-                onInputChange={(event, newInputValue) => {
-                  setInputValue(newInputValue);
-                }}
-                renderInput={(params) => (
-                  <TextField
-                    {...params}
-                    label="Type for start search"
-                  />
-                )}
-                renderOption={(props, option) => {
-                  return (
-                    <li {...props}>
-                      <Grid
-                        container
-                        spacing={2}
-                        sx={{
-                          width: "100%",
-                          height: "50px",
-                          marginBottom: "5px"
-                        }}
-                      >
-                        <Grid
-                          md={2}
-                          sx={{
-                            position: "relative"
-                          }}
-                        >
-                          <Image
-                            src={option.node.variants.edges[0].node.image.url}
-                            fill={true}
-                            alt="Picture of the author"
-                            className='shopify-fill'
-                            sizes="270 640 750"
-                          />
-                        </Grid>
-                        <Grid
-                          md={10}
-                        >
-                          <Typography
-                            variant="body2"
-                            color="text.secondary"
-                          >
-                            {option.node.title}
-                          </Typography>
-                        </Grid>
-                      </Grid>
-                    </li>
-                  );
-                }}
-              />
-            </Grid>
-            <Grid md={2}>
-              <Button 
-              variant='outlined'
-              sx={{
-                height:"54px",
-                position:"relative",
-                top:"5px"
-              }}
-              >
-                Browse
-              </Button>
-            </Grid>
-          </Grid>
           <OptionsComponent
             options={value?.node.options}
             handleChange={handleChange}

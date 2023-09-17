@@ -21,7 +21,7 @@ const Page = (props) => {
   const [count, setCount] = useState(0)
 
   const reqQuotesData = async(page, rowsPerPage) => {
-    const resQuotes = await getQuotesData(page, rowsPerPage, { status: { $nin: [ "new", "draft" ] } }) 
+    const resQuotes = await getQuotesData(page, rowsPerPage, { status: { $nin: [ "new" ] } }) 
     if (!resQuotes) {
       console.log("error get quotes data!")
       return

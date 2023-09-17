@@ -15,8 +15,10 @@ import {
   Tab,
   Tabs,
   TextField,
-  Typography
+  Typography,
+  Unstable_Grid2 as Grid,
 } from '@mui/material';
+import VisibilityIcon from '@mui/icons-material/Visibility';
 import { Layout as AuthLayout } from 'src/layouts/auth/layout';
 import { signIn } from "next-auth/react";
 
@@ -24,6 +26,7 @@ const Page = () => {
   const router = useRouter();
   const { status } = useSession();
   const [method, setMethod] = useState('email');
+  const [openPass, setOpenPass] = useState(false)
 
   const formik = useFormik({
     initialValues: {
@@ -51,9 +54,9 @@ const Page = () => {
         callbackUrl
       });
 
-      if(!res.error) {
+      if (!res.error) {
         if (typeof window !== "undefined") {
-          window.location.replace("/");  
+          window.location.replace("/");
         }
       } else {
         helpers.setStatus({ success: false });
@@ -75,7 +78,7 @@ const Page = () => {
       router.push('/')
       return
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [status]);
 
   return (
@@ -146,28 +149,44 @@ const Page = () => {
                 onSubmit={formik.handleSubmit}
               >
                 <Stack spacing={3}>
-                  <TextField
-                    error={!!(formik.touched.email && formik.errors.email)}
-                    fullWidth
-                    helperText={formik.touched.email && formik.errors.email}
-                    label="Email Address"
-                    name="email"
-                    onBlur={formik.handleBlur}
-                    onChange={formik.handleChange}
-                    type="email"
-                    value={formik.values.email}
-                  />
-                  <TextField
-                    error={!!(formik.touched.password && formik.errors.password)}
-                    fullWidth
-                    helperText={formik.touched.password && formik.errors.password}
-                    label="Password"
-                    name="password"
-                    onBlur={formik.handleBlur}
-                    onChange={formik.handleChange}
-                    type="password"
-                    value={formik.values.password}
-                  />
+                  <Grid
+                    container
+                    spacing={2}
+                    alignItems={"center"}
+                  >
+                    <Grid lg={11}>
+                      <TextField
+                        error={!!(formik.touched.email && formik.errors.email)}
+                        fullWidth
+                        helperText={formik.touched.email && formik.errors.email}
+                        label="Email Address"
+                        name="email"
+                        onBlur={formik.handleBlur}
+                        onChange={formik.handleChange}
+                        type="email"
+                        value={formik.values.email}
+                      />
+                    </Grid>
+                    <Grid lg={11}>
+                      <TextField
+                        error={!!(formik.touched.password && formik.errors.password)}
+                        fullWidth
+                        helperText={formik.touched.password && formik.errors.password}
+                        label="Password"
+                        name="password"
+                        onBlur={formik.handleBlur}
+                        onChange={formik.handleChange}
+                        type={openPass ? "text" : "password"}
+                        value={formik.values.password}
+                      />
+                    </Grid>
+                    <Grid lg={1}>
+                      <VisibilityIcon
+                        className='action'
+                        onClick={() => setOpenPass(!openPass)}
+                      />
+                    </Grid>
+                  </Grid>
                 </Stack>
                 {formik.errors.submit && (
                   <Typography
@@ -193,21 +212,21 @@ const Page = () => {
                   sx={{ mt: 3 }}
                 >
                   <div>
-                  <Typography
-                  color="text.secondary"
-                  variant="body2"
-                >
-                  Forgot password?
-                  &nbsp;
-                  <Link
-                    component={NextLink}
-                    href="/auth/login"
-                    underline="hover"
-                    variant="subtitle2"
-                  >
-                    click here!
-                  </Link>
-                </Typography>
+                    <Typography
+                      color="text.secondary"
+                      variant="body2"
+                    >
+                      Forgot password?
+                      &nbsp;
+                      <Link
+                        component={NextLink}
+                        href="/auth/login"
+                        underline="hover"
+                        variant="subtitle2"
+                      >
+                        click here!
+                      </Link>
+                    </Typography>
                   </div>
                 </Alert>
               </form>
