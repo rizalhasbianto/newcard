@@ -41,6 +41,7 @@ const Page = () => {
     const resQuotes = await getQuotesData(page, rowsPerPage, query, sort)
     if (!resQuotes) {
       console.log("error get quotes data!")
+      setLoading(false)
       return
     }
     setQuotesData(resQuotes.data.quote)
@@ -102,16 +103,16 @@ const Page = () => {
                 justifyContent={"center"}
               >
                 <Typography variant='subtitle1'>
-                  Start new quote 
+                  Start new quote
                 </Typography>
                 <LoadingButton
-                    color="primary"
-                    onClick={handleAddQuote}
-                    loading={loading}
-                    loadingPosition="start"
-                    startIcon={<AddIcon />}
-                    variant="outlined"
-                  >Add</LoadingButton>
+                  color="primary"
+                  onClick={handleAddQuote}
+                  loading={loading}
+                  loadingPosition="start"
+                  startIcon={<AddIcon />}
+                  variant="outlined"
+                >Add</LoadingButton>
               </Stack>
             ) : (
               <Stack
@@ -194,10 +195,12 @@ const Page = () => {
                       md={12}
                       lg={12}
                     >
-                      <QuotesForm
-                        tabContent={tabContent}
-                        reqQuotesData={reqQuotesData}
-                      />
+                      {tabContent &&
+                        <QuotesForm
+                          tabContent={tabContent}
+                          reqQuotesData={reqQuotesData}
+                        />
+                      }
                     </Grid>
                   </Grid>
                 </Slide>

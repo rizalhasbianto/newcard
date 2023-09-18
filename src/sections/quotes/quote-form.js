@@ -73,7 +73,7 @@ export const QuotesForm = (props) => {
         setButtonLoading(false)
         return
       }
-      
+
       const shopifyResponse = await syncQuoteToShopify(quoteId, quotesList, companyContact.email, tabContent.draftOrderId)
 
       if (!shopifyResponse || shopifyResponse.response.createDraft.errors) { // error when sync data to shopify
@@ -125,16 +125,22 @@ export const QuotesForm = (props) => {
   )
 
   const getCompaniesData = useCallback(async (page, rowsPerPage) => {
-    const companyList = await getCompanies(page, rowsPerPage)
-
-    if (!companyList) {
-      console.log("error get quotes data!")
-      return
+    let companyList 
+    if (companies.length === 0) {
+      const resGetCompanyList = await Promise.resolve(getCompanies(page, rowsPerPage))
+      if (!resGetCompanyList) {
+        console.log("error get company data!")
+        return
+      }
+      companyList = resGetCompanyList.data.company
+      setCompanies(resGetCompanyList.data.company)
+    } else {
+      companyList = companies
     }
 
     if (tabContent) {
       if (tabContent.company.name) {
-        const selectedCompany = companyList.data.company.find((company) => company.name === tabContent.company.name)
+        const selectedCompany = companyList.find((company) => company.name === tabContent.company.name)
         const selectedLocation = selectedCompany.shipTo.find((ship) => ship.locationName === tabContent.company.shipTo)
         setShipToList(selectedCompany.shipTo)
         setLocation(selectedLocation.location)
@@ -144,21 +150,20 @@ export const QuotesForm = (props) => {
         setCompanyContact()
         setLocation()
       }
-
+      
       setCompanyName(tabContent.company.name)
       setShipTo(tabContent.company.shipTo)
       setQuotesList(tabContent.quotesList)
       setQuoteId(tabContent._id)
     }
-
-    setCompanies(companyList.data.company)
-  }, [tabContent])
+  }, [companies, tabContent])
 
   useEffect(() => {
     getCompaniesData(0, 50)
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-  
+  }, [tabContent]);
+
+
   return (
     <>
       <Toast
@@ -167,7 +172,7 @@ export const QuotesForm = (props) => {
         toastMessage={toastUp.toastMessage}
       />
       {
-        ( tabContent && tabContent.status !== "new" && tabContent.status !== "draft") &&
+        (tabContent && tabContent.status !== "new" && tabContent.status !== "draft") &&
         <Card sx={{ mb: 2 }}>
           <Grid
             container
