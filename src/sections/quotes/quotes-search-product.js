@@ -5,7 +5,7 @@ import parse from 'autosuggest-highlight/parse';
 import { debounce } from '@mui/material/utils';
 import Link from 'next/link'
 import Image from 'next/image'
-import { ClientRequest } from 'src/lib/ClientRequest'
+import { fetchData } from 'src/lib/fetchData'
 import OptionsComponent from 'src/components/products/options'
 import AlertDialog from 'src/components/alert-dialog'
 import { usePopover } from 'src/hooks/use-popover';
@@ -29,7 +29,7 @@ export const SearchProduct = ({ quotesList, setQuotesList }) => {
   const getOptions = async (active, value) => {
 
     if (active) {
-      const data = await ClientRequest(
+      const data = await fetchData(
         "/api/shopify/get-products",
         "POST",
         { search: inputValue }

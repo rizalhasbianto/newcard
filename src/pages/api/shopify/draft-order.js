@@ -32,7 +32,11 @@ export default async function createDraftOrder(req, res) {
             input: {
               email: "${bodyObject.customerEmail}",
               lineItems: [${bodyObject.lineItems}],
-              poNumber: "${bodyObject.poNumber}"
+              poNumber: "${bodyObject.poNumber}",
+              appliedDiscount: {
+                valueType:FIXED_AMOUNT,
+                value:100
+              }
           }) {
             draftOrder {
               id
@@ -49,5 +53,6 @@ export default async function createDraftOrder(req, res) {
 
 
   const createDraft = await adminAPi(query);
+  console.log("createDraft", createDraft)
   res.json({ status: 200, createDraft });
 }

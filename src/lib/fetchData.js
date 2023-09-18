@@ -1,4 +1,4 @@
-export const ClientRequest = async (url, method, body = null) => {
+export const fetchData = async (url, method, body = null) => {
     try {
       // console.log(body);
       const response = await fetch(url, {

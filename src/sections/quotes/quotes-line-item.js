@@ -24,16 +24,14 @@ import { usePopover } from 'src/hooks/use-popover';
 import ProductModal from 'src/components/products/product-modal'
 import Lineitem from 'src/components/quotes/quote-line-item'
 import EditProductItem from 'src/components/quotes/edit-line-item'
+import DiscountLine from './quote-discount'
 
-export default function LineItemQuotes({ quotesList, setQuotesList }) {
+export default function LineItemQuotes({ quotesList, setQuotesList, discount, setDiscount}) {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [total, setTotal] = useState(10);
   const [editProductIndex, setEditProductIndex] = useState("");
   const modalPopUp = usePopover();
-  const [discountType, setDiscountType] = useState("")
-  const [discountAmount, setDiscountAmount] = useState("")
-  const [discount, setDiscount] = useState()
 
   useEffect(() => {
     const countSubtotal = (quotesList.reduce((n, { total }) => n + Number(total), 0)).toFixed(2)
@@ -59,16 +57,14 @@ export default function LineItemQuotes({ quotesList, setQuotesList }) {
   const handleChangePage = useCallback(
     (event, value) => {
       setPage(value);
-    },
-    []
+    }, []
   );
 
   const handleChangeRowsPerPage = useCallback(
     (event) => {
       setPage(0)
       setRowsPerPage(event.target.value);
-    },
-    []
+    }, []
   );
 
   const handleOpenProd = useCallback(
@@ -101,12 +97,12 @@ export default function LineItemQuotes({ quotesList, setQuotesList }) {
   );
 
   const handleDiscount = useCallback(
-    (event) => {
+    (value) => {
       setDiscount({
-        type: discountType,
-        amount: discountAmount
+        type: value.discountType,
+        amount: value.discountAmount
       })
-    }, [discountAmount, discountType]
+    }, []
   )
   const handleDeleteDiscount = useCallback(
     (event) => {
@@ -172,64 +168,9 @@ export default function LineItemQuotes({ quotesList, setQuotesList }) {
             justifyContent: "flex-end"
           }}
         >
-          <Box
-            sx={{
-              width: "100%",
-              padding: "20px 0"
-            }}>
-            <Grid
-              container
-              spacing={2}
-              direction="row"
-              justifyContent="flex-start"
-              alignItems="center"
-            >
-              <Grid md={3}>
-                <TextField
-                  id="discountType"
-                  name="discountType"
-                  label="Type"
-                  variant="outlined"
-                  select
-                  fullWidth
-                  value={discountType}
-                  onChange={(e) => setDiscountType(e.target.value)}
-                >
-                  <MenuItem value="fixed">
-                    <em>Fixed($)</em>
-                  </MenuItem>
-                  <MenuItem value="percent">
-                    <em>Percent(%)</em>
-                  </MenuItem>
-                </TextField>
-              </Grid>
-              <Grid md={3}>
-                <TextField
-                  id="discountAmount"
-                  name="discountAmount"
-                  label="Amount"
-                  variant="outlined"
-                  fullWidth
-                  value={discountAmount}
-                  onChange={(e) => setDiscountAmount(e.target.value)}
-                  InputProps={{
-                    endAdornment:
-                      <InputAdornment position="end">
-                        {discountType === "fixed" ? "$" : "%"}
-                      </InputAdornment>,
-                  }}
-                />
-              </Grid>
-              <Grid md={3}>
-                <Button
-                  variant="outlined"
-                  onClick={handleDiscount}
-                >
-                  Add discount
-                </Button>
-              </Grid>
-            </Grid>
-          </Box>
+          <DiscountLine
+            handleDiscount={handleDiscount}
+          />
           <Box
             sx={{
               width: "300px",
@@ -270,15 +211,15 @@ export default function LineItemQuotes({ quotesList, setQuotesList }) {
                     (
                       <Tooltip
                         title={
-                          <DeleteForeverIcon 
-                          fontSize="small"
-                          onClick={handleDeleteDiscount}
+                          <DeleteForeverIcon
+                            fontSize="small"
+                            onClick={handleDeleteDiscount}
                           />
                         }
                         placement="right"
                         arrow
                       >
-                        <Typography>{discountType === "fixed" ? "$" : "%"}{discountAmount}</Typography>
+                        <Typography>{discount.type === "fixed" ? "$" : "%"}{discount.amount}</Typography>
                       </Tooltip>
                     ) : (
                       ""

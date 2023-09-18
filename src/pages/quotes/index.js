@@ -8,10 +8,8 @@ import { Box, Button, Container, Stack, SvgIcon, Typography } from '@mui/materia
 import { useSelection } from 'src/hooks/use-selection';
 import { Layout as DashboardLayout } from 'src/layouts/dashboard/layout';
 import { QuotesTable } from 'src/sections/quotes/quotes-table';
-import { QuotesTab } from 'src/sections/quotes/quotes-tab';
 import { QuotesSearch } from 'src/sections/quotes/quotes-search';
 import { applyPagination } from 'src/utils/apply-pagination';
-import { ClientRequest } from 'src/lib/ClientRequest'
 import { getQuotesData } from 'src/service/use-mongo'
 
 const Page = (props) => {

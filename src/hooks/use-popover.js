@@ -1,5 +1,5 @@
 import { useCallback, useRef, useState, useMemo } from 'react';
-import { ClientRequest } from 'src/lib/ClientRequest'
+import { fetchData } from 'src/lib/fetchData'
 
 export function usePopover() {
   const anchorRef = useRef(null);
@@ -33,7 +33,7 @@ export function usePopover() {
   }, []);
 
   const handleGetProduct = useCallback( async(productId, index) => {
-    const res = await ClientRequest(
+    const res = await fetchData(
       "/api/shopify/get-single-product",
       "POST",
       {

@@ -1,8 +1,8 @@
-import { ClientRequest } from 'src/lib/ClientRequest'
+import { fetchData } from 'src/lib/fetchData'
 
 export const getQuotesData =
     async (page, rowsPerPage, query, sort, type) => {
-        const quotesRes = await ClientRequest(
+        const quotesRes = await fetchData(
             "/api/quotes/get-quotes",
             "POST",
             {
@@ -21,6 +21,7 @@ export const saveQuoteToMongoDb =
         companyName,
         shipTo,
         quotesList,
+        discount,
         status,
         quoteId
     ) => {
@@ -28,7 +29,7 @@ export const saveQuoteToMongoDb =
         const tax = (countSubtotal * 0.1).toFixed(2)
         const total = Number(countSubtotal) + Number(tax)
         const today = new Date()
-        const mongoRes = await ClientRequest(
+        const mongoRes = await fetchData(
             "/api/quotes/update-quote",
             "POST",
             {
@@ -45,6 +46,7 @@ export const saveQuoteToMongoDb =
                     },
                     status: status,
                     updatedAt: today,
+                    discount: discount
                 }
             }
         )
@@ -54,7 +56,7 @@ export const saveQuoteToMongoDb =
 export const addNewQuoteToMongoDb =
     async () => {
         const today = new Date()
-        const mongoRes = await ClientRequest(
+        const mongoRes = await fetchData(
             "/api/quotes/create-quote",
             "POST",
             {
@@ -71,7 +73,11 @@ export const addNewQuoteToMongoDb =
                 createdAt: today,
                 updatedAt: "",
                 draftOrderId: "",
-                draftOrderNumber:""
+                draftOrderNumber:"",
+                discount: {
+                    type:"",
+                    amount:""
+                }
             }
         )
         return mongoRes
@@ -79,7 +85,7 @@ export const addNewQuoteToMongoDb =
 
 export const updateOrderIdQuoteToMongoDb =
     async (quoteId, draftOrderId) => {
-        const mongoRes = await ClientRequest(
+        const mongoRes = await fetchData(
             "/api/quotes/update-quote",
             "POST",
             {
@@ -95,7 +101,7 @@ export const updateOrderIdQuoteToMongoDb =
 
 export const deleteQuoteFromMongo =
     async (quoteId) => {
-        const mongoRes = await ClientRequest(
+        const mongoRes = await fetchData(
             "/api/quotes/delete-quote",
             "POST",
             {
@@ -106,7 +112,7 @@ export const deleteQuoteFromMongo =
     }
 
 export const getCompanies = async (page, rowsPerPage) => {
-    const comapanyRes = await ClientRequest(
+    const comapanyRes = await fetchData(
         "/api/company/get-companies",
         "POST",
         {
@@ -120,7 +126,7 @@ export const getCompanies = async (page, rowsPerPage) => {
 
 export const addCompanyToMongo =
     async (companyData) => {
-        const mongoRes = await ClientRequest(
+        const mongoRes = await fetchData(
             "/api/company/add-company",
             "POST",
             {
@@ -158,7 +164,7 @@ export const addCompanyToMongo =
 
 export const checkCompanyName =
     async (companyData) => {
-        const mongoRes = await ClientRequest(
+        const mongoRes = await fetchData(
             "/api/company/get-companies",
             "POST",
             {
@@ -173,7 +179,7 @@ export const checkCompanyName =
 
 export const checkUserEmail =
     async (email) => {
-        const mongoRes = await ClientRequest( 
+        const mongoRes = await fetchData( 
             "/api/auth/check-user",
             "POST",
             {
@@ -185,7 +191,7 @@ export const checkUserEmail =
     }
 export const findUserById =
     async (userId) => {
-        const mongoRes = await ClientRequest(
+        const mongoRes = await fetchData(
             "/api/auth/check-user",
             "POST",
             {
@@ -198,7 +204,7 @@ export const findUserById =
 
 export const registerUser =
     async (userData, companyId) => {
-        const mongoRes = await ClientRequest(
+        const mongoRes = await fetchData(
             "/api/auth/register-user",
             "POST",
             {
@@ -219,7 +225,7 @@ export const registerUser =
 
 export const inviteUser =
     async (userData, userId) => {
-        const mongoRes = await ClientRequest(
+        const mongoRes = await fetchData(
             "/api/email/invite",
             "POST",
             {
@@ -233,7 +239,7 @@ export const inviteUser =
 
 export const updatePassword =
     async (newPassword, userId) => {
-        const mongoRes = await ClientRequest(
+        const mongoRes = await fetchData(
             "/api/auth/update-password",
             "POST",
             {

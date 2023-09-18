@@ -41,6 +41,7 @@ export const QuotesForm = (props) => {
   const [buttonloading, setButtonLoading] = useState();
   const [addNewCompany, setAddNewCompany] = useState(false);
   const [quoteId, setQuoteId] = useState();
+  const [discount, setDiscount] = useState();
   const toastUp = useToast();
 
   const handleTemplate = useCallback(
@@ -59,7 +60,7 @@ export const QuotesForm = (props) => {
         return
       }
 
-      const mongoReponse = await saveQuoteToMongoDb(companyName, shipTo, quotesList, type, quoteId)
+      const mongoReponse = await saveQuoteToMongoDb(companyName, shipTo, quotesList, discount, type, quoteId)
       if (!mongoReponse) { // error when save data to mongo
         toastUp.handleStatus("error")
         toastUp.handleMessage("Error save to DB!")
@@ -74,11 +75,11 @@ export const QuotesForm = (props) => {
         return
       }
 
-      const shopifyResponse = await syncQuoteToShopify(quoteId, quotesList, companyContact.email, tabContent.draftOrderId)
+      const shopifyResponse = await syncQuoteToShopify(quoteId, quotesList, companyContact.email, discount, tabContent.draftOrderId)
 
       if (!shopifyResponse || shopifyResponse.response.createDraft.errors) { // error when sync data to shopify
         toastUp.handleStatus("warning")
-        toastUp.handleMessage("Error sync to Shopify! saved as Draft")
+        toastUp.handleMessage("Error sync to Shopify!")
         setButtonLoading()
         return
       }
@@ -312,6 +313,8 @@ export const QuotesForm = (props) => {
             <LineItemQuotes
               quotesList={quotesList}
               setQuotesList={setQuotesList}
+              discount={discount}
+              setDiscount={setDiscount}
             />
           </CardContent>
           <Divider />

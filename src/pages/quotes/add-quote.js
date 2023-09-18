@@ -195,7 +195,8 @@ const Page = () => {
                       md={12}
                       lg={12}
                     >
-                      {tabContent &&
+                      {
+                        tabContent &&
                         <QuotesForm
                           tabContent={tabContent}
                           reqQuotesData={reqQuotesData}

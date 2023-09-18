@@ -1,7 +1,7 @@
-import { ClientRequest } from 'src/lib/ClientRequest'
+import { fetchData } from 'src/lib/fetchData'
 
 export const syncQuoteToShopify =
-    async (quoteId, quotesList, customerEmail, draftOrderId) => {
+    async (quoteId, quotesList, customerEmail, discount, draftOrderId) => {
         const lineItems = quotesList.map((list) => {
             return (
                 `{
@@ -11,13 +11,14 @@ export const syncQuoteToShopify =
             )
         })
 
-        const resSendToShopify = await ClientRequest(
+        const resSendToShopify = await fetchData(
             "/api/shopify/draft-order",
             "POST", {
             lineItems,
             poNumber: quoteId,
             customerEmail,
-            draftOrderId
+            discount,
+            draftOrderId,
         })
 
         if (draftOrderId) {
@@ -35,8 +36,8 @@ export const syncQuoteToShopify =
 
 export const sendInvoiceByShopify =
     async (id) => {
-        const sendToShopify = await ClientRequest(
-            "/api/shopify/draft-order-send",
+        const sendToShopify = await fetchData(
+            "/api/shopify/send-invoice",
             "POST", {
             id: id
         })
