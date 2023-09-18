@@ -182,15 +182,15 @@ const Page = () => {
                         type={openPass ? 'text' : 'password'}
                         InputProps={{
                           endAdornment: <InputAdornment position="end">
-                          <IconButton
-                            aria-label="toggle password visibility"
-                            onClick={() => setOpenPass(!openPass)}
-                            onMouseDown={() => setOpenPass(!openPass)}
-                            edge="end"
-                          > 
-                            {openPass ? <VisibilityOff /> : <Visibility />}
-                          </IconButton>
-                        </InputAdornment>
+                            <IconButton
+                              aria-label="toggle password visibility"
+                              onClick={() => setOpenPass(!openPass)}
+                              onMouseDown={() => setOpenPass(!openPass)}
+                              edge="end"
+                            >
+                              {openPass ? <VisibilityOff /> : <Visibility />}
+                            </IconButton>
+                          </InputAdornment>
                         }}
                         value={formik.values.password}
                       />

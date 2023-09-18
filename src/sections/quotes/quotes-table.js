@@ -124,8 +124,15 @@ export const QuotesTable = (props) => {
                     </TableCell>
                     <TableCell>
                       <Typography variant="subtitle2">
-                        #{quote._id}
+                        Po Number: #{quote._id.slice(-4)}
                       </Typography>
+                      {
+                        quote?.draftOrderNumber &&
+                        <Typography variant="subtitle2">
+                          Draft Order: {quote.draftOrderNumber}
+                        </Typography>
+                      }
+
                     </TableCell>
                     <TableCell>
                       <Stack
@@ -133,7 +140,7 @@ export const QuotesTable = (props) => {
                         direction="row"
                         spacing={2}
                       >
-                        {quote.company?.avatar &&
+                        {quote?.company?.avatar &&
                           <Avatar src={quote.company.avatar}>
                             {getInitials(quote.company.company)}
                           </Avatar>
@@ -144,10 +151,10 @@ export const QuotesTable = (props) => {
                           spacing={0}
                         >
                           <Typography variant="subtitle2">
-                            {quote.company?.name}
+                            {quote?.company?.name}
                           </Typography>
                           <Typography variant="subtitle2">
-                            {quote.company?.shipTo}
+                            {quote?.company?.shipTo}
                           </Typography>
                         </Stack>
                       </Stack>
@@ -159,16 +166,16 @@ export const QuotesTable = (props) => {
                         spacing={1}
                       >
                         <Typography variant="subtitle2">
-                          Total: ${quote.quoteInfo?.total}
+                          Total: ${quote?.quoteInfo?.total}
                         </Typography>
                         <Typography variant="subtitle2">
-                          Number of Item: {quote.quoteInfo?.item}
+                          Number of Item: {quote?.quoteInfo?.item}
                         </Typography>
                       </Stack>
                     </TableCell>
                     <TableCell>
                       <Typography variant="subtitle2">
-                        {quote.status}
+                        {quote?.status}
                       </Typography>
                     </TableCell>
                     <TableCell>

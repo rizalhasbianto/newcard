@@ -44,10 +44,7 @@ export const saveQuoteToMongoDb =
                         item: quotesList.length
                     },
                     status: status,
-                    createdAt: today,
-                    updatedAt: "",
-                    draftOrderId: "",
-                    draftOrderNumber:""
+                    updatedAt: today,
                 }
             }
         )
