@@ -42,7 +42,7 @@ function Page() {
               difference={12}
               positive
               sx={{ height: '100%' }}
-              value="$24k"
+              value="20"
             />
           </Grid>
           <Grid
@@ -54,7 +54,7 @@ function Page() {
               difference={16}
               positive={false}
               sx={{ height: '100%' }}
-              value="1.6k"
+              value="7"
             />
           </Grid>
           <Grid
@@ -64,7 +64,7 @@ function Page() {
           >
             <OverviewTasksProgress
               sx={{ height: '100%' }}
-              value={75.5}
+              value={17}
             />
           </Grid>
           <Grid
@@ -74,7 +74,7 @@ function Page() {
           >
             <OverviewTotalProfit
               sx={{ height: '100%' }}
-              value="$15k"
+              value="34"
             />
           </Grid>
           <Grid
@@ -102,7 +102,7 @@ function Page() {
           >
             <OverviewTraffic
               chartSeries={[63, 15, 22]}
-              labels={['Desktop', 'Tablet', 'Phone']}
+              labels={['Certor', 'Vicis', 'Other']}
               sx={{ height: '100%' }}
             />
           </Grid>

@@ -63,17 +63,17 @@ const useChartOptions = (labels) => {
 };
 
 const iconMap = {
-  Desktop: (
+  Certor: (
     <SvgIcon>
       <ComputerDesktopIcon />
     </SvgIcon>
   ),
-  Tablet: (
+  Vicis: (
     <SvgIcon>
       <DeviceTabletIcon />
     </SvgIcon>
   ),
-  Phone: (
+  Other: (
     <SvgIcon>
       <PhoneIcon />
     </SvgIcon>
@@ -86,7 +86,7 @@ export const OverviewTraffic = (props) => {
 
   return (
     <Card sx={sx}>
-      <CardHeader title="Traffic Source" />
+      <CardHeader title="Quotes By Vendor" />
       <CardContent>
         <Chart
           height={300}

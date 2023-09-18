@@ -4,9 +4,9 @@ import CogIcon from '@heroicons/react/24/solid/CogIcon';
 import LockClosedIcon from '@heroicons/react/24/solid/LockClosedIcon';
 import ShoppingBagIcon from '@heroicons/react/24/solid/ShoppingBagIcon';
 import UserIcon from '@heroicons/react/24/solid/UserIcon';
-import UserPlusIcon from '@heroicons/react/24/solid/UserPlusIcon';
+import ClipboardDocumentIcon from '@heroicons/react/24/solid/ClipboardDocumentIcon';
 import UsersIcon from '@heroicons/react/24/solid/UsersIcon';
-import XCircleIcon from '@heroicons/react/24/solid/XCircleIcon';
+import BuildingOfficeIcon from '@heroicons/react/24/solid/BuildingOfficeIcon';
 import PencilSquareIcon from '@heroicons/react/24/solid/PencilSquareIcon';
 import PuzzlePieceIcon from '@heroicons/react/24/solid/PuzzlePieceIcon';
 import { SvgIcon } from '@mui/material';
@@ -51,11 +51,20 @@ export const items = [
     ]
   },
   {
-    title: 'Customers',
-    path: '/customers',
+    title: 'Orders',
+    path: '/orders',
     icon: (
       <SvgIcon fontSize="small">
-        <UsersIcon />
+        <ShoppingBagIcon />
+      </SvgIcon>
+    )
+  },
+  {
+    title: 'Products',
+    path: '/Products',
+    icon: (
+      <SvgIcon fontSize="small">
+        <ClipboardDocumentIcon />
       </SvgIcon>
     )
   },
@@ -64,7 +73,7 @@ export const items = [
     path: '/companies',
     icon: (
       <SvgIcon fontSize="small">
-        <ShoppingBagIcon />
+        <BuildingOfficeIcon />
       </SvgIcon>
     )
   },
@@ -86,31 +95,4 @@ export const items = [
       </SvgIcon>
     )
   },
-  {
-    title: 'Login',
-    path: '/auth/login',
-    icon: (
-      <SvgIcon fontSize="small">
-        <LockClosedIcon />
-      </SvgIcon>
-    )
-  },
-  {
-    title: 'Register',
-    path: '/auth/register',
-    icon: (
-      <SvgIcon fontSize="small">
-        <UserPlusIcon />
-      </SvgIcon>
-    )
-  },
-  {
-    title: 'Error',
-    path: '/404',
-    icon: (
-      <SvgIcon fontSize="small">
-        <XCircleIcon />
-      </SvgIcon>
-    )
-  }
 ];
