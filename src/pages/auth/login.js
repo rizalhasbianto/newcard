@@ -49,15 +49,13 @@ const Page = () => {
         .required('Password is required')
     }),
     onSubmit: async (values, helpers) => {
-      const callbackUrl = "/"
       const res = await signIn("credentials", {
         redirect: false,
         email: values.email,
-        password: values.password,
-        callbackUrl
+        password: values.password
       });
-      if (!res.error) {
-      } else {
+
+      if (res.error) {
         helpers.setStatus({ success: false });
         helpers.setErrors({ submit: res.error });
         helpers.setSubmitting(false);
