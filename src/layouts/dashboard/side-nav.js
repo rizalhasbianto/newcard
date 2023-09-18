@@ -82,13 +82,13 @@ export const SideNav = (props) => {
                 color="inherit"
                 variant="subtitle1"
               >
-                {data?.user.detail.company.companyName}
+                {data?.user?.detail?.company?.companyName}
               </Typography>
               <Typography
                 color="neutral.400"
                 variant="body2"
               >
-                {data?.user.detail.name}
+                {data?.user?.detail?.name}
               </Typography>
               <LoadingButton
                 size="small"
