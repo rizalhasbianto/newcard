@@ -56,15 +56,7 @@ const Page = () => {
         password: values.password,
         callbackUrl
       });
-
       if (!res.error) {
-        const timer = setTimeout(() => {
-          if (typeof window !== "undefined") {
-            window.location.replace("/");
-          }
-        }, 1000);
-        return () => clearTimeout(timer);
-        
       } else {
         helpers.setStatus({ success: false });
         helpers.setErrors({ submit: res.error });
