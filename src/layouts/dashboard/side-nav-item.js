@@ -1,12 +1,12 @@
 import { useState } from 'react';
 import NextLink from 'next/link';
 import PropTypes from 'prop-types';
-import { Box, ButtonBase } from '@mui/material';
+import { Box, ButtonBase, Collapse } from '@mui/material';
 import { SubMenu } from './sub-menu'
 
 export const SideNavItem = (props) => {
   const { active = false, disabled, external, icon, path, title, subMenu } = props;
-  const [ hoverMenu, setHoverMenu] = useState("")
+  const [hoverMenu, setHoverMenu] = useState("")
 
   const linkProps = path
     ? external
@@ -86,27 +86,29 @@ export const SideNavItem = (props) => {
           {title}
         </Box>
       </ButtonBase>
-      {subMenu && active &&
-        <Box
-          sx={{
-            mb: '10px',
-            borderBottom: 1,
-            pt: '10px',
-            pb: '10px',
-            borderColor: '#243046'
-          }}
-        > {
-            subMenu?.map((sub, i) =>
-              <SubMenu
-                key={"sub-"+i}
-                icon={sub.icon}
-                path={sub.path}
-                title={sub.title}
-              />
+      {subMenu &&
+        <Collapse in={active}>
+          <Box
+            sx={{
+              mb: '10px',
+              borderBottom: 1,
+              pt: '10px',
+              pb: '10px',
+              borderColor: '#243046'
+            }}
+          > {
+              subMenu?.map((sub, i) =>
+                <SubMenu
+                  key={"sub-" + i}
+                  icon={sub.icon}
+                  path={sub.path}
+                  title={sub.title}
+                />
 
-            )
-          }
-        </Box>
+              )
+            }
+          </Box>
+        </Collapse>
       }
     </li>
   );

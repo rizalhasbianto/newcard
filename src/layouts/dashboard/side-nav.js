@@ -1,8 +1,9 @@
+import { useState } from 'react';
 import NextLink from 'next/link';
 import { usePathname } from 'next/navigation';
 import PropTypes from 'prop-types';
-import ArrowTopRightOnSquareIcon from '@heroicons/react/24/solid/ArrowTopRightOnSquareIcon';
 import ChevronUpDownIcon from '@heroicons/react/24/solid/ChevronUpDownIcon';
+import LogoutIcon from '@mui/icons-material/Logout';
 import {
   Box,
   Button,
@@ -11,17 +12,27 @@ import {
   Stack,
   SvgIcon,
   Typography,
-  useMediaQuery
+  useMediaQuery,
 } from '@mui/material';
+import LoadingButton from '@mui/lab/LoadingButton';
 import { Logo } from 'src/components/logo';
 import { Scrollbar } from 'src/components/scrollbar';
 import { items } from './config';
 import { SideNavItem } from './side-nav-item';
+import { useSession } from "next-auth/react"
+import { signOut } from "next-auth/react"
 
 export const SideNav = (props) => {
   const { open, onClose } = props;
   const pathname = usePathname();
   const lgUp = useMediaQuery((theme) => theme.breakpoints.up('lg'));
+  const { data } = useSession()
+  const [loading, setLoading] = useState(false)
+
+  const handleSignOut = () => {
+    setLoading(true)
+    signOut({ callbackUrl: '/auth/login' })
+  }
 
   const content = (
     <Scrollbar
@@ -71,14 +82,28 @@ export const SideNav = (props) => {
                 color="inherit"
                 variant="subtitle1"
               >
-                Skartch
+                {data?.user.detail.company.companyName}
               </Typography>
               <Typography
                 color="neutral.400"
                 variant="body2"
               >
-                Production
+                {data?.user.detail.name}
               </Typography>
+              <LoadingButton
+                size="small"
+                onClick={() => handleSignOut()}
+                endIcon={<LogoutIcon />}
+                loading={loading}
+                loadingPosition="end"
+                sx={{
+                  border:"none",
+                  paddingLeft: 0,
+                  color:"#9DA4AE"
+                }}
+              >
+                <span>Sign Out</span>
+              </LoadingButton>
             </div>
             <SvgIcon
               fontSize="small"

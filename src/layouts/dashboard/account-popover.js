@@ -1,5 +1,6 @@
 import { useCallback } from 'react';
 import { signOut } from "next-auth/react"
+import { useSession } from "next-auth/react"
 import PropTypes from 'prop-types';
 import { Box, Divider, MenuItem, MenuList, Popover, Typography } from '@mui/material';
 
@@ -13,6 +14,8 @@ export const AccountPopover = (props) => {
     },
     [onClose]
   );
+
+  const { data } = useSession()
 
   return (
     <Popover
@@ -38,7 +41,13 @@ export const AccountPopover = (props) => {
           color="text.secondary"
           variant="body2"
         >
-          Anika Visser
+          {data?.user.name}
+        </Typography>
+        <Typography
+          color="text.secondary"
+          variant="body2"
+        >
+          {data?.user.email}
         </Typography>
       </Box>
       <Divider />

@@ -37,8 +37,6 @@ const Page = (props) => {
 
   const handlePageChange = useCallback(
     async (event, value) => {
-      console.log("value", value)
-      console.log("event", event)
       setPage(value);
       reqQuotesData(value, rowsPerPage)
     },

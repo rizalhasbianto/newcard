@@ -16,9 +16,12 @@ import {
   Tabs,
   TextField,
   Typography,
+  InputAdornment,
+  IconButton,
   Unstable_Grid2 as Grid,
 } from '@mui/material';
-import VisibilityIcon from '@mui/icons-material/Visibility';
+import Visibility from '@mui/icons-material/Visibility';
+import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import { Layout as AuthLayout } from 'src/layouts/auth/layout';
 import { signIn } from "next-auth/react";
 
@@ -176,14 +179,20 @@ const Page = () => {
                         name="password"
                         onBlur={formik.handleBlur}
                         onChange={formik.handleChange}
-                        type={openPass ? "text" : "password"}
+                        type={openPass ? 'text' : 'password'}
+                        InputProps={{
+                          endAdornment: <InputAdornment position="end">
+                          <IconButton
+                            aria-label="toggle password visibility"
+                            onClick={() => setOpenPass(!openPass)}
+                            onMouseDown={() => setOpenPass(!openPass)}
+                            edge="end"
+                          > 
+                            {openPass ? <VisibilityOff /> : <Visibility />}
+                          </IconButton>
+                        </InputAdornment>
+                        }}
                         value={formik.values.password}
-                      />
-                    </Grid>
-                    <Grid lg={1}>
-                      <VisibilityIcon
-                        className='action'
-                        onClick={() => setOpenPass(!openPass)}
                       />
                     </Grid>
                   </Grid>
@@ -197,15 +206,17 @@ const Page = () => {
                     {formik.errors.submit}
                   </Typography>
                 )}
-                <Button
-                  fullWidth
-                  size="large"
-                  sx={{ mt: 3 }}
-                  type="submit"
-                  variant="contained"
-                >
-                  Continue
-                </Button>
+                <Grid lg={11}>
+                  <Button
+                    fullWidth
+                    size="large"
+                    sx={{ mt: 3 }}
+                    type="submit"
+                    variant="contained"
+                  >
+                    Continue
+                  </Button>
+                </Grid>
                 <Alert
                   color="primary"
                   severity="info"

@@ -178,7 +178,7 @@ export const QuotesTable = (props) => {
                     </TableCell>
                     <TableCell>
                       <Stack
-                        alignItems="center"
+                        alignItems="flex-start"
                         direction="row"
                         spacing={1}
                       >
@@ -196,7 +196,7 @@ export const QuotesTable = (props) => {
                         </Link>
                         <SvgIcon
                           className="action"
-                          color="error"
+                          color="action"
                           fontSize="small"
                           onClick={() => handleDelete(quote._id)}
                         >

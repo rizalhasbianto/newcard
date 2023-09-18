@@ -46,7 +46,8 @@ export const saveQuoteToMongoDb =
                     status: status,
                     createdAt: today,
                     updatedAt: "",
-                    DraftOrderId: ""
+                    draftOrderId: "",
+                    draftOrderNumber:""
                 }
             }
         )
@@ -72,7 +73,8 @@ export const addNewQuoteToMongoDb =
                 status: "new",
                 createdAt: today,
                 updatedAt: "",
-                DraftOrderId: ""
+                draftOrderId: "",
+                draftOrderNumber:""
             }
         )
         return mongoRes
@@ -86,7 +88,8 @@ export const updateOrderIdQuoteToMongoDb =
             {
                 quoteId: quoteId,
                 data: {
-                    draftOrderId: draftOrderId
+                    draftOrderId: draftOrderId.id,
+                    draftOrderNumber: draftOrderId.name
                 }
             }
         )

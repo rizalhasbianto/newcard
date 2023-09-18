@@ -1,7 +1,7 @@
 import { ClientRequest } from 'src/lib/ClientRequest'
 
 export const syncQuoteToShopify =
-    async (quoteId,quotesList,customerEmail) => {
+    async (quoteId, quotesList, customerEmail, draftOrderId) => {
         const lineItems = quotesList.map((list) => {
             return (
                 `{
@@ -10,22 +10,35 @@ export const syncQuoteToShopify =
             }`
             )
         })
-        const sendToShopify = await ClientRequest( 
-            "/api/shopify/draft-order-create",
+
+        const resSendToShopify = await ClientRequest(
+            "/api/shopify/draft-order",
             "POST", {
             lineItems,
             poNumber: quoteId,
-            customerEmail
+            customerEmail,
+            draftOrderId
         })
-        return sendToShopify
+
+        if (draftOrderId) {
+            return {
+                operation: "update",
+                response: resSendToShopify
+            }
+        }
+
+        return {
+            operation: "create",
+            response: resSendToShopify
+        }
     }
 
-    export const sendInvoiceByShopify =
+export const sendInvoiceByShopify =
     async (id) => {
         const sendToShopify = await ClientRequest(
             "/api/shopify/draft-order-send",
             "POST", {
-            id:id
+            id: id
         })
         return sendToShopify
     }

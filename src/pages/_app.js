@@ -27,25 +27,25 @@ const App = (props) => {
 
   return (
     <SessionProvider session={pageProps.session}>
-    <CacheProvider value={emotionCache}>
-      <Head>
-        <title>
-          Devias Kit
-        </title>
-        <meta
-          name="viewport"
-          content="initial-scale=1, width=device-width"
-        />
-      </Head>
-      <LocalizationProvider dateAdapter={AdapterDateFns}>
+      <CacheProvider value={emotionCache}>
+        <Head>
+          <title>
+            Skratch B2B
+          </title>
+          <meta
+            name="viewport"
+            content="initial-scale=1, width=device-width"
+          />
+        </Head>
+        <LocalizationProvider dateAdapter={AdapterDateFns}>
           <ThemeProvider theme={theme}>
             <CssBaseline />
-              {
-                getLayout(<Component {...pageProps} />)
-              }
+            {
+              getLayout(<Component {...pageProps} />)
+            }
           </ThemeProvider>
-      </LocalizationProvider>
-    </CacheProvider>
+        </LocalizationProvider>
+      </CacheProvider>
     </SessionProvider>
   );
 };

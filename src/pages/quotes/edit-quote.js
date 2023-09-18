@@ -18,26 +18,29 @@ const Page = () => {
   const router = useRouter();
   const { quoteId } = router.query;
 
-  const reqQuotesData = async (quoteId) => {
+  const reqQuotesData = async () => {
     setLoading(true)
     const page = 0
     const rowsPerPage = 1
     const query = ({ quoteId: quoteId })
     const sort = "DSC"
     const type = "id"
+    
     const resQuotes = await getQuotesData(page, rowsPerPage, query, sort, type)
     if (!resQuotes) {
       console.log("error get quotes data!")
       return
     }
+
     setTabContent(resQuotes.data.quote[0])
     setLoading(false)
   }
 
   useEffect(() => {
     if (quoteId) {
-      reqQuotesData(quoteId)
+      reqQuotesData()
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [quoteId]);
 
   return (

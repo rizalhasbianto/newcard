@@ -10,7 +10,8 @@ import {
   Divider,
   Button,
   Collapse,
-  Unstable_Grid2 as Grid
+  Unstable_Grid2 as Grid,
+  Typography
 } from '@mui/material';
 
 import { SearchProduct } from './quotes-search-product'
@@ -72,16 +73,24 @@ export const QuotesForm = (props) => {
         setButtonLoading(false)
         return
       }
+      
+      const shopifyResponse = await syncQuoteToShopify(quoteId, quotesList, companyContact.email, tabContent.draftOrderId)
 
-      const shopifyResponse = await syncQuoteToShopify(quoteId, quotesList, companyContact.email)
-      if (!shopifyResponse || shopifyResponse.createDraft.errors) { // error when sync data to shopify
+      if (!shopifyResponse || shopifyResponse.response.createDraft.errors) { // error when sync data to shopify
         toastUp.handleStatus("warning")
         toastUp.handleMessage("Error sync to Shopify! saved as Draft")
         setButtonLoading()
         return
       }
 
-      const draftOrderId = shopifyResponse.createDraft.data.draftOrderCreate.draftOrder.id
+      const draftOrderId = {
+        id: shopifyResponse.operation === "create" ?
+          shopifyResponse.response.createDraft.data.draftOrderCreate.draftOrder.id :
+          shopifyResponse.response.createDraft.data.draftOrderUpdate.draftOrder.id,
+        name: shopifyResponse.operation === "create" ?
+          shopifyResponse.response.createDraft.data.draftOrderCreate.draftOrder.name :
+          shopifyResponse.response.createDraft.data.draftOrderUpdate.draftOrder.name
+      }
       const updateQuoteAtMongoRes = await updateOrderIdQuoteToMongoDb(quoteId, draftOrderId)
       if (!updateQuoteAtMongoRes || updateQuoteAtMongoRes.modifiedCount === 0) { // error when update data to mongo
         toastUp.handleStatus("error")
@@ -111,7 +120,7 @@ export const QuotesForm = (props) => {
       toastUp.handleStatus("success")
       toastUp.handleMessage("Invoice sent!!!")
 
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+      // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [companyName, handleTemplate, quoteId, quotesList, reqQuotesData, shipTo, toastUp]
   )
 
@@ -143,14 +152,13 @@ export const QuotesForm = (props) => {
     }
 
     setCompanies(companyList.data.company)
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+  }, [tabContent])
 
   useEffect(() => {
     getCompaniesData(0, 50)
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
+  
   return (
     <>
       <Toast
@@ -158,6 +166,53 @@ export const QuotesForm = (props) => {
         handleStatus={toastUp.handleStatus}
         toastMessage={toastUp.toastMessage}
       />
+      {
+        ( tabContent && tabContent.status !== "new" && tabContent.status !== "draft") &&
+        <Card sx={{ mb: 2 }}>
+          <Grid
+            container
+            justify="flex-end"
+            alignItems="center"
+            sx={{
+              padding: "25px"
+            }}
+          >
+            <Grid
+              xs={6}
+              md={3}
+            >
+              <Typography variant="body2">
+                status: {tabContent?.status}
+              </Typography>
+            </Grid>
+            <Grid
+              xs={6}
+              md={3}
+            >
+              <Typography variant="body2">
+                Shopify Order Id: {tabContent?.draftOrderNumber}
+              </Typography>
+            </Grid>
+            <Grid
+              xs={6}
+              md={3}
+            >
+              <Typography variant="body2">
+                Created By: Admin
+              </Typography>
+            </Grid>
+            <Grid
+              xs={6}
+              md={3}
+            >
+              <Typography variant="body2">
+                LastUpdate: {tabContent?.updatedAt}
+              </Typography>
+            </Grid>
+          </Grid>
+        </Card>
+      }
+
       <Card sx={{ mb: 2 }}>
         <Grid
           container

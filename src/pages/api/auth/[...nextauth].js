@@ -36,14 +36,16 @@ export const authOptions = {
                     console.log("there is no user with that username");
                     throw new Error("User with that email is not found");
                 }
-                
+
                 const matchPass = await bcrypt.compare(password, response[0].password);
 
                 if (matchPass) {
                     return {
-                        name: response[0].name,
-                        role: response[0].role,
-                    };
+                        name:response[0].name,
+                        email:response[0].email,
+                        company:response[0].company,
+                        role:response[0].role
+                    }
                 } else {
                     console.log("invalid password");
                     throw new Error("Invalid password");
@@ -53,23 +55,28 @@ export const authOptions = {
     ],
     callbacks: {
         async jwt({ token, user, account }) {
-          if (account && user) {
-            return {
-              ...token,
-              accessToken: user.token,
-              refreshToken: user.refreshToken,
-            };
-          }
-    
-          return token;
+            if (account && user) {
+                return {
+                    ...token,
+                    ...user,
+                    accessToken: user.token,
+                    refreshToken: user.refreshToken,
+                };
+            }
+            return token;
         },
-    
+
         async session({ session, token }) {
-          session.user.accessToken = token.accessToken;
-            
-          return session;
+            session.user.accessToken = token.accessToken;
+            session.user.detail = {
+                name:token.name,
+                email:token.email,
+                company:token.company,
+                role:token.role
+            }
+            return session;
         },
-      },
+    },
 
     pages: {
         signIn: "/auth/login",
