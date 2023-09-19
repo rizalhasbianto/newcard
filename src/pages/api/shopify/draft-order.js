@@ -2,7 +2,7 @@ import { adminAPi } from 'src/lib/shopify'
 
 export default async function createDraftOrder(req, res) {
   const bodyObject = req.body;
-  console.log(bodyObject)
+
   let query
   if (bodyObject.draftOrderId) {
     query = `
@@ -12,7 +12,11 @@ export default async function createDraftOrder(req, res) {
           input: {
               email: "${bodyObject.customerEmail}",
               lineItems: [${bodyObject.lineItems}],
-              poNumber: "${bodyObject.poNumber}"
+              poNumber: "${bodyObject.poNumber}",
+              appliedDiscount: {
+                valueType:${bodyObject.discount.type},
+                value:${bodyObject.discount.amount}
+              }
           }) {
             draftOrder {
               id
@@ -34,8 +38,8 @@ export default async function createDraftOrder(req, res) {
               lineItems: [${bodyObject.lineItems}],
               poNumber: "${bodyObject.poNumber}",
               appliedDiscount: {
-                valueType:FIXED_AMOUNT,
-                value:100
+                valueType:${bodyObject.discount.type},
+                value:${bodyObject.discount.amount}
               }
           }) {
             draftOrder {

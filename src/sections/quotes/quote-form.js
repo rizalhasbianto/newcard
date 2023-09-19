@@ -156,6 +156,7 @@ export const QuotesForm = (props) => {
       setShipTo(tabContent.company.shipTo)
       setQuotesList(tabContent.quotesList)
       setQuoteId(tabContent._id)
+      setDiscount(tabContent.discount)
     }
   }, [companies, tabContent])
 

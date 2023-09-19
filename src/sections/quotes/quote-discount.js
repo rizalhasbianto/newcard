@@ -56,10 +56,10 @@ export default function DiscountLine(props) {
                         onChange={formik.handleChange}
                         value={formik.values.discountType}
                     >
-                        <MenuItem value="fixed">
+                        <MenuItem value="FIXED_AMOUNT">
                             <em>Fixed($)</em>
                         </MenuItem>
-                        <MenuItem value="percent">
+                        <MenuItem value="PERCENTAGE">
                             <em>Percent(%)</em>
                         </MenuItem>
                     </TextField>
@@ -74,7 +74,7 @@ export default function DiscountLine(props) {
                         InputProps={{
                             endAdornment:
                                 <InputAdornment position="end">
-                                    {formik?.values?.discountType === "fixed" ? "$" : "%"}
+                                    {formik?.values?.discountType === "FIXED_AMOUNT" ? "$" : "%"}
                                 </InputAdornment>,
                         }}
                         error={!!(formik.touched.discountAmount && formik.errors.discountAmount)}

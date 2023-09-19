@@ -10,10 +10,6 @@ import {
   TableHead,
   TablePagination,
   TableRow,
-  Button,
-  TextField,
-  MenuItem,
-  InputAdornment,
   Tooltip,
   Unstable_Grid2 as Grid
 } from '@mui/material';
@@ -37,11 +33,11 @@ export default function LineItemQuotes({ quotesList, setQuotesList, discount, se
     const countSubtotal = (quotesList.reduce((n, { total }) => n + Number(total), 0)).toFixed(2)
     let discountCalc = 0
     if (discount) {
-      if (discount.type === "fixed") {
+      if (discount.type === "FIXED_AMOUNT") {
         discountCalc = discount.amount
       } else {
-        const discountInPrice = countSubtotal * (discount.amount / 100)
-        discountCalc = (countSubtotal - discountInPrice).toFixed(2)
+        discountCalc = (countSubtotal * (discount.amount / 100)).toFixed(2)
+        console.log("discountCalc", discountCalc)
       }
     }
 
@@ -102,12 +98,12 @@ export default function LineItemQuotes({ quotesList, setQuotesList, discount, se
         type: value.discountType,
         amount: value.discountAmount
       })
-    }, []
+    }, [setDiscount]
   )
   const handleDeleteDiscount = useCallback(
     (event) => {
       setDiscount()
-    }, []
+    }, [setDiscount]
   )
 
   return (
@@ -219,7 +215,7 @@ export default function LineItemQuotes({ quotesList, setQuotesList, discount, se
                         placement="right"
                         arrow
                       >
-                        <Typography>{discount.type === "fixed" ? "$" : "%"}{discount.amount}</Typography>
+                        <Typography>{discount.type === "FIXED_AMOUNT" ? "$" : "%"}{discount.amount}</Typography>
                       </Tooltip>
                     ) : (
                       ""
