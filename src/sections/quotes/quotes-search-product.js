@@ -203,7 +203,8 @@ export const SearchProduct = ({ quotesList, setQuotesList }) => {
             }}
           />
         </Grid>
-        <Grid md={3}>
+        {
+        /*  <Grid md={3}>
           <Button
             variant='outlined'
             fullWidth
@@ -217,23 +218,24 @@ export const SearchProduct = ({ quotesList, setQuotesList }) => {
           </Button>
         </Grid>
         <Grid md={3}>
-        <Link
-                  href="/products"
-                  passHref
-                >
-          <Button
-            variant='outlined'
-            fullWidth
-            sx={{
-              height: "54px",
-              position: "relative",
-              top: "5px"
-            }}
+          <Link
+            href="/products"
+            passHref
           >
-            Browse
-          </Button>
+            <Button
+              variant='outlined'
+              fullWidth
+              sx={{
+                height: "54px",
+                position: "relative",
+                top: "5px"
+              }}
+            >
+              Browse
+            </Button>
           </Link>
         </Grid>
+            */}
       </Grid>
       <Grid
         container

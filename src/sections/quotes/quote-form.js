@@ -108,10 +108,10 @@ export const QuotesForm = (props) => {
         return
       }
 
-      const sendInvoiceRes = await sendInvoiceByShopify(draftOrderId)
+      const sendInvoiceRes = await sendInvoiceByShopify(draftOrderId.id)
       if (!sendInvoiceRes || sendInvoiceRes.sendDraft.errors) { // error when send invoice
         toastUp.handleStatus("error")
-        toastUp.handleMessage("Error send invoice! quote saved as open")
+        toastUp.handleMessage("Error send invoice! quote saved")
         setButtonLoading(false)
         return
       }

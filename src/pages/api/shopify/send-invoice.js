@@ -17,5 +17,6 @@ export default async function sendDraftOrder(req, res) {
     `;
 
   const sendDraft = await adminAPi(query);
+  console.log(bodyObject.id)
   res.json({ status: 200, sendDraft });
 }

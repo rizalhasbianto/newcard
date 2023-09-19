@@ -13,86 +13,12 @@ import { SvgIcon } from '@mui/material';
 
 export const items = [
   {
-    title: 'Overview',
-    path: '/',
-    icon: (
-      <SvgIcon fontSize="small">
-        <ChartBarIcon />
-      </SvgIcon>
-    ),
-  },
-  {
     title: 'Qoutes',
-    path: '/quotes',
+    path: '/',
     icon: (
       <SvgIcon fontSize="small">
         <NewspaperIcon />
       </SvgIcon>
     ),
-    subMenu: [
-      {
-        title: 'Add new quote',
-        path: '/quotes/add-quote',
-        icon: (
-          <SvgIcon fontSize="small">
-            <PencilSquareIcon />
-          </SvgIcon>
-        ),
-      },
-      {
-        title: 'Add new template',
-        path: '/quotes/add-template',
-        icon: (
-          <SvgIcon fontSize="small">
-            <PuzzlePieceIcon />
-          </SvgIcon>
-        ),
-      },
-    ]
-  },
-  {
-    title: 'Orders',
-    path: '/orders',
-    icon: (
-      <SvgIcon fontSize="small">
-        <ShoppingBagIcon />
-      </SvgIcon>
-    )
-  },
-  {
-    title: 'Products',
-    path: '/Products',
-    icon: (
-      <SvgIcon fontSize="small">
-        <ClipboardDocumentIcon />
-      </SvgIcon>
-    )
-  },
-  {
-    title: 'Companies',
-    path: '/companies',
-    icon: (
-      <SvgIcon fontSize="small">
-        <BuildingOfficeIcon />
-      </SvgIcon>
-    )
-  },
-  {
-    title: 'Account',
-    path: '/account',
-    icon: (
-      <SvgIcon fontSize="small">
-        <UserIcon />
-      </SvgIcon>
-    )
-  },
-  {
-    title: 'Settings',
-    path: '/settings',
-    icon: (
-      <SvgIcon fontSize="small">
-        <CogIcon />
-      </SvgIcon>
-    )
   },
 ];

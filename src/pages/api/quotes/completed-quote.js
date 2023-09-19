@@ -12,7 +12,7 @@ export default async function updateQuote(req, res) {
         sendQuote = await db.collection(collection).updateOne(
             {draftOrderId : "gid://shopify/DraftOrder/" + bodyObject.id},
             {$set : {
-                status: "donato"
+                status: "paid"
             }}
         );
     }
