@@ -10,7 +10,7 @@ export const getQuotesData =
                 postPerPage: rowsPerPage,
                 query: query,
                 sort: sort,
-                type:type ? type : "any"
+                type: type ? type : "any"
             }
         )
 
@@ -73,10 +73,10 @@ export const addNewQuoteToMongoDb =
                 createdAt: today,
                 updatedAt: "",
                 draftOrderId: "",
-                draftOrderNumber:"",
+                draftOrderNumber: "",
                 discount: {
-                    type:"",
-                    amount:""
+                    type: "",
+                    amount: ""
                 }
             }
         )
@@ -179,11 +179,11 @@ export const checkCompanyName =
 
 export const checkUserEmail =
     async (email) => {
-        const mongoRes = await fetchData( 
+        const mongoRes = await fetchData(
             "/api/auth/check-user",
             "POST",
             {
-                query: {email: email},
+                query: { email: email },
                 type: "email"
             }
         )
@@ -195,7 +195,7 @@ export const findUserById =
             "/api/auth/check-user",
             "POST",
             {
-                query:{id: userId},
+                query: { id: userId },
                 type: "id"
             }
         )

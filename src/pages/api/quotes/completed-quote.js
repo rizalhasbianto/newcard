@@ -6,9 +6,16 @@ export default async function updateQuote(req, res) {
     const db = client.db(process.env.DB_NAME);
     const collection = process.env.MONGODB_COLLECTION_QUOTES;
     const bodyObject = req.body;
-    const sendQuote = await db.collection(collection).updateOne(
-        {_id : new ObjectId(bodyObject.quoteId)},
-        {$set :bodyObject.data}
-    );
+    let sendQuote = "not completed"
+
+    if(bodyObject.status === "completed") {
+        sendQuote = await db.collection(collection).updateOne(
+            {draftOrderId : "gid://shopify/DraftOrder/" + bodyObject.id},
+            {$set : {
+                status: "donato"
+            }}
+        );
+    }
+    
     res.status(200).json({ status: 200, data: sendQuote });
 }

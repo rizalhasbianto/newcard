@@ -4,7 +4,7 @@ import { ObjectId } from 'mongodb'
 export default async function getQuotes(req, res) {
     const client = await clientPromise;
     const db = client.db(process.env.DB_NAME);
-    const collection = "quotes";
+    const collection = process.env.MONGODB_COLLECTION_QUOTES;
     const bodyObject = req.body;
 
     const skip = ((bodyObject.page + 1)* bodyObject.postPerPage) - bodyObject.postPerPage;

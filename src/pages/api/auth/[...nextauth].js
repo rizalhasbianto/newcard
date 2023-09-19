@@ -14,23 +14,15 @@ export const authOptions = {
     session: {
         strategy: "jwt",
     },
-    // Configure one or more authentication providers
     providers: [
-        // ...add more providers here
         CredentialsProvider({
-            // The name to display on the sign in form (e.g. "Sign in with...")
             name: "Credentials",
-            // `credentials` is used to generate a form on the sign in page.
-            // You can specify which fields should be submitted, by adding keys to the `credentials` object.
-            // e.g. domain, username, password, 2FA token, etc.
-            // You can pass any HTML attribute to the <input> tag through the object.
             async authorize(credentials, req) {
                 const { email, password } = credentials;
-                // perform you login logic
-                // find out user from db
                 const client = await clientPromise;
                 const db = client.db(process.env.DB_NAME);
-                const response = await db.collection("user").find({ email: email }).limit(10).toArray();
+                const userTable = process.env.MONGODB_COLLECTION_USER
+                const response = await db.collection(userTable).find({ email: email }).limit(10).toArray();
 
                 if (response.length === 0) {
                     console.log("there is no user with that username");
@@ -41,10 +33,10 @@ export const authOptions = {
 
                 if (matchPass) {
                     return {
-                        name:response[0].name,
-                        email:response[0].email,
-                        company:response[0].company,
-                        role:response[0].role
+                        name: response[0].name,
+                        email: response[0].email,
+                        company: response[0].company,
+                        role: response[0].role
                     }
                 } else {
                     console.log("invalid password");
@@ -69,10 +61,10 @@ export const authOptions = {
         async session({ session, token }) {
             session.user.accessToken = token.accessToken;
             session.user.detail = {
-                name:token.name,
-                email:token.email,
-                company:token.company,
-                role:token.role
+                name: token.name,
+                email: token.email,
+                company: token.company,
+                role: token.role
             }
             return session;
         },

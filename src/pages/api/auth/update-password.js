@@ -5,7 +5,7 @@ const bcrypt = require('bcrypt');
 export default async function createQuote(req, res) {
     const client = await clientPromise;
     const db = client.db(process.env.DB_NAME);
-    const collection = "user"
+    const collection = process.env.MONGODB_COLLECTION_USER
     const bodyObject = req.body;
     const password = bodyObject.newPassword
     const saltRounds = 10;

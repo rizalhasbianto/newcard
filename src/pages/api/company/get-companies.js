@@ -3,7 +3,7 @@ import clientPromise from "src/lib/mongodb";
 export default async function getQuotes(req, res) {
     const client = await clientPromise;
     const db = client.db(process.env.DB_NAME);
-    const collection = "company";
+    const collection = process.env.MONGODB_COLLECTION_COMPANY;
     const bodyObject = req.body;
     const queryCompany = bodyObject.type === "check" ? bodyObject.query : {}
     const postPerPage = bodyObject.postPerPage ? bodyObject.postPerPage : 10
