@@ -42,7 +42,7 @@ export default async function addCompany(req, res) {
         }
         const htmlEmail = template(data);
         const mailOptions = {
-            from: 'rizalhasbianto@gmail.com',
+            from: 'info@skratch.com',
             to: data.email,
             subject: 'Welcome email for set password',
             html: htmlEmail
