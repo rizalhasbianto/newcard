@@ -7,7 +7,7 @@ import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import { Box, Button, Link, Stack, TextField, Typography } from '@mui/material';
 import { Layout as AuthLayout } from 'src/layouts/auth/layout';
-import { findUserById, updatePassword } from 'src/service/use-mongo'
+import { FindUserById, UpdatePassword } from 'src/service/use-mongo'
 
 const Page = () => {
   const router = useRouter();
@@ -18,7 +18,7 @@ const Page = () => {
   const getUser = useCallback(
     async (id) => {
       if (id) {
-        const resUser = await findUserById(id)
+        const resUser = await FindUserById(id)
         if (!resUser) {
           setErrorUser("Error get user!")
           return
@@ -59,7 +59,7 @@ const Page = () => {
         )
     }),
     onSubmit: async (values, helpers) => {
-      const resUpdatePassword = await updatePassword(values.password, id)
+      const resUpdatePassword = await UpdatePassword(values.password, id)
       if (resUpdatePassword) {
         setSuccessUpdate("done")
       }

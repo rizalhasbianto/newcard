@@ -16,6 +16,7 @@ import {
   Typography,
   Unstable_Grid2 as Grid
 } from '@mui/material';
+import { GetProductsShopify } from 'src/service/use-shopify'
 
 export const SearchProduct = ({ quotesList, setQuotesList }) => {
   const [value, setValue] = useState(null);
@@ -29,11 +30,7 @@ export const SearchProduct = ({ quotesList, setQuotesList }) => {
   const getOptions = async (active, value) => {
 
     if (active) {
-      const data = await fetchData(
-        "/api/shopify/get-products",
-        "POST",
-        { search: inputValue }
-      )
+      const data = await GetProductsShopify(inputValue)
 
       let newOptions = [];
 
@@ -94,7 +91,7 @@ export const SearchProduct = ({ quotesList, setQuotesList }) => {
         productName: value.node.title,
         variant: selectedVariant,
         qty: selectedQuantity,
-        total: selectedQuantity * selectedVariant.price.amount
+        total: (selectedQuantity * selectedVariant.price.amount).toFixed(2)
       }
       oldQuote.push(newQuote)
       setQuotesList(oldQuote)

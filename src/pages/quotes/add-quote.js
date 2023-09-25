@@ -15,8 +15,8 @@ import AddIcon from '@mui/icons-material/Add';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { Layout as DashboardLayout } from 'src/layouts/dashboard/layout';
 import { QuotesForm } from 'src/sections/quotes/quote-form';
-import { getQuotesData } from 'src/service/use-mongo'
-import { addNewQuoteToMongoDb, deleteQuoteFromMongo } from 'src/service/use-mongo'
+import { GetQuotesData } from 'src/service/use-mongo'
+import { AddNewQuoteToMongoDb, DeleteQuoteFromMongo } from 'src/service/use-mongo'
 
 const Page = () => {
   const [quotesData, setQuotesData] = useState([]);
@@ -37,8 +37,9 @@ const Page = () => {
 
   const reqQuotesData = async (page, rowsPerPage) => {
     const query = ({ $or: [{ status: "draft" }, { status: "new" }] })
+    console.log("string", JSON.stringify(({ $or: [{ status: "draft" }, { status: "new" }] })))
     const sort = "DSC"
-    const resQuotes = await getQuotesData(page, rowsPerPage, query, sort)
+    const resQuotes = await GetQuotesData(page, rowsPerPage, query, sort)
     if (!resQuotes) {
       console.log("error get quotes data!")
       setLoading(false)
@@ -58,7 +59,7 @@ const Page = () => {
   const handleAddQuote = useCallback(
     async () => {
       setLoading(true)
-      const resCreateQuote = await addNewQuoteToMongoDb()
+      const resCreateQuote = await AddNewQuoteToMongoDb()
       if (!resCreateQuote) {
         setLoading(false)
         return
@@ -70,7 +71,7 @@ const Page = () => {
   const handleDeleteQuote = useCallback(
     async (id) => {
       setLoading(true)
-      const deleteRes = await deleteQuoteFromMongo(id)
+      const deleteRes = await DeleteQuoteFromMongo(id)
       if (!deleteRes) {
         setLoading(false)
         return

@@ -1,11 +1,14 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import io from 'socket.io-client'
 let socket
 
 const Home = () => {
     const [input, setInput] = useState('')
     const [chat, setChat] = useState([])
-
+    const [name, setName] = useState()
+    const nameRef = useRef(name)
+    const chatRef = useRef(chat)
+    
     useEffect(() => {
         socketInitializer()
     }, [])
@@ -17,9 +20,11 @@ const Home = () => {
         socket.on('connect', () => {
             console.log('connected')
         })
-
-        socket.on('update-input', newChat => {
-            setChat(newChat)
+        
+        socket.on('update-input', (newChat) => {
+            if(nameRef.current !== newChat.from) {
+                setChat([...chatRef.current, newChat])
+            }
         })
     }
 
@@ -27,21 +32,32 @@ const Home = () => {
         if (e.key === 'Enter') {
             setInput(e.target.value)
             const message = {
-                msg: e.target.value
+                msg: e.target.value,
+                from: name
             }
             const newChat = [...chat, message]
             setChat(newChat)
-            socket.emit('input-change', newChat)
+            chatRef.current = newChat
+            socket.emit('input-change', message)
         }
     }
 
     return (
         <>
+        <input
+                placeholder="Type something"
+                onKeyDown={(e) => {
+                    setName(e.target.value);
+                    nameRef.current = e.target.value
+                }}
+            />
             <input
                 placeholder="Type something"
                 onKeyDown={onChangeHandler}
             />
+
             <div className='chat'>
+                <h2>{name}</h2>
                 {
                     chat.map((ch,i) => {
                         return (

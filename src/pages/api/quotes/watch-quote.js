@@ -19,12 +19,11 @@ export default async function createQuote(req, res) {
       }
      ]
     const changeStream = db.collection(collection).watch(pipeline);
+    let data
     changeStream.on('change', next => {
         // process next document
-        console.log("next", next)
-      });
-
-    await changeStream.close();    
+        data = next
+      });    
     console.log("closed the change stream");
-    res.json({ status: 200, data: "test" });
+    res.json({ status: 200, data: data?._id?._data });
 }

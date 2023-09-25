@@ -25,11 +25,11 @@ import { useFormik, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
 import Image from 'next/image'
 import {
-    addCompanyToMongo,
-    checkCompanyName,
-    checkUserEmail,
-    registerUser,
-    inviteUser
+    AddCompanyToMongo,
+    CheckCompanyName,
+    CheckUserEmail,
+    RegisterUser,
+    InviteUser
 } from 'src/service/use-mongo'
 
 export default function AddCompany(props) {
@@ -102,8 +102,8 @@ export default function AddCompany(props) {
 
             let submitCondition = true
             let errorFields = {}
-            const resCheckCompanyName = await checkCompanyName(values.companyName)
-            const checkUser = await checkUserEmail(values.contactEmail)
+            const resCheckCompanyName = await CheckCompanyName(values.companyName)
+            const checkUser = await CheckUserEmail(values.contactEmail)
             
             if (!resCheckCompanyName || !checkUser) {
                 submitCondition = false
@@ -128,7 +128,7 @@ export default function AddCompany(props) {
             }
 
             if (submitCondition) {
-                const resSaveCompany = await addCompanyToMongo(values)
+                const resSaveCompany = await AddCompanyToMongo(values)
                 if (!resSaveCompany) {
                     toastUp.handleStatus("error")
                     toastUp.handleMessage("Error when create company!")
@@ -136,7 +136,7 @@ export default function AddCompany(props) {
                     return
                 }
 
-                const resAddUser = await registerUser(values, resSaveCompany.data.insertedId)
+                const resAddUser = await RegisterUser(values, resSaveCompany.data.insertedId)
                 if (!resAddUser) {
                     toastUp.handleStatus("error")
                     toastUp.handleMessage("Error when create user!")
@@ -144,7 +144,7 @@ export default function AddCompany(props) {
                     return
                 }
 
-                const resInvite = await inviteUser(values, resAddUser.data.insertedId)
+                const resInvite = await InviteUser(values, resAddUser.data.insertedId)
                 if (!resInvite && resInvite.status !== 200) {
                     toastUp.handleStatus("warning")
                     toastUp.handleMessage("Company added, sent user invite failed!")

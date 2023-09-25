@@ -10,7 +10,7 @@ import { Layout as DashboardLayout } from 'src/layouts/dashboard/layout';
 import { QuotesTable } from 'src/sections/quotes/quotes-table';
 import { QuotesSearch } from 'src/sections/quotes/quotes-search';
 import { applyPagination } from 'src/utils/apply-pagination';
-import { getQuotesData } from 'src/service/use-mongo'
+import { GetQuotesData } from 'src/service/use-mongo'
 
 const Page = (props) => {
   const [page, setPage] = useState(0);
@@ -19,7 +19,7 @@ const Page = (props) => {
   const [count, setCount] = useState(0)
 
   const reqQuotesData = async(page, rowsPerPage) => {
-    const resQuotes = await getQuotesData(page, rowsPerPage, { status: { $nin: [ "new" ] } }) 
+    const resQuotes = await GetQuotesData(page, rowsPerPage, { status: { $nin: [ "new" ] } }) 
     if (!resQuotes) {
       console.log("error get quotes data!")
       return

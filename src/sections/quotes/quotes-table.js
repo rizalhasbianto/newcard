@@ -1,6 +1,6 @@
 import { useCallback, useState, useEffect } from 'react';
 import Link from 'next/link'
-import { deleteQuoteFromMongo } from 'src/service/use-mongo'
+import { DeleteQuoteFromMongo } from 'src/service/use-mongo'
 import PropTypes from 'prop-types';
 import { format } from 'date-fns';
 import {
@@ -58,7 +58,7 @@ export const QuotesTable = (props) => {
   )
 
   const continueDelete = async () => {
-    const resDelete = await deleteQuoteFromMongo(deleteQuoteId)
+    const resDelete = await DeleteQuoteFromMongo(deleteQuoteId)
     if (!resDelete) {
       modalPopUp.handleContent(
         "Error Delete",

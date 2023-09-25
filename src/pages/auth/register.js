@@ -1,32 +1,17 @@
-import { useCallback, useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import Head from 'next/head';
 import NextLink from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useSession } from "next-auth/react"
-import { useFormik } from 'formik';
-import * as Yup from 'yup';
-import { useAuth } from 'src/hooks/use-auth';
 import { Layout as AuthLayout } from 'src/layouts/auth/layout';
 import { useToast } from 'src/hooks/use-toast'
 
 import Toast from 'src/components/toast'
-import { Box, Link, Stack, TextField, Typography, Collapse } from '@mui/material';
+import { Box, Link, Stack, Typography, Collapse } from '@mui/material';
 import AddCompany from 'src/sections/companies/company-add'
-import LoadingButton from '@mui/lab/LoadingButton';
-import SaveIcon from '@mui/icons-material/Save';
-
-import {
-  checkUserEmail,
-  registerUser,
-} from 'src/service/use-mongo'
 
 const Page = () => {
-  const [companyName, setCompanyName] = useState("");
-  const [shipTo, setShipTo] = useState("");
-  const [shipToList, setShipToList] = useState([]);
-  const [location, setLocation] = useState();
   const [addNewCompany, setAddNewCompany] = useState(true);
-  const [refreshList, setRefreshList] = useState(0);
 
   const router = useRouter();
   const { status } = useSession()
@@ -39,7 +24,7 @@ const Page = () => {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [status]);
-console.log("addNewCompany", addNewCompany)
+
   return (
     <>
       <Head>

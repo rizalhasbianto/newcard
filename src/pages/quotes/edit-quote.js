@@ -9,7 +9,7 @@ import {
 } from '@mui/material';
 import { Layout as DashboardLayout } from 'src/layouts/dashboard/layout';
 import { QuotesForm } from 'src/sections/quotes/quote-form';
-import { getQuotesData } from 'src/service/use-mongo'
+import { GetQuotesData } from 'src/service/use-mongo'
 
 const Page = () => {
   const [loading, setLoading] = useState(false);
@@ -26,7 +26,7 @@ const Page = () => {
     const sort = "DSC"
     const type = "id"
     
-    const resQuotes = await getQuotesData(page, rowsPerPage, query, sort, type)
+    const resQuotes = await GetQuotesData(page, rowsPerPage, query, sort, type)
     if (!resQuotes) {
       console.log("error get quotes data!")
       return
@@ -47,7 +47,7 @@ const Page = () => {
     <>
       <Head>
         <title>
-          Add new quote | Skratch
+          Edit quote | Skratch
         </title>
       </Head>
       <Box

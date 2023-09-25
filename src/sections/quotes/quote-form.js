@@ -23,11 +23,11 @@ import { saveQuoteButton } from 'src/data/save-quote-button'
 import { useToast } from 'src/hooks/use-toast'
 import Toast from 'src/components/toast'
 import {
-  saveQuoteToMongoDb,
-  updateOrderIdQuoteToMongoDb,
-  getCompanies
+  SaveQuoteToMongoDb,
+  UpdateOrderIdQuoteToMongoDb,
+  GetCompanies
 } from 'src/service/use-mongo'
-import { syncQuoteToShopify, sendInvoiceByShopify } from 'src/service/use-shopify'
+import { SyncQuoteToShopify, SendInvoiceByShopify } from 'src/service/use-shopify'
 
 export const QuotesForm = (props) => {
   const { tabContent, reqQuotesData } = props;
@@ -60,7 +60,7 @@ export const QuotesForm = (props) => {
         return
       }
 
-      const mongoReponse = await saveQuoteToMongoDb(companyName, shipTo, quotesList, discount, type, quoteId)
+      const mongoReponse = await SaveQuoteToMongoDb(companyName, shipTo, quotesList, discount, type, quoteId)
       if (!mongoReponse) { // error when save data to mongo
         toastUp.handleStatus("error")
         toastUp.handleMessage("Error save to DB!")
@@ -75,7 +75,7 @@ export const QuotesForm = (props) => {
         return
       }
 
-      const shopifyResponse = await syncQuoteToShopify(quoteId, quotesList, companyContact.email, discount, tabContent.draftOrderId)
+      const shopifyResponse = await SyncQuoteToShopify(quoteId, quotesList, companyContact.email, discount, tabContent.draftOrderId)
 
       if (!shopifyResponse || shopifyResponse.response.createDraft.errors) { // error when sync data to shopify
         toastUp.handleStatus("warning")
@@ -92,7 +92,7 @@ export const QuotesForm = (props) => {
           shopifyResponse.response.createDraft.data.draftOrderCreate.draftOrder.name :
           shopifyResponse.response.createDraft.data.draftOrderUpdate.draftOrder.name
       }
-      const updateQuoteAtMongoRes = await updateOrderIdQuoteToMongoDb(quoteId, draftOrderId)
+      const updateQuoteAtMongoRes = await UpdateOrderIdQuoteToMongoDb(quoteId, draftOrderId)
       if (!updateQuoteAtMongoRes || updateQuoteAtMongoRes.modifiedCount === 0) { // error when update data to mongo
         toastUp.handleStatus("error")
         toastUp.handleMessage("Error save to DB! please try publish again")
@@ -108,7 +108,7 @@ export const QuotesForm = (props) => {
         return
       }
 
-      const sendInvoiceRes = await sendInvoiceByShopify(draftOrderId)
+      const sendInvoiceRes = await SendInvoiceByShopify(draftOrderId.id)
       if (!sendInvoiceRes || sendInvoiceRes.sendDraft.errors) { // error when send invoice
         toastUp.handleStatus("error")
         toastUp.handleMessage("Error send invoice! quote saved as open")
@@ -125,10 +125,10 @@ export const QuotesForm = (props) => {
     }, [companyName, handleTemplate, quoteId, quotesList, reqQuotesData, shipTo, toastUp]
   )
 
-  const getCompaniesData = useCallback(async (page, rowsPerPage) => {
+  const GetCompaniesData = useCallback(async (page, rowsPerPage) => {
     let companyList 
     if (companies.length === 0) {
-      const resGetCompanyList = await Promise.resolve(getCompanies(page, rowsPerPage))
+      const resGetCompanyList = await Promise.resolve(GetCompanies(page, rowsPerPage))
       if (!resGetCompanyList) {
         console.log("error get company data!")
         return
@@ -161,7 +161,7 @@ export const QuotesForm = (props) => {
   }, [companies, tabContent])
 
   useEffect(() => {
-    getCompaniesData(0, 50)
+    GetCompaniesData(0, 50)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tabContent]);
 
@@ -281,7 +281,7 @@ export const QuotesForm = (props) => {
                 setLocation={setLocation}
                 setShipTo={setShipTo}
                 setCompanyName={setCompanyName}
-                getCompanies={getCompanies}
+                GetCompanies={GetCompanies}
                 setCompanyContact={setCompanyContact}
               />
             </Collapse>

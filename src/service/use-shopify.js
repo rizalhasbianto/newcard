@@ -1,6 +1,6 @@
-import { fetchData } from 'src/lib/fetchData'
+import { usePostData } from 'src/lib/fetchData'
 
-export const syncQuoteToShopify =
+export const SyncQuoteToShopify =
     async (quoteId, quotesList, customerEmail, discount, draftOrderId) => {
         const lineItems = quotesList.map((list) => {
             return (
@@ -11,7 +11,7 @@ export const syncQuoteToShopify =
             )
         })
 
-        const resSendToShopify = await fetchData(
+        const resSendToShopify = await usePostData(
             "/api/shopify/draft-order",
             "POST", {
             lineItems,
@@ -34,12 +34,22 @@ export const syncQuoteToShopify =
         }
     }
 
-export const sendInvoiceByShopify =
+export const SendInvoiceByShopify =
     async (id) => {
-        const sendToShopify = await fetchData(
+        const sendToShopify = await usePostData(
             "/api/shopify/send-invoice",
-            "POST", {
-            id: id
-        })
+            "POST",
+            { id: id }
+        )
+        return sendToShopify
+    }
+
+export const GetProductsShopify =
+    async (inputValue) => {
+        const sendToShopify = await usePostData(
+            "/api/shopify/get-products",
+            "POST",
+            { search: inputValue }
+        )
         return sendToShopify
     }
