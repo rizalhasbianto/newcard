@@ -1,9 +1,12 @@
-import { adminAPi } from 'src/lib/shopify'
+import { adminAPi } from "src/lib/shopify";
 
 export default async function createDraftOrder(req, res) {
   const bodyObject = req.body;
+  if (bodyObject.discount.amount) {
+    console.log("createDraft", bodyObject.discount.amount);
+  }
 
-  let query
+  let query;
   if (bodyObject.draftOrderId) {
     query = `
       mutation {
@@ -13,10 +16,14 @@ export default async function createDraftOrder(req, res) {
               email: "${bodyObject.customerEmail}",
               lineItems: [${bodyObject.lineItems}],
               poNumber: "${bodyObject.poNumber}",
-              appliedDiscount: {
-                valueType:${bodyObject.discount.type},
-                value:${bodyObject.discount.amount}
+              ${
+                bodyObject.discount.amount &&
+                `appliedDiscount: {
+                    valueType:${bodyObject.discount.type},
+                    value:${bodyObject.discount.amount}
+                  }`
               }
+              
           }) {
             draftOrder {
               id
@@ -30,16 +37,19 @@ export default async function createDraftOrder(req, res) {
       }
     `;
   } else {
-      query = `
+    query = `
         mutation {
           draftOrderCreate(
             input: {
               email: "${bodyObject.customerEmail}",
               lineItems: [${bodyObject.lineItems}],
               poNumber: "${bodyObject.poNumber}",
-              appliedDiscount: {
-                valueType:${bodyObject.discount.type},
-                value:${bodyObject.discount.amount}
+              ${
+                bodyObject.discount.amount &&
+                `appliedDiscount: {
+                    valueType:${bodyObject.discount.type},
+                    value:${bodyObject.discount.amount}
+                  }`
               }
           }) {
             draftOrder {
@@ -55,8 +65,7 @@ export default async function createDraftOrder(req, res) {
       `;
   }
 
-
   const createDraft = await adminAPi(query);
-  console.log("createDraft", createDraft)
+
   res.json({ status: 200, createDraft });
 }
