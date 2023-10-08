@@ -1,19 +1,17 @@
-import { callShopify } from 'src/lib/shopify'
+import { callShopify, adminAPi } from 'src/lib/shopify'
 
 export default async function getCollections(req, res) {
     const searchTerm = req.query?.search ? `query:"title:${req.body?.search}*"` : "";
     const query = `{
-      productTags(first: 100, ${searchTerm}) {
-          pageInfo {
-            hasNextPage
-          }
+      shop {
+        productVendors(first: 200) {
           edges {
-            cursor
             node
           }
         }
+      }
     }`;
 
-  const getCollections = await callShopify(query);
+  const getCollections = await adminAPi(query);
   res.status(200).json({ newData: getCollections })
 }

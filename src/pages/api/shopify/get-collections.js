@@ -18,5 +18,6 @@ export default async function getCollections(req, res) {
     }`;
 
   const getCollections = await callShopify(query);
+  
   res.status(200).json({ newData: getCollections })
 }
