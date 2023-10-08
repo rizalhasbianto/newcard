@@ -51,8 +51,7 @@ export const QuickAddProducts = ({ quotesList, setQuotesList }) => {
   }, []);
 
   return (
-    <Scrollbar>
-      <Box sx={{ minWidth: 800 }}>
+      <Box>
         <Grid container>
           <Grid lg={4}>
             <TextField
@@ -145,7 +144,8 @@ export const QuickAddProducts = ({ quotesList, setQuotesList }) => {
             </TextField>
           </Grid>
         </Grid>
-        <Table>
+        <Grid lg={12}>
+        <Table sx={{maxWidth:"100%"}}>
           <TableHead>
             <TableRow>
               <TableCell padding="checkbox"></TableCell>
@@ -156,7 +156,7 @@ export const QuickAddProducts = ({ quotesList, setQuotesList }) => {
           </TableHead>
           <TableBody></TableBody>
         </Table>
+        </Grid>
       </Box>
-    </Scrollbar>
   );
 };
