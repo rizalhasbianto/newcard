@@ -14,7 +14,7 @@ import {
   Typography
 } from '@mui/material';
 
-import { SearchProduct } from './quotes-search-product'
+import { SelectProducts } from './add-products'
 import QuoteSelectCompany from './quote-select-company'
 import AddCompany from '../companies/company-add'
 import LineItemQuotes from './quotes-line-item'
@@ -296,7 +296,7 @@ export const QuotesForm = (props) => {
           />
           <CardContent sx={{ pt: 0, pb: 0 }}>
             <Box sx={{ m: -1.5 }}>
-              <SearchProduct
+              <SelectProducts
                 quotesList={quotesList}
                 setQuotesList={setQuotesList}
               />

@@ -42,7 +42,7 @@ export default function AddCompany(props) {
         setLocation,
         setShipTo,
         setCompanyName,
-        getCompanies,
+        GetCompanies,
         setCompanyContact
     } = props
 
@@ -111,7 +111,7 @@ export default function AddCompany(props) {
                 toastUp.handleMessage("Error checking to database!")
                 setLoadSave(false)
             }
-
+            console.log("resCheckCompanyName", resCheckCompanyName)
             if (resCheckCompanyName.data.company.length > 0) {
                 errorFields.companyName = "Is already taken"
             }
@@ -167,12 +167,12 @@ export default function AddCompany(props) {
                     },
                     default: true
                 }]
-
+                console.log("getSelectedVal", getSelectedVal)
                 if(getSelectedVal) {
                     const page = 0,
-                    rowsPerPage=50
-                    const newCompaniesData = await getCompanies(page, rowsPerPage)
-                    
+                    rowsPerPage= 50
+                    const newCompaniesData = await GetCompanies(page, rowsPerPage)
+                    console.log("newCompaniesData", newCompaniesData)
                     setCompanies(newCompaniesData.data.company)
                     setCompanyName(values.companyName)
                     setShipTo(values.companyShippingLocation)

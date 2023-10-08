@@ -33,7 +33,7 @@ export const createTypography = () => {
       fontSize: '0.875rem',
       fontWeight: 500,
       lineHeight: 1.57
-    },
+    },  
     error: {
       color: 'red'
     },

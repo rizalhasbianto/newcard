@@ -1,9 +1,9 @@
 import { callShopify } from 'src/lib/shopify'
 
 export default async function getProducts(req, res) {
-    const searchTerm = req.body?.search
+    const searchTerm = req.body?.search ? `query:"title:${req.body?.search}*"` : "";
     const query = `{
-        products(first: 100, query: "title:${searchTerm}*") {
+        products(first: 100, ${searchTerm}) {
           pageInfo {
             hasNextPage
           }

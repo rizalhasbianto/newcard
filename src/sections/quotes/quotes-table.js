@@ -1,8 +1,8 @@
-import { useCallback, useState, useEffect } from 'react';
-import Link from 'next/link'
-import { DeleteQuoteFromMongo } from 'src/service/use-mongo'
-import PropTypes from 'prop-types';
-import { format } from 'date-fns';
+import { useCallback, useState, useEffect } from "react";
+import Link from "next/link";
+import { DeleteQuoteFromMongo } from "src/service/use-mongo";
+import PropTypes from "prop-types";
+import { format } from "date-fns";
 import {
   Avatar,
   Box,
@@ -17,58 +17,57 @@ import {
   TableRow,
   Typography,
   SvgIcon,
-  Grid
-} from '@mui/material';
-import PencilIcon from '@heroicons/react/24/solid/PencilIcon';
-import TrashIcon from '@heroicons/react/24/solid/TrashIcon';
-import { Scrollbar } from 'src/components/scrollbar';
-import { getInitials } from 'src/utils/get-initials';
-import { usePopover } from 'src/hooks/use-popover';
-import AlertConfirm from 'src/components/alert-confirm'
+  Grid,
+} from "@mui/material";
+import PencilIcon from "@heroicons/react/24/solid/PencilIcon";
+import TrashIcon from "@heroicons/react/24/solid/TrashIcon";
+import { Scrollbar } from "src/components/scrollbar";
+import { getInitials } from "src/utils/get-initials";
+import { usePopover } from "src/hooks/use-popover";
+import AlertConfirm from "src/components/alert-confirm";
+import { quotesListHead } from "src/data/tableList";
 
 export const QuotesTable = (props) => {
   const {
     count = 0,
     items = [],
-    onPageChange = () => { },
+    onPageChange = () => {},
     onRowsPerPageChange,
     page = 0,
     rowsPerPage = 0,
-    selected = []
+    selected = [],
   } = props;
 
-  const [deleteQuoteId, setDeleteQuoteId] = useState()
+  const [deleteQuoteId, setDeleteQuoteId] = useState();
 
   const listNumber = page * 10;
   const modalPopUp = usePopover();
 
   const handleDelete = useCallback(
     async (quoteId) => {
-      setDeleteQuoteId(quoteId)
-      modalPopUp.handleContent(
-        "Are you sure?",
-        "This permanent delete, can not undo!"
-      );
+      setDeleteQuoteId(quoteId);
+      modalPopUp.handleContent("Are you sure?", "This permanent delete, can not undo!");
       modalPopUp.handleOpen();
 
       if (modalPopUp.agree) {
-        console.log("quoteId", quoteId)
+        console.log("quoteId", quoteId);
       }
-    }, [modalPopUp]
-  )
+    },
+    [modalPopUp]
+  );
 
   const continueDelete = async () => {
-    const resDelete = await DeleteQuoteFromMongo(deleteQuoteId)
+    const resDelete = await DeleteQuoteFromMongo(deleteQuoteId);
     if (!resDelete) {
       modalPopUp.handleContent(
         "Error Delete",
         "Error when deleting the quote, Please try again later!"
       );
-      return
+      return;
     }
-    modalPopUp.handleClose()
-    onPageChange(1, page)
-  }
+    modalPopUp.handleClose();
+    onPageChange(1, page);
+  };
 
   return (
     <Card>
@@ -84,136 +83,80 @@ export const QuotesTable = (props) => {
           <Table>
             <TableHead>
               <TableRow>
-                <TableCell padding="checkbox">
-                </TableCell>
-                <TableCell>
-                  Id
-                </TableCell>
-                <TableCell>
-                  Ship To
-                </TableCell>
-                <TableCell>
-                  Quote Info
-                </TableCell>
-                <TableCell>
-                  Status
-                </TableCell>
-                <TableCell>
-                  Last update
-                </TableCell>
-                <TableCell>
-                  Action
-                </TableCell>
+                <TableCell padding="checkbox"></TableCell>
+                {quotesListHead.map((head) => {
+                  return <TableCell key={head.title}>{head.title}</TableCell>;
+                })}
               </TableRow>
             </TableHead>
             <TableBody>
-              {items && items.map((quote, index) => {
-                const isSelected = selected.includes(quote.id);
-                const lastUpdate = format(new Date(2014, 1, 11), 'dd/MM/yyyy');
+              {items &&
+                items.map((quote, index) => {
+                  const isSelected = selected.includes(quote.id);
+                  const lastUpdate = format(new Date(2014, 1, 11), "dd/MM/yyyy");
 
-                return (
-                  <TableRow
-                    hover
-                    key={quote._id}
-                    selected={isSelected}
-                  >
-                    <TableCell padding="checkbox">
-                      <Typography variant="subtitle2">
-                        {index + listNumber + 1}
-                      </Typography>
-                    </TableCell>
-                    <TableCell>
-                      <Typography variant="subtitle2">
-                        Po Number: #{quote._id.slice(-4)}
-                      </Typography>
-                      {
-                        quote.draftOrderNumber &&
+                  return (
+                    <TableRow hover key={quote._id} selected={isSelected}>
+                      <TableCell padding="checkbox">
+                        <Typography variant="subtitle2">{index + listNumber + 1}</Typography>
+                      </TableCell>
+                      <TableCell>
                         <Typography variant="subtitle2">
-                          Draft Order: {quote.draftOrderNumber}
+                          Po Number: #{quote._id.slice(-4)}
                         </Typography>
-                      }
-
-                    </TableCell>
-                    <TableCell>
-                      <Stack
-                        alignItems="top"
-                        direction="row"
-                        spacing={2}
-                      >
-                        {quote.company?.avatar &&
-                          <Avatar src={quote.company.avatar}>
-                            {getInitials(quote.company.company)}
-                          </Avatar>
-                        }
-                        <Stack
-                          alignItems="left"
-                          direction="column"
-                          spacing={0}
-                        >
+                        {quote.draftOrderNumber && (
                           <Typography variant="subtitle2">
-                            {quote.company?.name}
+                            Draft Order: {quote.draftOrderNumber}
                           </Typography>
+                        )}
+                      </TableCell>
+                      <TableCell>
+                        <Stack alignItems="top" direction="row" spacing={2}>
+                          {quote.company?.avatar && (
+                            <Avatar src={quote.company.avatar}>
+                              {getInitials(quote.company.company)}
+                            </Avatar>
+                          )}
+                          <Stack alignItems="left" direction="column" spacing={0}>
+                            <Typography variant="subtitle2">
+                              {quote.company?.name}, {quote.company?.shipTo}
+                            </Typography>
+                          </Stack>
+                        </Stack>
+                      </TableCell>
+                      <TableCell>
+                        <Stack alignItems="left" direction="column" spacing={1}>
                           <Typography variant="subtitle2">
-                            {quote.company?.shipTo}
+                            ${quote.quoteInfo?.total} ( {quote.quoteInfo?.item} )
                           </Typography>
                         </Stack>
-                      </Stack>
-                    </TableCell>
-                    <TableCell>
-                      <Stack
-                        alignItems="left"
-                        direction="column"
-                        spacing={1}
-                      >
-                        <Typography variant="subtitle2">
-                          Total: ${quote.quoteInfo?.total}
-                        </Typography>
-                        <Typography variant="subtitle2">
-                          Number of Item: {quote.quoteInfo?.item}
-                        </Typography>
-                      </Stack>
-                    </TableCell>
-                    <TableCell>
-                      <Typography variant="subtitle2">
-                        {quote.status}
-                      </Typography>
-                    </TableCell>
-                    <TableCell>
-                      <Typography variant="subtitle2">
-                        {lastUpdate}
-                      </Typography>
-                    </TableCell>
-                    <TableCell>
-                      <Stack
-                        alignItems="flex-start"
-                        direction="row"
-                        spacing={1}
-                      >
-                        <Link
-                          href={`/quotes/edit-quote?quoteId=${quote._id}`}
-                          passHref
-                        >
+                      </TableCell>
+                      <TableCell>
+                        <Typography variant="subtitle2">{quote.status}</Typography>
+                      </TableCell>
+                      <TableCell>
+                        <Typography variant="subtitle2">{lastUpdate}</Typography>
+                      </TableCell>
+                      <TableCell>
+                        <Stack alignItems="flex-start" direction="row" spacing={1}>
+                          <Link href={`/quotes/edit-quote?quoteId=${quote._id}`} passHref>
+                            <SvgIcon className="action" color="action" fontSize="small">
+                              <PencilIcon />
+                            </SvgIcon>
+                          </Link>
                           <SvgIcon
                             className="action"
                             color="action"
                             fontSize="small"
+                            onClick={() => handleDelete(quote._id)}
                           >
-                            <PencilIcon />
+                            <TrashIcon />
                           </SvgIcon>
-                        </Link>
-                        <SvgIcon
-                          className="action"
-                          color="action"
-                          fontSize="small"
-                          onClick={() => handleDelete(quote._id)}
-                        >
-                          <TrashIcon />
-                        </SvgIcon>
-                      </Stack>
-                    </TableCell>
-                  </TableRow>
-                );
-              })}
+                        </Stack>
+                      </TableCell>
+                    </TableRow>
+                  );
+                })}
             </TableBody>
           </Table>
         </Box>
@@ -242,5 +185,5 @@ QuotesTable.propTypes = {
   onSelectOne: PropTypes.func,
   page: PropTypes.number,
   rowsPerPage: PropTypes.number,
-  selected: PropTypes.array
+  selected: PropTypes.array,
 };

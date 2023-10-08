@@ -1,7 +1,7 @@
-import { usePostData, useGetData } from "src/lib/fetchData";
+import { useDataService, useSwrData } from "src/lib/fetchData";
 
 export const GetQuotesData = async (page, rowsPerPage, query, sort, type) => {
-  const quotesRes = await usePostData("/api/quotes/get-quotes", "POST", {
+  const quotesRes = await useDataService("/api/quotes/get-quotes", "POST", {
     page: page,
     postPerPage: rowsPerPage,
     query: query,
@@ -25,7 +25,7 @@ export const GetQuotesDataSwr = (page, rowsPerPage, query, sort, type) => {
     sort +
     "&type=" +
     theType;
-  const quotesRes = useGetData("/api/quotes/get-quotes", queryPath);
+  const quotesRes = useSwrData("/api/quotes/get-quotes", queryPath);
 
   return quotesRes;
 };
@@ -42,7 +42,7 @@ export const SaveQuoteToMongoDb = async (
   const tax = (countSubtotal * 0.1).toFixed(2);
   const total = Number(countSubtotal) + Number(tax);
   const today = new Date();
-  const mongoRes = await usePostData("/api/quotes/update-quote", "POST", {
+  const mongoRes = await useDataService("/api/quotes/update-quote", "POST", {
     quoteId: quoteId,
     data: {
       company: {
@@ -64,7 +64,7 @@ export const SaveQuoteToMongoDb = async (
 
 export const AddNewQuoteToMongoDb = async () => {
   const today = new Date();
-  const mongoRes = await usePostData("/api/quotes/create-quote", "POST", {
+  const mongoRes = await useDataService("/api/quotes/create-quote", "POST", {
     company: {
       name: "",
       shipTo: "",
@@ -88,7 +88,7 @@ export const AddNewQuoteToMongoDb = async () => {
 };
 
 export const UpdateOrderIdQuoteToMongoDb = async (quoteId, draftOrderId) => {
-  const mongoRes = await usePostData("/api/quotes/update-quote", "POST", {
+  const mongoRes = await useDataService("/api/quotes/update-quote", "POST", {
     quoteId: quoteId,
     data: {
       draftOrderId: draftOrderId.id,
@@ -99,14 +99,14 @@ export const UpdateOrderIdQuoteToMongoDb = async (quoteId, draftOrderId) => {
 };
 
 export const DeleteQuoteFromMongo = async (quoteId) => {
-  const mongoRes = await usePostData("/api/quotes/delete-quote", "POST", {
+  const mongoRes = await useDataService("/api/quotes/delete-quote", "POST", {
     quoteId: quoteId,
   });
   return mongoRes;
 };
 
 export const GetCompanies = async (page, rowsPerPage) => {
-  const comapanyRes = await usePostData("/api/company/get-companies", "POST", {
+  const comapanyRes = await useDataService("/api/company/get-companies", "POST", {
     page: page,
     postPerPage: rowsPerPage,
   });
@@ -114,8 +114,17 @@ export const GetCompanies = async (page, rowsPerPage) => {
   return comapanyRes;
 };
 
+export const GetCompaniesSwr = async (page, rowsPerPage) => {
+  const queryPath = 
+  "page=" + page +
+  "&postPerPage=" + rowsPerPage;
+  const comapanyRes = useSwrData("/api/company/get-companies", queryPath);
+
+  return comapanyRes;
+};
+
 export const AddCompanyToMongo = async (companyData) => {
-  const mongoRes = await usePostData("/api/company/add-company", "POST", {
+  const mongoRes = await useDataService("/api/company/add-company", "POST", {
     name: companyData.companyName,
     location: {
       address: "",
@@ -148,7 +157,8 @@ export const AddCompanyToMongo = async (companyData) => {
 };
 
 export const CheckCompanyName = async (companyData) => {
-  const mongoRes = await usePostData("/api/company/get-companies", "POST", {
+  console.log("companyData", companyData)
+  const mongoRes = await useDataService("/api/company/get-companies", "POST", {
     type: "check",
     query: {
       name: companyData,
@@ -158,14 +168,14 @@ export const CheckCompanyName = async (companyData) => {
 };
 
 export const CheckUserEmail = async (email) => {
-  const mongoRes = await usePostData("/api/auth/check-user", "POST", {
+  const mongoRes = await useDataService("/api/auth/check-user", "POST", {
     query: { email: email },
     type: "email",
   });
   return mongoRes;
 };
 export const FindUserById = async (userId) => {
-  const mongoRes = await usePostData("/api/auth/check-user", "POST", {
+  const mongoRes = await useDataService("/api/auth/check-user", "POST", {
     query: { id: userId },
     type: "id",
   });
@@ -173,7 +183,7 @@ export const FindUserById = async (userId) => {
 };
 
 export const RegisterUser = async (userData, companyId) => {
-  const mongoRes = await usePostData("/api/auth/register-user", "POST", {
+  const mongoRes = await useDataService("/api/auth/register-user", "POST", {
     name: userData.contactFirstName + " " + userData.contactLastName,
     email: userData.contactEmail,
     phone: "",
@@ -189,7 +199,7 @@ export const RegisterUser = async (userData, companyId) => {
 };
 
 export const InviteUser = async (userData, userId) => {
-  const mongoRes = await usePostData("/api/email/invite", "POST", {
+  const mongoRes = await useDataService("/api/email/invite", "POST", {
     name: userData.contactFirstName + " " + userData.contactLastName,
     email: userData.contactEmail,
     userId: userId,
@@ -198,7 +208,7 @@ export const InviteUser = async (userData, userId) => {
 };
 
 export const UpdatePassword = async (newPassword, userId) => {
-  const mongoRes = await usePostData("/api/auth/update-password", "POST", {
+  const mongoRes = await useDataService("/api/auth/update-password", "POST", {
     newPassword: newPassword,
     userId: userId,
   });

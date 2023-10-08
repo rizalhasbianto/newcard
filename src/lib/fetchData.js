@@ -1,6 +1,6 @@
 import useSWR from "swr";
 
-export const usePostData = async (url, method, body = null) => {
+export const useDataService = async (url, method, body = null) => {
     try {
       // console.log(body);
       const response = await fetch(url, {
@@ -8,7 +8,7 @@ export const usePostData = async (url, method, body = null) => {
         headers: {
           "Content-Type": "application/json",
         },
-        ...(body && { body: JSON.stringify(body) }),
+        ...(body && { body: JSON.stringify(body) })
       });
       if (response.ok) {
         return await response.json();
@@ -22,7 +22,7 @@ export const usePostData = async (url, method, body = null) => {
     }
   };
 
-export const useGetData = (url, query) => {
+export const useSwrData = (url, query) => {
   const fetcher = (url) => fetch(url).then((res) => res.json());
   const queryUrl = url + "?" + query
   const {

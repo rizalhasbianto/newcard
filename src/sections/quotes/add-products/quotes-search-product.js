@@ -1,11 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useEffect, useState, useCallback } from 'react';
-import Autocomplete from '@mui/material/Autocomplete';
-import parse from 'autosuggest-highlight/parse';
-import { debounce } from '@mui/material/utils';
-import Link from 'next/link'
 import Image from 'next/image'
-import { fetchData } from 'src/lib/fetchData'
 import OptionsComponent from 'src/components/products/options'
 import AlertDialog from 'src/components/alert-dialog'
 import { usePopover } from 'src/hooks/use-popover';
@@ -16,38 +11,24 @@ import {
   Typography,
   Unstable_Grid2 as Grid
 } from '@mui/material';
-import { GetProductsShopify } from 'src/service/use-shopify'
 
-export const SearchProduct = ({ quotesList, setQuotesList }) => {
-  const [value, setValue] = useState(null);
-  const [inputValue, setInputValue] = useState('');
-  const [productSearch, setProductSearch] = useState([]);
+export const SearchProduct = (props) => {
+  const { quotesList, setQuotesList, selectedProduct } = props
   const [selectedVariant, setSelectedVariant] = useState("");
   const [selectedOptions, setSelectedOptions] = useState("");
   const [selectedQuantity, setSelectedQuantity] = useState(1);
   const modalPopUp = usePopover();
 
-  const getOptions = async (active, value) => {
-
-    if (active) {
-      const data = await GetProductsShopify(inputValue)
-
-      let newOptions = [];
-
-      if (value) {
-        newOptions = [value];
-      }
-
-      if (data && data.newData.data) {
-        const dataProd = data.newData.data.products.edges
-        if (dataProd.length > 0) {
-          newOptions = [...newOptions, ...dataProd];
-        }
-      }
-
-      setProductSearch(newOptions);
-    }
-  }
+  useEffect(() => {
+    if (!selectedProduct) return undefined;
+    const selectedVar = selectedProduct.node.variants.edges[0].node;
+    const selectedOpt = selectedVar.selectedOptions.reduce(
+      (acc, curr) => ((acc[curr.name] = curr.value), acc),
+      {}
+    );
+    setSelectedVariant(selectedVar);
+    setSelectedOptions(selectedOpt);
+  }, [selectedProduct]);
 
   const handleChange = (event, newSingleOption) => {
     const getSelectedOption = newSingleOption.split(":")
@@ -55,7 +36,7 @@ export const SearchProduct = ({ quotesList, setQuotesList }) => {
       ...selectedOptions,
       [getSelectedOption[0]]: getSelectedOption[1]
     }
-    const variants = value.node.variants.edges
+    const variants = selectedProduct.node.variants.edges
     const newSelecetdVariant = variants.find((variant) => {
       return variant.node.selectedOptions.every((selectedOption) => {
         return newSelectedOptions[selectedOption.name] === selectedOption.value;
@@ -88,7 +69,7 @@ export const SearchProduct = ({ quotesList, setQuotesList }) => {
 
       const oldQuote = [...quotesList]
       const newQuote = {
-        productName: value.node.title,
+        productName: selectedProduct.node.title,
         variant: selectedVariant,
         qty: selectedQuantity,
         total: (selectedQuantity * selectedVariant.price.amount).toFixed(2)
@@ -98,30 +79,6 @@ export const SearchProduct = ({ quotesList, setQuotesList }) => {
     }
   )
 
-  useEffect(() => {
-    let active = true;
-    if (inputValue === '') {
-      setProductSearch(value ? [value] : []);
-      setSelectedVariant(value ? [value] : "")
-      setSelectedOptions(value ? [value] : "")
-      return undefined;
-    }
-
-    getOptions(active, value);
-
-    return () => {
-      active = false;
-    };
-  }, [inputValue]);
-
-  useEffect(() => {
-    if (!value) return undefined;
-    const selectedVar = value.node.variants.edges[0].node;
-    const selectedOpt = selectedVar.selectedOptions.reduce((acc, curr) => (acc[curr.name] = curr.value, acc), {});
-    setSelectedVariant(selectedVar)
-    setSelectedOptions(selectedOpt)
-  }, [value]);
-
   return (
     <>
       <AlertDialog
@@ -130,108 +87,6 @@ export const SearchProduct = ({ quotesList, setQuotesList }) => {
         open={modalPopUp.open}
         handleClose={modalPopUp.handleClose}
       />
-      <Grid container>
-        <Grid md={6}>
-          <Autocomplete
-            id="google-map-demo"
-            sx={{ width: '100%', mb: '20px', mt: '5px' }}
-            getOptionLabel={(option) =>
-              typeof option.node.title === 'string' ? option.node.title : option.node.title
-            }
-            filterOptions={(x) => x}
-            options={productSearch}
-            autoComplete
-            includeInputInList
-            filterSelectedOptions
-            value={value}
-            noOptionsText="No product found!"
-            onChange={(event, newValue) => {
-              setProductSearch(newValue ? [newValue, ...productSearch] : productSearch);
-              setValue(newValue);
-            }}
-            onInputChange={(event, newInputValue) => {
-              setInputValue(newInputValue);
-            }}
-            renderInput={(params) => (
-              <TextField
-                {...params}
-                label="Type for start search"
-              />
-            )}
-            renderOption={(props, option) => {
-              return (
-                <li {...props}>
-                  <Grid
-                    container
-                    spacing={2}
-                    sx={{
-                      width: "100%",
-                      height: "50px",
-                      marginBottom: "5px"
-                    }}
-                  >
-                    <Grid
-                      md={2}
-                      sx={{
-                        position: "relative"
-                      }}
-                    >
-                      <Image
-                        src={option.node.variants.edges[0].node.image.url}
-                        fill={true}
-                        alt="Picture of the author"
-                        className='shopify-fill'
-                        sizes="270 640 750"
-                      />
-                    </Grid>
-                    <Grid
-                      md={10}
-                    >
-                      <Typography
-                        variant="body2"
-                        color="text.secondary"
-                      >
-                        {option.node.title}
-                      </Typography>
-                    </Grid>
-                  </Grid>
-                </li>
-              );
-            }}
-          />
-        </Grid>
-        <Grid md={3}>
-          <Button
-            variant='outlined'
-            fullWidth
-            sx={{
-              height: "54px",
-              position: "relative",
-              top: "5px"
-            }}
-          >
-            Quick Add
-          </Button>
-        </Grid>
-        <Grid md={3}>
-        <Link
-                  href="/products"
-                  passHref
-                >
-          <Button
-            variant='outlined'
-            fullWidth
-            sx={{
-              height: "54px",
-              position: "relative",
-              top: "5px"
-            }}
-          >
-            Browse
-          </Button>
-          </Link>
-        </Grid>
-      </Grid>
       <Grid
         container
         spacing={3}
@@ -241,7 +96,7 @@ export const SearchProduct = ({ quotesList, setQuotesList }) => {
           md={5}
         >
           <OptionsComponent
-            options={value?.node.options}
+            options={selectedProduct?.node.options}
             handleChange={handleChange}
             selectedOpt={selectedOptions}
           />
