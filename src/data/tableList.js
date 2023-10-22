@@ -8,7 +8,9 @@ export const quotesListHead = [
 ]
 
 export const quotesQuickAddHead = [
+    { title: "No." },
     { title: "PRODUCT NAME" },
+    { title: "PRICE" },
     { title: "STOCK" },
     { title: "QUANTITY" },
     { title: "ACTION" }

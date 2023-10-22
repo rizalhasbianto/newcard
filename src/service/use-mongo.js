@@ -38,9 +38,18 @@ export const SaveQuoteToMongoDb = async (
   status,
   quoteId
 ) => {
-  const countSubtotal = quotesList.reduce((n, { total }) => n + total, 0);
+  let discountCalc = 0;
+  if (discount) {
+    if (discount.type === "FIXED_AMOUNT") {
+      discountCalc = discount.amount;
+    } else {
+      discountCalc = (countSubtotal * (discount.amount / 100)).toFixed(2);
+    }
+  }
+
+  const countSubtotal = quotesList.reduce((n, { total }) => n + Number(total), 0).toFixed(2);
   const tax = (countSubtotal * 0.1).toFixed(2);
-  const total = Number(countSubtotal) + Number(tax);
+  const total = ((Number(countSubtotal) + Number(tax)).toFixed(2) - discountCalc).toFixed(2);
   const today = new Date();
   const mongoRes = await useDataService("/api/quotes/update-quote", "POST", {
     quoteId: quoteId,
@@ -115,9 +124,7 @@ export const GetCompanies = async (page, rowsPerPage) => {
 };
 
 export const GetCompaniesSwr = async (page, rowsPerPage) => {
-  const queryPath = 
-  "page=" + page +
-  "&postPerPage=" + rowsPerPage;
+  const queryPath = "page=" + page + "&postPerPage=" + rowsPerPage;
   const comapanyRes = useSwrData("/api/company/get-companies", queryPath);
 
   return comapanyRes;
@@ -157,7 +164,7 @@ export const AddCompanyToMongo = async (companyData) => {
 };
 
 export const CheckCompanyName = async (companyData) => {
-  console.log("companyData", companyData)
+  console.log("companyData", companyData);
   const mongoRes = await useDataService("/api/company/get-companies", "POST", {
     type: "check",
     query: {

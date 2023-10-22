@@ -6,6 +6,7 @@ import {
   paperClasses,
   tableCellClasses
 } from '@mui/material';
+import { height } from '@mui/system';
 
 // Used only to create transitions
 const muiTheme = createTheme();

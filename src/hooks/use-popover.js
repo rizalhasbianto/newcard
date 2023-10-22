@@ -1,5 +1,5 @@
 import { useCallback, useRef, useState, useMemo } from 'react';
-import { usePostData } from 'src/lib/fetchData'
+import { useDataService } from 'src/lib/fetchData'
 
 export function usePopover() {
   const anchorRef = useRef(null);
@@ -7,7 +7,7 @@ export function usePopover() {
   const [agree, setAgree] = useState(false);
   const [message, setMessage] = useState('');
   const [productData, setProductData] = useState('');
- 
+  
   const handleOpen = useCallback(() => { 
     setOpen(true);
   }, []);
@@ -34,7 +34,7 @@ export function usePopover() {
 
   const handleGetProduct = useCallback( async(productId, index) => {
     // eslint-disable-next-line react-hooks/rules-of-hooks
-    const res = await usePostData(
+    const res = await useDataService(
       "/api/shopify/get-single-product",
       "POST",
       {

@@ -12,6 +12,7 @@ export default async function getCollections(req, res) {
             node {
               id
               title
+              handle
             }
           }
         }

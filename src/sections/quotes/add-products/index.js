@@ -11,12 +11,12 @@ import { QuickAddProducts } from "./quotes-quick-add"
 export const SelectProducts = ({ quotesList, setQuotesList }) => {
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [inputValue, setInputValue] = useState("");
-  const [productSearch, setProductSearch] = useState([]);
+  const [productSearch, setProductSearch] = useState([]); 
   const [activeTab, setActiveTab] = useState("search");
 
   const getOptions = async (active, selectedProduct) => {
     if (active) {
-      const data = await GetProductsShopify(inputValue);
+      const resData = await GetProductsShopify({prodName:inputValue});
 
       let newOptions = [];
 
@@ -24,8 +24,9 @@ export const SelectProducts = ({ quotesList, setQuotesList }) => {
         newOptions = [selectedProduct];
       }
 
-      if (data && data.newData.data) {
-        const dataProd = data.newData.data.products.edges;
+      if (resData) {
+        const dataProd = resData.newData.edges;
+        console.log("dataProd", dataProd)
         if (dataProd.length > 0) {
           newOptions = [...newOptions, ...dataProd];
         }

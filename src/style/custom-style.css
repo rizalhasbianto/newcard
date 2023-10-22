@@ -14,3 +14,7 @@
 .action {
     cursor: pointer;
 }
+
+.MuiPaper-elevation8 {
+    max-height: 250px!important;
+}

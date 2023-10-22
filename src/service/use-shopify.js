@@ -40,9 +40,17 @@ export const SendInvoiceByShopify = async (id) => {
   return sendToShopify;
 };
 
-export const GetProductsShopify = async (inputValue) => {
+export const GetProductsShopify = async (query, productPerPage, lastCursor, lodMoreCount) => {
+  const {prodName, prodType, prodTag, prodVendor, collection} = query
   const sendToShopify = await useDataService("/api/shopify/get-products", "POST", {
-    search: inputValue,
+    prodName,
+    prodType,
+    prodTag,
+    prodVendor,
+    collection,
+    productPerPage,
+    lastCursor,
+    lodMoreCount
   });
   return sendToShopify;
 };
