@@ -40,7 +40,7 @@ export default function LineItemQuotes({ quotesList, setQuotesList, discount, se
       }
     }
 
-    const tax = (countSubtotal * 0.1).toFixed(2)
+    const tax = (Number(countSubtotal) * 0.1).toFixed(2)
     const total = (((Number(countSubtotal) + Number(tax)).toFixed(2)) - discountCalc).toFixed(2)
     setTotal({
       subTotal: countSubtotal,

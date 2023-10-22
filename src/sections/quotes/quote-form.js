@@ -65,6 +65,7 @@ export const QuotesForm = (props) => {
         toastUp.handleStatus("error")
         toastUp.handleMessage("Error save to DB!")
         setButtonLoading(false)
+        return
       }
 
       if (type === "draft") {
@@ -76,7 +77,7 @@ export const QuotesForm = (props) => {
       }
 
       const shopifyResponse = await SyncQuoteToShopify(quoteId, quotesList, companyContact.email, discount, tabContent.draftOrderId)
-
+      console.log("shopifyResponse", shopifyResponse)
       if (!shopifyResponse || shopifyResponse.response.createDraft.errors) { // error when sync data to shopify
         toastUp.handleStatus("warning")
         toastUp.handleMessage("Error sync to Shopify!")

@@ -38,18 +38,10 @@ export const SaveQuoteToMongoDb = async (
   status,
   quoteId
 ) => {
-  let discountCalc = 0;
-  if (discount) {
-    if (discount.type === "FIXED_AMOUNT") {
-      discountCalc = discount.amount;
-    } else {
-      discountCalc = (countSubtotal * (discount.amount / 100)).toFixed(2);
-    }
-  }
-
   const countSubtotal = quotesList.reduce((n, { total }) => n + Number(total), 0).toFixed(2);
-  const tax = (countSubtotal * 0.1).toFixed(2);
-  const total = ((Number(countSubtotal) + Number(tax)).toFixed(2) - discountCalc).toFixed(2);
+  const tax = (Number(countSubtotal) * 0.1).toFixed(2);
+  const total = (Number(countSubtotal) + Number(tax)).toFixed(2);
+
   const today = new Date();
   const mongoRes = await useDataService("/api/quotes/update-quote", "POST", {
     quoteId: quoteId,

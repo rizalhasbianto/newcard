@@ -65,7 +65,6 @@ export default async function getProducts(req, res) {
       ${query(productPerPage, searchTerm, "")}
     }`;
     const resGetData = await callShopify(queryWithoutCollection);
-    console.log("resGetData", queryWithoutCollection)
     resData = resGetData.data.products;
   } else {
     let hasNextPage = true;

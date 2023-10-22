@@ -44,6 +44,7 @@ export default async function createDraftOrder(req, res) {
               email: "${bodyObject.customerEmail}",
               lineItems: [${bodyObject.lineItems}],
               poNumber: "${bodyObject.poNumber}",
+              tags:"b2b",
               ${
                 bodyObject.discount.amount &&
                 `appliedDiscount: {
@@ -66,6 +67,5 @@ export default async function createDraftOrder(req, res) {
   }
 
   const createDraft = await adminAPi(query);
-
   res.json({ status: 200, createDraft });
 }
