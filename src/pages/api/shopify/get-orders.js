@@ -1,9 +1,16 @@
 import { adminAPi } from 'src/lib/shopify'
 
 export default async function getOrders(req, res) {
-    const searchTerm = req.query?.cursor
+    let cursor = ""
+    let param = req.query?.page === "prev" ? "last ": "first"
+    if(req.query?.page === "prev") {
+      cursor = `, before: "${req.query?.startCursor}"`
+    } 
+    if(req.query?.page === "next") {
+      cursor = `, after: "${req.query?.endCursor}"`
+    }
     const query = `{
-        orders(first: 10, query:"tag:b2b") {
+        orders(${param}: 10, query:"tag:b2b" ${cursor}) {
           pageInfo {
             hasNextPage
             hasPreviousPage
@@ -27,12 +34,13 @@ export default async function getOrders(req, res) {
               currentSubtotalLineItemsQuantity
               displayFinancialStatus
               displayFulfillmentStatus
-              updatedAt
+              createdAt
             }
           }
         }
     }`;
 
   const resGetOrders = await adminAPi(query);
-  res.status(200).json({ newData: resGetOrders })
+  console.log(resGetOrders)
+  res.status(200).json({ newData: resGetOrders.data.orders })
 }

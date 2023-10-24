@@ -61,7 +61,7 @@ export const items = [
   },
   {
     title: 'Products',
-    path: '/Products',
+    path: '/products',
     icon: (
       <SvgIcon fontSize="small">
         <ClipboardDocumentIcon />

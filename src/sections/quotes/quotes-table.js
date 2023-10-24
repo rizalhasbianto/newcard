@@ -128,6 +128,12 @@ export const QuotesTable = (props) => {
                         <Stack alignItems="right" direction="column" spacing={1}>
                           <Typography variant="subtitle2">
                             ${new Intl.NumberFormat('en-US').format(quote.quoteInfo?.total)}
+                          </Typography>
+                        </Stack>
+                      </TableCell>
+                      <TableCell>
+                        <Stack alignItems="right" direction="column" spacing={1}>
+                          <Typography variant="subtitle2">
                             ( {quote.quoteInfo?.item} Item{quote.quoteInfo?.item > 1 ? "'s" : ""} )
                           </Typography>
                         </Stack>

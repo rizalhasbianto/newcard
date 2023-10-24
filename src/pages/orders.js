@@ -7,35 +7,52 @@ import PlusIcon from "@heroicons/react/24/solid/PlusIcon";
 import { Box, Button, Container, Stack, SvgIcon, Typography } from "@mui/material";
 import { useSelection } from "src/hooks/use-selection";
 import { Layout as DashboardLayout } from "src/layouts/dashboard/layout";
-import { QuotesTable } from "src/sections/quotes/quotes-table";
+import { OrdersTable } from "src/sections/orders/orders-table";
 import { QuotesSearch } from "src/sections/quotes/quotes-search";
 import { applyPagination } from "src/utils/apply-pagination";
-import { GetQuotesDataSwr } from "src/service/use-mongo";
+import { GetOrdersDataSwr } from "src/service/use-shopify";
 import TableLoading from "src/components/table-loading";
 
 const Page = () => {
-  const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(10);
-
-  const { data, isLoading, isError } = GetQuotesDataSwr(page, rowsPerPage, {
-    status: { $nin: ["new"] },
+  const [fetchData, setFetchData] = useState({
+    direction: "",
+    startCursor: "",
+    endCursor: "",
   });
+  const [pageNumber, setPageNumber] = useState(0);
+
+  const [hasPrev, setHasPrev] = useState(false);
+  const [hasNext, setHasNext] = useState(false);
+
+  const { data, isLoading, isError } = GetOrdersDataSwr(fetchData);
 
   const handlePageChange = useCallback(
-    async (event, value) => {
-      setPage(value);
-    },[]
+    async (value) => {
+      setFetchData({
+        direction: value,
+        startCursor: data.newData.pageInfo.startCursor,
+        endCursor: data.newData.pageInfo.endCursor,
+      });
+
+      if(value === "next") {
+        setPageNumber(pageNumber+1)
+      } else {
+        setPageNumber(pageNumber-1)
+      }
+    },
+    [data,pageNumber]
   );
 
-  const handleRowsPerPageChange = useCallback(async (event) => {
-    setPage(0);
-    setRowsPerPage(event.target.value);
-  }, []);
+  useEffect(() => {
+    if (!data) return;
+    setHasPrev(data.newData.pageInfo.hasPreviousPage);
+    setHasNext(data.newData.pageInfo.hasNextPage);
+  }, [data]);
 
   return (
     <>
       <Head>
-        <title>Quotes | skratch</title>
+        <title>Orders | skratch</title>
       </Head>
       <Box
         component="main"
@@ -48,18 +65,8 @@ const Page = () => {
           <Stack spacing={3}>
             <Stack direction="row" justifyContent="space-between" spacing={4}>
               <Stack spacing={1}>
-                <Typography variant="h4">Quotes</Typography>
+                <Typography variant="h4">Orders</Typography>
                 <Stack alignItems="center" direction="row" spacing={1}>
-                  <Button
-                    color="inherit"
-                    startIcon={
-                      <SvgIcon fontSize="small">
-                        <ArrowUpOnSquareIcon />
-                      </SvgIcon>
-                    }
-                  >
-                    Import
-                  </Button>
                   <Button
                     color="inherit"
                     startIcon={
@@ -72,32 +79,17 @@ const Page = () => {
                   </Button>
                 </Stack>
               </Stack>
-              <div>
-                <Link href="/quotes/add-quote" passHref>
-                  <Button
-                    startIcon={
-                      <SvgIcon fontSize="small">
-                        <PlusIcon />
-                      </SvgIcon>
-                    }
-                    variant="contained"
-                  >
-                    Add
-                  </Button>
-                </Link>
-              </div>
             </Stack>
             <QuotesSearch />
             {isLoading && <TableLoading />}
             {isError && <h2>Error loading data</h2>}
             {data && (
-              <QuotesTable
-                count={data.data.count}
-                items={data.data.quote}
-                onPageChange={handlePageChange}
-                onRowsPerPageChange={handleRowsPerPageChange}
-                page={page}
-                rowsPerPage={rowsPerPage}
+              <OrdersTable
+                items={data.newData.edges}
+                handlePageChange={handlePageChange}
+                hasPrev={hasPrev}
+                hasNext={hasNext}
+                pageNumber={pageNumber}
               />
             )}
           </Stack>

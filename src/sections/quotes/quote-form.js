@@ -77,7 +77,6 @@ export const QuotesForm = (props) => {
       }
 
       const shopifyResponse = await SyncQuoteToShopify(quoteId, quotesList, companyContact.email, discount, tabContent.draftOrderId)
-      console.log("shopifyResponse", shopifyResponse)
       if (!shopifyResponse || shopifyResponse.response.createDraft.errors) { // error when sync data to shopify
         toastUp.handleStatus("warning")
         toastUp.handleMessage("Error sync to Shopify!")

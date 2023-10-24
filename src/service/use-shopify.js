@@ -1,4 +1,4 @@
-import { useDataService } from "src/lib/fetchData";
+import { useDataService, useSwrData } from "src/lib/fetchData";
 
 export const SyncQuoteToShopify = async (
   quoteId,
@@ -41,7 +41,7 @@ export const SendInvoiceByShopify = async (id) => {
 };
 
 export const GetProductsShopify = async (query, productPerPage, lastCursor, lodMoreCount) => {
-  const {prodName, prodType, prodTag, prodVendor, collection} = query
+  const { prodName, prodType, prodTag, prodVendor, collection } = query;
   const sendToShopify = await useDataService("/api/shopify/get-products", "POST", {
     prodName,
     prodType,
@@ -50,9 +50,26 @@ export const GetProductsShopify = async (query, productPerPage, lastCursor, lodM
     collection,
     productPerPage,
     lastCursor,
-    lodMoreCount
+    lodMoreCount,
   });
   return sendToShopify;
+};
+
+export const GetProductsShopifySwr = (query, productPerPage, lastCursor, lodMoreCount) => {
+  const { prodName, prodType, prodTag, prodVendor, collection } = query;
+  const params = {
+    prodName,
+    prodType,
+    prodTag,
+    prodVendor,
+    collection,
+    productPerPage,
+    lastCursor,
+    lodMoreCount,
+  }
+  const queryPath = new URLSearchParams(params).toString();
+  const quotesRes = useSwrData("/api/shopify/get-products-swr?", queryPath);
+  return quotesRes;
 };
 
 export const GetProductsMeta = async (inputValue) => {
@@ -75,4 +92,17 @@ export const GetProductsMeta = async (inputValue) => {
   }
   const sendToShopify = useDataService(url, "GET");
   return sendToShopify;
+};
+
+export const GetOrdersDataSwr = (page) => {
+  const queryPath =
+    "page=" +
+    page.direction +
+    "&startCursor=" +
+    page.startCursor +
+    "&endCursor=" +
+    page.endCursor;
+  const quotesRes = useSwrData("/api/shopify/get-orders", queryPath);
+
+  return quotesRes;
 };

@@ -15,6 +15,10 @@
     cursor: pointer;
 }
 
+.disable {
+    opacity: 0.5;
+}
+
 .MuiPaper-elevation8 {
     max-height: 250px!important;
 }
