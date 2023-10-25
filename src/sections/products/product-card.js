@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import PropTypes from "prop-types";
 import ArrowDownOnSquareIcon from "@heroicons/react/24/solid/ArrowDownOnSquareIcon";
 import ClockIcon from "@heroicons/react/24/solid/ClockIcon";
@@ -33,6 +33,14 @@ export const ProductCard = (props) => {
     setSelectedOptions(newSelectedOptions);
     setSelectedVariant(newSelecetdVariant?.node);
   };
+
+  useEffect(() => {
+    setSelectedVariant(product.node.variants.edges[0].node)
+    setSelectedOptions(product.node.variants.edges[0].node.selectedOptions.reduce(
+      (acc, curr) => ((acc[curr.name] = curr.value), acc),
+      {}
+    ))
+  },[product])
 
   return (
     <Card
@@ -74,7 +82,6 @@ export const ProductCard = (props) => {
       </Stack>
         
       </CardContent>
-      <Box sx={{ flexGrow: 1 }} />
       <Divider />
       <Stack
         alignItems="center"
@@ -89,6 +96,7 @@ export const ProductCard = (props) => {
             selectedOpt={selectedOptions}
           />
       </Stack>
+      <Box sx={{ flexGrow: 1 }} />
       <Divider />
       <Stack
         alignItems="center"

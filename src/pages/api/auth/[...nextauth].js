@@ -25,7 +25,6 @@ export const authOptions = {
                 const response = await db.collection(userTable).find({ email: email }).limit(10).toArray();
 
                 if (response.length === 0) {
-                    console.log("there is no user with that username");
                     throw new Error("User with that email is not found");
                 }
 
@@ -39,7 +38,6 @@ export const authOptions = {
                         role: response[0].role
                     }
                 } else {
-                    console.log("invalid password");
                     throw new Error("Invalid password");
                 }
             },

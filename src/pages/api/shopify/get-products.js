@@ -7,7 +7,7 @@ export default async function getProducts(req, res) {
   const searchByVendor = req.body?.prodVendor ? `AND vendor:${req.body.prodVendor}` : "";
   const cursor = req.body?.lastCursor ? `, after: "${req.body.lastCursor}"` : "";
   const productPerPage = req.body?.productPerPage ? req.body.productPerPage : 100;
-  const lodMoreCount = req.body?.lodMoreCount ? req.body.lodMoreCount : 0;
+  const pageIndex = req.body?.pageIndex ? req.body.pageIndex : 0;
   const searchTerm = req.body
     ? `, query:"${searchByTitle} ${searchByType} ${searchByTag} ${searchByVendor}" ${cursor}`
     : "";
@@ -17,6 +17,7 @@ export default async function getProducts(req, res) {
         products(first: ${productPerPage} ${searchTerm}${cursor}) {
           pageInfo {
             hasNextPage
+            endCursor
           }
           edges {
             cursor
@@ -98,10 +99,10 @@ export default async function getProducts(req, res) {
       hasNextPage = resGetData.data.collection.products.pageInfo.hasNextPage;
     }
 
-    if (lodMoreCount > 0) {
+    if (pageIndex > 0) {
       const reqProd = ProdData.slice(
-        lodMoreCount * productPerPage,
-        lodMoreCount * productPerPage + productPerPage
+        pageIndex * productPerPage,
+        pageIndex * productPerPage + productPerPage
       );
       resData = {
         pageInfo: {

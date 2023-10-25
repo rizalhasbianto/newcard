@@ -2,10 +2,6 @@ import { adminAPi } from "src/lib/shopify";
 
 export default async function createDraftOrder(req, res) {
   const bodyObject = req.body;
-  if (bodyObject.discount.amount) {
-    console.log("createDraft", bodyObject.discount.amount);
-  }
-
   let query;
   if (bodyObject.draftOrderId) {
     query = `

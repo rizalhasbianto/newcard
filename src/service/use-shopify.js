@@ -1,4 +1,4 @@
-import { useDataService, useSwrData } from "src/lib/fetchData";
+import { useDataService, useSwrData, useSWRInfiniteData } from "src/lib/fetchData";
 
 export const SyncQuoteToShopify = async (
   quoteId,
@@ -40,7 +40,7 @@ export const SendInvoiceByShopify = async (id) => {
   return sendToShopify;
 };
 
-export const GetProductsShopify = async (query, productPerPage, lastCursor, lodMoreCount) => {
+export const GetProductsShopify = async (query, productPerPage, lastCursor, pageIndex) => {
   const { prodName, prodType, prodTag, prodVendor, collection } = query;
   const sendToShopify = await useDataService("/api/shopify/get-products", "POST", {
     prodName,
@@ -50,25 +50,24 @@ export const GetProductsShopify = async (query, productPerPage, lastCursor, lodM
     collection,
     productPerPage,
     lastCursor,
-    lodMoreCount,
+    pageIndex,
   });
   return sendToShopify;
 };
 
-export const GetProductsShopifySwr = (query, productPerPage, lastCursor, lodMoreCount) => {
+export const GetProductsShopifySwr = (query, productPerPage) => { 
   const { prodName, prodType, prodTag, prodVendor, collection } = query;
   const params = {
     prodName,
-    prodType,
+    prodType, 
     prodTag,
     prodVendor,
-    collection,
-    productPerPage,
-    lastCursor,
-    lodMoreCount,
+    collection, 
+    productPerPage
   }
-  const queryPath = new URLSearchParams(params).toString();
-  const quotesRes = useSwrData("/api/shopify/get-products-swr?", queryPath);
+  const queryParam = new URLSearchParams(params).toString();
+  const quotesRes = useSWRInfiniteData("/api/shopify/get-products-swr", queryParam);
+
   return quotesRes;
 };
 

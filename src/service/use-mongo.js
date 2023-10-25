@@ -156,7 +156,6 @@ export const AddCompanyToMongo = async (companyData) => {
 };
 
 export const CheckCompanyName = async (companyData) => {
-  console.log("companyData", companyData);
   const mongoRes = await useDataService("/api/company/get-companies", "POST", {
     type: "check",
     query: {

@@ -207,6 +207,13 @@ export function createComponents(config) {
         }
       }
     },
+    MuiSelect: {
+      styleOverrides: {
+        select : {
+          padding: "21px 32px 8px 12px"
+        }
+      }
+    },
     MuiOutlinedInput: {
       styleOverrides: {
         root: {

@@ -53,7 +53,6 @@ export default async function addCompany(req, res) {
                 console.log(error);
                 res.json({ status: 400, data: error });
             } else {
-                console.log('Email sent: ' + info.response);
                 res.json({ status: 200, data: info.response });
             }
         });

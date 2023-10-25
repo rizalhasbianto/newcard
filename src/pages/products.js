@@ -23,7 +23,8 @@ import { GetProductsShopifySwr } from "src/service/use-shopify";
 import { useEffect, useState } from "react";
 
 const Page = () => {
-  const [query, setQuery] = useState({
+  const [hasNextPage, sethasNextPage] = useState(true)
+  const [selectedFilter, setSelectedFilter] = useState({
     prodName: "",
     collection: "",
     prodType: "",
@@ -31,25 +32,25 @@ const Page = () => {
     prodTag: "",
   });
 
-  const productPerPage = 9;
+  const productPerPage = 12;
   const lastCursor = "";
-  const lodMoreCount = 0;
+  const lodMoreCount = 0; 
 
-  const { data, isLoading, isError } = GetProductsShopifySwr(
-    query,
+  const { data, isLoading, isError, size, setSize } = GetProductsShopifySwr(
+    selectedFilter,
     productPerPage,
     lastCursor,
     lodMoreCount
   );
 
   const handleLoadMore = () => {
-    console.log("load more");
+    setSize(size + 1);
   };
 
   useEffect(() => {
-    console.log("Products", data);
-  }, [data]);
-
+    if(!data) return
+    sethasNextPage(data.at(-1).newData?.pageInfo.hasNextPage)
+  },[data])
   return (
     <>
       <Head>
@@ -66,7 +67,7 @@ const Page = () => {
           <Stack spacing={3}>
             <Stack direction="row" justifyContent="space-between" spacing={4}>
               <Stack spacing={1}>
-                <Typography variant="h4">Companies</Typography>
+                <Typography variant="h4">Products</Typography>
                 <Stack alignItems="center" direction="row" spacing={1}>
                   <Button
                     color="inherit"
@@ -103,16 +104,24 @@ const Page = () => {
                 </Button>
               </div>
             </Stack>
-            <ProductsSearch />
+            <ProductsSearch 
+              selectedFilter={selectedFilter}
+              setSelectedFilter={setSelectedFilter}
+            />
             <Grid container spacing={3}>
-              {data &&
-                data.newData.edges.map((product, i) => (
-                  <Grid xs={12} md={6} lg={4} key={i + 1}>
-                    <ProductCard product={product} />
-                  </Grid>
-                ))}
+              {data&&
+                data.map((dt) => {
+                  return(
+                    dt.newData.edges.map((product, i) => (
+                      <Grid xs={12} md={6} lg={3} key={i + 1}>
+                        <ProductCard product={product} />
+                      </Grid>
+                    ))
+                  )
+                })}
             </Grid>
-            <Box
+            { hasNextPage 
+            ?<Box
               sx={{
                 display: "flex",
                 justifyContent: "center",
@@ -121,7 +130,7 @@ const Page = () => {
               <LoadingButton
                 color="primary"
                 onClick={() => handleLoadMore()}
-                loading={true}
+                loading={isLoading}
                 loadingPosition="start"
                 startIcon={<AutorenewIcon />}
                 variant="contained"
@@ -129,6 +138,8 @@ const Page = () => {
                 LOAD MORE
               </LoadingButton>
             </Box>
+            : ""
+}
           </Stack>
         </Container>
       </Box>

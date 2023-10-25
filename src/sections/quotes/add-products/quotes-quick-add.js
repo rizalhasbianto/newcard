@@ -11,11 +11,13 @@ import {
   MenuItem,
   Typography,
   SvgIcon,
+  Skeleton,
   Unstable_Grid2 as Grid,
 } from "@mui/material";
 import LoadingButton from "@mui/lab/LoadingButton";
 import AutorenewIcon from "@mui/icons-material/Autorenew";
 import AlertDialog from "src/components/alert-dialog";
+import TableLoading from "src/components/table-loading";
 
 import { useCallback, useEffect, useState, Fragment } from "react";
 import { Scrollbar } from "src/components/scrollbar";
@@ -26,8 +28,8 @@ import { GetProductsShopify } from "src/service/use-shopify";
 import { addQuote } from "src/helper/handleAddQuote";
 import { usePopover } from "src/hooks/use-popover";
 
-import PlaylistAddIcon from '@mui/icons-material/PlaylistAdd';
-import PlaylistAddCheckIcon from '@mui/icons-material/PlaylistAddCheck';
+import PlaylistAddIcon from "@mui/icons-material/PlaylistAdd";
+import PlaylistAddCheckIcon from "@mui/icons-material/PlaylistAddCheck";
 
 export const QuickAddProducts = ({ quotesList, setQuotesList }) => {
   const [selectedFilter, setSelectedFilter] = useState({
@@ -40,7 +42,7 @@ export const QuickAddProducts = ({ quotesList, setQuotesList }) => {
   const [filterOpt, setFilterOpt] = useState();
   const [prodList, setProdList] = useState([]);
   const [lastCursor, setLastCursor] = useState();
-  const [lodMoreCount, setLodMoreCount] = useState(1);
+  const [pageIndex, setPageIndex] = useState(0);
   const [loadMoreLoading, setLoadMoreLoading] = useState(false);
   const [qtyList, setQtyList] = useState([]);
   const [addQuoteLoading, setAddQuoteLoading] = useState();
@@ -49,9 +51,8 @@ export const QuickAddProducts = ({ quotesList, setQuotesList }) => {
 
   const handleFilterChange = useCallback(
     async (event) => {
-
-      let newSelectedFilter = selectedFilter
-      if(event) {
+      let newSelectedFilter = selectedFilter;
+      if (event) {
         newSelectedFilter = {
           ...selectedFilter,
           [event.target.name]: event.target.value,
@@ -63,35 +64,34 @@ export const QuickAddProducts = ({ quotesList, setQuotesList }) => {
         setProdList(resData.newData.edges);
         if (resData.newData.pageInfo.hasNextPage) {
           setLastCursor(resData?.newData?.edges?.at(-1)?.cursor);
+        } else {
+          setLastCursor()
         }
       }
     },
     [selectedFilter]
   );
 
+  //initial load prod data
   useEffect(() => {
     handleFilterChange();
-  }, [handleFilterChange]);
+  }, []);
 
   const handleLoadMore = useCallback(async () => {
     setLoadMoreLoading(true);
-    const resData = await GetProductsShopify(
-      selectedFilter,
-      productPerPage,
-      lastCursor,
-      lodMoreCount
-    );
+    const nextPageIndex = pageIndex + 1
+    const resData = await GetProductsShopify(selectedFilter, productPerPage, lastCursor, nextPageIndex);
     if (resData) {
       setProdList([...prodList, ...resData.newData.edges]);
       setLoadMoreLoading(false);
       if (resData.newData.pageInfo.hasNextPage) {
         setLastCursor(resData?.newData?.edges?.at(-1)?.cursor);
-        setLodMoreCount(lodMoreCount + 1);
+        setPageIndex(nextPageIndex);
       } else {
         setLastCursor();
       }
     }
-  }, [lastCursor, lodMoreCount, prodList, selectedFilter]);
+  }, [lastCursor, pageIndex, prodList, selectedFilter]);
 
   async function fetchData() {
     const newFilterOpt = {
@@ -164,10 +164,10 @@ export const QuickAddProducts = ({ quotesList, setQuotesList }) => {
       selectedQuantity,
       modalPopUp,
     });
-    setAddQuoteLoading(loadingIdx)
+    setAddQuoteLoading(loadingIdx);
     setTimeout(() => {
-      setAddQuoteLoading()
-  }, 3000);
+      setAddQuoteLoading();
+    }, 3000);
   };
 
   useEffect(() => {
@@ -198,149 +198,164 @@ export const QuickAddProducts = ({ quotesList, setQuotesList }) => {
             onChange={handleFilterChange}
           />
         </Grid>
-        {filterList.map((filter) => {
-          return (
-            filterOpt && (
-              <Grid lg={2} key={filter.id}>
-                <TextField
-                  id={filter.id}
-                  name={filter.id}
-                  label={filter.title}
-                  value={selectedFilter[filter.id]}
-                  select
-                  fullWidth
-                  onChange={handleFilterChange}
-                  sx={{ maxHeight: 250 }}
-                >
-                  <MenuItem value="">
-                    <em>None</em>
-                  </MenuItem>
-                  {filterOpt[filter.id]?.map((option) => (
-                    <MenuItem key={option} value={option}>
-                      {option}
+        {!filterOpt ? (
+          <Skeleton
+            variant="rectangular"
+            width={162}
+            height={55}
+            sx={{ marginTop: "12px", borderRadius: "5px" }}
+          />
+        ) : (
+          filterList.map((filter) => {
+            return (
+              filterOpt && (
+                <Grid lg={2} key={filter.id}>
+                  <TextField
+                    id={filter.id}
+                    name={filter.id}
+                    label={filter.title}
+                    value={selectedFilter[filter.id]}
+                    select
+                    fullWidth
+                    onChange={handleFilterChange}
+                    sx={{ maxHeight: 250 }}
+                  >
+                    <MenuItem value="">
+                      <em>None</em>
                     </MenuItem>
-                  ))}
-                </TextField>
-              </Grid>
-            )
-          );
-        })}
+                    {filterOpt[filter.id]?.map((option) => (
+                      <MenuItem key={option} value={option}>
+                        {option}
+                      </MenuItem>
+                    ))}
+                  </TextField>
+                </Grid>
+              )
+            );
+          })
+        )}
       </Grid>
       <Grid lg={12}>
-        <TableContainer sx={{ maxHeight: 600 }}>
-          <Table stickyHeader aria-label="sticky table">
-            <TableHead>
-              <TableRow>
-                {quotesQuickAddHead.map((head) => {
-                  return (
-                    <TableCell
-                      key={head.title}
-                      sx={{
-                        textAlign: "left",
-                      }}
-                    >
-                      {head.title}
-                    </TableCell>
-                  );
-                })}
-              </TableRow>
-            </TableHead>
-            <TableBody sx={{ maxHeight: "500px" }}>
-              {prodList.map((item, i) => (
-                <Fragment key={item.node.id}>
-                  <TableRow sx={{ backgroundColor: "#ececec" }}>
-                    <TableCell padding="checkbox">
-                      <Typography sx={{ fontWeight: "bold" }}>{i + 1}</Typography>
-                    </TableCell>
-                    <TableCell>
-                      <Typography sx={{ fontWeight: "bold" }}>{item.node.title}</Typography>
-                    </TableCell>
-                    <TableCell></TableCell>
-                    <TableCell></TableCell>
-                    <TableCell></TableCell>
-                    <TableCell></TableCell>
-                  </TableRow>
-                  {item.node.variants?.edges.map((varItem, idx) => (
-                    <TableRow key={varItem.node.id}>
-                      <TableCell padding="checkbox" sx={{ minWidth: "70px" }}>
-                        <Typography display={"inline-block"} sx={{ fontWeight: "bold" }}>
-                          {i + 1}.
-                        </Typography>
-                        <Typography display={"inline-block"}>{idx + 1}</Typography>
-                      </TableCell>
-                      <TableCell sx={{ padding: "0 0px 0 40px" }}>
-                        -- {varItem.node.title}
-                      </TableCell>
-                      <TableCell sx={{ padding: "0 16px" }}>${varItem.node.price.amount}</TableCell>
-                      <TableCell sx={{ padding: "0 16px" }}>
-                        {!varItem.node.currentlyNotInStock ? "In stock" : "Out of stock"}
-                      </TableCell>
-                      <TableCell sx={{ padding: "0 16px" }}>
-                        <TextField
-                          placeholder="Qty"
-                          variant="standard"
-                          InputProps={{ inputProps: { min: 1 } }}
-                          type="number"
-                          onChange={(event) => {
-                            handleAddQty(parseInt(event.target.value), varItem.node.id);
-                          }}
-                          size="small"
-                          sx={{
-                            margin: "10px 0",
-                            maxWidth: "70px",
-                          }}
-                        />
-                      </TableCell>
+        {!prodList ? (
+          <TableLoading />
+        ) : (
+          <TableContainer sx={{ maxHeight: 600 }}>
+            <Table stickyHeader aria-label="sticky table">
+              <TableHead>
+                <TableRow>
+                  {quotesQuickAddHead.map((head) => {
+                    return (
                       <TableCell
+                        key={head.title}
                         sx={{
-                          padding: "0 16px",
-                          textAlign: "center",
+                          textAlign: "left",
                         }}
                       >
-                        <SvgIcon
-                          color="action"
-                          fontSize="medium"
-                          onClick={() => handleAddQuote(item, varItem,`${i}${idx}`)}
-                          sx={{cursor:"pointer"}}
-                        >
-                          {
-                            addQuoteLoading === `${i}${idx}`
-                            ? <PlaylistAddCheckIcon sx={{color:"green"}}/>
-                            : <PlaylistAddIcon />
-                          }
-                        </SvgIcon>
+                        {head.title}
                       </TableCell>
-                    </TableRow>
-                  ))}
-                </Fragment>
-              ))}
-            </TableBody>
-            {lastCursor && (
-              <TableFooter>
-                <TableRow>
-                  <TableCell
-                    sx={{
-                      textAlign: "center",
-                    }}
-                    variant="footer"
-                    colSpan="6"
-                  >
-                    <LoadingButton
-                      color="primary"
-                      onClick={() => handleLoadMore()}
-                      loading={loadMoreLoading}
-                      loadingPosition="start"
-                      startIcon={<AutorenewIcon />}
-                      variant="contained"
-                    >
-                      LOAD MORE
-                    </LoadingButton>
-                  </TableCell>
+                    );
+                  })}
                 </TableRow>
-              </TableFooter>
-            )}
-          </Table>
-        </TableContainer>
+              </TableHead>
+              <TableBody sx={{ maxHeight: "500px" }}>
+                {prodList.map((item, i) => (
+                  <Fragment key={item.node.id}>
+                    <TableRow sx={{ backgroundColor: "#ececec" }}>
+                      <TableCell padding="checkbox">
+                        <Typography sx={{ fontWeight: "bold" }}>{i + 1}</Typography>
+                      </TableCell>
+                      <TableCell>
+                        <Typography sx={{ fontWeight: "bold" }}>{item.node.title}</Typography>
+                      </TableCell>
+                      <TableCell></TableCell>
+                      <TableCell></TableCell>
+                      <TableCell></TableCell>
+                      <TableCell></TableCell>
+                    </TableRow>
+                    {item.node.variants?.edges.map((varItem, idx) => (
+                      <TableRow key={varItem.node.id}>
+                        <TableCell padding="checkbox" sx={{ minWidth: "70px" }}>
+                          <Typography display={"inline-block"} sx={{ fontWeight: "bold" }}>
+                            {i + 1}.
+                          </Typography>
+                          <Typography display={"inline-block"}>{idx + 1}</Typography>
+                        </TableCell>
+                        <TableCell sx={{ padding: "0 0px 0 40px" }}>
+                          -- {varItem.node.title}
+                        </TableCell>
+                        <TableCell sx={{ padding: "0 16px" }}>
+                          ${varItem.node.price.amount}
+                        </TableCell>
+                        <TableCell sx={{ padding: "0 16px" }}>
+                          {!varItem.node.currentlyNotInStock ? "In stock" : "Out of stock"}
+                        </TableCell>
+                        <TableCell sx={{ padding: "0 16px" }}>
+                          <TextField
+                            placeholder="Qty"
+                            variant="standard"
+                            InputProps={{ inputProps: { min: 1 } }}
+                            type="number"
+                            onChange={(event) => {
+                              handleAddQty(parseInt(event.target.value), varItem.node.id);
+                            }}
+                            size="small"
+                            sx={{
+                              margin: "10px 0",
+                              maxWidth: "70px",
+                            }}
+                          />
+                        </TableCell>
+                        <TableCell
+                          sx={{
+                            padding: "0 16px",
+                            textAlign: "center",
+                          }}
+                        >
+                          <SvgIcon
+                            color="action"
+                            fontSize="medium"
+                            onClick={() => handleAddQuote(item, varItem, `${i}${idx}`)}
+                            sx={{ cursor: "pointer" }}
+                          >
+                            {addQuoteLoading === `${i}${idx}` ? (
+                              <PlaylistAddCheckIcon sx={{ color: "green" }} />
+                            ) : (
+                              <PlaylistAddIcon />
+                            )}
+                          </SvgIcon>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </Fragment>
+                ))}
+              </TableBody>
+              {lastCursor && (
+                <TableFooter>
+                  <TableRow>
+                    <TableCell
+                      sx={{
+                        textAlign: "center",
+                      }}
+                      variant="footer"
+                      colSpan="6"
+                    >
+                      <LoadingButton
+                        color="primary"
+                        onClick={() => handleLoadMore()}
+                        loading={loadMoreLoading}
+                        loadingPosition="start"
+                        startIcon={<AutorenewIcon />}
+                        variant="contained"
+                      >
+                        LOAD MORE
+                      </LoadingButton>
+                    </TableCell>
+                  </TableRow>
+                </TableFooter>
+              )}
+            </Table>
+          </TableContainer>
+        )}
       </Grid>
     </Box>
   );
