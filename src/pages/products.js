@@ -130,7 +130,7 @@ const Page = () => {
               <LoadingButton
                 color="primary"
                 onClick={() => handleLoadMore()}
-                loading={isLoading}
+                loading={!data || data.length < size ? true : false}
                 loadingPosition="start"
                 startIcon={<AutorenewIcon />}
                 variant="contained"

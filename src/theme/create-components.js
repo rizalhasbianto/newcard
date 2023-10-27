@@ -214,6 +214,13 @@ export function createComponents(config) {
         }
       }
     },
+    MuiCheckbox: {
+      styleOverrides: {
+        root: {
+          padding: "5px 10px"
+        }
+      }
+    },
     MuiOutlinedInput: {
       styleOverrides: {
         root: {

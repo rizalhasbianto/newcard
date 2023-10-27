@@ -8,12 +8,59 @@ export default async function getProducts(req, res) {
   const cursor = req.query?.lastCursor ? `, after: "${req.query.lastCursor}"` : "";
   const productPerPage = req.query?.productPerPage ? req.query.productPerPage : 10;
   const pageIndex = req.query?.pageIndex ? req.query.pageIndex : 0;
-  console.log(req.query?.collection)
   const searchTerm = req.query
     ? `, query:"${searchByTitle} ${searchByType} ${searchByTag} ${searchByVendor}" ${cursor}`
     : "";
 
   const query = (productPerPage, searchTerm, cursor) => {
+    return `
+        products(first: ${productPerPage} ${searchTerm}${cursor}) {
+          pageInfo {
+            hasNextPage
+            endCursor
+          }
+          edges {
+            cursor
+            node {
+              id
+              title
+              productType
+              handle
+              tags
+              vendor
+              options {
+                name
+                values
+              }
+              variants(first: 100) {
+                edges {
+                  node {
+                    id
+                    title
+                    sku
+                    currentlyNotInStock
+                    price {
+                      amount
+                    }
+                    selectedOptions {
+                      name
+                      value
+                    }
+                    image{
+                      url: url(transform: { maxWidth: 270})
+                    }
+                    product {
+                      id
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }`;
+  };
+
+  const variantQuery = (productPerPage, searchTerm, cursor) => {
     return `
         products(first: ${productPerPage} ${searchTerm}${cursor}) {
           pageInfo {
