@@ -1,10 +1,10 @@
 import { callShopify } from "src/lib/shopify";
 
 export default async function getProducts(req, res) {
-  const searchByTitle = req.query?.prodName ? `title:${req.query.prodName}*` : "";
-  const searchByType = req.query?.prodType ? `AND product_type:${req.query.prodType}` : "";
-  const searchByTag = req.query?.prodTag ? `AND tag:${req.query.prodTag}` : "";
-  const searchByVendor = req.query?.prodVendor ? `AND vendor:${req.query.prodVendor}` : "";
+  const searchByTitle = req.query?.productName ? `title:${req.query.productName}*` : "";
+  const searchByType = req.query?.productType ? `AND product_type:${req.query.productType}` : "";
+  const searchByTag = req.query?.tag ? `AND tag:${req.query.tag}` : "";
+  const searchByVendor = req.query?.productVendor ? `AND vendor:${req.query.productVendor}` : "";
   const cursor = req.query?.lastCursor ? `, after: "${req.query.lastCursor}"` : "";
   const productPerPage = req.query?.productPerPage ? req.query.productPerPage : 10;
   const pageIndex = req.query?.pageIndex ? req.query.pageIndex : 0;
@@ -13,54 +13,6 @@ export default async function getProducts(req, res) {
     : "";
 
   const query = (productPerPage, searchTerm, cursor) => {
-    return `
-        products(first: ${productPerPage} ${searchTerm}${cursor}) {
-          pageInfo {
-            hasNextPage
-            endCursor
-          }
-          edges {
-            cursor
-            node {
-              id
-              title
-              productType
-              handle
-              tags
-              vendor
-              options {
-                name
-                values
-              }
-              variants(first: 100) {
-                edges {
-                  node {
-                    id
-                    title
-                    sku
-                    currentlyNotInStock
-                    price {
-                      amount
-                    }
-                    selectedOptions {
-                      name
-                      value
-                    }
-                    image{
-                      url: url(transform: { maxWidth: 270})
-                    }
-                    product {
-                      id
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }`;
-  };
-
-  const variantQuery = (productPerPage, searchTerm, cursor) => {
     return `
         products(first: ${productPerPage} ${searchTerm}${cursor}) {
           pageInfo {

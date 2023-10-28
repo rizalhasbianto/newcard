@@ -23,7 +23,7 @@ import { useCallback, useEffect, useState, Fragment } from "react";
 import { Scrollbar } from "src/components/scrollbar";
 import { quotesQuickAddHead } from "src/data/tableList";
 import { GetProductsMeta } from "src/service/use-shopify";
-import { filterList } from "src/data/quickAddFilterList";
+import { topFilterList } from "src/data/quickAddFilterList";
 import { GetProductsShopify } from "src/service/use-shopify";
 import { addQuote } from "src/helper/handleAddQuote";
 import { usePopover } from "src/hooks/use-popover";
@@ -33,11 +33,11 @@ import PlaylistAddCheckIcon from "@mui/icons-material/PlaylistAddCheck";
 
 export const QuickAddProducts = ({ quotesList, setQuotesList }) => {
   const [selectedFilter, setSelectedFilter] = useState({
-    prodName: "",
+    productName: "",
     collection: "",
-    prodType: "",
-    prodVendor: "",
-    prodTag: "",
+    productType: "",
+    productVendor: "",
+    tag: "",
   });
   const [filterOpt, setFilterOpt] = useState();
   const [prodList, setProdList] = useState([]);
@@ -58,6 +58,7 @@ export const QuickAddProducts = ({ quotesList, setQuotesList }) => {
           [event.target.name]: event.target.value,
         };
       }
+
       setSelectedFilter(newSelectedFilter);
       const resData = await GetProductsShopify(newSelectedFilter, productPerPage);
       if (resData) {
@@ -96,9 +97,9 @@ export const QuickAddProducts = ({ quotesList, setQuotesList }) => {
   async function fetchData() {
     const newFilterOpt = {
       collection: [],
-      prodType: [],
-      prodVendor: [],
-      prodTag: [],
+      productType: [],
+      productVendor: [],
+      tag: [],
     };
 
     const resCollection = await GetProductsMeta("collections");
@@ -116,19 +117,19 @@ export const QuickAddProducts = ({ quotesList, setQuotesList }) => {
       const orderedProdType = resProdType.newData.data.productTypes.edges.map(
         (prodType) => prodType.node && prodType.node
       );
-      newFilterOpt.prodType = orderedProdType;
+      newFilterOpt.productType = orderedProdType;
     }
     if (resProdVendor) {
       const orderedProdVendor = resProdVendor.newData.data.shop.productVendors.edges.map(
         (prodVendor) => prodVendor.node && prodVendor.node
       );
-      newFilterOpt.prodVendor = orderedProdVendor;
+      newFilterOpt.productVendor = orderedProdVendor;
     }
     if (resProdTag) {
       const orderedProdTag = resProdTag.newData.data.productTags.edges.map(
         (prodTag) => prodTag.node && prodTag.node
       );
-      newFilterOpt.prodTag = orderedProdTag;
+      newFilterOpt.tag = orderedProdTag;
     }
     setFilterOpt(newFilterOpt);
   }
@@ -190,10 +191,10 @@ export const QuickAddProducts = ({ quotesList, setQuotesList }) => {
       <Grid container>
         <Grid lg={4}>
           <TextField
-            id="prodName"
-            name="prodName"
+            id="productName"
+            name="productName"
             label="Product Name"
-            value={selectedFilter.selectedProdName}
+            value={selectedFilter.productName}
             fullWidth
             onChange={handleFilterChange}
           />
@@ -206,7 +207,7 @@ export const QuickAddProducts = ({ quotesList, setQuotesList }) => {
             sx={{ marginTop: "12px", borderRadius: "5px" }}
           />
         ) : (
-          filterList.map((filter) => {
+          topFilterList.map((filter) => {
             return (
               filterOpt && (
                 <Grid lg={2} key={filter.id}>

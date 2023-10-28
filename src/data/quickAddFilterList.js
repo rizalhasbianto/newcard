@@ -1,18 +1,18 @@
-export const filterList = [
+export const topFilterList = [
     {
         title:"Collection",
-        id:"collection"
+        id:"collection",
     },
     {
         title:"Product Type",
-        id:"prodType"
+        id:"productType",
     },
     {
         title:"Product Vendor",
-        id:"prodVendor"
+        id:"productVendor",
     },
     {
         title:"Product Tag",
-        id:"prodTag"
+        id:"tag",
     },
 ]

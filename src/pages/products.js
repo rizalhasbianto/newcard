@@ -19,25 +19,26 @@ import { Layout as DashboardLayout } from "src/layouts/dashboard/layout";
 import { ProductCard } from "src/sections/products/product-card";
 import { ProductsSearch } from "src/sections/products/products-search";
 
-import { GetProductsShopifySwr } from "src/service/use-shopify";
+import { SearchProducts } from "src/service/use-shopify";
 import { useEffect, useState } from "react";
 
 const Page = () => {
   const [hasNextPage, sethasNextPage] = useState(true)
   const [selectedFilter, setSelectedFilter] = useState({
-    prodName: "",
+    productName: "",
     collection: "",
-    prodType: "",
-    prodVendor: "",
-    prodTag: "",
+    productType: "",
+    productVendor: "",
+    tag: "",
   });
+  const [selectedVariantFilter, setSelectedVariantFilter] = useState([]);
 
   const productPerPage = 12;
   const lastCursor = "";
   const lodMoreCount = 0; 
-
-  const { data, isLoading, isError, size, setSize } = GetProductsShopifySwr(
+  const { data, isLoading, isError, size, setSize } = SearchProducts(
     selectedFilter,
+    selectedVariantFilter,
     productPerPage,
     lastCursor,
     lodMoreCount
@@ -107,6 +108,9 @@ const Page = () => {
             <ProductsSearch 
               selectedFilter={selectedFilter}
               setSelectedFilter={setSelectedFilter}
+              selectedVariantFilter={selectedVariantFilter}
+              setSelectedVariantFilter={setSelectedVariantFilter}
+              filterList={data?.at(-1).newData.productFilters}
             />
             <Grid container spacing={3}>
               {data&&

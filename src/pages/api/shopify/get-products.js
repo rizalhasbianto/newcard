@@ -1,15 +1,21 @@
 import { callShopify } from "src/lib/shopify";
 
 export default async function getProducts(req, res) {
-  const searchByTitle = req.body?.prodName ? `title:${req.body.prodName}*` : "";
-  const searchByType = req.body?.prodType ? `AND product_type:${req.body.prodType}` : "";
-  const searchByTag = req.body?.prodTag ? `AND tag:${req.body.prodTag}` : "";
-  const searchByVendor = req.body?.prodVendor ? `AND vendor:${req.body.prodVendor}` : "";
+  const searchByTitle = req.body?.productName ? `title:${req.body.productName}*` : "";
+  const searchByType = req.body?.productType ? `product_type:${req.body.productType}` : "";
+  const searchByTag = req.body?.tag ? `AND tag:${req.body.tag}` : "";
+  const searchByVendor = req.body?.productVendor ? `AND vendor:${req.body.productVendor}` : "";
   const cursor = req.body?.lastCursor ? `, after: "${req.body.lastCursor}"` : "";
   const productPerPage = req.body?.productPerPage ? req.body.productPerPage : 100;
   const pageIndex = req.body?.pageIndex ? req.body.pageIndex : 0;
-  const searchTerm = req.body
-    ? `, query:"${searchByTitle} ${searchByType} ${searchByTag} ${searchByVendor}" ${cursor}`
+
+  const searchTerm = req.body.queryParam
+    ? `, query:"${req.body.queryParam
+        .replace(/&/g, " AND ")
+        .replace(/\+/g, " ")
+        .replace(/=/g, ":")
+        .replace("productVendor", "vendor")
+        .replace("productName", "title")}" ${cursor}`
     : "";
 
   const query = (productPerPage, searchTerm, cursor) => {
@@ -82,16 +88,16 @@ export default async function getProducts(req, res) {
       let resProdData = resGetData.data.collection.products.edges;
 
       if (searchByTitle) {
-        resProdData = resProdData.filter((prod) => prod.node.title.includes(req.body?.prodName));
+        resProdData = resProdData.filter((prod) => prod.node.title.includes(req.body?.productName));
       }
       if (searchByType) {
-        resProdData = resProdData.filter((prod) => prod.node.productType === req.body?.prodType);
+        resProdData = resProdData.filter((prod) => prod.node.productType === req.body?.productType);
       }
       if (searchByTag) {
-        resProdData = resProdData.filter((prod) => prod.node.tags.includes(req.body?.prodTag));
+        resProdData = resProdData.filter((prod) => prod.node.tags.includes(req.body?.tag));
       }
       if (searchByVendor) {
-        resProdData = resProdData.filter((prod) => prod.node.vendor === req.body?.prodVendor);
+        resProdData = resProdData.filter((prod) => prod.node.vendor === req.body?.productVendor);
       }
 
       resProdData.map((prod) => ProdData.push(prod));

@@ -15,6 +15,7 @@ import {
 import { Layout as DashboardLayout } from 'src/layouts/dashboard/layout';
 import { CompanyCard } from 'src/sections/companies/company-card';
 import { CompaniesSearch } from 'src/sections/companies/companies-search';
+import { GetCompaniesSwr } from 'src/service/use-mongo'
 
 const companies = [
   {
@@ -67,7 +68,10 @@ const companies = [
   }
 ];
 
-const Page = () => (
+const Page = () => {
+  const { data, isLoading, isError } = GetCompaniesSwr(0, 10);
+console.log("data", data)
+  return(
   <>
     <Head>
       <title>
@@ -137,7 +141,7 @@ const Page = () => (
             container
             spacing={3}
           >
-            {companies.map((company) => (
+            {data && data.data.company.map((company) => (
               <Grid
                 xs={12}
                 md={6}
@@ -163,7 +167,8 @@ const Page = () => (
       </Container>
     </Box>
   </>
-);
+)
+          };
 
 Page.getLayout = (page) => (
   <DashboardLayout>

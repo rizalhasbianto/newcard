@@ -21,18 +21,69 @@ import {
   Checkbox,
   Unstable_Grid2 as Grid,
 } from "@mui/material";
-import { filterList } from "src/data/quickAddFilterList";
+import { topFilterList } from "src/data/quickAddFilterList";
 import { variantFilters } from "src/data/variantFilters";
 import { Stack } from "@mui/system";
 
 export const ProductsSearch = (props) => {
-  const { selectedFilter, setSelectedFilter } = props;
-  const [selectedVariantFilter, setSelectedVariantFilter] = useState([]);
+  const { selectedFilter, setSelectedFilter, selectedVariantFilter, setSelectedVariantFilter, filterList } = props;
   const [filterOpt, setFilterOpt] = useState();
   const [isVariantFilters, setIsVariantFilters] = useState(false);
+const orderFilterList = (type) => {
+  const getProdType = filterList.find((item) => item.label === type)
+  const orderedProdType = getProdType.values.map(
+    (item) => item.label && item.label
+  );
+  return orderedProdType
+}
+  async function getGeneralFilter() {
+    const newFilterOpt = {
+      collection: [],
+      productType: [],
+      productVendor: [],
+      tag: [],
+    };
+    const resCollection = await GetProductsMeta("collections");
+    if (resCollection) {
+    topFilterList.map((item) => {
+      if(item.id === "collection") {
+          const orderedCollection = resCollection.newData.data.collections.edges.map(
+            (collection) => collection.node.handle
+          );
+          newFilterOpt.collection = orderedCollection;
+      } else {
+        if (filterList) {
+          newFilterOpt.productType = orderFilterList("productType");
+          newFilterOpt.productVendor = orderFilterList("productVendor");
+          newFilterOpt.tag = orderFilterList("tag");
+        }
+      }
+    })
+  }
+    setFilterOpt(newFilterOpt);
+  }
 
+  useEffect(() => {
+    if(!filterOpt || filterOpt.tag.length === 0) {
+      getGeneralFilter();
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [filterList]);
+
+  // PRODUCT SEARCH AND VARIANT FILTER
   const handleFilterChange = useCallback(
-    async (event) => {
+    (event) => {
+      const newData = {
+        [event.target.name] : event.target.value
+      }
+      const isHaveSameFilter = selectedVariantFilter.findIndex((n) => n.name === event.target.name)
+      if(isHaveSameFilter < 0) {
+        setSelectedVariantFilter([...selectedVariantFilter, newData])
+      } else {
+        selectedVariantFilter.splice(isHaveSameFilter, 1)
+        setSelectedVariantFilter([...selectedVariantFilter, selectedVariantFilter[isHaveSameFilter] = newData])
+      }
+
       let newSelectedFilter = selectedFilter;
       if (event) {
         newSelectedFilter = {
@@ -42,93 +93,26 @@ export const ProductsSearch = (props) => {
       }
       setSelectedFilter(newSelectedFilter);
     },
-    [selectedFilter, setSelectedFilter]
+    [selectedFilter, selectedVariantFilter, setSelectedFilter, setSelectedVariantFilter]
   );
 
-  async function fetchData() {
-    const newFilterOpt = {
-      collection: [],
-      prodType: [],
-      prodVendor: [],
-      prodTag: [],
-    };
-
-    const resCollection = await GetProductsMeta("collections");
-    const resProdType = await GetProductsMeta("prodType");
-    const resProdVendor = await GetProductsMeta("prodVendor");
-    const resProdTag = await GetProductsMeta("prodTag");
-
-    if (resCollection) {
-      const orderedCollection = resCollection.newData.data.collections.edges.map(
-        (collection) => collection.node.handle
-      );
-      newFilterOpt.collection = orderedCollection;
-    }
-    if (resProdType) {
-      const orderedProdType = resProdType.newData.data.productTypes.edges.map(
-        (prodType) => prodType.node && prodType.node
-      );
-      newFilterOpt.prodType = orderedProdType;
-    }
-    if (resProdVendor) {
-      const orderedProdVendor = resProdVendor.newData.data.shop.productVendors.edges.map(
-        (prodVendor) => prodVendor.node && prodVendor.node
-      );
-      newFilterOpt.prodVendor = orderedProdVendor;
-    }
-    if (resProdTag) {
-      const orderedProdTag = resProdTag.newData.data.productTags.edges.map(
-        (prodTag) => prodTag.node && prodTag.node
-      );
-      newFilterOpt.prodTag = orderedProdTag;
-    }
-    setFilterOpt(newFilterOpt);
-  }
-
-  useEffect(() => {
-    fetchData();
-  }, []);
-
-  // PRODUCT SEARCH AND VARIANT FILTER
-
-  const handleVariantFilterChange = (event) => {
+  const handleVariantFilterChange = useCallback((event) => {
     const splitVal = event.target.name.split("|-|");
 
     const newData = {
-      name:splitVal[0],
-      value:[splitVal[1]]
-    }
-    const isHaveSameFilter = selectedVariantFilter.findIndex((n) => n.name === splitVal[0])
-    if(isHaveSameFilter < 0) {
-      setSelectedVariantFilter(
-        [
-          ...selectedVariantFilter,
-          newData
-        ]
-      )
-    } else {
-      const oldFilterVal = [...selectedVariantFilter]
-      const isHaveSameFilterVal = oldFilterVal[isHaveSameFilter].value.findIndex((val) => val === splitVal[1])
-      if(isHaveSameFilterVal < 0) {
-        const newDataSameFilter = {
-          name:splitVal[0],
-          value:[...oldFilterVal[isHaveSameFilter].value, splitVal[1]]
-        }
-        oldFilterVal[isHaveSameFilter] = newDataSameFilter
-        setSelectedVariantFilter(oldFilterVal)
-      } else {
-        const newVal = oldFilterVal[isHaveSameFilter].value;
-        newVal.splice(isHaveSameFilterVal, 1)
-        const newDataSameFilter = {
-          name:splitVal[0],
-          value:newVal
-        }
-        oldFilterVal[isHaveSameFilter] = newDataSameFilter
-        setSelectedVariantFilter(oldFilterVal)
+      variantOption: {
+        name:splitVal[0],
+        value:splitVal[1]
       }
     }
-    
-  };
+    const isHaveSameFilter = selectedVariantFilter.findIndex((n) => n.variantOption?.name === splitVal[0] && n.variantOption?.value === splitVal[1])
+    if(isHaveSameFilter < 0) {
+      setSelectedVariantFilter([...selectedVariantFilter, newData])
+    } else {
+      selectedVariantFilter.splice(isHaveSameFilter, 1)
+      setSelectedVariantFilter([...selectedVariantFilter])
+    }
+  },[selectedVariantFilter, setSelectedVariantFilter]);
   return (
     <Card
       sx={{
@@ -150,6 +134,7 @@ export const ProductsSearch = (props) => {
             size="small"
             sx={{ width: "100%" }}
             onClick={() => setIsVariantFilters(!isVariantFilters)}
+            disabled={selectedFilter.prodName ? true : false}
           >
             Variant
           </Button>
@@ -162,6 +147,7 @@ export const ProductsSearch = (props) => {
             value={selectedFilter.selectedProdName}
             fullWidth
             onChange={handleFilterChange}
+            disabled={selectedVariantFilter.length > 0 ? true : false}
           />
         </Grid>
         {!filterOpt ? (
@@ -172,7 +158,7 @@ export const ProductsSearch = (props) => {
             sx={{ marginTop: "12px", borderRadius: "5px" }}
           />
         ) : (
-          filterList.map((filter) => {
+          topFilterList.map((filter) => {
             return (
               filterOpt && (
                 <Grid lg={2} key={filter.id}>
@@ -205,7 +191,6 @@ export const ProductsSearch = (props) => {
         <Box sx={{ display: "block", overflow: "auto" }}>
           <Box sx={{ display: "block", width: "max-content" }}>
             {variantFilters.map((variant) => {
-               const selectedFilter = selectedVariantFilter.find((varFilter) => varFilter.name === variant.name)
               return (
                 <FormControl
                   sx={{ m: 3 }}
@@ -222,13 +207,13 @@ export const ProductsSearch = (props) => {
                     }}
                   >
                     {variant.values.map((varVal, i) => {
-                      const isHaveVal = selectedFilter ? selectedFilter.value.includes(varVal) : false
+                      const isHaveSameFilter = selectedVariantFilter.findIndex((n) => n.variantOption?.name === variant.name && n.variantOption?.value === varVal)
                       return (
                         <FormControlLabel
                           key={i + 1}
                           control={
                             <Checkbox
-                              checked={isHaveVal}
+                              checked={isHaveSameFilter < 0 ? false : true}
                               onChange={handleVariantFilterChange}
                               name={`${variant.name}|-|${varVal}`}
                             />

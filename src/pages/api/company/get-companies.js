@@ -12,7 +12,7 @@ export default async function getQuotes(req, res) {
   const data = await db
     .collection(collection)
     .find(queryCompany)
-    .project({ avatar: avatar })
+    .project(!bodyObject.avatar ? { avatar: avatar } : "")
     .sort({ _id: -1 })
     .skip(skip)
     .limit(postPerPage)

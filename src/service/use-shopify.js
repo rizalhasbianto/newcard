@@ -40,13 +40,20 @@ export const SendInvoiceByShopify = async (id) => {
   return sendToShopify;
 };
 
-export const GetProductsShopify = async (query, productPerPage, lastCursor, pageIndex) => {
-  const { prodName, prodType, prodTag, prodVendor, collection } = query;
+export const GetProductsShopify = async (selectedFilter, productPerPage, lastCursor, pageIndex) => {
+  const { productName, productType, tag, productVendor, collection } = selectedFilter;
+  const newParam = {...selectedFilter}
+  Object.keys(newParam).forEach(key => {
+    if(!newParam[key])
+    delete newParam[key]
+ });
+  const queryParam = new URLSearchParams(newParam).toString();
   const sendToShopify = await useDataService("/api/shopify/get-products", "POST", {
-    prodName,
-    prodType,
-    prodTag,
-    prodVendor,
+    queryParam,
+    productName,
+    productType,
+    tag,
+    productVendor,
     collection,
     productPerPage,
     lastCursor,
@@ -55,8 +62,9 @@ export const GetProductsShopify = async (query, productPerPage, lastCursor, page
   return sendToShopify;
 };
 
-export const GetProductsShopifySwr = (query, productPerPage) => { 
-  const { prodName, prodType, prodTag, prodVendor, collection } = query;
+const GetProductsShopifySwr = (selectedFilter, productPerPage) => { 
+
+  const { prodName, prodType, prodTag, prodVendor, collection } = selectedFilter;              
   const params = {
     prodName,
     prodType, 
@@ -69,6 +77,31 @@ export const GetProductsShopifySwr = (query, productPerPage) => {
   const quotesRes = useSWRInfiniteData("/api/shopify/get-products-swr", queryParam);
 
   return quotesRes;
+};
+
+export const SearchProducts = (selectedFilter, selectedVariantFilter, productPerPage) => { 
+  const { prodName, prodType, prodTag, prodVendor, collection } = selectedFilter;  
+  let queryParam
+  let url
+  if(collection) {
+    const params = {
+      prodName,
+      prodType, 
+      prodTag,
+      prodVendor,
+      collection,
+      productPerPage
+    }
+    queryParam = new URLSearchParams(params).toString();
+    url = "/api/shopify/get-products-swr"
+  } else {
+    queryParam = selectedVariantFilter.length > 0 ?`selectedFilter=${JSON.stringify(selectedVariantFilter)}` : ""
+    url = "/api/shopify/search-products"
+  }           
+console.log("url", url)
+console.log("queryParam", queryParam)
+  const dataRes = useSWRInfiniteData(url, queryParam);
+  return dataRes;
 };
 
 export const GetProductsMeta = async (inputValue) => {
