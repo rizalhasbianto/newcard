@@ -34,6 +34,16 @@ export const ProductCard = (props) => {
     setSelectedVariant(newSelecetdVariant?.node);
   };
 
+  const handleAddQuote = () => {
+    const newQuote = {
+      productName: product.node.title,
+      variant: selectedVariant,
+      qty: selectedQuantity,
+      total: (selectedQuantity * selectedVariant.price.amount).toFixed(2),
+    };
+    console.log("prod", product)
+  }
+
   useEffect(() => {
     setSelectedVariant(product.node.variants.edges[0].node)
     setSelectedOptions(product.node.variants.edges[0].node.selectedOptions.reduce(
@@ -126,14 +136,7 @@ export const ProductCard = (props) => {
                     <Grid xs={12} md={8}>
                       <Button
                         variant="contained"
-                        onClick={() => addQuote({
-                          quotesList,
-                          setQuotesList,
-                          selectedProduct,
-                          selectedVariant,
-                          selectedQuantity,
-                          modalPopUp,
-                        })}
+                        onClick={() => handleAddQuote()}
                       >
                         Add to Quote List
                       </Button>

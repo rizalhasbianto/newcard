@@ -32,6 +32,7 @@ const Page = () => {
     tag: "",
   });
   const [selectedVariantFilter, setSelectedVariantFilter] = useState([]);
+  const [smartSearch, setSmartSearch] = useState();
 
   const productPerPage = 12;
   const lastCursor = "";
@@ -39,6 +40,7 @@ const Page = () => {
   const { data, isLoading, isError, size, setSize } = SearchProducts(
     selectedFilter,
     selectedVariantFilter,
+    smartSearch,
     productPerPage,
     lastCursor,
     lodMoreCount
@@ -50,7 +52,8 @@ const Page = () => {
 
   useEffect(() => {
     if(!data) return
-    sethasNextPage(data.at(-1).newData?.pageInfo.hasNextPage)
+    console.log("data", data)
+    sethasNextPage(data.at(-1).newData?.pageInfo?.hasNextPage)
   },[data])
   return (
     <>
@@ -111,6 +114,9 @@ const Page = () => {
               selectedVariantFilter={selectedVariantFilter}
               setSelectedVariantFilter={setSelectedVariantFilter}
               filterList={data?.at(-1).newData.productFilters}
+              smartSearch={smartSearch}
+              setSmartSearch={setSmartSearch}
+              predictiveSearch={data?.at(-1).newData.predictiveSearch}
             />
             <Grid container spacing={3}>
               {data&&

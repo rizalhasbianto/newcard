@@ -79,7 +79,7 @@ const GetProductsShopifySwr = (selectedFilter, productPerPage) => {
   return quotesRes;
 };
 
-export const SearchProducts = (selectedFilter, selectedVariantFilter, productPerPage) => { 
+export const SearchProducts = (selectedFilter, selectedVariantFilter, smartSearch, productPerPage) => { 
   const { prodName, prodType, prodTag, prodVendor, collection } = selectedFilter;  
   let queryParam
   let url
@@ -95,11 +95,15 @@ export const SearchProducts = (selectedFilter, selectedVariantFilter, productPer
     queryParam = new URLSearchParams(params).toString();
     url = "/api/shopify/get-products-swr"
   } else {
-    queryParam = selectedVariantFilter.length > 0 ?`selectedFilter=${JSON.stringify(selectedVariantFilter)}` : ""
-    url = "/api/shopify/search-products"
+    if(smartSearch) {
+      queryParam = `selectedFilter=${smartSearch}`
+      url = "/api/shopify/smart-search"
+    } else {
+      queryParam = selectedVariantFilter.length > 0 ?`selectedFilter=${JSON.stringify(selectedVariantFilter)}` : ""
+      url = "/api/shopify/search-products"
+    }
+    
   }           
-console.log("url", url)
-console.log("queryParam", queryParam)
   const dataRes = useSWRInfiniteData(url, queryParam);
   return dataRes;
 };

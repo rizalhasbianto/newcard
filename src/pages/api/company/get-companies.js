@@ -7,12 +7,11 @@ export default async function getQuotes(req, res) {
   const bodyObject = req.method === "POST" ? req.body : req.query;
   const queryCompany = bodyObject.type === "check" ? bodyObject.query : {};
   const postPerPage = bodyObject.postPerPage ? Number(bodyObject.postPerPage) : 10;
-  const avatar = bodyObject.avatar ? 1 : 0
   const skip = (bodyObject.page + 1) * bodyObject.postPerPage - bodyObject.postPerPage;
   const data = await db
     .collection(collection)
     .find(queryCompany)
-    .project(!bodyObject.avatar ? { avatar: avatar } : "")
+    .project(!bodyObject.avatar ? { avatar: 0 } : "")
     .sort({ _id: -1 })
     .skip(skip)
     .limit(postPerPage)
