@@ -8,6 +8,13 @@ export const quotesListHead = [
     { title: "ACTION"}
 ]
 
+export const quotesListHeadProduct = [
+    { title: "ID" },
+    { title: "TOTAL" },
+    { title: "ITEMS" },
+    { title: "ACTION"}
+]
+
 export const ordersListHead = [
     { title: "ID" },
     { title: "DATE" },

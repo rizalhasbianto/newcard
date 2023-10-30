@@ -18,8 +18,10 @@ import {
 import { Layout as DashboardLayout } from "src/layouts/dashboard/layout";
 import { ProductCard } from "src/sections/products/product-card";
 import { ProductsSearch } from "src/sections/products/products-search";
+import ProductAlertDialogQuoteList from "src/sections/products/product-alert-dialog-quotelist"
 
 import { SearchProducts } from "src/service/use-shopify";
+import { GetQuotesData } from 'src/service/use-mongo'
 import { useEffect, useState } from "react";
 
 const Page = () => {
@@ -33,6 +35,8 @@ const Page = () => {
   });
   const [selectedVariantFilter, setSelectedVariantFilter] = useState([]);
   const [smartSearch, setSmartSearch] = useState();
+  const [openQuote, setOpenQuote] = useState(false);
+  const [quoteList, setQuoteList] = useState(false);
 
   const productPerPage = 12;
   const lastCursor = "";
@@ -50,11 +54,23 @@ const Page = () => {
     setSize(size + 1);
   };
 
+  const handleOpenQuoteList = async () => {
+    const query = ({ $or: [{ status: "draft" }, { status: "new" }] })
+    const sort = "DSC"
+    const resQuotes = await GetQuotesData(0, 50, query, sort)
+    if (!resQuotes) {
+      console.log("resQuotes", resQuotes)
+      return
+    }
+    setQuoteList(resQuotes.data.quote)
+    setOpenQuote(true)
+  }
+
   useEffect(() => {
     if(!data) return
-    console.log("data", data)
     sethasNextPage(data.at(-1).newData?.pageInfo?.hasNextPage)
   },[data])
+
   return (
     <>
       <Head>
@@ -68,6 +84,11 @@ const Page = () => {
         }}
       >
         <Container maxWidth="xl">
+          <ProductAlertDialogQuoteList 
+          openQuote={openQuote}
+          setOpenQuote={setOpenQuote}
+          quoteList={quoteList}
+          />
           <Stack spacing={3}>
             <Stack direction="row" justifyContent="space-between" spacing={4}>
               <Stack spacing={1}>
@@ -124,7 +145,10 @@ const Page = () => {
                   return(
                     dt.newData.edges.map((product, i) => (
                       <Grid xs={12} md={6} lg={3} key={i + 1}>
-                        <ProductCard product={product} />
+                        <ProductCard 
+                          product={product} 
+                          handleOpenQuoteList={handleOpenQuoteList}
+                        />
                       </Grid>
                     ))
                   )

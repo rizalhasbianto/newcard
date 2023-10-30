@@ -92,20 +92,24 @@ export const ProductsSearch = (props) => {
   // PRODUCT SEARCH AND VARIANT FILTER
   const handleFilterChange = useCallback(
     (event) => {
-      const newData = {
-        [event.target.name]: event.target.value,
-      };
-      const isHaveSameFilter = selectedVariantFilter.findIndex((n) => n.name === event.target.name);
-      if (isHaveSameFilter < 0) {
-        setSelectedVariantFilter([...selectedVariantFilter, newData]);
-      } else {
-        selectedVariantFilter.splice(isHaveSameFilter, 1);
-        setSelectedVariantFilter([
-          ...selectedVariantFilter,
-          (selectedVariantFilter[isHaveSameFilter] = newData),
-        ]);
+      if(event.target.name !== "collection") {
+        const newData = {
+          [event.target.name]: event.target.value,
+        };
+        const isHaveSameFilter = selectedVariantFilter.findIndex((n) => n[event.target.name]);
+        if (isHaveSameFilter < 0) {
+          setSelectedVariantFilter([...selectedVariantFilter, newData]);
+        } else {
+          if(event.target.value) {
+            selectedVariantFilter[isHaveSameFilter] = newData
+            setSelectedVariantFilter([
+              ...selectedVariantFilter
+            ]);
+          } else {
+            selectedVariantFilter.splice(isHaveSameFilter, 1);
+          }
+        }
       }
-
       let newSelectedFilter = selectedFilter;
       if (event) {
         newSelectedFilter = {
@@ -140,7 +144,7 @@ export const ProductsSearch = (props) => {
     },
     [selectedVariantFilter, setSelectedVariantFilter]
   );
-console.log("smartSearch", smartSearch)
+
   return (
     <>
       <Card
@@ -170,12 +174,13 @@ console.log("smartSearch", smartSearch)
           </Grid>
           <Grid lg={3}>
             <TextField
-              id="prodName"
-              name="prodName"
+              id="productName"
+              name="productName"
               label="Product Name"
               value={selectedFilter.selectedProdName}
               fullWidth
               onChange={handleFilterChange}
+              disabled={selectedVariantFilter.filter(e => e["variantOption"]).length > 0 ? true : false}
             />
           </Grid>
           {!filterOpt ? (
@@ -328,7 +333,7 @@ console.log("smartSearch", smartSearch)
           )}
           {selectedVariantFilter?.map((item, i) => {
             return item.variantOption ? (
-              <Typography key={i + 1} variant="caption" sx={{ display: "inline-block" }}>
+              <Typography key={i + 1} variant="caption" sx={{ display: "inline-block", marginRight: "5px" }}>
                 {item.variantOption.name}: {item.variantOption.value}
               </Typography>
             ) : (

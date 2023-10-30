@@ -37,7 +37,6 @@ const Page = () => {
 
   const reqQuotesData = async (page, rowsPerPage) => {
     const query = ({ $or: [{ status: "draft" }, { status: "new" }] })
-    console.log("string", JSON.stringify(({ $or: [{ status: "draft" }, { status: "new" }] })))
     const sort = "DSC"
     const resQuotes = await GetQuotesData(page, rowsPerPage, query, sort)
     if (!resQuotes) {

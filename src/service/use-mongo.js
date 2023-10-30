@@ -11,7 +11,7 @@ export const GetQuotesData = async (page, rowsPerPage, query, sort, type) => {
 
   return quotesRes;
 };
-
+ 
 export const GetQuotesDataSwr = (page, rowsPerPage, query, sort, type) => {
   const theType = type ? type : "any";
   const queryPath =
@@ -95,6 +95,17 @@ export const UpdateOrderIdQuoteToMongoDb = async (quoteId, draftOrderId) => {
       draftOrderId: draftOrderId.id,
       draftOrderNumber: draftOrderId.name,
     },
+  });
+  return mongoRes;
+};
+
+export const UpdateQuoteItem = async (quoteId, quoteItem) => {
+  const mongoRes = await useDataService("/api/quotes/update-quote", "POST", {
+    quoteId: quoteId,
+    data: {
+      quotesList: quoteItem,
+    },
+    type:"item"
   });
   return mongoRes;
 };
