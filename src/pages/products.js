@@ -47,7 +47,7 @@ const Page = () => {
   const [smartSearch, setSmartSearch] = useState();
   const [openQuote, setOpenQuote] = useState(false);
   const [quoteList, setQuoteList] = useState(false);
-console.log("selectedFilter", selectedFilter)
+
   const productPerPage = 12;
   const lastCursor = "";
   const lodMoreCount = 0;

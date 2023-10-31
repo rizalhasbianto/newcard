@@ -167,7 +167,7 @@ export default function AddCompany(props) {
                     },
                     default: true
                 }]
-                console.log("getSelectedVal", getSelectedVal)
+
                 if(getSelectedVal) {
                     const page = 0,
                     rowsPerPage= 50

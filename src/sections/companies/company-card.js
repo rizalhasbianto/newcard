@@ -3,6 +3,7 @@ import ArrowDownOnSquareIcon from '@heroicons/react/24/solid/ArrowDownOnSquareIc
 import ClockIcon from '@heroicons/react/24/solid/ClockIcon';
 import { Avatar, Box, Card, CardContent, Divider, Stack, SvgIcon, Typography } from '@mui/material';
 import { ImageComponent } from "src/components/image";
+import Link from 'next/link'
 
 export const CompanyCard = (props) => {
   const { company, quoteTotal } = props;
@@ -65,6 +66,7 @@ export const CompanyCard = (props) => {
       }}
     >
       <CardContent>
+      <Link href={`/companies/edit-company?id=${company._id}`}>
         <Box
           sx={{
             display: 'flex',
@@ -90,6 +92,7 @@ export const CompanyCard = (props) => {
         >
           {company.name}
         </Typography>
+        </Link>
       </CardContent>
       <Box sx={{ flexGrow: 1 }} />
       <Divider />

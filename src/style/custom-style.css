@@ -22,3 +22,8 @@
 .MuiPaper-elevation8 {
     max-height: 250px!important;
 }
+
+a {
+    color: initial;
+    text-decoration: none;
+}

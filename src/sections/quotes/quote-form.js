@@ -256,7 +256,7 @@ export const QuotesForm = (props) => {
         </Grid>
         <CardContent sx={{ pt: 0 }}>
           <Box sx={{ m: -1.5 }}>
-            <Collapse in={addNewCompany ? false : true}>
+            <Collapse in={!addNewCompany}>
               <QuoteSelectCompany
                 companies={companies}
                 location={location}
