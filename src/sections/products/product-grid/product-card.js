@@ -1,21 +1,16 @@
 import { useEffect, useState } from "react";
 import PropTypes from "prop-types";
-import ArrowDownOnSquareIcon from "@heroicons/react/24/solid/ArrowDownOnSquareIcon";
-import ClockIcon from "@heroicons/react/24/solid/ClockIcon";
 import {
-  Avatar,
   Box,
   Card,
   CardContent,
   Divider,
   Stack,
-  SvgIcon,
   Typography,
   Button,
   TextField,
   Unstable_Grid2 as Grid,
 } from "@mui/material";
-import Image from "next/image";
 import OptionsComponent from "src/components/products/options";
 import { ImageComponent } from "src/components/image";
 import { useRouter } from "next/router";

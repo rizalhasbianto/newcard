@@ -42,11 +42,10 @@ export const SendInvoiceByShopify = async (id) => {
 
 export const GetProductsShopify = async (selectedFilter, productPerPage, lastCursor, pageIndex) => {
   const { productName, productType, tag, productVendor, collection } = selectedFilter;
-  const newParam = {...selectedFilter}
-  Object.keys(newParam).forEach(key => {
-    if(!newParam[key])
-    delete newParam[key]
- });
+  const newParam = { ...selectedFilter };
+  Object.keys(newParam).forEach((key) => {
+    if (!newParam[key]) delete newParam[key];
+  });
   const queryParam = new URLSearchParams(newParam).toString();
   const sendToShopify = await useDataService("/api/shopify/get-products", "POST", {
     queryParam,
@@ -62,50 +61,58 @@ export const GetProductsShopify = async (selectedFilter, productPerPage, lastCur
   return sendToShopify;
 };
 
-const GetProductsShopifySwr = (selectedFilter, productPerPage) => { 
-
-  const { prodName, prodType, prodTag, prodVendor, collection } = selectedFilter;              
+const GetProductsShopifySwr = (selectedFilter, productPerPage) => {
+  const { prodName, prodType, prodTag, prodVendor, collection } = selectedFilter;
   const params = {
     prodName,
-    prodType, 
+    prodType,
     prodTag,
     prodVendor,
-    collection, 
-    productPerPage
-  }
+    collection,
+    productPerPage,
+  };
   const queryParam = new URLSearchParams(params).toString();
   const quotesRes = useSWRInfiniteData("/api/shopify/get-products-swr", queryParam);
 
   return quotesRes;
 };
 
-export const SearchProducts = (selectedFilter, selectedVariantFilter, smartSearch, productPerPage) => { 
-  const { productName, productType, tag, productVendor, collection } = selectedFilter;  
-  let queryParam
-  let url
-  if(collection) {
+export const SearchProducts = (
+  selectedFilter,
+  selectedVariantFilter,
+  smartSearch,
+  productPerPage
+) => {
+  const { productName, productType, tag, productVendor, collection } = selectedFilter;
+  let queryParam;
+  let url;
+  if (collection) {
     const params = {
       productName,
-      productType, 
+      productType,
       tag,
       productVendor,
       collection,
-      productPerPage
-    }
+      productPerPage,
+    };
     queryParam = new URLSearchParams(params).toString();
-    url = "/api/shopify/get-products-swr"
+    url = "/api/shopify/get-products-swr";
   } else {
-    if(smartSearch) {
-      queryParam = `selectedFilter=${smartSearch}`
-      url = "/api/shopify/smart-search"
+    if (smartSearch) {
+      queryParam = `selectedFilter=${smartSearch}&productPerPage=${productPerPage}`;
+      url = "/api/shopify/smart-search";
     } else {
-      if(!selectedFilter.collection) {
-        queryParam = selectedVariantFilter.length > 0 ?`selectedFilter=${JSON.stringify(selectedVariantFilter)}` : ""
-        url = "/api/shopify/search-products"
+      if (!selectedFilter.collection) {
+        queryParam =
+          selectedVariantFilter.length > 0
+            ? `selectedFilter=${JSON.stringify(
+                selectedVariantFilter
+              )}&productPerPage=${productPerPage}`
+            : "";
+        url = "/api/shopify/search-products";
       }
     }
-    
-  }      
+  }
   const dataRes = useSWRInfiniteData(url, queryParam);
   return dataRes;
 };
@@ -134,12 +141,7 @@ export const GetProductsMeta = async (inputValue) => {
 
 export const GetOrdersDataSwr = (page) => {
   const queryPath =
-    "page=" +
-    page.direction +
-    "&startCursor=" +
-    page.startCursor +
-    "&endCursor=" +
-    page.endCursor;
+    "page=" + page.direction + "&startCursor=" + page.startCursor + "&endCursor=" + page.endCursor;
   const quotesRes = useSwrData("/api/shopify/get-orders", queryPath);
 
   return quotesRes;

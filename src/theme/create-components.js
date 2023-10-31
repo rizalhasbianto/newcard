@@ -42,7 +42,7 @@ export function createComponents(config) {
     MuiButton: {
       styleOverrides: {
         root: {
-          borderRadius: '12px',
+          borderRadius: '5px',
           textTransform: 'none'
         },
         sizeSmall: {
@@ -68,7 +68,7 @@ export function createComponents(config) {
     MuiCard: {
       styleOverrides: {
         root: {
-          borderRadius: 20,
+          borderRadius: 10,
           [`&.${paperClasses.elevation1}`]: {
             boxShadow: '0px 5px 22px rgba(0, 0, 0, 0.04), 0px 0px 0px 0.5px rgba(0, 0, 0, 0.03)'
           }
