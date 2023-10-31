@@ -2,9 +2,59 @@ import PropTypes from 'prop-types';
 import ArrowDownOnSquareIcon from '@heroicons/react/24/solid/ArrowDownOnSquareIcon';
 import ClockIcon from '@heroicons/react/24/solid/ClockIcon';
 import { Avatar, Box, Card, CardContent, Divider, Stack, SvgIcon, Typography } from '@mui/material';
+import { ImageComponent } from "src/components/image";
 
 export const CompanyCard = (props) => {
-  const { company } = props;
+  const { company, quoteTotal } = props;
+
+  function stringToColor(string) {
+    let hash = 0;
+    let i;
+  
+    /* eslint-disable no-bitwise */
+    for (i = 0; i < string.length; i += 1) {
+      hash = string.charCodeAt(i) + ((hash << 5) - hash);
+    }
+  
+    let color = '#';
+  
+    for (i = 0; i < 3; i += 1) {
+      const value = (hash >> (i * 8)) & 0xff;
+      color += `00${value.toString(16)}`.slice(-2);
+    }
+    /* eslint-enable no-bitwise */
+  
+    return color;
+  }
+  
+  function stringAvatar(name) {
+    
+    const splitName = name.split(' ')
+    let inisial
+    if(splitName.length > 1) {
+      inisial = {
+        sx: {
+          bgcolor: stringToColor(name),
+          width:"80px",
+          height:"80px",
+          fontSize: "28px"
+        },
+        children: `${splitName[0][0]}${splitName[1][0]}`,
+      }
+    } else {
+      const splitOneName = name.split("")
+      inisial = {
+        sx: {
+          bgcolor: stringToColor(name),
+          width:"80px",
+          height:"80px",
+          fontSize: "28px"
+        },
+        children: `${splitOneName[0][0]}${splitOneName[1][0]}`,
+      }
+    }
+    return inisial;
+  }
 
   return (
     <Card
@@ -19,19 +69,17 @@ export const CompanyCard = (props) => {
           sx={{
             display: 'flex',
             justifyContent: 'center',
-            pb: 3
+            pb: 3,
+            mb: 2,
+            position: "relative",
+            width: "100%",
+            height: "80px"
           }}
         >
           {
             company.avatar 
-            ? <Avatar
-                src={company.avatar}
-                variant="square"
-              />
-            : <Avatar
-                src='/assets/logos/logo-github.png'
-                variant="square"
-              />
+            ? <ImageComponent img={company.avatar} title={company.name} />
+            : <Avatar {...stringAvatar(company.name)}/>
           }
           
         </Box>
@@ -68,7 +116,7 @@ export const CompanyCard = (props) => {
             display="inline"
             variant="body2"
           >
-            Updated 2hr ago
+            {quoteTotal} open quote&lsquo;s
           </Typography>
         </Stack>
         <Stack
@@ -87,7 +135,7 @@ export const CompanyCard = (props) => {
             display="inline"
             variant="body2"
           >
-            {company.downloads} Downloads
+            Detail
           </Typography>
         </Stack>
       </Stack>

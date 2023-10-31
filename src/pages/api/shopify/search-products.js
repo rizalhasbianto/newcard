@@ -2,15 +2,18 @@ import { callShopify } from "src/lib/shopify";
 
 export default async function getProducts(req, res) {
   const productPerPage = req.query.productPerPage ? req.query.productPerPage : 12;
+  const productName = req.query.productName ? req.query.productName : "";
   const cursor = req.query?.lastCursor ? `, after: "${req.query.lastCursor}"` : "";
+  
   const prodFilter = req.query.selectedFilter
     ? `, productFilters:${req.query.selectedFilter.replace(/"([^(")"]+)":/g, "$1:")}`
     : "";
+
   const gQl = `
     { search(
         first:${productPerPage}, 
         types:PRODUCT, 
-        query:""${prodFilter}${cursor}
+        query:"${productName}"${prodFilter}${cursor}
         ) {
             pageInfo {
               hasNextPage

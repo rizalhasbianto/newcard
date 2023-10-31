@@ -31,12 +31,14 @@ export const ProductsSearch = (props) => {
     setSmartSearch,
     predictiveSearch
   } = props;
-
+ 
   const [filterOpt, setFilterOpt] = useState();
   const [variantFilterOpt, setVariantFilterOpt] = useState();
   const [isVariantFilters, setIsVariantFilters] = useState(false);
   const orderFilterList = (type) => {
     const getProdType = filterList.find((item) => item.label === type);
+    if(!getProdType) return
+
     const orderedProdType = getProdType.values.map((item) => ({
       label: item.label,
       count: item.count,

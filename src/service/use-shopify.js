@@ -103,11 +103,12 @@ export const SearchProducts = (
       url = "/api/shopify/smart-search";
     } else {
       if (!selectedFilter.collection) {
+        const paramNoTitle = selectedVariantFilter.filter((item) => !item["productName"])
         queryParam =
-          selectedVariantFilter.length > 0
+        selectedVariantFilter.length > 0
             ? `selectedFilter=${JSON.stringify(
-                selectedVariantFilter
-              )}&productPerPage=${productPerPage}`
+              paramNoTitle
+              )}&productPerPage=${productPerPage}&productName=${productName}`
             : "";
         url = "/api/shopify/search-products";
       }
