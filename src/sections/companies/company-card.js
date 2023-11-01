@@ -66,7 +66,7 @@ export const CompanyCard = (props) => {
       }}
     >
       <CardContent>
-      <Link href={`/companies/edit-company?id=${company._id}`}>
+      <Link href={`/companies/${company._id}`}>
         <Box
           sx={{
             display: 'flex',

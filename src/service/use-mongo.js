@@ -143,6 +143,8 @@ export const GetSingleCompaniesSwr = (id, quotePage, quotePostPerPage) => {
 export const AddCompanyToMongo = async (companyData) => {
   const mongoRes = await useDataService("/api/company/add-company", "POST", {
     name: companyData.companyName,
+    about: companyData.companyAbout,
+    marked: companyData.marked ? true : false,
     location: {
       address: "",
       city: "",
@@ -169,6 +171,53 @@ export const AddCompanyToMongo = async (companyData) => {
         default: true,
       },
     ],
+  });
+  return mongoRes;
+};
+
+export const UpdateCompanyInfoToMongo = async (companyData) => {
+  const mongoRes = await useDataService("/api/company/add-company", "POST", {
+    name: companyData.companyName,
+    about: companyData.companyAbout,
+    marked: companyData.marked ? true : false,
+    location: {
+      address: "",
+      city: "",
+      state: "",
+      zip: "",
+    },
+    contact: [
+      {
+        email: companyData.contactEmail,
+        name: companyData.contactFirstName + " " + companyData.contactLastName,
+      },
+    ],
+  });
+  return mongoRes;
+};
+
+export const UpdateCompanyShipToMongo = async (companyData) => {
+  const mongoRes = await useDataService("/api/company/add-company", "POST", {
+    shipTo: [
+      {
+        locationName: companyData.companyShippingLocation,
+        location: {
+          attention: companyData.attentionLocation,
+          address: companyData.addressLocation,
+          city: companyData.cityLocation,
+          state: companyData.stateName.name,
+          zip: companyData.postalLocation,
+        },
+        default: companyData.default ? true : false,
+      },
+    ],
+  });
+  return mongoRes;
+};
+
+export const UpdateCompanyAvatarToMongo = async (companyData) => {
+  const mongoRes = await useDataService("/api/company/add-company", "POST", {
+    avatar: companyData.companyPhoto,
   });
   return mongoRes;
 };

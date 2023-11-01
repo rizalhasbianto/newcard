@@ -62,6 +62,7 @@ export default function AddCompany(props) {
         initialValues: {
             companyName: "",
             companyAbout: "",
+            marked: "",
             companyShippingLocation: "",
             countryName: "USA",
             stateName: "",
@@ -317,6 +318,11 @@ export default function AddCompany(props) {
                         <Checkbox
                             icon={<BookmarkBorderIcon />}
                             checkedIcon={<BookmarkIcon />}
+                            name="marked"
+                            id="marked"
+                            onBlur={formik.handleBlur}
+                            onChange={formik.handleChange}
+                            value={formik.values.marked}
                         />
                     </Grid>
                 </Grid>

@@ -3,6 +3,7 @@ import { useEffect, useState, useCallback } from "react";
 import Autocomplete from "@mui/material/Autocomplete";
 import Link from "next/link";
 import Image from "next/image";
+import { ImageComponent } from "src/components/image"
 import { Box, Button, TextField, Typography, Unstable_Grid2 as Grid } from "@mui/material";
 import { GetProductsShopify } from "src/service/use-shopify";
 import { SearchProduct } from "./quotes-search-product";
@@ -16,7 +17,7 @@ export const SelectProducts = ({ quotesList, setQuotesList }) => {
 
   const getOptions = async (active, selectedProduct) => {
     if (active) {
-      const resData = await GetProductsShopify({prodName:inputValue});
+      const resData = await GetProductsShopify({title:`${inputValue}*`});
 
       let newOptions = [];
 
@@ -24,9 +25,8 @@ export const SelectProducts = ({ quotesList, setQuotesList }) => {
         newOptions = [selectedProduct];
       }
 
-      if (resData) {
+      if (resData) { 
         const dataProd = resData.newData.edges;
-        console.log("dataProd", dataProd)
         if (dataProd.length > 0) {
           newOptions = [...newOptions, ...dataProd];
         }
@@ -94,13 +94,7 @@ export const SelectProducts = ({ quotesList, setQuotesList }) => {
                         position: "relative",
                       }}
                     >
-                      <Image
-                        src={option.node.variants.edges[0].node.image.url}
-                        fill={true}
-                        alt="Picture of the author"
-                        className="shopify-fill"
-                        sizes="270 640 750"
-                      />
+                      <ImageComponent img={option.node.variants.edges[0].node?.image?.url} title="" />
                     </Grid>
                     <Grid md={10}>
                       <Typography variant="body2" color="text.secondary">

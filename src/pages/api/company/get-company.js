@@ -15,8 +15,6 @@ export default async function getQuotes(req, res) {
     .limit(1)
     .toArray();
 
-    console.log("data", data)
-
   let relatedQuote;
   if (bodyObject.withQuote) {
     relatedQuote = await db

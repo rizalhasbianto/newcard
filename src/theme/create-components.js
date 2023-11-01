@@ -327,7 +327,7 @@ export function createComponents(config) {
           textTransform: 'none',
           opacity: 0.5,
           '& + &': {
-            marginLeft: 24
+            marginLeft: 0
           },
           '&.Mui-selected': {
             opacity: 1,

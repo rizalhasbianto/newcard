@@ -1,0 +1,11 @@
+import clientPromise from "src/lib/mongodb";
+import { ObjectId } from "mongodb";
+
+export default async function updateCompany(req, res) {
+    const client = await clientPromise;
+    const db = client.db(process.env.DB_NAME);
+    const collection = process.env.MONGODB_COLLECTION_COMPANY
+    const bodyObject = req.body;
+    const addCompany = await db.collection(collection).updateOne({ _id: new ObjectId(bodyObject.companyId) }, { $set: bodyObject });
+    res.json({ status: 200, data: addCompany });
+}

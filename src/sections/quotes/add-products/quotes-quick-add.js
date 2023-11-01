@@ -60,7 +60,9 @@ export const QuickAddProducts = ({ quotesList, setQuotesList }) => {
       }
 
       setSelectedFilter(newSelectedFilter);
-      const resData = await GetProductsShopify(newSelectedFilter, productPerPage);
+      const filterData = {...newSelectedFilter}
+      filterData.productName = `${newSelectedFilter.productName}*`
+      const resData = await GetProductsShopify(filterData, productPerPage);
       if (resData) {
         setProdList(resData.newData.edges);
         if (resData.newData.pageInfo.hasNextPage) {

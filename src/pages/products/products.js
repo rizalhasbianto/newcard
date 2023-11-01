@@ -33,7 +33,7 @@ import { SearchProducts } from "src/service/use-shopify";
 import { GetQuotesData } from "src/service/use-mongo";
 import { useCallback, useEffect, useState } from "react";
 
-const Page = () => {
+const Products = () => {
   const [layout, setLayout] = useState("card");
   const [hasNextPage, sethasNextPage] = useState(true);
   const [selectedFilter, setSelectedFilter] = useState({
@@ -185,6 +185,4 @@ const Page = () => {
   );
 };
 
-Page.getLayout = (page) => <DashboardLayout>{page}</DashboardLayout>;
-
-export default Page;
+export default Products;

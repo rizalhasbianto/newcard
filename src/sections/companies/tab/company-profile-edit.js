@@ -11,17 +11,26 @@ import {
   Unstable_Grid2 as Grid,
 } from "@mui/material";
 
+import {
+  UpdateCompanyInfoToMongo,
+  CheckCompanyName,
+  CheckUserEmail,
+} from 'src/service/use-mongo'
+
 import { useFormik, ErrorMessage } from "formik";
 import * as Yup from 'yup';
 
-export const CompanyEditDetails = () => {
+export const CompanyEditDetails = (props) => {
+  const { data } = props
+
+  const contactName = data?.contact[0].name.split(" ")
   const formik = useFormik({
     initialValues: {
-      companyName: "",
-      companyAbout: "",
-      contactFirstName: "",
-      contactLastName: "",
-      contactEmail: "",
+      companyName: data?.name,
+      companyAbout: data?.about,
+      contactFirstName: contactName && contactName[0],
+      contactLastName: contactName && contactName[1],
+      contactEmail: data?.contact[0].email,
       submit: null,
     },
     validationSchema: Yup.object({
@@ -36,9 +45,6 @@ export const CompanyEditDetails = () => {
     }),
     onSubmit: async (values, helpers) => {
       setLoadSave(true);
-      if (file) {
-        values.companyPhoto = file.base64File;
-      }
 
       let submitCondition = true;
       let errorFields = {};
@@ -68,7 +74,7 @@ export const CompanyEditDetails = () => {
       }
 
       if (submitCondition) {
-        const resSaveCompany = await AddCompanyToMongo(values);
+        const resSaveCompany = await UpdateCompanyInfoToMongo(values);
         if (!resSaveCompany) {
           toastUp.handleStatus("error");
           toastUp.handleMessage("Error when create company!");
@@ -76,56 +82,9 @@ export const CompanyEditDetails = () => {
           return;
         }
 
-        const resAddUser = await RegisterUser(values, resSaveCompany.data.insertedId);
-        if (!resAddUser) {
-          toastUp.handleStatus("error");
-          toastUp.handleMessage("Error when create user!");
-          setLoadSave(false);
-          return;
-        }
-
-        const resInvite = await InviteUser(values, resAddUser.data.insertedId);
-        if (!resInvite && resInvite.status !== 200) {
-          toastUp.handleStatus("warning");
-          toastUp.handleMessage("Company added, sent user invite failed!");
-          setLoadSave(false);
-          return;
-        }
-
         setLoadSave(false);
         toastUp.handleStatus("success");
-        toastUp.handleMessage("Company added, sent user invite!");
-
-        const shipToSelected = [
-          {
-            locationName: values.companyShippingLocation,
-            location: {
-              attention: values.attentionLocation,
-              address: values.addressLocation,
-              city: values.cityLocation,
-              state: values.stateName.name,
-              zip: values.postalLocation,
-            },
-            default: true,
-          },
-        ];
-
-        if (getSelectedVal) {
-          const page = 0,
-            rowsPerPage = 50;
-          const newCompaniesData = await GetCompanies(page, rowsPerPage);
-          console.log("newCompaniesData", newCompaniesData);
-          setCompanies(newCompaniesData.data.company);
-          setCompanyName(values.companyName);
-          setShipTo(values.companyShippingLocation);
-          setShipToList(shipToSelected);
-          setLocation(shipToSelected[0].location);
-          setCompanyContact({
-            email: values.contactEmail,
-            name: values.contactFirstName + " " + values.contactLastName,
-          });
-        }
-        setAddNewCompany(false);
+        toastUp.handleMessage("Company updated!");
       }
     },
   });

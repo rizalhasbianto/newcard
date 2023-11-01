@@ -15,19 +15,23 @@ import TabPanel from "@mui/lab/TabPanel";
 import { Layout as DashboardLayout } from "src/layouts/dashboard/layout";
 import { CompanyProfile } from "src/sections/companies/company-profile";
 import { CompanyProfileDetails } from "src/sections/companies/tab/company-profile-details";
+import { CompanyAddresses } from "src/sections/companies/tab/company-addresses";
 import { GetSingleCompaniesSwr, GetCompanies } from "src/service/use-mongo";
 import { useState } from "react";
-import { CompanyEditDetails } from "src/sections/companies/tab/company-edit";
+import { CompanyEditDetails } from "src/sections/companies/tab/company-profile-edit";
+import { useRouter } from 'next/router';
 
 const Page = () => {
   const [value, setValue] = useState("1");
-  const { data, isLoading, isError } = GetSingleCompaniesSwr("6509c2d0701a309976512e9c", 0, 1);
+
+  const router = useRouter();
+  const { id } = router.query;
+  const { data, isLoading, isError } = GetSingleCompaniesSwr(router.query.companyId, 0, 1);
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
   };
 
-  console.log("data", data);
   return (
     <>
       <Head>
@@ -62,10 +66,10 @@ const Page = () => {
                           </TabList>
                         </Box>
                         <TabPanel value="1">
-                          <CompanyEditDetails />
+                          { data && <CompanyEditDetails data={data && data.data.company[0]}/> }
                         </TabPanel>
                         <TabPanel value="2">
-                          <CompanyProfileDetails />
+                        { data && <CompanyAddresses data={data && data.data.company[0]}/> }
                         </TabPanel>
                         <TabPanel value="3">
                           <CompanyProfileDetails />
