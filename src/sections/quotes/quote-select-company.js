@@ -33,7 +33,6 @@ export default function QuoteSelectCompany(props) {
                     return
                 }
                 const selectedCompany = companies.find((company) => company.name === event.target.value)
-                console.log("companies", companies)
                 setShipTo(selectedCompany.shipTo[0].locationName)
                 setCompanyContact(selectedCompany.contact[0])
                 setShipToList(selectedCompany.shipTo)

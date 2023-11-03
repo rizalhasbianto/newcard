@@ -132,7 +132,12 @@ export const SideNav = (props) => {
             }}
           >
             {items.map((item) => {
-              const active = item.path ? (pathname === item.path) : false;
+              let active
+              if(item.path === "/") {
+                active = item.path ? (pathname === item.path) : false;
+              } else {
+                active = item.path ? (pathname.includes(item.path)) : false;
+              }
 
               return (
                 <SideNavItem

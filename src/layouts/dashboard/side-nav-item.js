@@ -47,6 +47,7 @@ export const SideNavItem = (props) => {
         }}
         {...linkProps}
         onMouseOver={() => setHoverMenu(title)}
+        onMouseLeave={() => setHoverMenu()}
       >
         {icon && (
           <Box
@@ -87,7 +88,7 @@ export const SideNavItem = (props) => {
         </Box>
       </ButtonBase>
       {subMenu &&
-        <Collapse in={active}>
+        <Collapse in={active || hoverMenu === title}>
           <Box
             sx={{
               mb: '10px',
@@ -112,7 +113,7 @@ export const SideNavItem = (props) => {
       }
     </li>
   );
-};
+}; 
 
 SideNavItem.propTypes = {
   active: PropTypes.bool,

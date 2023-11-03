@@ -357,49 +357,8 @@ export default function AddCompany(props) {
                     </Grid>
                     <Grid
                         xs={12}
-                        md={2}
-                    >
-                        <TextField
-                            id="country-name"
-                            name="countryName"
-                            label="Country"
-                            value={formik.values.countryName}
-                            select
-                            fullWidth
-                            required
-                            onChange={(e) => formik.setValues({ countryName: e.target.value })}
-                        >
-                            <MenuItem value="USA">
-                                <em>USA</em>
-                            </MenuItem>
-                        </TextField>
-                    </Grid>
-                    <Grid
-                        xs={12}
                         md={5}
-                    >
-                        <Autocomplete
-                            disablePortal
-                            id="state"
-                            name="stateName"
-                            options={newUsaState}
-                            fullWidth
-                            isOptionEqualToValue={() => { return (true) }}
-                            renderInput={(params) =>
-                                <TextField
-                                    {...params}
-                                    label="State"
-                                    error={!!(formik.touched.stateName && formik.errors.stateName)}
-                                    helperText={formik.touched.stateName && formik.errors.stateName}
-                                />
-                            }
-                            onChange={(event, newValue) => {
-                                formik.setFieldValue("stateName", newValue)
-                            }}
-                            onBlur={() => formik.setTouched({ ["stateName"]: true })}
-                            value={formik.values.stateName}
-                        />
-                    </Grid>
+                    ></Grid>
                     <Grid
                         xs={12}
                         md={6}
@@ -436,7 +395,52 @@ export default function AddCompany(props) {
                     </Grid>
                     <Grid
                         xs={12}
+                        md={2}
+                    >
+                        <TextField
+                            id="country-name"
+                            name="countryName"
+                            label="Country"
+                            value={formik.values.countryName}
+                            select
+                            fullWidth
+                            required
+                            onChange={(e) => formik.setValues({ countryName: e.target.value })}
+                        >
+                            <MenuItem value="USA">
+                                <em>USA</em>
+                            </MenuItem>
+                        </TextField>
+                    </Grid>
+                    <Grid
+                        xs={12}
                         md={4}
+                    >
+                        <Autocomplete
+                            disablePortal
+                            id="state"
+                            name="stateName"
+                            options={newUsaState}
+                            fullWidth
+                            isOptionEqualToValue={() => { return (true) }}
+                            renderInput={(params) =>
+                                <TextField
+                                    {...params}
+                                    label="State"
+                                    error={!!(formik.touched.stateName && formik.errors.stateName)}
+                                    helperText={formik.touched.stateName && formik.errors.stateName}
+                                />
+                            }
+                            onChange={(event, newValue) => {
+                                formik.setFieldValue("stateName", newValue)
+                            }}
+                            onBlur={() => formik.setTouched({ ["stateName"]: true })}
+                            value={formik.values.stateName}
+                        />
+                    </Grid>
+                    <Grid
+                        xs={12}
+                        md={3}
                     >
                         <TextField
                             id="city-location"
@@ -453,7 +457,7 @@ export default function AddCompany(props) {
                     </Grid>
                     <Grid
                         xs={12}
-                        md={4}
+                        md={3}
                     >
                         <TextField
                             id="postal-location"
@@ -468,23 +472,6 @@ export default function AddCompany(props) {
                             helperText={formik.touched.postalLocation && formik.errors.postalLocation}
                         />
                     </Grid>
-                    <Grid
-                        xs={12}
-                        md={4}
-                    >
-                        <TextField
-                            id="phone-location"
-                            name="phoneLocation"
-                            label="Phone"
-                            variant="outlined"
-                            fullWidth
-                            onBlur={formik.handleBlur}
-                            onChange={formik.handleChange}
-                            value={formik.values.phoneLocation}
-                            error={!!(formik.touched.phoneLocation && formik.errors.phoneLocation)}
-                            helperText={formik.touched.phoneLocation && formik.errors.phoneLocation}
-                        />
-                    </Grid>
                 </Grid>
             </Stack>
             <Stack>
@@ -497,7 +484,7 @@ export default function AddCompany(props) {
                     </Grid>
                     <Grid
                         xs={12}
-                        md={4}
+                        md={3}
                     >
                         <TextField
                             id="contact-first-name"
@@ -514,7 +501,7 @@ export default function AddCompany(props) {
                     </Grid>
                     <Grid
                         xs={12}
-                        md={4}
+                        md={3}
                     >
                         <TextField
                             id="contact-last-name"
@@ -531,7 +518,7 @@ export default function AddCompany(props) {
                     </Grid>
                     <Grid
                         xs={12}
-                        md={4}
+                        md={3}
                     >
                         <TextField
                             id="contact-email"
@@ -545,6 +532,24 @@ export default function AddCompany(props) {
                             value={formik.values.contactEmail}
                             error={!!(formik.touched.contactEmail && formik.errors.contactEmail)}
                             helperText={formik.touched.contactEmail && formik.errors.contactEmail}
+                        />
+                    </Grid>
+
+                    <Grid
+                        xs={12}
+                        md={3}
+                    >
+                        <TextField
+                            id="phone-location"
+                            name="phoneLocation"
+                            label="Phone"
+                            variant="outlined"
+                            fullWidth
+                            onBlur={formik.handleBlur}
+                            onChange={formik.handleChange}
+                            value={formik.values.phoneLocation}
+                            error={!!(formik.touched.phoneLocation && formik.errors.phoneLocation)}
+                            helperText={formik.touched.phoneLocation && formik.errors.phoneLocation}
                         />
                     </Grid>
                     <CardActions sx={{ justifyContent: 'flex-end' }}>

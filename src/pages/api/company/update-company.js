@@ -6,6 +6,7 @@ export default async function updateCompany(req, res) {
     const db = client.db(process.env.DB_NAME);
     const collection = process.env.MONGODB_COLLECTION_COMPANY
     const bodyObject = req.body;
-    const addCompany = await db.collection(collection).updateOne({ _id: new ObjectId(bodyObject.companyId) }, { $set: bodyObject });
+    console.log(bodyObject)
+    const addCompany = await db.collection(collection).updateOne({ _id: new ObjectId(bodyObject.id) }, { $set: bodyObject.updateData});
     res.json({ status: 200, data: addCompany });
 }

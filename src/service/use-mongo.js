@@ -156,6 +156,7 @@ export const AddCompanyToMongo = async (companyData) => {
       {
         email: companyData.contactEmail,
         name: companyData.contactFirstName + " " + companyData.contactLastName,
+        phone: companyData.phoneLocation
       },
     ],
     shipTo: [
@@ -176,28 +177,33 @@ export const AddCompanyToMongo = async (companyData) => {
 };
 
 export const UpdateCompanyInfoToMongo = async (companyData) => {
-  const mongoRes = await useDataService("/api/company/add-company", "POST", {
-    name: companyData.companyName,
-    about: companyData.companyAbout,
-    marked: companyData.marked ? true : false,
-    location: {
-      address: "",
-      city: "",
-      state: "",
-      zip: "",
-    },
-    contact: [
-      {
-        email: companyData.contactEmail,
-        name: companyData.contactFirstName + " " + companyData.contactLastName,
+  console.log("companyData", companyData)
+  const mongoRes = await useDataService("/api/company/update-company", "POST", {
+    id:companyData.id,
+    updateData: {
+      name: companyData.companyName,
+      about: companyData.companyAbout,
+      marked: companyData.marked ? true : false,
+      location: {
+        address: "",
+        city: "",
+        state: "",
+        zip: "",
       },
-    ],
+      contact: [
+        {
+          email: companyData.contactEmail,
+          name: companyData.contactFirstName + " " + companyData.contactLastName,
+          phone: companyData.phoneLocation
+        },
+      ],
+    }
   });
   return mongoRes;
 };
 
 export const UpdateCompanyShipToMongo = async (companyData) => {
-  const mongoRes = await useDataService("/api/company/add-company", "POST", {
+  const mongoRes = await useDataService("/api/company/update-company", "POST", {
     shipTo: [
       {
         locationName: companyData.companyShippingLocation,
@@ -216,7 +222,7 @@ export const UpdateCompanyShipToMongo = async (companyData) => {
 };
 
 export const UpdateCompanyAvatarToMongo = async (companyData) => {
-  const mongoRes = await useDataService("/api/company/add-company", "POST", {
+  const mongoRes = await useDataService("/api/company/update-company", "POST", {
     avatar: companyData.companyPhoto,
   });
   return mongoRes;

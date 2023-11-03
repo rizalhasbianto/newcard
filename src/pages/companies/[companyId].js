@@ -20,10 +20,12 @@ import { GetSingleCompaniesSwr, GetCompanies } from "src/service/use-mongo";
 import { useState } from "react";
 import { CompanyEditDetails } from "src/sections/companies/tab/company-profile-edit";
 import { useRouter } from 'next/router';
+import { useToast } from 'src/hooks/use-toast'
+import Toast from 'src/components/toast'
 
 const Page = () => {
   const [value, setValue] = useState("1");
-
+  const toastUp = useToast();
   const router = useRouter();
   const { id } = router.query;
   const { data, isLoading, isError } = GetSingleCompaniesSwr(router.query.companyId, 0, 1);
@@ -45,6 +47,11 @@ const Page = () => {
         }}
       >
         <Container maxWidth="lg">
+        <Toast
+        toastStatus={toastUp.toastStatus}
+        handleStatus={toastUp.handleStatus}
+        toastMessage={toastUp.toastMessage}
+      />
           <Stack spacing={3}>
             <div>
               <Typography variant="h4">Company Details</Typography>
@@ -66,10 +73,10 @@ const Page = () => {
                           </TabList>
                         </Box>
                         <TabPanel value="1">
-                          { data && <CompanyEditDetails data={data && data.data.company[0]}/> }
+                          { data && <CompanyEditDetails data={data && data.data.company[0]} toastUp={toastUp}/> }
                         </TabPanel>
                         <TabPanel value="2">
-                        { data && <CompanyAddresses data={data && data.data.company[0]}/> }
+                        { data && <CompanyAddresses data={data && data.data.company[0]} toastUp={toastUp}/> }
                         </TabPanel>
                         <TabPanel value="3">
                           <CompanyProfileDetails />

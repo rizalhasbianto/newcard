@@ -1,36 +1,26 @@
 import { useCallback, useState } from "react";
-import {
-  Box,
-  Button,
-  Card,
-  CardActions,
-  CardContent,
-  CardHeader,
-  Divider,
-  TextField,
-  Unstable_Grid2 as Grid,
-} from "@mui/material";
-
-import {
-  UpdateCompanyInfoToMongo,
-  CheckCompanyName,
-  CheckUserEmail,
-} from 'src/service/use-mongo'
+import { Box, CardActions, Divider, TextField, Unstable_Grid2 as Grid } from "@mui/material";
+import LoadingButton from "@mui/lab/LoadingButton";
+import SaveIcon from "@mui/icons-material/Save";
+import { UpdateCompanyInfoToMongo, CheckCompanyName, CheckUserEmail } from "src/service/use-mongo";
 
 import { useFormik, ErrorMessage } from "formik";
-import * as Yup from 'yup';
+import * as Yup from "yup";
 
 export const CompanyEditDetails = (props) => {
-  const { data } = props
+  const { data, toastUp } = props;
+  const [loadSave, setLoadSave] = useState(false);
 
-  const contactName = data?.contact[0].name.split(" ")
+  const contactName = data?.contact[0].name.split(" ");
   const formik = useFormik({
     initialValues: {
+      id: data?._id,
       companyName: data?.name,
       companyAbout: data?.about,
       contactFirstName: contactName && contactName[0],
       contactLastName: contactName && contactName[1],
       contactEmail: data?.contact[0].email,
+      phoneLocation: data?.contact.phone,
       submit: null,
     },
     validationSchema: Yup.object({
@@ -48,8 +38,22 @@ export const CompanyEditDetails = (props) => {
 
       let submitCondition = true;
       let errorFields = {};
-      const resCheckCompanyName = await CheckCompanyName(values.companyName);
-      const checkUser = await CheckUserEmail(values.contactEmail);
+      let resCheckCompanyName = {
+        data: {
+          company: [],
+        },
+      };
+      let checkUser = {
+        data: [],
+      };
+
+      if (values.companyName !== data?.name) {
+        resCheckCompanyName = await CheckCompanyName(values.companyName);
+      }
+
+      if (values.contactEmail !== data?.contact[0].email) {
+        checkUser = await CheckUserEmail(values.contactEmail);
+      }
 
       if (!resCheckCompanyName || !checkUser) {
         submitCondition = false;
@@ -63,7 +67,7 @@ export const CompanyEditDetails = (props) => {
       }
 
       if (checkUser.data.length > 0) {
-        errorFields.contactEmail = "Is already taken, have account? please login";
+        errorFields.contactEmail = "Is already taken";
       }
 
       if (Object.keys(errorFields).length !== 0) {
@@ -129,7 +133,7 @@ export const CompanyEditDetails = (props) => {
           <Grid xs={12} md={12}>
             <Divider textAlign="left">Contact</Divider>
           </Grid>
-          <Grid xs={12} md={4}>
+          <Grid xs={12} md={6}>
             <TextField
               id="contact-first-name"
               name="contactFirstName"
@@ -143,7 +147,7 @@ export const CompanyEditDetails = (props) => {
               helperText={formik.touched.contactFirstName && formik.errors.contactFirstName}
             />
           </Grid>
-          <Grid xs={12} md={4}>
+          <Grid xs={12} md={6}>
             <TextField
               id="contact-last-name"
               name="contactLastName"
@@ -157,7 +161,7 @@ export const CompanyEditDetails = (props) => {
               helperText={formik.touched.contactLastName && formik.errors.contactLastName}
             />
           </Grid>
-          <Grid xs={12} md={4}>
+          <Grid xs={12} md={6}>
             <TextField
               id="contact-email"
               name="contactEmail"
@@ -172,11 +176,34 @@ export const CompanyEditDetails = (props) => {
               helperText={formik.touched.contactEmail && formik.errors.contactEmail}
             />
           </Grid>
+          <Grid xs={12} md={6}>
+            <TextField
+              id="phone-location"
+              name="phoneLocation"
+              label="Phone"
+              variant="outlined"
+              fullWidth
+              onBlur={formik.handleBlur}
+              onChange={formik.handleChange}
+              value={formik.values.phoneLocation}
+              error={!!(formik.touched.phoneLocation && formik.errors.phoneLocation)}
+              helperText={formik.touched.phoneLocation && formik.errors.phoneLocation}
+            />
+          </Grid>
         </Grid>
       </Box>
       <Divider sx={{ mb: 2, mt: 2 }} />
       <CardActions sx={{ justifyContent: "flex-end" }}>
-        <Button variant="contained">Save details</Button>
+        <LoadingButton
+          color="primary"
+          loading={loadSave}
+          loadingPosition="start"
+          startIcon={<SaveIcon />}
+          variant="contained"
+          type="submit"
+        >
+          Save
+        </LoadingButton>
       </CardActions>
     </form>
   );
