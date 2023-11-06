@@ -72,15 +72,6 @@ const Page = () => {
                             <Tab label="Quote" value="3" />
                           </TabList>
                         </Box>
-                        <TabPanel value="1">
-                          { data && <CompanyEditDetails data={data && data.data.company[0]} toastUp={toastUp}/> }
-                        </TabPanel>
-                        <TabPanel value="2">
-                        { data && <CompanyAddresses data={data && data.data.company[0]} toastUp={toastUp}/> }
-                        </TabPanel>
-                        <TabPanel value="3">
-                          <CompanyProfileDetails />
-                        </TabPanel>
                       </TabContext>
                     </CardContent>
                   </Card>
