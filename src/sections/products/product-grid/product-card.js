@@ -32,6 +32,7 @@ export const ProductCard = (props) => {
   const img = selectedVariant.image?.url;
 
   const handleChange = (event, newSingleOption) => {
+    if(!newSingleOption) return
     const getSelectedOption = newSingleOption.split(":");
     const newSelectedOptions = {
       ...selectedOptions,

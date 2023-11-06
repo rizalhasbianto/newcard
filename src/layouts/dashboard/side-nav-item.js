@@ -26,7 +26,10 @@ export const SideNavItem = (props) => {
   }
 
   return (
-    <li>
+    <li
+    onMouseOver={() => setHoverMenu(title)}
+        onMouseLeave={() => setHoverMenu()}
+    >
       <ButtonBase
         sx={{
           alignItems: 'center',
@@ -46,8 +49,6 @@ export const SideNavItem = (props) => {
           }
         }}
         {...linkProps}
-        onMouseOver={() => setHoverMenu(title)}
-        onMouseLeave={() => setHoverMenu()}
       >
         {icon && (
           <Box
