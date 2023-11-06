@@ -25,6 +25,7 @@ import { signOut } from "next-auth/react"
 export const SideNav = (props) => {
   const { open, onClose } = props;
   const pathname = usePathname();
+  console.log("pathname", pathname)
   const lgUp = useMediaQuery((theme) => theme.breakpoints.up('lg'));
   const { data } = useSession()
   const [loading, setLoading] = useState(false)
@@ -136,7 +137,7 @@ export const SideNav = (props) => {
               if(item.path === "/") {
                 active = item.path ? (pathname === item.path) : false;
               } else {
-                active = item.path ? (pathname.includes(item.path)) : false;
+                active = item.path ? (pathname?.includes(item.path)) : false;
               }
 
               return (
