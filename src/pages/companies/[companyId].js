@@ -46,40 +46,6 @@ const Page = () => {
           py: 8,
         }}
       >
-        <Container maxWidth="lg">
-        <Toast
-        toastStatus={toastUp.toastStatus}
-        handleStatus={toastUp.handleStatus}
-        toastMessage={toastUp.toastMessage}
-      />
-          <Stack spacing={3}>
-            <div>
-              <Typography variant="h4">Company Details</Typography>
-            </div>
-            <div>
-              <Grid container spacing={3}>
-                <Grid xs={12} md={6} lg={4}>
-                  <CompanyProfile />
-                </Grid>
-                <Grid xs={12} md={6} lg={8}>
-                  <Card>
-                    <CardContent>
-                      <TabContext value={value}>
-                        <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
-                          <TabList onChange={handleChange} aria-label="lab API tabs example">
-                            <Tab label="Profile" value="1" />
-                            <Tab label="Addresses" value="2" />
-                            <Tab label="Quote" value="3" />
-                          </TabList>
-                        </Box>
-                      </TabContext>
-                    </CardContent>
-                  </Card>
-                </Grid>
-              </Grid>
-            </div>
-          </Stack>
-        </Container>
       </Box>
     </>
   );
