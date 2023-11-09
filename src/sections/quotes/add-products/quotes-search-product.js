@@ -12,6 +12,7 @@ export const SearchProduct = (props) => {
   const [selectedVariant, setSelectedVariant] = useState("");
   const [selectedOptions, setSelectedOptions] = useState("");
   const [selectedQuantity, setSelectedQuantity] = useState(1);
+  const [notAvilableOption, setNotAvilableOption] = useState(false);
   const modalPopUp = usePopover();
 
   useEffect(() => {
@@ -38,7 +39,12 @@ export const SearchProduct = (props) => {
       });
     });
     setSelectedOptions(newSelectedOptions);
-    setSelectedVariant(newSelecetdVariant?.node);
+    if (newSelecetdVariant) {
+      setNotAvilableOption(false);
+      setSelectedVariant(newSelecetdVariant?.node);
+    } else {
+      setNotAvilableOption(true);
+    }
   };
 
   return (
@@ -77,11 +83,22 @@ export const SearchProduct = (props) => {
                   />
                 </Grid>
                 <Grid xs={12} md={7}>
-                  <Typography variant="body2">Price: ${selectedVariant.price.amount}</Typography>
-                  <Typography variant="body2">
-                    Stock: {selectedVariant.currentlyNotInStock ? "Out of stock" : "In stock"}
-                  </Typography>
-                  <Typography variant="body2">Sku: {selectedVariant.sku}</Typography>
+                  {notAvilableOption ? (
+                    <Typography variant="body2">
+                      No variant available for this selected options!
+                    </Typography>
+                  ) : (
+                    <>
+                      <Typography variant="body2">
+                        Price: ${selectedVariant.price.amount}
+                      </Typography>
+                      <Typography variant="body2">
+                        Stock: {selectedVariant.currentlyNotInStock ? "Out of stock" : "In stock"}
+                      </Typography>
+                      <Typography variant="body2">Sku: {selectedVariant.sku}</Typography>
+                    </>
+                  )}
+
                   <Grid container justifyContent="center" alignItems="center">
                     <Grid xs={12} md={4}>
                       <TextField
@@ -103,14 +120,17 @@ export const SearchProduct = (props) => {
                     <Grid xs={12} md={8}>
                       <Button
                         variant="contained"
-                        onClick={() => addQuote({
-                          quotesList,
-                          setQuotesList,
-                          selectedProduct,
-                          selectedVariant,
-                          selectedQuantity,
-                          modalPopUp,
-                        })}
+                        onClick={() =>
+                          addQuote({
+                            quotesList,
+                            setQuotesList,
+                            selectedProduct,
+                            selectedVariant,
+                            selectedQuantity,
+                            modalPopUp,
+                          })
+                        }
+                        disabled={notAvilableOption}
                       >
                         Add to Quote List
                       </Button>

@@ -11,7 +11,7 @@ export const GetQuotesData = async (page, rowsPerPage, query, sort, type) => {
 
   return quotesRes;
 };
- 
+
 export const GetQuotesDataSwr = (page, rowsPerPage, query, sort, type) => {
   const theType = type ? type : "any";
   const queryPath =
@@ -105,7 +105,7 @@ export const UpdateQuoteItem = async (quoteId, quoteItem) => {
     data: {
       quotesList: quoteItem,
     },
-    type:"item"
+    type: "item",
   });
   return mongoRes;
 };
@@ -134,7 +134,13 @@ export const GetCompaniesSwr = (page, postPerPage) => {
 };
 
 export const GetSingleCompaniesSwr = (id, quotePage, quotePostPerPage) => {
-  const queryPath = "withQuote=true&quotePage=" + quotePage + "&quotePostPerPage=" + quotePostPerPage + "&avatar=true&id=" + id;
+  const queryPath =
+    "withQuote=true&quotePage=" +
+    quotePage +
+    "&quotePostPerPage=" +
+    quotePostPerPage +
+    "&avatar=true&id=" +
+    id;
   const comapanyRes = useSwrData("/api/company/get-company", queryPath);
 
   return comapanyRes;
@@ -156,7 +162,7 @@ export const AddCompanyToMongo = async (companyData) => {
       {
         email: companyData.contactEmail,
         name: companyData.contactFirstName + " " + companyData.contactLastName,
-        phone: companyData.phoneLocation
+        phone: companyData.phoneLocation,
       },
     ],
     shipTo: [
@@ -177,9 +183,9 @@ export const AddCompanyToMongo = async (companyData) => {
 };
 
 export const UpdateCompanyInfoToMongo = async (companyData) => {
-  console.log("companyData", companyData)
+  console.log("companyData", companyData);
   const mongoRes = await useDataService("/api/company/update-company", "POST", {
-    id:companyData.id,
+    id: companyData.id,
     updateData: {
       name: companyData.companyName,
       about: companyData.companyAbout,
@@ -194,29 +200,59 @@ export const UpdateCompanyInfoToMongo = async (companyData) => {
         {
           email: companyData.contactEmail,
           name: companyData.contactFirstName + " " + companyData.contactLastName,
-          phone: companyData.phoneLocation
+          phone: companyData.phoneLocation,
         },
       ],
-    }
+    },
   });
   return mongoRes;
 };
 
-export const UpdateCompanyShipToMongo = async (companyData) => {
-  const mongoRes = await useDataService("/api/company/update-company", "POST", {
-    shipTo: [
-      {
-        locationName: companyData.companyShippingLocation,
-        location: {
-          attention: companyData.attentionLocation,
-          address: companyData.addressLocation,
-          city: companyData.cityLocation,
-          state: companyData.stateName.name,
-          zip: companyData.postalLocation,
-        },
-        default: companyData.default ? true : false,
+export const UpdateCompanyShipToMongo = async (id, companyData, shipToData) => {
+  const findShipTarget = shipToData.findIndex(
+    (item) => item.locationName === companyData.companyShippingLocation
+  );
+  const shipToNew = [...shipToData]
+  shipToNew[findShipTarget] = {
+      locationName: companyData.companyShippingLocation,
+      location: {
+        attention: companyData.attentionLocation,
+        address: companyData.addressLocation,
+        city: companyData.cityLocation,
+        state: companyData.stateName.name,
+        zip: companyData.postalLocation,
       },
-    ],
+      default: companyData.default ? true : false,
+    };
+  const mongoRes = await useDataService("/api/company/update-company", "POST", {
+    id: id,
+    updateData: {
+      shipTo: shipToNew,
+    },
+  });
+  return mongoRes;
+};
+
+export const AddNewShipToMongo = async (id, companyData, shipToData) => {
+  const shipToNew = [
+    ...shipToData,
+    {
+      locationName: companyData.companyShippingLocation,
+      location: {
+        attention: companyData.attentionLocation,
+        address: companyData.addressLocation,
+        city: companyData.cityLocation,
+        state: companyData.stateName.name,
+        zip: companyData.postalLocation,
+      },
+      default: companyData.default ? true : false,
+    },
+  ];
+  const mongoRes = await useDataService("/api/company/update-company", "POST", {
+    id: id,
+    updateData: {
+      shipTo: shipToNew,
+    },
   });
   return mongoRes;
 };

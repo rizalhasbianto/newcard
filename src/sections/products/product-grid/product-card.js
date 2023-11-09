@@ -21,6 +21,7 @@ export const ProductCard = (props) => {
   const router = useRouter();
   const quoteId = router.query?.quoteId;
 
+  const [notAvilableOption, setNotAvilableOption] = useState(false);
   const [selectedVariant, setSelectedVariant] = useState(product.node.variants.edges[0].node);
   const [selectedOptions, setSelectedOptions] = useState(
     product.node.variants.edges[0].node.selectedOptions.reduce(
@@ -29,10 +30,10 @@ export const ProductCard = (props) => {
     )
   );
   const [selectedQuantity, setSelectedQuantity] = useState(1);
-  const img = selectedVariant.image?.url;
+  const img = selectedVariant?.image?.url;
 
   const handleChange = (event, newSingleOption) => {
-    if(!newSingleOption) return
+    if (!newSingleOption) return;
     const getSelectedOption = newSingleOption.split(":");
     const newSelectedOptions = {
       ...selectedOptions,
@@ -45,7 +46,12 @@ export const ProductCard = (props) => {
       });
     });
     setSelectedOptions(newSelectedOptions);
-    setSelectedVariant(newSelecetdVariant?.node);
+    if (newSelecetdVariant) {
+      setNotAvilableOption(false);
+      setSelectedVariant(newSelecetdVariant?.node);
+    } else {
+      setNotAvilableOption(true);
+    }
   };
 
   const handleAddQuote = async () => {
@@ -73,7 +79,6 @@ export const ProductCard = (props) => {
       )
     );
   }, [product]);
-
   return (
     <Card
       sx={{
@@ -135,6 +140,12 @@ export const ProductCard = (props) => {
         sx={{ p: 2 }}
       >
         <Grid container justifyContent="center" alignItems="center">
+          {
+            notAvilableOption &&
+            <Typography variant="body2">No variant available for this selected options!</Typography>
+          }
+        <Grid xs={12} md={12}>
+          </Grid>
           <Grid xs={12} md={4}>
             <TextField
               id="qtySingle"
@@ -154,14 +165,18 @@ export const ProductCard = (props) => {
           </Grid>
           <Grid xs={12} md={8}>
             {!quoteId ? (
-              <Button variant="contained" onClick={() => handleOpenQuoteList()}>
+              <Button
+                variant="contained"
+                onClick={() => handleOpenQuoteList()}
+                disabled={selectedVariant.currentlyNotInStock ? true : false || notAvilableOption}
+              >
                 Choose Quote
               </Button>
             ) : (
               <Button
                 variant="contained"
                 onClick={() => handleAddQuote()}
-                disabled={selectedVariant.currentlyNotInStock ? true : false}
+                disabled={selectedVariant.currentlyNotInStock ? true : false || notAvilableOption}
               >
                 Add to #{quoteId.slice(-4)}
               </Button>

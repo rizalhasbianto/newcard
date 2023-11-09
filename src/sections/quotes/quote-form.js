@@ -142,10 +142,10 @@ export const QuotesForm = (props) => {
     if (tabContent) {
       if (tabContent.company.name) {
         const selectedCompany = companyList.find((company) => company.name === tabContent.company.name)
-        const selectedLocation = selectedCompany.shipTo.find((ship) => ship.locationName === tabContent.company.shipTo)
-        setShipToList(selectedCompany.shipTo)
-        setLocation(selectedLocation.location)
-        setCompanyContact(selectedCompany.contact[0])
+        const selectedLocation = selectedCompany?.shipTo.find((ship) => ship.locationName === tabContent.company.shipTo)
+        setShipToList(selectedCompany?.shipTo)
+        setLocation(selectedLocation?.location)
+        setCompanyContact(selectedCompany?.contact[0])
       } else {
         setShipToList([])
         setCompanyContact()

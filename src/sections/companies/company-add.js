@@ -401,6 +401,7 @@ export default function AddCompany(props) {
                             id="country-name"
                             name="countryName"
                             label="Country"
+                            variant="outlined"
                             value={formik.values.countryName}
                             select
                             fullWidth
@@ -427,11 +428,13 @@ export default function AddCompany(props) {
                                 <TextField
                                     {...params}
                                     label="State"
+                                    variant="outlined"
                                     error={!!(formik.touched.stateName && formik.errors.stateName)}
                                     helperText={formik.touched.stateName && formik.errors.stateName}
                                 />
                             }
                             onChange={(event, newValue) => {
+                                console.log("newValue", newValue)
                                 formik.setFieldValue("stateName", newValue)
                             }}
                             onBlur={() => formik.setTouched({ ["stateName"]: true })}

@@ -60,6 +60,7 @@ export default function QuoteSelectCompany(props) {
                         id="companyName"
                         name="companyName"
                         label="Company"
+                        variant="outlined"
                         value={companyName}
                         select
                         fullWidth
@@ -87,6 +88,7 @@ export default function QuoteSelectCompany(props) {
                         fullWidth
                         label="Ship To"
                         name="shipTo"
+                        variant="outlined"
                         onChange={(e) => handleChange(e, shipToList)}
                         required
                         select

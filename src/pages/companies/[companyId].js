@@ -16,7 +16,7 @@ import { Layout as DashboardLayout } from "src/layouts/dashboard/layout";
 import { CompanyProfile } from "src/sections/companies/company-profile";
 import { CompanyProfileDetails } from "src/sections/companies/tab/company-profile-details";
 import { CompanyAddresses } from "src/sections/companies/tab/company-addresses";
-import { GetSingleCompaniesSwr, GetCompanies } from "src/service/use-mongo";
+import { GetSingleCompaniesSwr } from "src/service/use-mongo";
 import { useState } from "react";
 import { CompanyEditDetails } from "src/sections/companies/tab/company-profile-edit";
 import { useRouter } from 'next/router';
@@ -28,7 +28,7 @@ const Page = () => {
   const toastUp = useToast();
   const router = useRouter();
   const { id } = router.query;
-  const { data, isLoading, isError } = GetSingleCompaniesSwr(router.query.companyId, 0, 1);
+  const { data, isLoading, isError, mutate, isValidating } = GetSingleCompaniesSwr(router.query.companyId, 0, 1);
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
@@ -73,10 +73,10 @@ const Page = () => {
                           </TabList>
                         </Box>
                         <TabPanel value="1">
-                          { data && <CompanyEditDetails data={data && data.data.company[0]} toastUp={toastUp}/> }
+                          { data && <CompanyEditDetails data={data && data.data.company[0]} toastUp={toastUp} /> }
                         </TabPanel>
                         <TabPanel value="2">
-                        { data && <CompanyAddresses data={data && data.data.company[0]} toastUp={toastUp}/> }
+                        { data && <CompanyAddresses data={data && data.data.company[0]} toastUp={toastUp} mutate={mutate}/> }
                         </TabPanel>
                         <TabPanel value="3">
                           <CompanyProfileDetails />

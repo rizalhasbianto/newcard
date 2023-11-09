@@ -26,9 +26,9 @@ export const useDataService = async (url, method, body = null) => {
 export const useSwrData = (url, query) => {
   const fetcher = (url) => fetch(url).then((res) => res.json());
   const queryUrl = url + "?" + query;
-  const { data, isLoading, isError } = useSWR(queryUrl, fetcher);
+  const { data, isLoading, isError, mutate, isValidating } = useSWR(queryUrl, fetcher);
 
-  return { data, isLoading, isError };
+  return { data, isLoading, isError, mutate, isValidating  };
 };
 
 export const useSWRInfiniteData = (url, query) => {

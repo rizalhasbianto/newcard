@@ -210,7 +210,7 @@ export function createComponents(config) {
     MuiSelect: {
       styleOverrides: {
         select : {
-          padding: "21px 32px 8px 12px"
+          padding: "14px 32px 14px 12px"
         }
       }
     },
