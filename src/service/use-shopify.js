@@ -45,11 +45,14 @@ export const GetProductsShopify = async (selectedFilter, productPerPage, lastCur
   const newParam = { ...selectedFilter };
   Object.keys(newParam).forEach((key) => {
     if (!newParam[key]) delete newParam[key];
+    if (newParam[key] === "*") delete newParam[key];
   });
+  
   const queryParam = new URLSearchParams(newParam).toString();
+  const productNameForCollection = productName.replace("*", "")
   const sendToShopify = await useDataService("/api/shopify/get-products", "POST", {
     queryParam,
-    productName,
+    productName:productNameForCollection,
     productType,
     tag,
     productVendor,

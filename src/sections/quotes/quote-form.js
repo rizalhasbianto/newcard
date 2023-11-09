@@ -299,6 +299,7 @@ export const QuotesForm = (props) => {
               <SelectProducts
                 quotesList={quotesList}
                 setQuotesList={setQuotesList}
+                quoteId={quoteId}
               />
             </Box>
           </CardContent>
@@ -307,7 +308,7 @@ export const QuotesForm = (props) => {
       <Collapse in={companyName && quotesList.length > 0 ? true : false}>
         <Card>
           <CardHeader
-            subheader="The information can be edited"
+            subheader=""
             title="Selected Products"
           />
           <CardContent sx={{ pt: 0 }}>

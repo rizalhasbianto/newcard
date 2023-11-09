@@ -14,6 +14,7 @@ export default async function getProducts(req, res) {
         .replace(/&/g, " AND ")
         .replace(/\+/g, " ")
         .replace(/=/g, ":")
+        .replace("productType", "product_type")
         .replace("productVendor", "vendor")
         .replace("productName", "title")}" ${cursor}`
     : "";
@@ -85,6 +86,7 @@ export default async function getProducts(req, res) {
         }
       }`;
       const resGetData = await callShopify(queryWithCollection);
+      
       let resProdData = resGetData.data.collection.products.edges;
 
       if (searchByTitle) {
@@ -99,7 +101,7 @@ export default async function getProducts(req, res) {
       if (searchByVendor) {
         resProdData = resProdData.filter((prod) => prod.node.vendor === req.body?.productVendor);
       }
-
+      
       resProdData.map((prod) => ProdData.push(prod));
       cursor = `, after: "${resGetData.data.collection.products.edges.at(-1).cursor}"`;
       hasNextPage = resGetData.data.collection.products.pageInfo.hasNextPage;

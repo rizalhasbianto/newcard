@@ -9,7 +9,7 @@ import { GetProductsShopify } from "src/service/use-shopify";
 import { SearchProduct } from "./quotes-search-product";
 import { QuickAddProducts } from "./quotes-quick-add"
 
-export const SelectProducts = ({ quotesList, setQuotesList }) => {
+export const SelectProducts = ({ quotesList, setQuotesList, quoteId }) => {
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [inputValue, setInputValue] = useState("");
   const [productSearch, setProductSearch] = useState([]); 
@@ -107,7 +107,7 @@ export const SelectProducts = ({ quotesList, setQuotesList }) => {
             }}
           />
         </Grid>
-        <Grid md={3}>
+        <Grid md={2}>
           <Button
             variant="outlined"
             fullWidth
@@ -121,8 +121,8 @@ export const SelectProducts = ({ quotesList, setQuotesList }) => {
             Quick Add
           </Button>
         </Grid>
-        <Grid md={3}>
-          <Link href="/products" passHref>
+        <Grid md={2}>
+          <Link href={`/products?quoteId=${quoteId}`} passHref>
             <Button
               variant="outlined"
               fullWidth
@@ -133,6 +133,21 @@ export const SelectProducts = ({ quotesList, setQuotesList }) => {
               }}
             >
               Browse
+            </Button>
+          </Link>
+        </Grid>
+        <Grid md={2}>
+          <Link href="/products" passHref>
+            <Button
+              variant="outlined"
+              fullWidth
+              sx={{
+                height: "54px",
+                position: "relative",
+                top: "5px",
+              }}
+            >
+              Load From template
             </Button>
           </Link>
         </Grid>
