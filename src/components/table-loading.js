@@ -1,22 +1,16 @@
 import {
-  Avatar,
   Box,
   Card,
-  Checkbox,
   Stack,
   Table,
   TableBody,
   TableCell,
   TableHead,
-  TablePagination,
   TableRow,
-  Typography,
-  SvgIcon,
-  Grid,
   Skeleton
 } from "@mui/material";
 
-export default function TableLoading() {
+export default function CardLoading() {
   return (
     <Card>
       <Box sx={{ minWidth: 800 }}>

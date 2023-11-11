@@ -17,7 +17,6 @@ import {
   TableRow,
   Typography,
   SvgIcon,
-  Grid,
 } from "@mui/material";
 import PencilIcon from "@heroicons/react/24/solid/PencilIcon";
 import TrashIcon from "@heroicons/react/24/solid/TrashIcon";
@@ -32,6 +31,7 @@ export const QuotesTable = (props) => {
     count = 0,
     items = [],
     onPageChange = () => {},
+    onDelete = () => {},
     onRowsPerPageChange,
     page = 0,
     rowsPerPage = 0,
@@ -63,10 +63,10 @@ export const QuotesTable = (props) => {
         "Error Delete",
         "Error when deleting the quote, Please try again later!"
       );
-      return;
+      return; 
     }
     modalPopUp.handleClose();
-    onPageChange(1, page);
+    onDelete();
   };
 
   return (

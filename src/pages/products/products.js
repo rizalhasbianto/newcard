@@ -32,6 +32,7 @@ import ProductAlertDialogQuoteList from "src/sections/products/product-alert-dia
 import { SearchProducts } from "src/service/use-shopify";
 import { GetQuotesData } from "src/service/use-mongo";
 import { useCallback, useEffect, useState } from "react";
+import CardLoading from "src/components/grid-loading";
 
 const Products = () => {
   const [layout, setLayout] = useState("card");
@@ -78,6 +79,7 @@ const Products = () => {
 
   useEffect(() => {
     if (!data) return;
+    console.log("data", data);
     sethasNextPage(data.at(-1).newData?.pageInfo?.hasNextPage);
   }, [data]);
 
@@ -107,7 +109,9 @@ const Products = () => {
                   <ButtonGroup variant="outlined" aria-label="outlined button group">
                     <Button onClick={() => setLayout("list")}>
                       <SvgIcon fontSize="small">
-                        <DvrIcon sx={{ color: layout === "list" ? "neutral.800" : "neutral.400" }} />
+                        <DvrIcon
+                          sx={{ color: layout === "list" ? "neutral.800" : "neutral.400" }}
+                        />
                       </SvgIcon>
                     </Button>
                     <Button onClick={() => setLayout("card")}>
@@ -144,13 +148,12 @@ const Products = () => {
               setSmartSearch={setSmartSearch}
               predictiveSearch={data?.at(-1).newData.predictiveSearch}
             />
+            {isLoading && <CardLoading count={4} />}
+            {data && data[0]?.newData?.edges?.length === 0 && (
+              <Typography variant="h4">No Products Found!</Typography>
+            )}
             <Grid container spacing={3}>
-              {
-                isError &&
-                <Typography variant="h5">
-                  No data found
-                </Typography>
-              }
+              {isError && <Typography variant="h5">No data found</Typography>}
               {layout === "card" ? (
                 <ProductGrid handleOpenQuoteList={handleOpenQuoteList} data={data} />
               ) : (

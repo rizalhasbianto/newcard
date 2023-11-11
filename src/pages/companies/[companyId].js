@@ -13,12 +13,13 @@ import TabContext from "@mui/lab/TabContext";
 import TabList from "@mui/lab/TabList";
 import TabPanel from "@mui/lab/TabPanel";
 import { Layout as DashboardLayout } from "src/layouts/dashboard/layout";
-import { CompanyProfile } from "src/sections/companies/company-profile";
+import { CompanyProfile } from "src/sections/companies/company-avatar";
 import { CompanyProfileDetails } from "src/sections/companies/tab/company-profile-details";
 import { CompanyAddresses } from "src/sections/companies/tab/company-addresses";
 import { GetSingleCompaniesSwr } from "src/service/use-mongo";
 import { useState } from "react";
 import { CompanyEditDetails } from "src/sections/companies/tab/company-profile-edit";
+import { CompanyQuote } from "src/sections/companies/tab/company-quote";
 import { useRouter } from 'next/router';
 import { useToast } from 'src/hooks/use-toast'
 import Toast from 'src/components/toast'
@@ -27,9 +28,8 @@ const Page = () => {
   const [value, setValue] = useState("1");
   const toastUp = useToast();
   const router = useRouter();
-  const { id } = router.query;
+  const { id } = router.query; 
   const { data, isLoading, isError, mutate, isValidating } = GetSingleCompaniesSwr(router.query.companyId, 0, 1);
-
   const handleChange = (event, newValue) => {
     setValue(newValue);
   };
@@ -59,7 +59,7 @@ const Page = () => {
             <div>
               <Grid container spacing={3}>
                 <Grid xs={12} md={6} lg={4}>
-                  <CompanyProfile />
+                  {data && <CompanyProfile company={data && data.data.company[0]} toastUp={toastUp} />}
                 </Grid>
                 <Grid xs={12} md={6} lg={8}>
                   <Card>
@@ -79,7 +79,7 @@ const Page = () => {
                         { data && <CompanyAddresses data={data && data.data.company[0]} toastUp={toastUp} mutate={mutate}/> }
                         </TabPanel>
                         <TabPanel value="3">
-                          <CompanyProfileDetails />
+                          <CompanyQuote items={data && data.data.relatedQuote}/>
                         </TabPanel>
                       </TabContext>
                     </CardContent>

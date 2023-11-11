@@ -22,6 +22,7 @@ import { GetCompaniesSwr, GetCompanies } from "src/service/use-mongo";
 import { useEffect, useState } from "react";
 import { useToast } from "src/hooks/use-toast";
 import Toast from "src/components/toast";
+import CardLoading from "src/components/grid-loading";
 
 const Companies = () => {
   const [page, setPage] = useState(1);
@@ -35,14 +36,14 @@ const Companies = () => {
   const toastUp = useToast();
   const postPerPage = 6;
   const { data, isLoading, isError } = GetCompaniesSwr(page - 1, postPerPage);
-  const [count, setCount] = useState(0)
+  const [count, setCount] = useState(0);
   const handleChange = (event, value) => {
     setPage(value);
   };
 
   useEffect(() => {
-    if(!data) return
-    setCount(Math.ceil(data.data.count / 6))
+    if (!data) return;
+    setCount(Math.ceil(data.data.count / 6));
   }, [data]);
 
   return (
@@ -103,6 +104,7 @@ const Companies = () => {
               </Card>
             </Collapse>
             <Collapse in={!addNewCompany}>
+              {isLoading && <CardLoading count={3} />}
               <Grid container spacing={3}>
                 {isError && <Typography variant="h5">No data found!</Typography>}
                 {data &&
@@ -124,12 +126,7 @@ const Companies = () => {
                 justifyContent: "center",
               }}
             >
-                <Pagination
-                  count={count}
-                  page={page}
-                  size="small"
-                  onChange={handleChange}
-                />
+              <Pagination count={count} page={page} size="small" onChange={handleChange} />
             </Box>
           </Stack>
         </Container>

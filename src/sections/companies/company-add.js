@@ -1,15 +1,11 @@
 import React, { useState, useRef } from "react";
 import {
     Box,
-    Button,
     TextField,
-    Typography,
     Checkbox,
     Divider,
-    Select,
     MenuItem,
     Unstable_Grid2 as Grid,
-    InputLabel,
     Autocomplete,
     CardActions,
     Stack
@@ -217,7 +213,6 @@ export default function AddCompany(props) {
         } else {
             setFileError(true)
         }
-        console.log("newFile", newFile)
     }
 
     return (

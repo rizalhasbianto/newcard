@@ -17,7 +17,7 @@ const Page = () => {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
 
-  const { data, isLoading, isError } = GetQuotesDataSwr(page, rowsPerPage, {
+  const { data, isLoading, isError, mutate, isValidating } = GetQuotesDataSwr(page, rowsPerPage, {
     status: { $nin: ["new"] },
   });
 
@@ -88,13 +88,14 @@ const Page = () => {
               </div>
             </Stack>
             <QuotesSearch />
-            {isLoading && <TableLoading />}
+            {isLoading || isValidating && <TableLoading />}
             {isError && <h2>Error loading data</h2>}
-            {data && (
+            {data && !isValidating && (
               <QuotesTable
                 count={data.data.count}
                 items={data.data.quote}
                 onPageChange={handlePageChange}
+                onDelete={mutate}
                 onRowsPerPageChange={handleRowsPerPageChange}
                 page={page}
                 rowsPerPage={rowsPerPage}

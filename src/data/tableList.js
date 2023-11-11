@@ -8,6 +8,14 @@ export const quotesListHead = [
     { title: "ACTION"}
 ]
 
+export const companyQuotesListHead = [
+    { title: "ID" },
+    { title: "SHIP TO" },
+    { title: "TOTAL" },
+    { title: "STATUS" },
+    { title: "LAST UPDATE" }
+]
+
 export const quotesListHeadProduct = [
     { title: "ID" },
     { title: "TOTAL" },

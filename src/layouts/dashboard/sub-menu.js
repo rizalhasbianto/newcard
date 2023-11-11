@@ -5,6 +5,19 @@ import { Box, ButtonBase } from '@mui/material';
 export const SubMenu = (props) => {
   const { active, external, icon, path, title } = props;
 
+  const linkProps = path
+    ? external
+      ? {
+        component: 'a',
+        href: path,
+        target: '_blank'
+      }
+      : {
+        component: NextLink,
+        href: path
+      }
+    : {};
+    
   return (
     <>
       <ButtonBase
@@ -23,6 +36,7 @@ export const SubMenu = (props) => {
             backgroundColor: 'rgba(255, 255, 255, 0.04)'
           }
         }}
+        {...linkProps}
       >
         {icon && (
           <Box

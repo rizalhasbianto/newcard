@@ -131,7 +131,7 @@ export const GetCompaniesSwr = (page, postPerPage) => {
   const comapanyRes = useSwrData("/api/company/get-companies", queryPath);
 
   return comapanyRes;
-};
+}; 
 
 export const GetSingleCompaniesSwr = (id, quotePage, quotePostPerPage) => {
   const queryPath =
@@ -183,7 +183,6 @@ export const AddCompanyToMongo = async (companyData) => {
 };
 
 export const UpdateCompanyInfoToMongo = async (companyData) => {
-  console.log("companyData", companyData);
   const mongoRes = await useDataService("/api/company/update-company", "POST", {
     id: companyData.id,
     updateData: {
@@ -257,9 +256,12 @@ export const AddNewShipToMongo = async (id, companyData, shipToData) => {
   return mongoRes;
 };
 
-export const UpdateCompanyAvatarToMongo = async (companyData) => {
+export const UpdateCompanyAvatarToMongo = async (id, companyPhoto) => {
   const mongoRes = await useDataService("/api/company/update-company", "POST", {
-    avatar: companyData.companyPhoto,
+    id: id,
+    updateData: {
+      avatar: companyPhoto,
+    },
   });
   return mongoRes;
 };
