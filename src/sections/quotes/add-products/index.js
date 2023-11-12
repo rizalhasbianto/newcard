@@ -17,7 +17,7 @@ export const SelectProducts = ({ quotesList, setQuotesList, quoteId }) => {
 
   const getOptions = async (active, selectedProduct) => {
     if (active) {
-      const resData = await GetProductsShopify({title:`${inputValue}*`});
+      const resData = await GetProductsShopify({productName:`${inputValue}*`});
 
       let newOptions = [];
 
@@ -94,7 +94,7 @@ export const SelectProducts = ({ quotesList, setQuotesList, quoteId }) => {
                         position: "relative",
                       }}
                     >
-                      <ImageComponent img={option.node.variants.edges[0].node?.image?.url} title="" />
+                      <ImageComponent img={option.node.variants.edges[0].node?.image?.url} title={option.node.title} />
                     </Grid>
                     <Grid md={10}>
                       <Typography variant="body2" color="text.secondary">

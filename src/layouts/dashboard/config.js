@@ -71,6 +71,7 @@ export const items = [
   {
     title: 'Companies',
     path: '/companies',
+    role: 'admin',
     icon: (
       <SvgIcon fontSize="small">
         <BuildingOfficeIcon />
@@ -80,19 +81,11 @@ export const items = [
   {
     title: 'Account',
     path: '/account',
+    role: 'customer',
     icon: (
       <SvgIcon fontSize="small">
         <UserIcon />
       </SvgIcon>
     )
-  },
-  {
-    title: 'Settings',
-    path: '/settings',
-    icon: (
-      <SvgIcon fontSize="small">
-        <CogIcon />
-      </SvgIcon>
-    )
-  },
+  }
 ];

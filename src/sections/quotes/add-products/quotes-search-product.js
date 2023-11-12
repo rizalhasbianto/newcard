@@ -6,6 +6,7 @@ import AlertDialog from "src/components/alert-dialog";
 import { usePopover } from "src/hooks/use-popover";
 import { addQuote } from "src/helper/handleAddQuote";
 import { Box, Button, TextField, Typography, Unstable_Grid2 as Grid } from "@mui/material";
+import { ImageComponent } from "src/components/image";
 
 export const SearchProduct = (props) => {
   const { quotesList, setQuotesList, selectedProduct } = props;
@@ -72,15 +73,10 @@ export const SearchProduct = (props) => {
                   md={5}
                   sx={{
                     position: "relative",
-                  }}
+                    padding: 0
+                  }} 
                 >
-                  <Image
-                    src={selectedVariant.image.url}
-                    fill={true}
-                    alt="Picture of the author"
-                    className="shopify-fill"
-                    sizes="270 640 750"
-                  />
+                  <ImageComponent img={selectedVariant.image.url} title={selectedProduct.node.title} />
                 </Grid>
                 <Grid xs={12} md={7}>
                   {notAvilableOption ? (

@@ -9,7 +9,6 @@ export default async function getQuotes(req, res) {
   const queryCompany = bodyObject.type === "check" ? bodyObject.query : {};
   const postPerPage = bodyObject.postPerPage ? Number(bodyObject.postPerPage) : 10;
   const skip = (Number(bodyObject.page) + 1) * bodyObject.postPerPage - bodyObject.postPerPage;
-
   const data = await db
     .collection(collection)
     .find(queryCompany)
@@ -18,9 +17,7 @@ export default async function getQuotes(req, res) {
     .skip(skip)
     .limit(postPerPage)
     .toArray();
-
   const companyNames = data.map((item) => item.name);
-
   let relatedQuote;
   if (bodyObject.withQuote) {
     relatedQuote = await db
@@ -30,14 +27,11 @@ export default async function getQuotes(req, res) {
       .limit(1000)
       .toArray();
   }
-
   const numberOfDoc = await db.collection(collection).estimatedDocumentCount();
-
   const resData = {
     company: data,
     relatedQuote: relatedQuote,
     count: numberOfDoc,
   };
-
   res.json({ status: 200, data: resData });
 }
