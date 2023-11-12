@@ -2,6 +2,9 @@ import { adminAPi } from "src/lib/shopify";
 
 export default async function createDraftOrder(req, res) {
   const bodyObject = req.body;
+  const name = bodyObject.companyBill.contact && bodyObject.companyBill.contact.name.split(" ")
+  const firstName = name && name[0]
+  const lastName = name && name[1]
   let query;
   if (bodyObject.draftOrderId) {
     query = `
@@ -37,7 +40,29 @@ export default async function createDraftOrder(req, res) {
         mutation {
           draftOrderCreate(
             input: {
-              email: "${bodyObject.customerEmail}",
+              email: "${bodyObject.companyBill.contact.email}",
+              billingAddress: {
+                address1:"${bodyObject.companyBill.location.address}",
+                city:"${bodyObject.companyBill.location.city}",
+                company:"${bodyObject.companyBill.name}",
+                countryCode:US,
+                firstName:"${firstName}"
+                lastName:"${lastName}",
+                phone:"${bodyObject.companyBill.contact.phone}",
+                provinceCode:"${bodyObject.companyBill.location.state}",
+                zip:"${bodyObject.companyBill.location.zip}"
+              },
+              shippingAddress: {
+                address1:"${bodyObject.companyBill.location.address}",
+                city:"${bodyObject.companyBill.location.city}",
+                company:"${bodyObject.companyBill.name}",
+                countryCode:US,
+                firstName:"${firstName}"
+                lastName:"${lastName}",
+                phone:"${bodyObject.companyBill.contact.phone}",
+                provinceCode:"${bodyObject.companyBill.location.state}",
+                zip:"${bodyObject.companyBill.location.zip}"
+              }
               lineItems: [${bodyObject.lineItems}],
               poNumber: "${bodyObject.poNumber}",
               tags:"b2b",
@@ -63,5 +88,6 @@ export default async function createDraftOrder(req, res) {
   }
 
   const createDraft = await adminAPi(query);
+  console.log("createDraft", createDraft)
   res.json({ status: 200, createDraft });
 }

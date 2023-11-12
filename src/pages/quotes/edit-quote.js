@@ -10,9 +10,10 @@ import {
 import { Layout as DashboardLayout } from 'src/layouts/dashboard/layout';
 import { QuotesForm } from 'src/sections/quotes/quote-form';
 import { GetQuotesData } from 'src/service/use-mongo'
+import CardLoading from "src/components/grid-loading";
 
 const Page = () => {
-  const [loading, setLoading] = useState(false);
+  const [isLoading, setLoading] = useState(false);
   const [tabContent, setTabContent] = useState();
   const slideRef = useRef(null);
   const router = useRouter();
@@ -29,6 +30,7 @@ const Page = () => {
     const resQuotes = await GetQuotesData(page, rowsPerPage, query, sort, type)
     if (!resQuotes) {
       console.log("error get quotes data!")
+      setLoading(false)
       return
     }
 
@@ -65,6 +67,7 @@ const Page = () => {
               overflow: "hidden"
             }}
           >
+            {isLoading && <CardLoading count={1} />}
             <Grid
               container
               spacing={3}

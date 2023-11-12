@@ -66,7 +66,7 @@ export const CompanyAddresses = (props) => {
   const newUsaState = usaState.map((st) => {
     return {
       label: st.name,
-      name: st.name,
+      name: st.abbreviation,
     };
   });
   const defaultAddress = data?.shipTo?.find((item) => item.default);

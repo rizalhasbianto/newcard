@@ -3,6 +3,7 @@ import {
     Button,
     TextField,
     MenuItem,
+    Typography,
     InputAdornment,
     Unstable_Grid2 as Grid
 } from '@mui/material';
@@ -33,8 +34,9 @@ export default function DiscountLine(props) {
         <Box
             sx={{
                 width: "100%",
-                padding: "20px 0"
+                padding: "20px 0 0" 
             }}>
+                <Typography>Discount</Typography>
             <Grid
                 container
                 spacing={2}

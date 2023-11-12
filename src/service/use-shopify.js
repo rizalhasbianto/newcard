@@ -3,7 +3,7 @@ import { useDataService, useSwrData, useSWRInfiniteData } from "src/lib/fetchDat
 export const SyncQuoteToShopify = async (
   quoteId,
   quotesList,
-  customerEmail,
+  companyBill,
   discount,
   draftOrderId
 ) => {
@@ -17,7 +17,7 @@ export const SyncQuoteToShopify = async (
   const resSendToShopify = await useDataService("/api/shopify/draft-order", "POST", {
     lineItems,
     poNumber: quoteId,
-    customerEmail,
+    companyBill,
     discount,
     draftOrderId,
   });
