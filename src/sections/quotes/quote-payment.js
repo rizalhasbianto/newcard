@@ -7,17 +7,20 @@ import {
   InputAdornment,
   Unstable_Grid2 as Grid,
 } from "@mui/material";
-import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
-import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { useFormik } from "formik";
 import * as Yup from "yup";
+import { add, formatISO, format } from 'date-fns'
 import { paymentOptions } from "src/data/payment-options";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 export default function PaymentOptions(props) {
-  const { handleDiscount } = props;
-  const [date, setDate] = useState()
+  const { handlePayment, payment } = props;
+  const [date, setDate] = useState();
+  const [isNeedDate, setNeedDate] = useState(false);
+  const [isFlexibleDate, setFlexibleDate] = useState(false);
+  const [selectedPayment, setSelectedPayment] = useState(false);
 
   const formik = useFormik({
     initialValues: {
@@ -26,15 +29,41 @@ export default function PaymentOptions(props) {
       submit: null,
     },
     validationSchema: Yup.object({
-      discountType: Yup.string().required("Discount type is required"),
+      paymentType: Yup.string().required("Discount type is required"),
     }),
-    onSubmit: async (values, helpers) => {
-      handleDiscount({
-        discountType: values.discountType,
-        discountAmount: values.discountAmount,
+    onSubmit: (values, helpers) => {
+      const getPaymentTerm = paymentOptions.find((item) => item.id === formik.values.paymentType)
+      console.log("getPaymentTerm", getPaymentTerm)
+      setSelectedPayment({
+        type:getPaymentTerm.description,
+        date:format(new Date(date), 'MMMM dd yyyy')
+      })
+      handlePayment({
+        type: values.paymentType,
+        date: date,
       });
     },
   });
+
+useEffect(() => {
+  if(formik.values.paymentType) {
+    const getPaymentTerm = paymentOptions.find((item) => item.id === formik.values.paymentType)
+    if(getPaymentTerm.dueInDays || getPaymentTerm.paymentTermsType === "FIXED") {
+      setNeedDate(true)
+      setFlexibleDate(true)
+      if(getPaymentTerm.dueInDays) {
+        const targetDate = add(new Date(), {days:getPaymentTerm.dueInDays})
+        setDate(formatISO(targetDate))
+        setFlexibleDate(false)
+      }
+    } else {
+      setDate()
+      setNeedDate(false)
+    }
+  }
+  
+},[formik.values])
+console.log("payment", payment)
   return (
     <Box
       sx={{
@@ -42,9 +71,19 @@ export default function PaymentOptions(props) {
         padding: "20px 0",
       }}
     >
-      <Typography>Payment</Typography>
-      <Grid container spacing={2} direction="row" justifyContent="flex-start" alignItems="center">
-        <Grid md={3}>
+      <Typography variant="subtitle1">Payment: {selectedPayment?.type} {selectedPayment.date && `at ${selectedPayment.date}`}</Typography>
+      {
+        !selectedPayment &&
+
+      
+      <Grid 
+        container 
+        spacing={2} 
+        direction="row" 
+        justifyContent="flex-start" 
+        alignItems="center"
+      >
+        <Grid md={6}>
           <TextField
             id="paymentType"
             name="paymentType"
@@ -65,25 +104,23 @@ export default function PaymentOptions(props) {
             ))}
           </TextField>
         </Grid>
-        <Grid md={3}>
-          <LocalizationProvider dateAdapter={AdapterDateFns}>
+        
+          {
+            isNeedDate &&
+            <Grid md={6}>
             <DatePicker
               variant="outlined"
               value={date}
-              disabled={true}
+              disabled={!isFlexibleDate}
               renderInput={(params) => <TextField variant="outlined" {...params} />}
               onChange={(newValue) => {
                 setDate(newValue);
               }}
             />
-          </LocalizationProvider>
-        </Grid>
-        <Grid md={3}>
-          <Button variant="outlined" onClick={formik.handleSubmit}>
-            Add discount
-          </Button>
-        </Grid>
+            </Grid>
+          }
       </Grid>
+}
     </Box>
   );
 }

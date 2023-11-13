@@ -11,6 +11,7 @@ import {
   TablePagination,
   TableRow,
   Tooltip,
+  Button,
   Unstable_Grid2 as Grid,
 } from "@mui/material";
 import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
@@ -23,13 +24,14 @@ import EditProductItem from "src/components/quotes/edit-line-item";
 import DiscountLine from "./quote-discount";
 import PaymentOptions from "./quote-payment";
 
-export default function LineItemQuotes({ quotesList, setQuotesList, discount, setDiscount }) {
+export default function LineItemQuotes(props) {
+  const { quotesList, setQuotesList, discount, setDiscount, payment, setPayment } = props;
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [total, setTotal] = useState(10);
   const [editProductIndex, setEditProductIndex] = useState("");
   const modalPopUp = usePopover();
-  console.log("discount", discount);
+
   useEffect(() => {
     const countSubtotal = quotesList.reduce((n, { total }) => n + Number(total), 0).toFixed(2);
     let discountCalc = 0;
@@ -93,6 +95,17 @@ export default function LineItemQuotes({ quotesList, setQuotesList, discount, se
     },
     [setDiscount]
   );
+
+  const handlePayment = useCallback(
+    (value) => {
+      setPayment({
+        type: value.type,
+        date: value.date,
+      });
+    },
+    [setPayment]
+  );
+
   const handleDeleteDiscount = useCallback(
     (event) => {
       setDiscount();
@@ -162,17 +175,22 @@ export default function LineItemQuotes({ quotesList, setQuotesList, discount, se
             }}
           >
             <DiscountLine handleDiscount={handleDiscount} />
-            <PaymentOptions />
           </Box>
           <Box
             sx={{
-              width: "300px",
+              width: "600px",
+              mt: "20px"
             }}
           >
+            <Typography
+                  variant="subtitle1"
+                >
+                  Total info
+                </Typography>
             <Grid container>
-              <Grid xs={12} md={6}>
+              <Grid xs={12} md={4}>
                 <Typography>Subtotal:</Typography>
-                {discount.amount ? <Typography>Discount:</Typography> : ""}
+                <Typography>Discount:</Typography>
                 <Typography>Shipping:</Typography>
                 <Typography>Tax:</Typography>
                 <Typography
@@ -192,13 +210,13 @@ export default function LineItemQuotes({ quotesList, setQuotesList, discount, se
                     placement="right"
                     arrow
                   >
-                    <Typography>
+                    <Typography sx={{ width: "fit-content" }}>
                       {discount.type === "FIXED_AMOUNT" ? "$" : "%"}
                       {discount.amount}
                     </Typography>
                   </Tooltip>
                 ) : (
-                  ""
+                  <Button variant="outlined" size="small">Add Discount</Button>
                 )}
                 <Typography>count later</Typography>
                 <Typography>${total.tax}</Typography>
@@ -211,6 +229,7 @@ export default function LineItemQuotes({ quotesList, setQuotesList, discount, se
                   ${total.total}
                 </Typography>
               </Grid>
+              <PaymentOptions handlePayment={handlePayment} />
             </Grid>
           </Box>
         </Container>

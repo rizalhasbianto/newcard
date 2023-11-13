@@ -88,7 +88,7 @@ const Page = () => {
               </div>
             </Stack>
             <QuotesSearch />
-            {isLoading || isValidating && <TableLoading />}
+            {isLoading && <TableLoading />}
             {isError && <h2>Error loading data</h2>}
             {data && !isValidating && (
               <QuotesTable

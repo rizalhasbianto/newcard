@@ -40,7 +40,6 @@ const Page = () => {
   );
 
   const reqQuotesData = async (page, rowsPerPage) => {
-    setDataLoading(true);
     const query = { $or: [{ status: "draft" }, { status: "new" }] };
     const sort = "DSC";
     const resQuotes = await GetQuotesData(page, rowsPerPage, query, sort);
@@ -53,9 +52,11 @@ const Page = () => {
     setTabContent(resQuotes.data.quote[0]);
     setTabIndex(0);
     setDataLoading(false);
+    setLoading(false);
   };
 
   useEffect(() => {
+    setDataLoading(true);
     reqQuotesData(0, 50);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);

@@ -12,17 +12,42 @@ export default async function createDraftOrder(req, res) {
         draftOrderUpdate(
           id: "${bodyObject.draftOrderId}",
           input: {
-              email: "${bodyObject.customerEmail}",
-              lineItems: [${bodyObject.lineItems}],
-              poNumber: "${bodyObject.poNumber}",
-              ${
-                bodyObject.discount.amount &&
-                `appliedDiscount: {
-                    valueType:${bodyObject.discount.type},
-                    value:${bodyObject.discount.amount}
-                  }`
-              }
-              
+            email: "${bodyObject.companyBill.contact.email}",
+            billingAddress: {
+              address1:"${bodyObject.companyBill.location.address}",
+              city:"${bodyObject.companyBill.location.city}",
+              company:"${bodyObject.companyBill.name}",
+              countryCode:US,
+              firstName:"${firstName}"
+              lastName:"${lastName}",
+              phone:"${bodyObject.companyBill.contact.phone}",
+              provinceCode:"${bodyObject.companyBill.location.state}",
+              zip:"${bodyObject.companyBill.location.zip}"
+            },
+            shippingAddress: {
+              address1:"${bodyObject.companyBill.location.address}",
+              city:"${bodyObject.companyBill.location.city}",
+              company:"${bodyObject.companyBill.name}",
+              countryCode:US,
+              firstName:"${firstName}"
+              lastName:"${lastName}",
+              phone:"${bodyObject.companyBill.contact.phone}",
+              provinceCode:"${bodyObject.companyBill.location.state}",
+              zip:"${bodyObject.companyBill.location.zip}"
+            }
+            lineItems: [${bodyObject.lineItems}],
+            poNumber: "${bodyObject.poNumber}",
+            tags:"b2b",
+            paymentTerms: {
+              paymentTermsTemplateId:"gid://shopify/PaymentTermsTemplate/9"
+            }
+            ${
+              bodyObject.discount.amount &&
+              `appliedDiscount: {
+                  valueType:${bodyObject.discount.type},
+                  value:${bodyObject.discount.amount}
+                }`
+            }
           }) {
             draftOrder {
               id
@@ -88,6 +113,5 @@ export default async function createDraftOrder(req, res) {
   }
 
   const createDraft = await adminAPi(query);
-  console.log("createDraft", createDraft)
   res.json({ status: 200, createDraft });
 }

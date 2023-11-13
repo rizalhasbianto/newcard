@@ -42,6 +42,7 @@ export const QuotesForm = (props) => {
   const [addNewCompany, setAddNewCompany] = useState(false);
   const [quoteId, setQuoteId] = useState();
   const [discount, setDiscount] = useState();
+  const [payment, setPayment] = useState();
   const toastUp = useToast();
 
   const handleTemplate = useCallback(() => {
@@ -87,7 +88,7 @@ export const QuotesForm = (props) => {
         contact: companyContact,
         location: location,
       };
-      
+
       const shopifyResponse = await SyncQuoteToShopify(
         quoteId,
         quotesList,
@@ -113,7 +114,9 @@ export const QuotesForm = (props) => {
             ? shopifyResponse.response.createDraft.data.draftOrderCreate.draftOrder.name
             : shopifyResponse.response.createDraft.data.draftOrderUpdate.draftOrder.name,
       };
+
       const updateQuoteAtMongoRes = await UpdateOrderIdQuoteToMongoDb(quoteId, draftOrderId);
+
       if (!updateQuoteAtMongoRes || updateQuoteAtMongoRes.modifiedCount === 0) {
         // error when update data to mongo
         toastUp.handleStatus("error");
@@ -146,7 +149,19 @@ export const QuotesForm = (props) => {
 
       // eslint-disable-next-line react-hooks/exhaustive-deps
     },
-    [companyName, handleTemplate, quoteId, quotesList, reqQuotesData, shipTo, toastUp]
+    [
+      companyContact,
+      companyName,
+      discount,
+      handleTemplate,
+      location,
+      quoteId,
+      quotesList,
+      reqQuotesData,
+      shipTo,
+      tabContent.draftOrderId,
+      toastUp,
+    ]
   );
 
   const GetCompaniesData = useCallback(
@@ -312,6 +327,8 @@ export const QuotesForm = (props) => {
               setQuotesList={setQuotesList}
               discount={discount}
               setDiscount={setDiscount}
+              payment={payment}
+              setPayment={setPayment}
             />
           </CardContent>
           <Divider />
