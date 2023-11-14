@@ -2,6 +2,7 @@ import { useCallback, useState, useEffect } from 'react';
 import Head from 'next/head';
 import NextLink from 'next/link';
 import { useRouter } from 'next/router';
+import { redirect } from 'next/navigation'
 import { useSession } from "next-auth/react"
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
@@ -55,14 +56,12 @@ const Page = () => {
         password: values.password
       });
 
-      console.log("login", res)
-
       if (res.error) {
         helpers.setStatus({ success: false });
         helpers.setErrors({ submit: res.error });
         helpers.setSubmitting(false);
       } else {
-        router.push('/')
+        window.location.replace('/')
       }
     }
   });
