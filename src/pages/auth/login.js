@@ -55,10 +55,14 @@ const Page = () => {
         password: values.password
       });
 
+      console.log("login", res)
+
       if (res.error) {
         helpers.setStatus({ success: false });
         helpers.setErrors({ submit: res.error });
         helpers.setSubmitting(false);
+      } else {
+        router.push('/')
       }
     }
   });
@@ -69,14 +73,6 @@ const Page = () => {
     },
     []
   );
-
-  useEffect(() => {
-    if (status === "authenticated") {
-      router.push('/')
-      return
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [status]);
 
   return (
     <>
