@@ -26,8 +26,9 @@ import {
   SaveQuoteToMongoDb,
   UpdateOrderIdQuoteToMongoDb,
   GetCompanies,
+  SendInvoice
 } from "src/service/use-mongo";
-import { SyncQuoteToShopify, SendInvoiceByShopify } from "src/service/use-shopify";
+import { SyncQuoteToShopify } from "src/service/use-shopify";
 
 export const QuotesForm = (props) => {
   const { tabContent, reqQuotesData } = props;
@@ -42,9 +43,8 @@ export const QuotesForm = (props) => {
   const [addNewCompany, setAddNewCompany] = useState(false);
   const [quoteId, setQuoteId] = useState();
   const [discount, setDiscount] = useState();
-  const [payment, setPayment] = useState();
+  const [payment, setPayment] = useState(tabContent.payment);
   const toastUp = useToast();
-
   const handleTemplate = useCallback(() => {
     setButtonLoading();
     toastUp.handleStatus("success");
@@ -65,7 +65,8 @@ export const QuotesForm = (props) => {
         quotesList,
         discount,
         type,
-        quoteId
+        quoteId,
+        payment
       );
       if (!mongoReponse) {
         // error when save data to mongo
@@ -94,8 +95,10 @@ export const QuotesForm = (props) => {
         quotesList,
         companyBill,
         discount,
+        payment,
         tabContent.draftOrderId
       );
+
       if (!shopifyResponse || shopifyResponse.response.createDraft.errors) {
         // error when sync data to shopify
         toastUp.handleStatus("warning");
@@ -115,7 +118,18 @@ export const QuotesForm = (props) => {
             : shopifyResponse.response.createDraft.data.draftOrderUpdate.draftOrder.name,
       };
 
-      const updateQuoteAtMongoRes = await UpdateOrderIdQuoteToMongoDb(quoteId, draftOrderId);
+      const checkoutUrl = {
+        url:
+          shopifyResponse.operation === "create"
+            ? shopifyResponse.response.createDraft.data.draftOrderCreate.draftOrder.invoiceUrl
+            : shopifyResponse.response.createDraft.data.draftOrderUpdate.draftOrder.invoiceUrl,
+      };
+
+      const updateQuoteAtMongoRes = await UpdateOrderIdQuoteToMongoDb(
+        quoteId,
+        draftOrderId,
+        checkoutUrl
+      );
 
       if (!updateQuoteAtMongoRes || updateQuoteAtMongoRes.modifiedCount === 0) {
         // error when update data to mongo
@@ -133,8 +147,17 @@ export const QuotesForm = (props) => {
         return;
       }
 
-      const sendInvoiceRes = await SendInvoiceByShopify(draftOrderId.id);
-      if (!sendInvoiceRes || sendInvoiceRes.sendDraft.errors) {
+      const quoteDataInvoice = {
+        name: companyContact.name,
+        email: companyContact.email,
+        companyName: companyName,
+        orderNumber: draftOrderId.name,
+        poNumber: "#"+quoteId,
+        checkoutUrl: checkoutUrl.utl,
+        quoteId: quoteId,
+      }
+      const sendInvoiceRes = await SendInvoice(quoteDataInvoice);
+      if (!sendInvoiceRes) {
         // error when send invoice
         toastUp.handleStatus("error");
         toastUp.handleMessage("Error send invoice! quote saved as open");
@@ -146,9 +169,8 @@ export const QuotesForm = (props) => {
       setButtonLoading();
       toastUp.handleStatus("success");
       toastUp.handleMessage("Invoice sent!!!");
-
-      // eslint-disable-next-line react-hooks/exhaustive-deps
     },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [
       companyContact,
       companyName,
@@ -320,7 +342,26 @@ export const QuotesForm = (props) => {
       </Collapse>
       <Collapse in={companyName && quotesList.length > 0 ? true : false}>
         <Card>
-          <CardHeader subheader="" title="Selected Products" />
+        <Grid container justify="flex-end" alignItems="center">
+          <Grid
+            xs={6}
+            md={6}
+          >
+            <CardHeader subheader="" title="Selected Products" />
+          </Grid>
+          <Grid
+            xs={6}
+            md={6}
+            sx={{
+              textAlign: "right",
+              paddingRight: "25px",
+            }}
+          >
+            <Button variant="outlined" onClick={() => setAddNewCompany(true)}>
+              Save As Template
+            </Button>
+          </Grid>
+        </Grid>
           <CardContent sx={{ pt: 0 }}>
             <LineItemQuotes
               quotesList={quotesList}
@@ -332,7 +373,7 @@ export const QuotesForm = (props) => {
             />
           </CardContent>
           <Divider />
-          <CardActions sx={{ justifyContent: "flex-end" }}>
+          <CardActions sx={{ justifyContent: "flex-end", padding: "20px" }}>
             {saveQuoteButton.map((button) => {
               return (
                 <LoadingButton

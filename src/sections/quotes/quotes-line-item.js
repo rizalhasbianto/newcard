@@ -11,7 +11,7 @@ import {
   TablePagination,
   TableRow,
   Tooltip,
-  Button,
+  Collapse,
   Unstable_Grid2 as Grid,
 } from "@mui/material";
 import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
@@ -30,6 +30,7 @@ export default function LineItemQuotes(props) {
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [total, setTotal] = useState(10);
   const [editProductIndex, setEditProductIndex] = useState("");
+  const [onDiscount, setOnDiscount] = useState(false);
   const modalPopUp = usePopover();
 
   useEffect(() => {
@@ -94,16 +95,6 @@ export default function LineItemQuotes(props) {
       });
     },
     [setDiscount]
-  );
-
-  const handlePayment = useCallback(
-    (value) => {
-      setPayment({
-        type: value.type,
-        date: value.date,
-      });
-    },
-    [setPayment]
   );
 
   const handleDeleteDiscount = useCallback(
@@ -174,7 +165,9 @@ export default function LineItemQuotes(props) {
               width: "100%",
             }}
           >
-            <DiscountLine handleDiscount={handleDiscount} />
+            <Collapse in={onDiscount}>
+            <DiscountLine handleDiscount={handleDiscount} setOnDiscount={setOnDiscount}/>
+            </Collapse>
           </Box>
           <Box
             sx={{
@@ -204,7 +197,7 @@ export default function LineItemQuotes(props) {
               </Grid>
               <Grid xs={12} md={6}>
                 <Typography>${total.subTotal}</Typography>
-                {discount.amount ? (
+                {discount?.amount ? (
                   <Tooltip
                     title={<DeleteForeverIcon fontSize="small" onClick={handleDeleteDiscount} />}
                     placement="right"
@@ -216,7 +209,7 @@ export default function LineItemQuotes(props) {
                     </Typography>
                   </Tooltip>
                 ) : (
-                  <Button variant="outlined" size="small">Add Discount</Button>
+                  <Typography sx={{cursor:"pointer"}} onClick={() => setOnDiscount(true)} >Add Discount?</Typography>
                 )}
                 <Typography>count later</Typography>
                 <Typography>${total.tax}</Typography>
@@ -229,7 +222,7 @@ export default function LineItemQuotes(props) {
                   ${total.total}
                 </Typography>
               </Grid>
-              <PaymentOptions handlePayment={handlePayment} />
+              <PaymentOptions setPayment={setPayment} payment={payment}/>
             </Grid>
           </Box>
         </Container>

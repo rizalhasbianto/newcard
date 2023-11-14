@@ -11,7 +11,7 @@ import { useFormik } from 'formik';
 import * as Yup from 'yup';
 
 export default function DiscountLine(props) {
-    const { handleDiscount } = props
+    const { handleDiscount, setOnDiscount } = props
 
     const formik = useFormik({
         initialValues: {
@@ -28,6 +28,7 @@ export default function DiscountLine(props) {
                 discountType: values.discountType,
                 discountAmount: values.discountAmount
             })
+            setOnDiscount(false)
         }
     });
     return (

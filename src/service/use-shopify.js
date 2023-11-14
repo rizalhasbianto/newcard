@@ -5,6 +5,7 @@ export const SyncQuoteToShopify = async (
   quotesList,
   companyBill,
   discount,
+  payment,
   draftOrderId
 ) => {
   const lineItems = quotesList.map((list) => {
@@ -19,6 +20,7 @@ export const SyncQuoteToShopify = async (
     poNumber: quoteId,
     companyBill,
     discount,
+    payment,
     draftOrderId,
   });
 

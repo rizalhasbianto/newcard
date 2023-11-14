@@ -36,7 +36,8 @@ export const SaveQuoteToMongoDb = async (
   quotesList,
   discount,
   status,
-  quoteId
+  quoteId,
+  payment
 ) => {
   const countSubtotal = quotesList.reduce((n, { total }) => n + Number(total), 0).toFixed(2);
   const tax = (Number(countSubtotal) * 0.1).toFixed(2);
@@ -58,6 +59,7 @@ export const SaveQuoteToMongoDb = async (
       status: status,
       updatedAt: today,
       discount: discount,
+      payment: payment,
     },
   });
   return mongoRes;
@@ -84,16 +86,24 @@ export const AddNewQuoteToMongoDb = async () => {
       type: "",
       amount: "",
     },
+    payment: {
+      id: "",
+      date: "",
+      description: "",
+      viewDate: "",
+    },
+    checkoutUrl: "",
   });
   return mongoRes;
 };
 
-export const UpdateOrderIdQuoteToMongoDb = async (quoteId, draftOrderId) => {
+export const UpdateOrderIdQuoteToMongoDb = async (quoteId, draftOrderId, checkoutUrl) => {
   const mongoRes = await useDataService("/api/quotes/update-quote", "POST", {
     quoteId: quoteId,
     data: {
       draftOrderId: draftOrderId.id,
       draftOrderNumber: draftOrderId.name,
+      checkoutUrl: checkoutUrl.url,
     },
   });
   return mongoRes;
@@ -117,6 +127,11 @@ export const DeleteQuoteFromMongo = async (quoteId) => {
   return mongoRes;
 };
 
+export const SendInvoice = async (quoteDataInvoice) => {
+  const mongoRes = await useDataService("/api/email/invoice", "POST", quoteDataInvoice);
+  return mongoRes;
+};
+
 export const GetCompanies = async (page, rowsPerPage) => {
   const comapanyRes = await useDataService("/api/company/get-companies", "POST", {
     page: page,
@@ -131,7 +146,7 @@ export const GetCompaniesSwr = (page, postPerPage) => {
   const comapanyRes = useSwrData("/api/company/get-companies", queryPath);
 
   return comapanyRes;
-}; 
+};
 
 export const GetSingleCompaniesSwr = (id, quotePage, quotePostPerPage) => {
   const queryPath =
@@ -211,18 +226,18 @@ export const UpdateCompanyShipToMongo = async (id, companyData, shipToData) => {
   const findShipTarget = shipToData.findIndex(
     (item) => item.locationName === companyData.companyShippingLocation
   );
-  const shipToNew = [...shipToData]
+  const shipToNew = [...shipToData];
   shipToNew[findShipTarget] = {
-      locationName: companyData.companyShippingLocation,
-      location: {
-        attention: companyData.attentionLocation,
-        address: companyData.addressLocation,
-        city: companyData.cityLocation,
-        state: companyData.stateName.name,
-        zip: companyData.postalLocation,
-      },
-      default: companyData.default ? true : false,
-    };
+    locationName: companyData.companyShippingLocation,
+    location: {
+      attention: companyData.attentionLocation,
+      address: companyData.addressLocation,
+      city: companyData.cityLocation,
+      state: companyData.stateName.name,
+      zip: companyData.postalLocation,
+    },
+    default: companyData.default ? true : false,
+  };
   const mongoRes = await useDataService("/api/company/update-company", "POST", {
     id: id,
     updateData: {

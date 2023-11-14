@@ -2,9 +2,9 @@ import { adminAPi } from "src/lib/shopify";
 
 export default async function createDraftOrder(req, res) {
   const bodyObject = req.body;
-  const name = bodyObject.companyBill.contact && bodyObject.companyBill.contact.name.split(" ")
-  const firstName = name && name[0]
-  const lastName = name && name[1]
+  const name = bodyObject.companyBill.contact && bodyObject.companyBill.contact.name.split(" ");
+  const firstName = name && name[0];
+  const lastName = name && name[1];
   let query;
   if (bodyObject.draftOrderId) {
     query = `
@@ -38,8 +38,27 @@ export default async function createDraftOrder(req, res) {
             lineItems: [${bodyObject.lineItems}],
             poNumber: "${bodyObject.poNumber}",
             tags:"b2b",
-            paymentTerms: {
-              paymentTermsTemplateId:"gid://shopify/PaymentTermsTemplate/9"
+            ${
+              bodyObject.payment.id
+                ? `paymentTerms: {
+                paymentTermsTemplateId:"${bodyObject.payment.id}",
+                ${
+                  bodyObject.payment.date &&
+                  `
+                paymentSchedules: {
+                  ${
+                    bodyObject.payment.id === "gid://shopify/PaymentTermsTemplate/7"
+                      ? `dueAt:"${bodyObject.payment.date}"`
+                      : `issuedAt:"${bodyObject.payment.date}"`
+                  }
+                }
+                `
+                }
+              },`
+                : `paymentTerms: {
+                    paymentTermsTemplateId:"gid://shopify/PaymentTermsTemplate/1"
+                  },
+                `
             }
             ${
               bodyObject.discount.amount &&
@@ -52,6 +71,7 @@ export default async function createDraftOrder(req, res) {
             draftOrder {
               id
               name
+              invoiceUrl
             }
             userErrors {
               field
@@ -92,6 +112,24 @@ export default async function createDraftOrder(req, res) {
               poNumber: "${bodyObject.poNumber}",
               tags:"b2b",
               ${
+                bodyObject.payment.id &&
+                `paymentTerms: {
+                  paymentTermsTemplateId:"${bodyObject.payment.id}",
+                  ${
+                    bodyObject.payment.date &&
+                    `
+                  paymentSchedules: {
+                    ${
+                      bodyObject.payment.id === "gid://shopify/PaymentTermsTemplate/7"
+                        ? `dueAt:"${bodyObject.payment.date}"`
+                        : `issuedAt:"${bodyObject.payment.date}"`
+                    }
+                  }
+                  `
+                  }
+                },`
+              }
+              ${
                 bodyObject.discount.amount &&
                 `appliedDiscount: {
                     valueType:${bodyObject.discount.type},
@@ -102,6 +140,7 @@ export default async function createDraftOrder(req, res) {
             draftOrder {
               id
               name
+              invoiceUrl
             }
             userErrors {
               field
