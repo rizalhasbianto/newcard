@@ -82,16 +82,16 @@ export default async function getProducts(req, res) {
       let resProdData = resGetData.data.collection.products.edges;
 
       if (searchByTitle) {
-        resProdData = resProdData.filter((prod) => prod.node.title.includes(req.query?.prodName));
+        resProdData = resProdData.filter((prod) => prod.node.title.includes(req.query?.productName));
       }
       if (searchByType) {
-        resProdData = resProdData.filter((prod) => prod.node.productType === req.query?.prodType);
+        resProdData = resProdData.filter((prod) => prod.node.productType === req.query?.productType);
       }
       if (searchByTag) {
-        resProdData = resProdData.filter((prod) => prod.node.tags.includes(req.query?.prodTag));
+        resProdData = resProdData.filter((prod) => prod.node.tags.includes(req.query?.tag));
       }
       if (searchByVendor) {
-        resProdData = resProdData.filter((prod) => prod.node.vendor === req.query?.prodVendor);
+        resProdData = resProdData.filter((prod) => prod.node.vendor === req.query?.productVendor);
       }
 
       resProdData.map((prod) => ProdData.push(prod));

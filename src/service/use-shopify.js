@@ -91,6 +91,7 @@ export const SearchProducts = (
   const { productName, productType, tag, productVendor, collection } = selectedFilter;
   let queryParam;
   let url;
+
   if (collection) {
     const params = {
       productName,
@@ -99,7 +100,7 @@ export const SearchProducts = (
       productVendor,
       collection,
       productPerPage,
-    };
+    }; 
     queryParam = new URLSearchParams(params).toString();
     url = "/api/shopify/get-products-swr";
   } else {
