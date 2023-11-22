@@ -1,20 +1,26 @@
 import Image from "next/image";
 import { CircularProgress, Stack } from "@mui/material";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 
 export const ImageComponent = (props) => {
   const [loading, setLoading] = useState(true);
   const { img, title } = props;
   const image = img ? img : "/assets/default.png";
   const alt = title ? title : "skratch b2b";
+  const imageLoad = useRef()
 
   useEffect(() => {
     setLoading(true);
   }, [img]);
 
+  useEffect(() => {
+    if (imageLoad.current.complete) setLoading(false)
+}, [])
+
   return (
     <>
       <Image
+        ref={imageLoad}
         src={image}
         fill={true}
         alt={alt}
