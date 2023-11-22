@@ -3,13 +3,19 @@ import { callShopify } from "src/lib/shopify";
 export default async function getProducts(req, res) {
   console.log(req.query);
   const query = `
-    {productByHandle(handle:"youth-vengeance-a11-helmet") {
+    {productByHandle(handle:"${req.query.productHandle}") {
               id
               title
               productType
               handle
               tags
+              description
               vendor
+              priceRange {
+                maxVariantPrice {
+                  amount
+                }
+              }
               options {
                 name
                 values
