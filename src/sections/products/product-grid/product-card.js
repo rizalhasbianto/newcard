@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import PropTypes from "prop-types";
 import {
   Box,
@@ -98,11 +99,15 @@ export const ProductCard = (props) => {
             marginBottom: "20px",
           }}
         >
-          <ImageComponent img={img} title={product.node.title} />
+          <Link href={`/products/${product.node.handle}`}>
+            <ImageComponent img={img} title={product.node.title} />
+          </Link>
         </Box>
-        <Typography align="center" gutterBottom variant="h5">
-          {product.node.title}
-        </Typography>
+        <Link href={`/products/${product.node.handle}`}>
+          <Typography align="center" gutterBottom variant="h5">
+            {product.node.title}
+          </Typography>
+        </Link>
         <Stack
           alignItems="center"
           direction="row"

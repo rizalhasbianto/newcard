@@ -25,7 +25,7 @@ const Page = () => {
   const [hasNext, setHasNext] = useState(false);
 
   const { data, isLoading, isError } = GetOrdersDataSwr(fetchData);
-
+console.log("data", data)
   const handlePageChange = useCallback(
     async (value) => {
       setFetchData({

@@ -27,6 +27,8 @@ export const ImageComponent = (props) => {
           sx={{
             position: "absolute",
             zIndex: 2,
+            left: 0,
+            top: 0,
             width: "100%",
             height: "100%",
             background: "rgba(241, 241, 241, 0.47)",

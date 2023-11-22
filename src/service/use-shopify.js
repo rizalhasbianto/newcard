@@ -153,3 +153,9 @@ export const GetOrdersDataSwr = (page) => {
 
   return quotesRes;
 };
+
+export const GetProductByhandleSwr = (handle) => {
+  const queryPath = "productHandle=" + handle ;
+  const productRes = useSwrData("/api/shopify/get-product-byhandle", queryPath);
+  return productRes;
+}
