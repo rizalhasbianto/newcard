@@ -16,7 +16,14 @@ import {
 import { ImageComponent } from "src/components/image";
 
 export const ProductFrom = (props) => {
-  const { quotesList, setQuotesList, selectedProduct } = props;
+  const {
+    quotesList,
+    setQuotesList,
+    selectedProduct,
+    setSelectedImgVariant,
+    setSelectedTab,
+    quoteId,
+  } = props;
   const [selectedVariant, setSelectedVariant] = useState("");
   const [selectedOptions, setSelectedOptions] = useState("");
   const [selectedQuantity, setSelectedQuantity] = useState(1);
@@ -47,12 +54,31 @@ export const ProductFrom = (props) => {
       });
     });
     setSelectedOptions(newSelectedOptions);
+
     if (newSelecetdVariant) {
       setNotAvilableOption(false);
       setSelectedVariant(newSelecetdVariant?.node);
+      setSelectedImgVariant(newSelecetdVariant?.node.image.bigUrl);
+      setSelectedTab(0);
     } else {
       setNotAvilableOption(true);
     }
+  };
+
+  const handleAddQuote = async () => {
+    if (!router.query.quoteId) {
+      return;
+    }
+
+    const updateQuote = {
+      productName: selectedProduct.title,
+      variant: selectedVariant,
+      qty: selectedQuantity,
+      total: (selectedQuantity * selectedVariant.price.amount).toFixed(2),
+    };
+
+    const resUpdateQuote = await UpdateQuoteItem(router.query.quoteId, updateQuote);
+    console.log("resUpdateQuote", resUpdateQuote);
   };
 
   return (
@@ -90,21 +116,22 @@ export const ProductFrom = (props) => {
           />
         </Grid>
         <Grid md={10}>
+          {quoteId && (
+            <Button
+              variant="contained"
+              onClick={() => handleAddQuote()}
+              disabled={selectedVariant.currentlyNotInStock ? true : false || notAvilableOption}
+              sx={{ mr: 1 }}
+            >
+              Add to #{quoteId.slice(-4)}
+            </Button>
+          )}
           <Button
             variant="contained"
-            onClick={() =>
-              addQuote({
-                quotesList,
-                setQuotesList,
-                selectedProduct,
-                selectedVariant,
-                selectedQuantity,
-                modalPopUp,
-              })
-            }
-            disabled={notAvilableOption}
+            onClick={() => handleOpenQuoteList()}
+            disabled={selectedVariant.currentlyNotInStock ? true : false || notAvilableOption}
           >
-            Add to Quote List
+            Choose Quote
           </Button>
         </Grid>
       </Grid>

@@ -141,7 +141,7 @@ export const QuickAddProducts = ({ quotesList, setQuotesList }) => {
     const qtyNum = !qty || qty <= 0 ? 1 : qty;
     if (checkQtyList >= 0) {
       const updateQty = [...qtyList];
-      updateQty[0].qty = qtyNum;
+      updateQty[checkQtyList].qty = qtyNum;
       setQtyList(updateQty);
     } else {
       setQtyList([
@@ -275,7 +275,10 @@ export const QuickAddProducts = ({ quotesList, setQuotesList }) => {
                       <TableCell></TableCell>
                       <TableCell></TableCell>
                     </TableRow>
-                    {item.node.variants?.edges.map((varItem, idx) => (
+                    {item.node.variants?.edges.map((varItem, idx) => {
+                      const findQty = qtyList.findIndex((qtyItem) => qtyItem.id === varItem.node.id);
+                      const qty = findQty >= 0 ?  qtyList[findQty].qty : 1
+                      return (
                       <TableRow key={varItem.node.id}>
                         <TableCell padding="checkbox" sx={{ minWidth: "70px" }}>
                           <Typography display={"inline-block"} sx={{ fontWeight: "bold" }}>
@@ -298,6 +301,7 @@ export const QuickAddProducts = ({ quotesList, setQuotesList }) => {
                             variant="standard"
                             InputProps={{ inputProps: { min: 1 } }}
                             type="number"
+                            value={qty}
                             onChange={(event) => {
                               handleAddQty(parseInt(event.target.value), varItem.node.id);
                             }}
@@ -328,7 +332,7 @@ export const QuickAddProducts = ({ quotesList, setQuotesList }) => {
                           </SvgIcon>
                         </TableCell>
                       </TableRow>
-                    ))}
+                    )})}
                   </Fragment>
                 ))}
               </TableBody>

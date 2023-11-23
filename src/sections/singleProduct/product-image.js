@@ -9,20 +9,19 @@ import {
 import { ImageComponent } from "src/components/image";
 
 export const ProductImage = (props) => {
-  const { imgGallery } = props;
-  const [selectedImg, setSelectedImg] = useState();
-  const [selectedTab, setSelectedTab] = useState(1);
+  const { imgGallery, selectedImgVariant, setSelectedImgVariant, selectedTab, setSelectedTab } = props;
+  
   const handleTabChange = useCallback(
     (event, newValue) => {
       setSelectedTab(newValue);
-      setSelectedImg(imgGallery[newValue - 1].node.bigUrl);
+      setSelectedImgVariant(imgGallery[newValue - 1].node.bigUrl);
     },
-    [selectedImg]
+    [selectedImgVariant]
   );
 
   useEffect(() => {
     if (imgGallery) {
-      setSelectedImg(imgGallery[0].node.bigUrl);
+      setSelectedImgVariant(imgGallery[0].node.bigUrl);
     }
   }, [imgGallery]);
 
@@ -60,7 +59,7 @@ export const ProductImage = (props) => {
           justifyContent={"center"}
           alignContent={"center"}
         >
-          {selectedImg && <ImageComponent img={selectedImg} />}
+          {selectedImgVariant && <ImageComponent img={selectedImgVariant} />}
         </Grid>
       </Grid>
     </Stack>

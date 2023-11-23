@@ -80,6 +80,7 @@ export const ProductCard = (props) => {
       )
     );
   }, [product]);
+
   return (
     <Card
       sx={{
@@ -88,7 +89,7 @@ export const ProductCard = (props) => {
         height: "100%",
       }}
     >
-      <CardContent>
+      <CardContent sx={{p:"10px 20px 10px"}}>
         <Box
           sx={{
             display: "flex",
@@ -99,12 +100,12 @@ export const ProductCard = (props) => {
             marginBottom: "20px",
           }}
         >
-          <Link href={`/products/${product.node.handle}`}>
+          <Link href={`/products/${product.node.handle}${quoteId && `?quoteId=${quoteId}`}`}>
             <ImageComponent img={img} title={product.node.title} />
           </Link>
         </Box>
-        <Link href={`/products/${product.node.handle}`}>
-          <Typography align="center" gutterBottom variant="h5">
+        <Link href={`/products/${product.node.handle}${quoteId && `?quoteId=${quoteId}`}`}>
+          <Typography align="center" gutterBottom variant="h6">
             {product.node.title}
           </Typography>
         </Link>
@@ -113,7 +114,7 @@ export const ProductCard = (props) => {
           direction="row"
           justifyContent="space-between"
           spacing={2}
-          sx={{ p: 2 }}
+          sx={{ p: 0 }}
         >
           <Typography variant="body2">Price: ${selectedVariant.price?.amount}</Typography>
           <Typography variant="body2">
@@ -127,7 +128,7 @@ export const ProductCard = (props) => {
         direction="row"
         justifyContent="space-between"
         spacing={2}
-        sx={{ p: 2 }}
+        sx={{ p: 1 }}
       >
         <OptionsComponent
           options={product.node.options}
@@ -142,15 +143,13 @@ export const ProductCard = (props) => {
         direction="row"
         justifyContent="space-between"
         spacing={2}
-        sx={{ p: 2 }}
+        sx={{ p: 1 }}
       >
         <Grid container justifyContent="center" alignItems="center">
           {
             notAvilableOption &&
-            <Typography variant="body2">No variant available for this selected options!</Typography>
+            <Typography variant="body2" sx={{mb:1}}>No variant available for this selected options!</Typography>
           }
-        <Grid xs={12} md={12}>
-          </Grid>
           <Grid xs={12} md={4}>
             <TextField
               id="qtySingle"
