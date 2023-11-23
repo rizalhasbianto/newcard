@@ -1,10 +1,8 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useEffect, useState, useCallback } from "react";
-import Image from "next/image";
 import OptionsComponent from "src/components/products/options";
 import AlertDialog from "src/components/alert-dialog";
 import { usePopover } from "src/hooks/use-popover";
-import { addQuote } from "src/helper/handleAddQuote";
 import {
   Button,
   TextField,
@@ -13,21 +11,28 @@ import {
   Divider,
   Unstable_Grid2 as Grid,
 } from "@mui/material";
-import { ImageComponent } from "src/components/image";
+import LoadingButton from "@mui/lab/LoadingButton";
+import RequestQuoteIcon from '@mui/icons-material/RequestQuote';
+import ProductAlertDialogQuoteList from "src/sections/products/product-alert-dialog-quotelist";
+
+import { GetQuotesData, UpdateQuoteItem } from "src/service/use-mongo";
 
 export const ProductFrom = (props) => {
   const {
-    quotesList,
-    setQuotesList,
     selectedProduct,
     setSelectedImgVariant,
     setSelectedTab,
     quoteId,
+    toastUp
   } = props;
+
+  const [buttonloading, setButtonloading] = useState(false);
   const [selectedVariant, setSelectedVariant] = useState("");
   const [selectedOptions, setSelectedOptions] = useState("");
   const [selectedQuantity, setSelectedQuantity] = useState(1);
   const [notAvilableOption, setNotAvilableOption] = useState(false);
+  const [openQuote, setOpenQuote] = useState(false);
+  const [quoteList, setQuoteList] = useState(false);
   const modalPopUp = usePopover();
 
   useEffect(() => {
@@ -66,10 +71,10 @@ export const ProductFrom = (props) => {
   };
 
   const handleAddQuote = async () => {
-    if (!router.query.quoteId) {
+    if (!quoteId) {
       return;
     }
-
+    setButtonloading(true)
     const updateQuote = {
       productName: selectedProduct.title,
       variant: selectedVariant,
@@ -77,12 +82,38 @@ export const ProductFrom = (props) => {
       total: (selectedQuantity * selectedVariant.price.amount).toFixed(2),
     };
 
-    const resUpdateQuote = await UpdateQuoteItem(router.query.quoteId, updateQuote);
-    console.log("resUpdateQuote", resUpdateQuote);
+    const resUpdateQuote = await UpdateQuoteItem(quoteId, updateQuote);
+    if(resUpdateQuote) {
+      toastUp.handleStatus("success");
+      toastUp.handleMessage("Product added to quote!!!");
+    } else {
+      toastUp.handleStatus("error");
+      toastUp.handleMessage("Error add product to quote!!!");
+    }
+    
+    setButtonloading(false)
   };
+
+  const handleOpenQuoteList = useCallback(async () => {
+    const query = { $or: [{ status: "draft" }, { status: "new" }] };
+    const sort = "DSC";
+    const resQuotes = await GetQuotesData(0, 50, query, sort);
+    if (!resQuotes) {
+      toastUp.handleStatus("error");
+      toastUp.handleMessage("Error when get quote list!!!");
+      return;
+    }
+    setQuoteList(resQuotes.data.quote);
+    setOpenQuote(true);
+  }, []);
 
   return (
     <Stack spacing={0} sx={{ mt: 2 }}>
+      <ProductAlertDialogQuoteList
+            openQuote={openQuote}
+            setOpenQuote={setOpenQuote}
+            quoteList={quoteList}
+          />
       <AlertDialog
         title={modalPopUp.message.title}
         content={modalPopUp.message.content}
@@ -117,14 +148,18 @@ export const ProductFrom = (props) => {
         </Grid>
         <Grid md={10}>
           {quoteId && (
-            <Button
-              variant="contained"
-              onClick={() => handleAddQuote()}
-              disabled={selectedVariant.currentlyNotInStock ? true : false || notAvilableOption}
-              sx={{ mr: 1 }}
-            >
-              Add to #{quoteId.slice(-4)}
-            </Button>
+            <LoadingButton
+            color="primary"
+            disabled={selectedVariant.currentlyNotInStock ? true : false || notAvilableOption}
+            onClick={() => handleAddQuote()}
+            loading={buttonloading ? true : false}
+            loadingPosition="start"
+            startIcon={<RequestQuoteIcon />}
+            variant="contained"
+            sx={{mr:2}}
+          >
+            Add to #{quoteId.slice(-4)}
+          </LoadingButton>
           )}
           <Button
             variant="contained"

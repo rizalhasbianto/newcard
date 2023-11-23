@@ -14,7 +14,8 @@ import { quotesQuickAddHead } from "src/data/tableList";
 import { Scrollbar } from "src/components/scrollbar";
 
 export const ProductTable = (props) => {
-  const { handleOpenQuoteList, data } = props;
+  const { handleOpenQuoteList, data, toastUp, productPerPage, quoteId } = props;
+
   return (
     data && (
       <Card sx={{ minWidth: "100%" }}>
@@ -23,16 +24,19 @@ export const ProductTable = (props) => {
             <TableHead>
               <TableRow>
                 {quotesQuickAddHead.map((head) => {
-                  return <TableCell key={head.title}>{head.title}</TableCell>;
+                  return <TableCell key={head.title} sx={{textAlign:"center"}}>{head.title}</TableCell>;
                 })}
               </TableRow>
             </TableHead>
             <TableBody>
-              {data.map((dt) => {
+              {data.map((dt, idx) => {
                 return dt.newData.edges.map((product, i) => (
                   <Productlist
                     product={product}
                     handleOpenQuoteList={handleOpenQuoteList}
+                    toastUp={toastUp}
+                    noUrut={idx * productPerPage + (i + 1)}
+                    quoteId={quoteId}
                     key={i + 1}
                   />
                 ));

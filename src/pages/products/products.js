@@ -1,6 +1,5 @@
 import Head from "next/head";
-import ArrowUpOnSquareIcon from "@heroicons/react/24/solid/ArrowUpOnSquareIcon";
-import ArrowDownOnSquareIcon from "@heroicons/react/24/solid/ArrowDownOnSquareIcon";
+import { useRouter } from "next/router";
 import PlusIcon from "@heroicons/react/24/solid/PlusIcon";
 import LoadingButton from "@mui/lab/LoadingButton";
 import AutorenewIcon from "@mui/icons-material/Autorenew";
@@ -23,11 +22,13 @@ import {
   Unstable_Grid2 as Grid,
 } from "@mui/material";
 
-import { Layout as DashboardLayout } from "src/layouts/dashboard/layout";
 import { ProductGrid } from "src/sections/products/product-grid";
 import { ProductsSearch } from "src/sections/products/products-search";
 import { ProductTable } from "src/sections/products/product-table";
 import ProductAlertDialogQuoteList from "src/sections/products/product-alert-dialog-quotelist";
+
+import Toast from "src/components/toast";
+import { useToast } from "src/hooks/use-toast";
 
 import { SearchProducts } from "src/service/use-shopify";
 import { GetQuotesData } from "src/service/use-mongo";
@@ -48,6 +49,9 @@ const Products = () => {
   const [smartSearch, setSmartSearch] = useState();
   const [openQuote, setOpenQuote] = useState(false);
   const [quoteList, setQuoteList] = useState(false);
+  const toastUp = useToast();
+  const router = useRouter();
+  const quoteId = router.query?.quoteId;
 
   const productPerPage = 12;
   const lastCursor = "";
@@ -100,6 +104,11 @@ const Products = () => {
             openQuote={openQuote}
             setOpenQuote={setOpenQuote}
             quoteList={quoteList}
+          />
+          <Toast
+            toastStatus={toastUp.toastStatus}
+            handleStatus={toastUp.handleStatus}
+            toastMessage={toastUp.toastMessage}
           />
           <Stack spacing={3}>
             <Stack direction="row" justifyContent="space-between" spacing={4}>
@@ -155,9 +164,20 @@ const Products = () => {
             <Grid container spacing={3}>
               {isError && <Typography variant="h5">No data found</Typography>}
               {layout === "card" ? (
-                <ProductGrid handleOpenQuoteList={handleOpenQuoteList} data={data} />
+                <ProductGrid
+                  handleOpenQuoteList={handleOpenQuoteList}
+                  data={data}
+                  toastUp={toastUp}
+                  quoteId={quoteId}
+                />
               ) : (
-                <ProductTable handleOpenQuoteList={handleOpenQuoteList} data={data} />
+                <ProductTable
+                  handleOpenQuoteList={handleOpenQuoteList}
+                  data={data}
+                  toastUp={toastUp}
+                  productPerPage={productPerPage}
+                  quoteId={quoteId}
+                />
               )}
             </Grid>
             {hasNextPage ? (

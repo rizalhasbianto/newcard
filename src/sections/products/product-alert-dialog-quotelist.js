@@ -21,7 +21,6 @@ import LoadingButton from "@mui/lab/LoadingButton";
 import SaveIcon from "@mui/icons-material/Save";
 
 import { quotesListHeadProduct } from "src/data/tableList";
-import { useState } from "react";
 import { useRouter } from 'next/router'
 
 export default function ProductAddToQuote(props) {
@@ -29,7 +28,8 @@ export default function ProductAddToQuote(props) {
   const router = useRouter()
 
   const handleSelectQuote = (id) => {
-    router.push("/products?quoteId="+id)
+    const pathName = router.asPath.split("?")
+    router.push(`${pathName[0]}?quoteId=`+id)
     setOpenQuote(false)
   }
 

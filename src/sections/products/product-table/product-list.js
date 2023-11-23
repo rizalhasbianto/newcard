@@ -1,37 +1,28 @@
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import PropTypes from "prop-types";
-import ArrowDownOnSquareIcon from "@heroicons/react/24/solid/ArrowDownOnSquareIcon";
-import ClockIcon from "@heroicons/react/24/solid/ClockIcon";
 import {
-  Avatar,
   Box,
-  Card,
-  CardContent,
-  Divider,
   Stack,
-  SvgIcon,
   Typography,
   Button,
   TextField,
-  Table,
-  TableBody,
   TableCell,
-  TableHead,
-  TablePagination,
   TableRow,
   Unstable_Grid2 as Grid,
 } from "@mui/material";
-import Image from "next/image";
+import LoadingButton from "@mui/lab/LoadingButton";
+import RequestQuoteIcon from "@mui/icons-material/RequestQuote";
 import OptionsComponent from "src/components/products/options";
 import { ImageComponent } from "src/components/image";
-import { useRouter } from "next/router";
 import { UpdateQuoteItem } from "src/service/use-mongo";
 
 export const Productlist = (props) => {
-  const { product, handleOpenQuoteList } = props;
-  const router = useRouter();
-  const quoteId = router.query?.quoteId;
+  const { product, handleOpenQuoteList, toastUp, noUrut, quoteId } = props;
 
+
+  const [buttonloading, setButtonloading] = useState(false);
+  const [notAvilableOption, setNotAvilableOption] = useState(false);
   const [selectedVariant, setSelectedVariant] = useState(product.node.variants.edges[0].node);
   const [selectedOptions, setSelectedOptions] = useState(
     product.node.variants.edges[0].node.selectedOptions.reduce(
@@ -55,14 +46,19 @@ export const Productlist = (props) => {
       });
     });
     setSelectedOptions(newSelectedOptions);
-    setSelectedVariant(newSelecetdVariant?.node);
+    if (newSelecetdVariant) {
+      setNotAvilableOption(false);
+      setSelectedVariant(newSelecetdVariant?.node);
+    } else {
+      setNotAvilableOption(true);
+    }
   };
 
   const handleAddQuote = async () => {
-    if (!router.query.quoteId) {
+    if (!quoteId) {
       return;
     }
-
+    setButtonloading(true);
     const updateQuote = {
       productName: product.node.title,
       variant: selectedVariant,
@@ -70,8 +66,15 @@ export const Productlist = (props) => {
       total: (selectedQuantity * selectedVariant.price.amount).toFixed(2),
     };
 
-    const resUpdateQuote = await UpdateQuoteItem(router.query.quoteId, updateQuote);
-    console.log("resUpdateQuote", resUpdateQuote);
+    const resUpdateQuote = await UpdateQuoteItem(quoteId, updateQuote);
+    if (resUpdateQuote) {
+      toastUp.handleStatus("success");
+      toastUp.handleMessage("Product added to quote!!!");
+    } else {
+      toastUp.handleStatus("error");
+      toastUp.handleMessage("Error add product to quote!!!");
+    }
+    setButtonloading(false);
   };
 
   useEffect(() => {
@@ -86,7 +89,7 @@ export const Productlist = (props) => {
 
   return (
     <TableRow hover>
-      <TableCell padding="checkbox">1</TableCell>
+      <TableCell padding="checkbox">{noUrut}</TableCell>
       <TableCell>
         <Grid container justifyContent="flex-start">
           <Grid lg={4}>
@@ -100,13 +103,17 @@ export const Productlist = (props) => {
                 marginBottom: "20px",
               }}
             >
+              <Link href={`/products/${product.node.handle}${quoteId ? `?quoteId=${quoteId}` : ""}`}>
               <ImageComponent img={img} title={product.node.title} />
+              </Link>
             </Box>
           </Grid>
           <Grid lg={8}>
+          <Link href={`/products/${product.node.handle}${quoteId ? `?quoteId=${quoteId}` : ""}`}>
             <Typography align="left" gutterBottom variant="h6">
               {product.node.title}
             </Typography>
+            </Link>
             <Stack
               alignItems="center"
               direction="row"
@@ -114,6 +121,11 @@ export const Productlist = (props) => {
               spacing={2}
               sx={{ p: 2 }}
             >
+              {notAvilableOption && (
+                <Typography variant="body2" sx={{ mb: 1 }}>
+                  No variant available for this selected options!
+                </Typography>
+              )}
               <OptionsComponent
                 options={product.node.options}
                 handleChange={handleChange}
@@ -126,7 +138,7 @@ export const Productlist = (props) => {
       <TableCell align="right">
         <Typography variant="body2">${selectedVariant.price?.amount}</Typography>
       </TableCell>
-      <TableCell>
+      <TableCell sx={{minWidth:"150px"}} align="center">
         <Typography variant="body2">
           {selectedVariant.currentlyNotInStock ? "Out of stock" : "In stock"}
         </Typography>
@@ -148,19 +160,23 @@ export const Productlist = (props) => {
           }}
         />
       </TableCell>
-      <TableCell>
+      <TableCell sx={{minWidth:"250px"}} align="center">
         {!quoteId ? (
           <Button variant="contained" onClick={() => handleOpenQuoteList()}>
             Choose Quote
           </Button>
         ) : (
-          <Button
-            variant="contained"
+          <LoadingButton
+            color="primary"
+            disabled={selectedVariant.currentlyNotInStock ? true : false || notAvilableOption}
             onClick={() => handleAddQuote()}
-            disabled={selectedVariant.currentlyNotInStock ? true : false}
+            loading={buttonloading ? true : false}
+            loadingPosition="start"
+            startIcon={<RequestQuoteIcon />}
+            variant="contained"
           >
             Add to #{quoteId.slice(-4)}
-          </Button>
+          </LoadingButton>
         )}
       </TableCell>
     </TableRow>

@@ -12,16 +12,16 @@ import {
   TextField,
   Unstable_Grid2 as Grid,
 } from "@mui/material";
+import LoadingButton from "@mui/lab/LoadingButton";
+import RequestQuoteIcon from "@mui/icons-material/RequestQuote";
 import OptionsComponent from "src/components/products/options";
 import { ImageComponent } from "src/components/image";
-import { useRouter } from "next/router";
 import { UpdateQuoteItem } from "src/service/use-mongo";
 
 export const ProductCard = (props) => {
-  const { product, handleOpenQuoteList } = props;
-  const router = useRouter();
-  const quoteId = router.query?.quoteId;
+  const { product, handleOpenQuoteList, toastUp, quoteId } = props;
 
+  const [buttonloading, setButtonloading] = useState(false);
   const [notAvilableOption, setNotAvilableOption] = useState(false);
   const [selectedVariant, setSelectedVariant] = useState(product.node.variants.edges[0].node);
   const [selectedOptions, setSelectedOptions] = useState(
@@ -59,7 +59,7 @@ export const ProductCard = (props) => {
     if (!router.query.quoteId) {
       return;
     }
-
+    setButtonloading(true);
     const updateQuote = {
       productName: product.node.title,
       variant: selectedVariant,
@@ -68,7 +68,14 @@ export const ProductCard = (props) => {
     };
 
     const resUpdateQuote = await UpdateQuoteItem(router.query.quoteId, updateQuote);
-    console.log("resUpdateQuote", resUpdateQuote);
+    if (resUpdateQuote) {
+      toastUp.handleStatus("success");
+      toastUp.handleMessage("Product added to quote!!!");
+    } else {
+      toastUp.handleStatus("error");
+      toastUp.handleMessage("Error add product to quote!!!");
+    }
+    setButtonloading(false);
   };
 
   useEffect(() => {
@@ -89,7 +96,7 @@ export const ProductCard = (props) => {
         height: "100%",
       }}
     >
-      <CardContent sx={{p:"10px 20px 10px"}}>
+      <CardContent sx={{ p: "10px 20px 10px" }}>
         <Box
           sx={{
             display: "flex",
@@ -146,10 +153,11 @@ export const ProductCard = (props) => {
         sx={{ p: 1 }}
       >
         <Grid container justifyContent="center" alignItems="center">
-          {
-            notAvilableOption &&
-            <Typography variant="body2" sx={{mb:1}}>No variant available for this selected options!</Typography>
-          }
+          {notAvilableOption && (
+            <Typography variant="body2" sx={{ mb: 1 }}>
+              No variant available for this selected options!
+            </Typography>
+          )}
           <Grid xs={12} md={4}>
             <TextField
               id="qtySingle"
@@ -177,13 +185,18 @@ export const ProductCard = (props) => {
                 Choose Quote
               </Button>
             ) : (
-              <Button
-                variant="contained"
-                onClick={() => handleAddQuote()}
+              <LoadingButton
+                color="primary"
                 disabled={selectedVariant.currentlyNotInStock ? true : false || notAvilableOption}
+                onClick={() => handleAddQuote()}
+                loading={buttonloading ? true : false}
+                loadingPosition="start"
+                startIcon={<RequestQuoteIcon />}
+                variant="contained"
+                sx={{ mr: 2 }}
               >
                 Add to #{quoteId.slice(-4)}
-              </Button>
+              </LoadingButton>
             )}
           </Grid>
         </Grid>
