@@ -100,11 +100,11 @@ export const ProductCard = (props) => {
             marginBottom: "20px",
           }}
         >
-          <Link href={`/products/${product.node.handle}${quoteId && `?quoteId=${quoteId}`}`}>
+          <Link href={`/products/${product.node.handle}${quoteId ? `?quoteId=${quoteId}` : ""}`}>
             <ImageComponent img={img} title={product.node.title} />
           </Link>
         </Box>
-        <Link href={`/products/${product.node.handle}${quoteId && `?quoteId=${quoteId}`}`}>
+        <Link href={`/products/${product.node.handle}${quoteId ? `?quoteId=${quoteId}` : ""}`}>
           <Typography align="center" gutterBottom variant="h6">
             {product.node.title}
           </Typography>
