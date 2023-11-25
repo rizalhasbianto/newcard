@@ -1,6 +1,7 @@
 import { useCallback, useState, useEffect } from "react";
 import LoadingButton from "@mui/lab/LoadingButton";
 import SaveIcon from "@mui/icons-material/Save";
+import ClearIcon from "@mui/icons-material/Clear";
 import {
   Box,
   Card,
@@ -12,6 +13,8 @@ import {
   Collapse,
   Unstable_Grid2 as Grid,
   Typography,
+  TextField,
+  Stack,
 } from "@mui/material";
 
 import { SelectProducts } from "./add-products";
@@ -26,12 +29,13 @@ import {
   SaveQuoteToMongoDb,
   UpdateOrderIdQuoteToMongoDb,
   GetCompanies,
-  SendInvoice
+  SendInvoice,
+  SaveCollectionToMongoDb,
 } from "src/service/use-mongo";
 import { SyncQuoteToShopify } from "src/service/use-shopify";
 
 export const QuotesForm = (props) => {
-  const { tabContent, reqQuotesData } = props;
+  const { tabContent, reqQuotesData, tabIndex } = props;
   const [companies, setCompanies] = useState([]);
   const [companyName, setCompanyName] = useState("");
   const [shipTo, setShipTo] = useState("");
@@ -44,6 +48,8 @@ export const QuotesForm = (props) => {
   const [quoteId, setQuoteId] = useState();
   const [discount, setDiscount] = useState();
   const [payment, setPayment] = useState(tabContent.payment);
+  const [newCollection, setNewCollection] = useState(false);
+  const [collectionName, setCollectionName] = useState();
   const toastUp = useToast();
   const handleTemplate = useCallback(() => {
     setButtonLoading();
@@ -79,7 +85,7 @@ export const QuotesForm = (props) => {
       if (type === "draft") {
         toastUp.handleStatus("success");
         toastUp.handleMessage("Quote saved as draft!!!");
-        reqQuotesData(0, 50);
+        reqQuotesData(0, 50, tabIndex);
         setButtonLoading(false);
         return;
       }
@@ -152,10 +158,10 @@ export const QuotesForm = (props) => {
         email: companyContact.email,
         companyName: companyName,
         orderNumber: draftOrderId.name,
-        poNumber: "#"+quoteId,
+        poNumber: "#" + quoteId,
         checkoutUrl: checkoutUrl.utl,
         quoteId: quoteId,
-      }
+      };
       const sendInvoiceRes = await SendInvoice(quoteDataInvoice);
       if (!sendInvoiceRes) {
         // error when send invoice
@@ -227,6 +233,23 @@ export const QuotesForm = (props) => {
     },
     [companies, tabContent]
   );
+
+  const handleSaveCollection = useCallback(async () => {
+    let error = true;
+    if (collectionName) {
+      const resSaveCollection = await SaveCollectionToMongoDb(collectionName, quotesList);
+      if (resSaveCollection && resSaveCollection.data.insertedId !== "error") {
+        toastUp.handleStatus("success");
+        toastUp.handleMessage("Collection saved!!!");
+        setNewCollection(false);
+        error = false;
+        return true;
+      }
+    }
+
+    toastUp.handleStatus("error");
+    toastUp.handleMessage("Failed save collection!!!");
+  }, [collectionName, quotesList, toastUp]);
 
   useEffect(() => {
     GetCompaniesData(0, 50);
@@ -342,26 +365,57 @@ export const QuotesForm = (props) => {
       </Collapse>
       <Collapse in={companyName && quotesList.length > 0 ? true : false}>
         <Card>
-        <Grid container justify="flex-end" alignItems="center">
-          <Grid
-            xs={6}
-            md={6}
-          >
-            <CardHeader subheader="" title="Selected Products" />
+          <Grid container justify="flex-end" alignItems="center">
+            <Grid xs={6} md={6}>
+              <CardHeader subheader="" title="Selected Products" />
+            </Grid>
+            <Grid
+              xs={6}
+              md={6}
+              sx={{
+                textAlign: "right",
+                paddingRight: "25px",
+              }}
+            >
+              <Collapse in={newCollection}>
+                <Stack direction="row" spacing={2} justifyContent={"flex-end"}>
+                  <TextField
+                    id="collection-name"
+                    name="collectionName"
+                    label="Collection Name"
+                    variant="outlined"
+                    value={collectionName}
+                    onInput={(e) => setCollectionName(e.target.value)}
+                  />
+                  <LoadingButton
+                    color="primary"
+                    onClick={handleSaveCollection}
+                    loading={false}
+                    loadingPosition="start"
+                    startIcon={<SaveIcon />}
+                    variant="contained"
+                  >
+                    Save
+                  </LoadingButton>
+                  <LoadingButton
+                    color="primary"
+                    loading={false}
+                    loadingPosition="start"
+                    startIcon={<ClearIcon />}
+                    variant="contained"
+                    onClick={() => setNewCollection(false)}
+                  >
+                    Cancel
+                  </LoadingButton>
+                </Stack>
+              </Collapse>
+              <Collapse in={!newCollection}>
+                <Button variant="outlined" onClick={() => setNewCollection(true)}>
+                  Save products as collection
+                </Button>
+              </Collapse>
+            </Grid>
           </Grid>
-          <Grid
-            xs={6}
-            md={6}
-            sx={{
-              textAlign: "right",
-              paddingRight: "25px",
-            }}
-          >
-            <Button variant="outlined" onClick={() => setAddNewCompany(true)}>
-              Save As Template
-            </Button>
-          </Grid>
-        </Grid>
           <CardContent sx={{ pt: 0 }}>
             <LineItemQuotes
               quotesList={quotesList}

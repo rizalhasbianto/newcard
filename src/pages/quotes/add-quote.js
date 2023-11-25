@@ -25,6 +25,7 @@ const Page = () => {
   const [loading, setLoading] = useState(false);
   const [isDataLoading, setDataLoading] = useState(false);
   const [tabContent, setTabContent] = useState();
+  const [offset, setOffset] = useState(0);
   const slideRef = useRef(null);
 
   const handleChange = useCallback(
@@ -39,18 +40,20 @@ const Page = () => {
     [quotesData]
   );
 
-  const reqQuotesData = async (page, rowsPerPage) => {
+  const reqQuotesData = async (page, rowsPerPage, tabIdx) => {
     const query = { $or: [{ status: "draft" }, { status: "new" }] };
     const sort = "DSC";
     const resQuotes = await GetQuotesData(page, rowsPerPage, query, sort);
     if (!resQuotes) {
       console.log("error get quotes data!");
       setDataLoading(false);
+      setLoading(false);
       return;
     }
+
     setQuotesData(resQuotes.data.quote);
-    setTabContent(resQuotes.data.quote[0]);
-    setTabIndex(0);
+    setTabContent(resQuotes.data.quote[tabIdx ? tabIdx : 0]);
+    setTabIndex(tabIdx ? tabIdx : 0);
     setDataLoading(false);
     setLoading(false);
   };
@@ -79,6 +82,15 @@ const Page = () => {
       return;
     }
     reqQuotesData(0, 50);
+  }, []);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const onScroll = () => setOffset(window.scrollY);
+      window.removeEventListener("scroll", onScroll);
+      window.addEventListener("scroll", onScroll, { passive: true });
+      return () => window.removeEventListener("scroll", onScroll);
+    }
   }, []);
 
   return (
@@ -118,14 +130,17 @@ const Page = () => {
                   </LoadingButton>
                 </Stack>
               ) : (
-                <Stack
-                  spacing={3}
-                  ref={slideRef}
-                  sx={{
-                    overflow: "hidden",
-                  }}
-                >
-                  <Stack spacing={1} direction={"row"}>
+                <Stack spacing={3} ref={slideRef}>
+                  <Stack
+                    spacing={1}
+                    direction={"row"}
+                    sx={{
+                      position: "sticky",
+                      top: "0px",
+                      zIndex: "3",
+                    }}
+                    className={offset > 70 ? "onScroll" : ""}
+                  >
                     <LoadingButton
                       color="primary"
                       onClick={handleAddQuote}
@@ -154,39 +169,41 @@ const Page = () => {
                                   {tabIndex === i ? (
                                     <DeleteIcon onClick={() => handleDeleteQuote(quote._id)} />
                                   ) : (
-                                    <DeleteIcon sx={{ opacity: 0 }} />
+                                    <DeleteIcon sx={{ opacity: 0.3 }} />
                                   )}
                                 </Grid>
                                 <Grid md={9}>
                                   <Typography variant="subtitle1">
                                     {quote.company.name || "New Quote"}
                                   </Typography>
-                                  <Typography variant="subtitle1">
+                                  {
+                                    offset <= 70 &&
+                                    <Typography variant="subtitle1">
                                     #{quote._id.slice(-4)}
                                   </Typography>
+                                  }
                                 </Grid>
                               </Grid>
                             }
                             iconPosition="start"
                             key={i + 1}
+                            sx={{ mr: 2 }}
                           />
                         );
                       })}
                     </Tabs>
                   </Stack>
-                  <Slide
-                    in={!loading ? true : false}
-                    direction="right"
-                    container={slideRef.current}
-                  >
-                    <Grid container spacing={3}>
-                      <Grid xs={12} md={12} lg={12}>
-                        {tabContent && (
-                          <QuotesForm tabContent={tabContent} reqQuotesData={reqQuotesData} />
-                        )}
-                      </Grid>
+                  <Grid container spacing={3}>
+                    <Grid xs={12} md={12} lg={12}>
+                      {tabContent && (
+                        <QuotesForm
+                          tabContent={tabContent}
+                          reqQuotesData={reqQuotesData}
+                          tabIndex={tabIndex}
+                        />
+                      )}
                     </Grid>
-                  </Slide>
+                  </Grid>
                 </Stack>
               )}
             </Box>

@@ -64,7 +64,6 @@ const Products = () => {
     lastCursor,
     lodMoreCount
   );
-
   const handleLoadMore = () => {
     setSize(size + 1);
   };

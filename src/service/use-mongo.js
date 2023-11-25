@@ -338,3 +338,14 @@ export const UpdatePassword = async (newPassword, userId) => {
   });
   return mongoRes;
 };
+
+export const SaveCollectionToMongoDb = async (
+  collectionName,
+  quotesList,
+) => {
+  const mongoRes = await useDataService("/api/quotes/create-quote-collection", "POST", {
+      collectionName: collectionName,
+      quotesList: quotesList || [],
+  });
+  return mongoRes;
+};

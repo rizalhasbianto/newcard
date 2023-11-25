@@ -27,3 +27,18 @@ a {
     color: initial;
     text-decoration: none;
 }
+
+.onScroll {
+    background-color: #fff;
+    height: 60px;
+    padding: 20px;
+    border-radius: 5px;
+}
+.onScroll .MuiButtonBase-root {
+    min-height: 0;
+    padding: 0;
+    line-height: 0; 
+}
+.onScroll .MuiTabs-indicator {
+    bottom: 15px;
+}

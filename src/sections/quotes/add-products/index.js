@@ -147,7 +147,7 @@ export const SelectProducts = ({ quotesList, setQuotesList, quoteId }) => {
                 top: "5px",
               }}
             >
-              Load From template
+              Load From collection
             </Button>
           </Link>
         </Grid>
