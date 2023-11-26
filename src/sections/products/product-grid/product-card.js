@@ -56,7 +56,7 @@ export const ProductCard = (props) => {
   };
 
   const handleAddQuote = async () => {
-    if (!router.query.quoteId) {
+    if (!quoteId) {
       return;
     }
     setButtonloading(true);
@@ -67,7 +67,7 @@ export const ProductCard = (props) => {
       total: (selectedQuantity * selectedVariant.price.amount).toFixed(2),
     };
 
-    const resUpdateQuote = await UpdateQuoteItem(router.query.quoteId, updateQuote);
+    const resUpdateQuote = await UpdateQuoteItem(quoteId, updateQuote);
     if (resUpdateQuote) {
       toastUp.handleStatus("success");
       toastUp.handleMessage("Product added to quote!!!");

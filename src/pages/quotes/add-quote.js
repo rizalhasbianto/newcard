@@ -139,7 +139,7 @@ const Page = () => {
                       top: "0px",
                       zIndex: "3",
                     }}
-                    className={offset > 70 ? "onScroll" : ""}
+                    className={offset > 100 ? "onScroll" : ""}
                   >
                     <LoadingButton
                       color="primary"
@@ -177,7 +177,7 @@ const Page = () => {
                                     {quote.company.name || "New Quote"}
                                   </Typography>
                                   {
-                                    offset <= 70 &&
+                                    offset < 70 &&
                                     <Typography variant="subtitle1">
                                     #{quote._id.slice(-4)}
                                   </Typography>
