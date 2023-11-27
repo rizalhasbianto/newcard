@@ -152,13 +152,13 @@ export const ProductCard = (props) => {
         spacing={2}
         sx={{ p: 1 }}
       >
-        <Grid container justifyContent="center" alignItems="center">
-          {notAvilableOption && (
-            <Typography variant="body2" sx={{ mb: 1 }}>
-              No variant available for this selected options!
-            </Typography>
-          )}
-          <Grid xs={12} md={4}>
+        {notAvilableOption && (
+          <Typography variant="body2" sx={{ mb: 1 }}>
+            No variant available for this selected options!
+          </Typography>
+        )}
+        <Grid container spacing={2}>
+          <Grid item xs={12} md={4}>
             <TextField
               id="qtySingle"
               label="Quantity"
@@ -175,7 +175,7 @@ export const ProductCard = (props) => {
               }}
             />
           </Grid>
-          <Grid xs={12} md={8}>
+          <Grid item xs={12} md={8}>
             {!quoteId ? (
               <Button
                 variant="contained"

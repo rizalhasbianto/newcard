@@ -25,7 +25,7 @@ import DiscountLine from "./quote-discount";
 import PaymentOptions from "./quote-payment";
 
 export default function LineItemQuotes(props) {
-  const { quotesList, setQuotesList, discount, setDiscount, payment, setPayment } = props;
+  const { quotesList, setQuotesList, discount, setDiscount, payment, setPayment, layout } = props;
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [total, setTotal] = useState(10);
@@ -153,7 +153,7 @@ export default function LineItemQuotes(props) {
           </TableBody>
         </Table>
       </TableContainer>
-      {quotesList.length > 0 && (
+      {quotesList.length > 0 && layout !== "collection" && (
         <Container
           sx={{
             display: "flex",

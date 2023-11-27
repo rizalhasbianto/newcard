@@ -11,18 +11,22 @@ import {
 import LoadingButton from "@mui/lab/LoadingButton";
 import AddIcon from "@mui/icons-material/Add";
 import DeleteIcon from "@mui/icons-material/Delete";
+import LineItemQuotes from "../quotes-line-item";
+
 import { useState, useCallback } from "react";
 
 export default function QuotesCollection(props) {
-  const [loading, setLoading] = useState(false)
-  const [tabIndex, setTabIndex] = useState(1)
+  const [loading, setLoading] = useState(false);
+  const [tabIndex, setTabIndex] = useState(0);
+  const [quotesList, setQuotesList] = useState();
   const { collections } = props;
-console.log("collections", collections)
+  console.log("collections", collections);
   const handleChange = useCallback(
     (event, newValue) => {
       setLoading(true);
       setTimeout(() => {
         setTabIndex(newValue);
+        setQuotesList(collections[newValue].quotesList)
         //setTabContent(collections[newValue]);
         setLoading(false);
       }, 500);
@@ -30,9 +34,9 @@ console.log("collections", collections)
     [collections]
   );
 
-    const handleDeleteQuote = () => {
-      console.log("delete")
-    }
+  const handleDeleteQuote = () => {
+    console.log("delete");
+  };
 
   return (
     <Stack spacing={3}>
@@ -70,11 +74,11 @@ console.log("collections", collections)
                 label={
                   <Grid container alignItems="center" spacing={2}>
                     <Grid md={3}>
-                    {tabIndex === i ? (
-                                    <DeleteIcon onClick={() => handleDeleteQuote(quote._id)} />
-                                  ) : (
-                                    <DeleteIcon sx={{ opacity: 0.3 }} />
-                                  )}
+                      {tabIndex === i ? (
+                        <DeleteIcon onClick={() => handleDeleteQuote(quote._id)} />
+                      ) : (
+                        <DeleteIcon sx={{ opacity: 0.3 }} />
+                      )}
                     </Grid>
                     <Grid md={9}>
                       <Typography variant="subtitle1">
@@ -91,9 +95,15 @@ console.log("collections", collections)
           })}
         </Tabs>
       </Stack>
-      <Grid container spacing={3}>
-        <Grid xs={12} md={12} lg={12}></Grid>
-      </Grid>
+      {
+        quotesList && 
+<LineItemQuotes
+        quotesList={quotesList}
+        setQuotesList={setQuotesList}
+        layout="collection"
+      />
+      }
+      
     </Stack>
   );
 }
