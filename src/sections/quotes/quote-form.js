@@ -427,7 +427,11 @@ export const QuotesForm = (props) => {
             />
           </CardContent>
           <Divider />
-          <CardActions sx={{ justifyContent: "flex-end", padding: "20px" }}>
+          <CardActions sx={{ justifyContent: "space-between", padding: "20px" }}>
+            <Typography variant="body1">
+              Current Status: {tabContent?.status}
+            </Typography>
+            <Stack direction="row" spacing={2} justifyContent={"flex-end"}>
             {saveQuoteButton.map((button) => {
               return (
                 <LoadingButton
@@ -439,10 +443,11 @@ export const QuotesForm = (props) => {
                   variant="contained"
                   key={button.action}
                 >
-                  {button.title}
+                  {button.action === tabContent?.status ? "Save" : button.title}
                 </LoadingButton>
               );
             })}
+            </Stack>
           </CardActions>
         </Card>
       </Collapse>

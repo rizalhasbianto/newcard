@@ -17,7 +17,7 @@ import {
 import LoadingButton from '@mui/lab/LoadingButton';
 import { Logo } from 'src/components/logo';
 import { Scrollbar } from 'src/components/scrollbar';
-import { items } from './config';
+import { items } from '../../data/nav-list';
 import { SideNavItem } from './side-nav-item';
 import { useSession } from "next-auth/react"
 import { signOut } from "next-auth/react"

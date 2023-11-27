@@ -349,3 +349,8 @@ export const SaveCollectionToMongoDb = async (
   });
   return mongoRes;
 };
+
+export const GetQuoteCollections = (queryPath) => {
+  const mongoRes = useSwrData("/api/quotes/get-quote-collections", queryPath);
+  return mongoRes;
+};

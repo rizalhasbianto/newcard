@@ -1,4 +1,4 @@
-import { Unstable_Grid2 as Grid } from "@mui/material";
+import { Box, Grid } from "@mui/material";
 
 import { ProductCard } from "./product-card";
 
@@ -8,7 +8,13 @@ export const ProductGrid = (props) => {
     data &&
     data.map((dt) => {
       return dt.newData.edges.map((product, i) => (
-        <Grid xs={12} md={6} lg={3} key={i + 1}>
+        <Grid 
+          item 
+          xs={12} 
+          md={4} 
+          lg={3} 
+          key={i + 1}
+        >
           <ProductCard
             product={product}
             handleOpenQuoteList={handleOpenQuoteList}

@@ -4,7 +4,7 @@ export const saveQuoteButton = [
         action: "draft"
     },
     {
-        title: "Open",
+        title: "Set As Open",
         action: "open"
     },
     {

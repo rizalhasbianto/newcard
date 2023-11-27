@@ -9,6 +9,7 @@ import UsersIcon from '@heroicons/react/24/solid/UsersIcon';
 import BuildingOfficeIcon from '@heroicons/react/24/solid/BuildingOfficeIcon';
 import PencilSquareIcon from '@heroicons/react/24/solid/PencilSquareIcon';
 import PuzzlePieceIcon from '@heroicons/react/24/solid/PuzzlePieceIcon';
+import EmailIcon from '@mui/icons-material/Email';
 import { SvgIcon } from '@mui/material';
 
 export const items = [
@@ -40,8 +41,8 @@ export const items = [
         ),
       },
       {
-        title: 'Add new template',
-        path: '/quotes/add-template',
+        title: 'Quote collections',
+        path: '/quotes/collections',
         icon: (
           <SvgIcon fontSize="small">
             <PuzzlePieceIcon />
@@ -75,6 +76,16 @@ export const items = [
     icon: (
       <SvgIcon fontSize="small">
         <BuildingOfficeIcon />
+      </SvgIcon>
+    )
+  },
+  {
+    title: 'Tickets',
+    path: '/tickets',
+    role: 'admin',
+    icon: (
+      <SvgIcon fontSize="small">
+        <EmailIcon />
       </SvgIcon>
     )
   },

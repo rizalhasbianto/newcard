@@ -19,7 +19,7 @@ import {
   Stack,
   SvgIcon,
   Typography,
-  Unstable_Grid2 as Grid,
+  Grid,
 } from "@mui/material";
 
 import { ProductGrid } from "src/sections/products/product-grid";
@@ -160,6 +160,7 @@ const Products = () => {
             {data && data[0]?.newData?.edges?.length === 0 && (
               <Typography variant="h4">No Products Found!</Typography>
             )}
+            <Stack spacing={3}>
             <Grid container spacing={3}>
               {isError && <Typography variant="h5">No data found</Typography>}
               {layout === "card" ? (
@@ -179,6 +180,7 @@ const Products = () => {
                 />
               )}
             </Grid>
+            </Stack>
             {hasNextPage ? (
               <Box
                 sx={{
