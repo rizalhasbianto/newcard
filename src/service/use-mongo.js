@@ -354,3 +354,10 @@ export const GetQuoteCollections = (queryPath) => {
   const mongoRes = useSwrData("/api/quotes/get-quote-collections", queryPath);
   return mongoRes;
 };
+
+export const DeleteQuoteCollections = async (quoteId) => {
+  const mongoRes = await useDataService("/api/quotes/delete-quote-collection", "POST", {
+    quoteId: quoteId,
+  });
+  return mongoRes;
+};

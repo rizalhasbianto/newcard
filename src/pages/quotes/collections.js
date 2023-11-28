@@ -1,15 +1,13 @@
 import Head from "next/head";
-import { GetQuoteCollections } from 'src/service/use-mongo'
+import { GetQuoteCollections, DeleteQuoteCollections } from "src/service/use-mongo";
 import { Box, Button, Container, Stack, SvgIcon, Typography } from "@mui/material";
 import { Layout as DashboardLayout } from "src/layouts/dashboard/layout";
 import QuotesCollection from "src/sections/quotes/collections/QuotesCollection";
 import TableLoading from "src/components/table-loading";
 
-
 const Page = () => {
+  const { data, isLoading, isError, mutate, isValidating } = GetQuoteCollections();
 
-  const { data, isLoading, isError } = GetQuoteCollections();
-console.log("data", data)
   return (
     <>
       <Head>
@@ -26,13 +24,18 @@ console.log("data", data)
           <Stack spacing={3}>
             <Stack direction="row" justifyContent="space-between" spacing={4}>
               <Stack spacing={1}>
-                <Typography variant="h4">Orders</Typography>
+                <Typography variant="h4">Quote Collections</Typography>
               </Stack>
             </Stack>
             {isLoading && <TableLoading />}
             {isError && <h2>Error loading data</h2>}
             {data && (
-              <QuotesCollection collections={data.data.collections}/>
+              <QuotesCollection
+                collections={data.data.collections}
+                DeleteQuoteCollections={DeleteQuoteCollections}
+                isValidating={isValidating}
+                mutate={mutate}
+              />
             )}
           </Stack>
         </Container>

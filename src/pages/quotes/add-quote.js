@@ -35,7 +35,7 @@ const Page = () => {
         setTabIndex(newValue);
         setTabContent(quotesData[newValue]);
         setLoading(false);
-      }, 500);
+      }, 300);
     },
     [quotesData]
   );

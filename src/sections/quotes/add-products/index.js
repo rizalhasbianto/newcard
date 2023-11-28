@@ -8,6 +8,7 @@ import { Box, Button, TextField, Typography, Unstable_Grid2 as Grid } from "@mui
 import { GetProductsShopify } from "src/service/use-shopify";
 import { SearchProduct } from "./quotes-search-product";
 import { QuickAddProducts } from "./quotes-quick-add"
+import { QuoteCollections } from "./quote-collections"
 
 export const SelectProducts = ({ quotesList, setQuotesList, quoteId }) => {
   const [selectedProduct, setSelectedProduct] = useState(null);
@@ -137,7 +138,6 @@ export const SelectProducts = ({ quotesList, setQuotesList, quoteId }) => {
           </Link>
         </Grid>
         <Grid md={2}>
-          <Link href="/products" passHref>
             <Button
               variant="outlined"
               fullWidth
@@ -146,10 +146,10 @@ export const SelectProducts = ({ quotesList, setQuotesList, quoteId }) => {
                 position: "relative",
                 top: "5px",
               }}
+              onClick={() => setActiveTab("collection")}
             >
-              Load From collection
+              Collection
             </Button>
-          </Link>
         </Grid>
       </Grid>
       {selectedProduct && activeTab === "search" && (
@@ -161,6 +161,12 @@ export const SelectProducts = ({ quotesList, setQuotesList, quoteId }) => {
       )}
       {activeTab === "quick" && (
         <QuickAddProducts
+          quotesList={quotesList}
+          setQuotesList={setQuotesList}
+        />
+      )}
+      {activeTab === "collection" && (
+        <QuoteCollections
           quotesList={quotesList}
           setQuotesList={setQuotesList}
         />

@@ -40,3 +40,11 @@ export const quotesQuickAddHead = [
     { title: "QUANTITY" },
     { title: "ACTION" }
 ]
+
+export const quotesCollectionHead = [
+    { title: "No." },
+    { title: "COLLECTION NAME" },
+    { title: "TOTAL" },
+    { title: "ITEM" },
+    { title: "ACTION" }
+]

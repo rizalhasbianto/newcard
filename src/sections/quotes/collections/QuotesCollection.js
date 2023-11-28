@@ -13,30 +13,34 @@ import AddIcon from "@mui/icons-material/Add";
 import DeleteIcon from "@mui/icons-material/Delete";
 import LineItemQuotes from "../quotes-line-item";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 
 export default function QuotesCollection(props) {
-  const [loading, setLoading] = useState(false);
+  const { collections, DeleteQuoteCollections, isValidating, mutate } = props;
   const [tabIndex, setTabIndex] = useState(0);
-  const [quotesList, setQuotesList] = useState();
-  const { collections } = props;
-  console.log("collections", collections);
+  const [quotesList, setQuotesList] = useState(collections[0].quotesList);
   const handleChange = useCallback(
     (event, newValue) => {
-      setLoading(true);
-      setTimeout(() => {
         setTabIndex(newValue);
-        setQuotesList(collections[newValue].quotesList)
-        //setTabContent(collections[newValue]);
-        setLoading(false);
-      }, 500);
+        setQuotesList(collections[newValue].quotesList);
     },
     [collections]
   );
 
-  const handleDeleteQuote = () => {
-    console.log("delete");
+  const handleDeleteQuote = async(id) => {
+    const resDeleteCollection = await DeleteQuoteCollections(id)
+    if(resDeleteCollection) {
+      mutate()
+      setTabIndex(0)
+      setQuotesList(collections[0].quotesList)
+    }
   };
+
+  useEffect(() => {
+    if(!collections) return
+    setQuotesList(collections[tabIndex].quotesList)
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [collections])
 
   return (
     <Stack spacing={3}>
@@ -52,7 +56,7 @@ export default function QuotesCollection(props) {
         <LoadingButton
           color="primary"
           //onClick={handleAddQuote}
-          loading={loading}
+          loading={isValidating}
           loadingPosition="start"
           startIcon={<AddIcon />}
           variant="outlined"
@@ -72,20 +76,16 @@ export default function QuotesCollection(props) {
             return (
               <Tab
                 label={
-                  <Grid container alignItems="center" spacing={2}>
-                    <Grid md={3}>
+                  <Stack container alignItems="center" direction="row" spacing={2}>
                       {tabIndex === i ? (
-                        <DeleteIcon onClick={() => handleDeleteQuote(quote._id)} />
+                        <DeleteIcon onClick={() => handleDeleteQuote(collection._id)} />
                       ) : (
                         <DeleteIcon sx={{ opacity: 0.3 }} />
                       )}
-                    </Grid>
-                    <Grid md={9}>
                       <Typography variant="subtitle1">
                         {collection.collectionName || "New Collection"}
                       </Typography>
-                    </Grid>
-                  </Grid>
+                  </Stack>
                 }
                 iconPosition="start"
                 key={i + 1}
@@ -95,15 +95,9 @@ export default function QuotesCollection(props) {
           })}
         </Tabs>
       </Stack>
-      {
-        quotesList && 
-<LineItemQuotes
-        quotesList={quotesList}
-        setQuotesList={setQuotesList}
-        layout="collection"
-      />
-      }
-      
+      {quotesList && (
+        <LineItemQuotes quotesList={quotesList} setQuotesList={setQuotesList} layout="collection" />
+      )}
     </Stack>
   );
 }
