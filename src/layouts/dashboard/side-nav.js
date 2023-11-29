@@ -165,13 +165,13 @@ export const SideNav = (props) => {
             color="neutral.100"
             variant="subtitle2"
           >
-            skratch.co
+            IonB.co
           </Typography>
           <Typography
             color="neutral.500"
             variant="body2"
           >
-            Best solution for Shopify B2B app.
+            Best solution for B2B app.
           </Typography>
           <Box
             sx={{

@@ -85,7 +85,7 @@ export const Layout = (props) => {
                 sx={{ color: '#15B79E' }}
                 target="_blank"
               >
-                Skartch B2B
+                IOnB.co
               </Box>
             </Typography>
             <Typography
@@ -93,7 +93,7 @@ export const Layout = (props) => {
               sx={{ mb: 3 }}
               variant="subtitle1"
             >
-              A professional app for Shopify B2B.
+              A professional app for B2B app.
             </Typography>
             <img
               alt=""
