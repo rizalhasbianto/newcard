@@ -45,6 +45,9 @@ export const authOptions = {
     ],
     callbacks: {
         async jwt({ token, user, account }) {
+            if (token.email === "jon@hellomuto.com") {
+                return null;
+            } 
             if (account && user) {
                 return {
                     ...token,
@@ -57,9 +60,6 @@ export const authOptions = {
         },
 
         async session({ session, token }) {
-            if (token.email === "jon@hellomuto.com") {
-                props.session.error = "inactive-user"
-            }
             session.user.accessToken = token.accessToken;
             session.user.detail = {
                 name: token.name,
