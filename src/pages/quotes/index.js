@@ -12,14 +12,26 @@ import { QuotesSearch } from "src/sections/quotes/quotes-search";
 import { applyPagination } from "src/utils/apply-pagination";
 import { GetQuotesDataSwr } from "src/service/use-mongo";
 import TableLoading from "src/components/table-loading";
+import { useToast } from 'src/hooks/use-toast'
+import Toast from 'src/components/toast'
 
 const Page = () => {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
+  const toastUp = useToast();
 
   const { data, isLoading, isError, mutate, isValidating } = GetQuotesDataSwr(page, rowsPerPage, {
     status: { $nin: ["new"] },
   });
+
+  useEffect(
+    () => {
+      if(isValidating) {
+        toastUp.handleStatus("loading");
+        toastUp.handleMessage("Validating data");
+      }
+    },[isValidating]
+  )
 
   const handlePageChange = useCallback(
     async (event, value) => {
@@ -45,6 +57,11 @@ const Page = () => {
         }}
       >
         <Container maxWidth="xl">
+        <Toast
+          toastStatus={toastUp.toastStatus}
+          handleStatus={toastUp.handleStatus}
+          toastMessage={toastUp.toastMessage}
+        />
           <Stack spacing={3}>
             <Stack direction="row" justifyContent="space-between" spacing={4}>
               <Stack spacing={1}>
@@ -88,9 +105,9 @@ const Page = () => {
               </div>
             </Stack>
             <QuotesSearch />
-            {(isLoading || isValidating) && <TableLoading />}
+            {(isLoading) && <TableLoading />}
             {isError && <h2>Error loading data</h2>}
-            {data && !isValidating && (
+            {data && (
               <QuotesTable
                 count={data.data.count}
                 items={data.data.quote}

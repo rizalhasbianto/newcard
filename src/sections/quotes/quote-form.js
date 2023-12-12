@@ -50,6 +50,7 @@ export const QuotesForm = (props) => {
   const [payment, setPayment] = useState(tabContent.payment);
   const [newCollection, setNewCollection] = useState(false);
   const [collectionName, setCollectionName] = useState();
+  const [total, setTotal] = useState(10);
   const toastUp = useToast();
   const handleTemplate = useCallback(() => {
     setButtonLoading();
@@ -367,7 +368,7 @@ export const QuotesForm = (props) => {
         <Card>
           <Grid container justify="flex-end" alignItems="center">
             <Grid xs={6} md={6}>
-              <CardHeader subheader="" title="Selected Products" />
+              <CardHeader subheader={`${quotesList.length} item's (${total.countQty}Qty) at $${total.subTotal}`} title="Selected Products" />
             </Grid>
             <Grid
               xs={6}
@@ -424,6 +425,8 @@ export const QuotesForm = (props) => {
               setDiscount={setDiscount}
               payment={payment}
               setPayment={setPayment}
+              total={total}
+              setTotal={setTotal}
             />
           </CardContent>
           <Divider />

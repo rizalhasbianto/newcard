@@ -48,10 +48,10 @@ const Page = () => {
     >
       <Container maxWidth="lg">
       <Toast
-      toastStatus={toastUp.toastStatus}
-      handleStatus={toastUp.handleStatus}
-      toastMessage={toastUp.toastMessage}
-    />
+        toastStatus={toastUp.toastStatus}
+        handleStatus={toastUp.handleStatus}
+        toastMessage={toastUp.toastMessage}
+      />
         <Stack spacing={3}>
           <div>
             <Typography variant="h4">Company Details</Typography>

@@ -13,6 +13,7 @@ import {
   Tooltip,
   Collapse,
   Unstable_Grid2 as Grid,
+  TableFooter,
 } from "@mui/material";
 import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
 import { Container } from "@mui/system";
@@ -25,16 +26,16 @@ import DiscountLine from "./quote-discount";
 import PaymentOptions from "./quote-payment";
 
 export default function LineItemQuotes(props) {
-  const { quotesList, setQuotesList, discount, setDiscount, payment, setPayment, layout } = props;
+  const { quotesList, setQuotesList, discount, setDiscount, setTotal, payment, setPayment, layout, total } = props;
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
-  const [total, setTotal] = useState(10);
   const [editProductIndex, setEditProductIndex] = useState("");
   const [onDiscount, setOnDiscount] = useState(false);
   const modalPopUp = usePopover();
 
   useEffect(() => {
     const countSubtotal = quotesList.reduce((n, { total }) => n + Number(total), 0).toFixed(2);
+    const countQty = quotesList.reduce((n, { qty }) => n + Number(qty), 0);
     let discountCalc = 0;
     if (discount) {
       if (discount.type === "FIXED_AMOUNT") {
@@ -50,6 +51,7 @@ export default function LineItemQuotes(props) {
       subTotal: countSubtotal,
       tax,
       total,
+      countQty
     });
   }, [quotesList, discount]);
 
@@ -111,7 +113,7 @@ export default function LineItemQuotes(props) {
         open={modalPopUp.open}
         handleClose={modalPopUp.handleClose}
       />
-      <TableContainer sx={{ maxHeight: 600 }}>
+      <TableContainer>
         <Table stickyHeader aria-label="sticky table">
           <TableHead>
             <TableRow>
@@ -153,6 +155,18 @@ export default function LineItemQuotes(props) {
           </TableBody>
         </Table>
       </TableContainer>
+      <TablePagination
+        rowsPerPageOptions={[10, 25, 100]}
+        component="div"
+        count={quotesList.length}
+        rowsPerPage={rowsPerPage}
+        page={page}
+        onPageChange={handleChangePage}
+        onRowsPerPageChange={handleChangeRowsPerPage}
+        sx={{
+          background: "#f8f9fa",
+        }}
+      />
       {quotesList.length > 0 && layout !== "collection" && (
         <Container
           sx={{
@@ -178,7 +192,7 @@ export default function LineItemQuotes(props) {
             <Typography
                   variant="subtitle1"
                 >
-                  Total info
+                  Summary
                 </Typography>
             <Grid container>
               <Grid xs={12} md={4}>
@@ -227,18 +241,6 @@ export default function LineItemQuotes(props) {
           </Box>
         </Container>
       )}
-      <TablePagination
-        rowsPerPageOptions={[10, 25, 100]}
-        component="div"
-        count={quotesList.length}
-        rowsPerPage={rowsPerPage}
-        page={page}
-        onPageChange={handleChangePage}
-        onRowsPerPageChange={handleChangeRowsPerPage}
-        sx={{
-          background: "#f8f9fa",
-        }}
-      />
     </Paper>
   );
 }

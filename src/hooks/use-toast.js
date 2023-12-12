@@ -9,7 +9,7 @@ export function useToast() {
             setToastStatus(status)
             setTimeout(() => {
                 setToastStatus("")
-            }, 10000);
+            }, 3000);
         },[]
     )
 

@@ -135,7 +135,7 @@ export const ProductCard = (props) => {
         direction="row"
         justifyContent="space-between"
         spacing={2}
-        sx={{ p: 1 }}
+        sx={{ p: "20px" }}
       >
         <OptionsComponent
           options={product.node.options}
@@ -145,20 +145,18 @@ export const ProductCard = (props) => {
       </Stack>
       <Box sx={{ flexGrow: 1 }} />
       <Divider />
-      <Stack
-        alignItems="center"
-        direction="row"
-        justifyContent="space-between"
-        spacing={2}
-        sx={{ p: 1 }}
-      >
-        {notAvilableOption && (
+      {notAvilableOption && (
           <Typography variant="body2" sx={{ mb: 1 }}>
             No variant available for this selected options!
           </Typography>
         )}
-        <Grid container spacing={2}>
-          <Grid item xs={12} md={4}>
+      <Stack
+        direction="row"
+        alignItems="center"
+        justifyContent="center"
+        spacing={2}
+        sx={{p:"20px"}}
+      >
             <TextField
               id="qtySingle"
               label="Quantity"
@@ -168,14 +166,13 @@ export const ProductCard = (props) => {
               sx={{
                 mt: "10px",
                 mb: "10px",
+                maxWidth:"70px"
               }}
               value={selectedQuantity}
               onChange={(event) => {
                 setSelectedQuantity(event.target.value);
               }}
             />
-          </Grid>
-          <Grid item xs={12} md={8}>
             {!quoteId ? (
               <Button
                 variant="contained"
@@ -198,8 +195,6 @@ export const ProductCard = (props) => {
                 Add to #{quoteId.slice(-4)}
               </LoadingButton>
             )}
-          </Grid>
-        </Grid>
       </Stack>
     </Card>
   );
