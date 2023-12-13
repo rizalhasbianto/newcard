@@ -361,3 +361,26 @@ export const DeleteQuoteCollections = async (quoteId) => {
   });
   return mongoRes;
 };
+
+export const AddNewTicket = async (ticket) => {
+  const mongoRes = await useDataService("/api/tickets/create-new-ticket", "POST", ticket);
+  return mongoRes;
+};
+
+export const GetTicketsDataSwr = (page, rowsPerPage, query, sort, type) => {
+  const theType = type ? type : "any";
+  const queryPath =
+    "page=" +
+    page +
+    "&postPerPage=" +
+    rowsPerPage +
+    "&query=" +
+    JSON.stringify(query) +
+    "&sort=" +
+    sort +
+    "&type=" +
+    theType;
+  const quotesRes = useSwrData("/api/quotes/get-tickets", queryPath);
+
+  return quotesRes;
+};

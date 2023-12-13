@@ -48,3 +48,14 @@ export const quotesCollectionHead = [
     { title: "ITEM" },
     { title: "ACTION" }
 ]
+
+export const ticketsHead = [
+    { title: "" },
+    { title: "ID" },
+    { title: "Company" },
+    { title: "Subject" },
+    { title: "Status" },
+    { title: "Created At" },
+    { title: "Last Update" },
+    { title: "Action" }
+]

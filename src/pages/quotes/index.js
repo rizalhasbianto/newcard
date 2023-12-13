@@ -30,6 +30,7 @@ const Page = () => {
         toastUp.handleStatus("loading");
         toastUp.handleMessage("Validating data");
       }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     },[isValidating]
   )
 
@@ -112,7 +113,7 @@ const Page = () => {
                 count={data.data.count}
                 items={data.data.quote}
                 onPageChange={handlePageChange}
-                onDelete={mutate}
+                mutateData={mutate}
                 onRowsPerPageChange={handleRowsPerPageChange}
                 page={page}
                 rowsPerPage={rowsPerPage}

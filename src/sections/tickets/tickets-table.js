@@ -24,9 +24,9 @@ import { Scrollbar } from "src/components/scrollbar";
 import { getInitials } from "src/utils/get-initials";
 import { usePopover } from "src/hooks/use-popover";
 import AlertConfirm from "src/components/alert-confirm";
-import { quotesListHead } from "src/data/tableList";
+import { ticketsHead } from "src/data/tableList";
 
-export const QuotesTable = (props) => {
+export const TicketsTable = (props) => {
   const {
     count = 0,
     items = [],
@@ -84,7 +84,7 @@ export const QuotesTable = (props) => {
             <TableHead>
               <TableRow>
                 <TableCell padding="checkbox"></TableCell>
-                {quotesListHead.map((head) => {
+                {ticketsHead.map((head) => {
                   return <TableCell key={head.title}>{head.title}</TableCell>;
                 })}
               </TableRow>
@@ -92,11 +92,9 @@ export const QuotesTable = (props) => {
             <TableBody>
               {items &&
                 items.map((quote, index) => {
-                  const isSelected = selected.includes(quote.id);
                   const lastUpdate = format(new Date(2014, 1, 11), "dd/MM/yyyy");
-
                   return (
-                    <TableRow hover key={quote._id} selected={isSelected}>
+                    <TableRow hover key={quote._id}>
                       <TableCell padding="checkbox">
                         <Typography variant="subtitle2">{index + listNumber + 1}</Typography>
                       </TableCell>
@@ -181,16 +179,3 @@ export const QuotesTable = (props) => {
   );
 };
 
-QuotesTable.propTypes = {
-  count: PropTypes.number,
-  items: PropTypes.array,
-  onDeselectAll: PropTypes.func,
-  onDeselectOne: PropTypes.func,
-  onPageChange: PropTypes.func,
-  onRowsPerPageChange: PropTypes.func,
-  onSelectAll: PropTypes.func,
-  onSelectOne: PropTypes.func,
-  page: PropTypes.number,
-  rowsPerPage: PropTypes.number,
-  selected: PropTypes.array,
-};

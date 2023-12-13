@@ -18,29 +18,30 @@ import { useState, useCallback, useEffect } from "react";
 export default function QuotesCollection(props) {
   const { collections, DeleteQuoteCollections, isValidating, mutate } = props;
   const [tabIndex, setTabIndex] = useState(0);
+  const [total, setTotal] = useState(0);
   const [quotesList, setQuotesList] = useState(collections[0].quotesList);
   const handleChange = useCallback(
     (event, newValue) => {
-        setTabIndex(newValue);
-        setQuotesList(collections[newValue].quotesList);
+      setTabIndex(newValue);
+      setQuotesList(collections[newValue].quotesList);
     },
     [collections]
   );
 
-  const handleDeleteQuote = async(id) => {
-    const resDeleteCollection = await DeleteQuoteCollections(id)
-    if(resDeleteCollection) {
-      mutate()
-      setTabIndex(0)
-      setQuotesList(collections[0].quotesList)
+  const handleDeleteQuote = async (id) => {
+    const resDeleteCollection = await DeleteQuoteCollections(id);
+    if (resDeleteCollection) {
+      mutate();
+      setTabIndex(0);
+      setQuotesList(collections[0].quotesList);
     }
   };
 
   useEffect(() => {
-    if(!collections) return
-    setQuotesList(collections[tabIndex].quotesList)
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [collections])
+    if (!collections) return;
+    setQuotesList(collections[tabIndex].quotesList);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [collections]);
 
   return (
     <Stack spacing={3}>
@@ -77,14 +78,14 @@ export default function QuotesCollection(props) {
               <Tab
                 label={
                   <Stack container alignItems="center" direction="row" spacing={2}>
-                      {tabIndex === i ? (
-                        <DeleteIcon onClick={() => handleDeleteQuote(collection._id)} />
-                      ) : (
-                        <DeleteIcon sx={{ opacity: 0.3 }} />
-                      )}
-                      <Typography variant="subtitle1">
-                        {collection.collectionName || "New Collection"}
-                      </Typography>
+                    {tabIndex === i ? (
+                      <DeleteIcon onClick={() => handleDeleteQuote(collection._id)} />
+                    ) : (
+                      <DeleteIcon sx={{ opacity: 0.3 }} />
+                    )}
+                    <Typography variant="subtitle1">
+                      {collection.collectionName || "New Collection"}
+                    </Typography>
                   </Stack>
                 }
                 iconPosition="start"
@@ -96,7 +97,13 @@ export default function QuotesCollection(props) {
         </Tabs>
       </Stack>
       {quotesList && (
-        <LineItemQuotes quotesList={quotesList} setQuotesList={setQuotesList} layout="collection" />
+        <LineItemQuotes
+          quotesList={quotesList}
+          setQuotesList={setQuotesList}
+          layout="collection"
+          total={total}
+          setTotal={setTotal}
+        />
       )}
     </Stack>
   );
