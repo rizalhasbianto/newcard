@@ -380,7 +380,7 @@ export const GetTicketsDataSwr = (page, rowsPerPage, query, sort, type) => {
     sort +
     "&type=" +
     theType;
-  const quotesRes = useSwrData("/api/quotes/get-tickets", queryPath);
+  const quotesRes = useSwrData("/api/tickets/get-tickets", queryPath);
 
   return quotesRes;
 };

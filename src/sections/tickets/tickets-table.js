@@ -2,7 +2,7 @@ import { useCallback, useState, useEffect } from "react";
 import Link from "next/link";
 import { DeleteQuoteFromMongo } from "src/service/use-mongo";
 import PropTypes from "prop-types";
-import { format } from "date-fns";
+import { format } from "date-fns-tz";
 import {
   Avatar,
   Box,
@@ -91,60 +91,44 @@ export const TicketsTable = (props) => {
             </TableHead>
             <TableBody>
               {items &&
-                items.map((quote, index) => {
-                  const lastUpdate = format(new Date(2014, 1, 11), "dd/MM/yyyy");
+                items.map((ticket, index) => {
+                  const createdAt = ticket.createdAt ? format(new Date(ticket.createdAt), "dd/MM/yyyy") : "";
+                  const lastUpdate = ticket.lastUpdateAt ? format(new Date(ticket.lastUpdateAt), "dd/MM/yyyy") : "";
                   return (
-                    <TableRow hover key={quote._id}>
+                    <TableRow hover key={ticket._id}>
                       <TableCell padding="checkbox">
                         <Typography variant="subtitle2">{index + listNumber + 1}</Typography>
                       </TableCell>
                       <TableCell>
-                        <Typography variant="subtitle2">
-                          Po Number: #{quote._id.slice(-4)}
+                        <Typography variant="subtitle2">#{ticket._id.slice(-4)}
                         </Typography>
-                        {quote.draftOrderNumber && (
-                          <Typography variant="subtitle2">
-                            Draft Order: {quote.draftOrderNumber}
-                          </Typography>
-                        )}
                       </TableCell>
                       <TableCell>
-                        <Stack alignItems="top" direction="row" spacing={2}>
-                          {quote.company?.avatar && (
-                            <Avatar src={quote.company.avatar}>
-                              {getInitials(quote.company.company)}
-                            </Avatar>
-                          )}
-                          <Stack alignItems="left" direction="column" spacing={0}>
                             <Typography variant="subtitle2">
-                              {quote.company?.name}, {quote.company?.shipTo}
+                              {ticket.createdBy.company.companyName}, {ticket.createdBy.name}
                             </Typography>
-                          </Stack>
-                        </Stack>
+                      </TableCell>
+                      <TableCell>
+                          <Typography variant="subtitle2">
+                            {ticket.subject}
+                          </Typography>
                       </TableCell>
                       <TableCell>
                         <Stack alignItems="right" direction="column" spacing={1}>
                           <Typography variant="subtitle2">
-                            ${new Intl.NumberFormat('en-US').format(quote.quoteInfo?.total)}
+                          {ticket.status}
                           </Typography>
                         </Stack>
                       </TableCell>
                       <TableCell>
-                        <Stack alignItems="right" direction="column" spacing={1}>
-                          <Typography variant="subtitle2">
-                            ( {quote.quoteInfo?.item} Item{quote.quoteInfo?.item > 1 ? "'s" : ""} )
-                          </Typography>
-                        </Stack>
-                      </TableCell>
-                      <TableCell>
-                        <Typography variant="subtitle2">{quote.status}</Typography>
+                        <Typography variant="subtitle2">{createdAt}</Typography>
                       </TableCell>
                       <TableCell>
                         <Typography variant="subtitle2">{lastUpdate}</Typography>
                       </TableCell>
                       <TableCell>
                         <Stack alignItems="flex-start" direction="row" spacing={1}>
-                          <Link href={`/quotes/edit-quote?quoteId=${quote._id}`} passHref>
+                          <Link href={`/tickets/${ticket._id}`} passHref>
                             <SvgIcon className="action" color="action" fontSize="small">
                               <PencilIcon />
                             </SvgIcon>
@@ -153,7 +137,7 @@ export const TicketsTable = (props) => {
                             className="action"
                             color="action"
                             fontSize="small"
-                            onClick={() => handleDelete(quote._id)}
+                            onClick={() => handleDelete(ticket._id)}
                           >
                             <TrashIcon />
                           </SvgIcon>

@@ -50,7 +50,6 @@ export const quotesCollectionHead = [
 ]
 
 export const ticketsHead = [
-    { title: "" },
     { title: "ID" },
     { title: "Company" },
     { title: "Subject" },

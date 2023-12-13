@@ -17,7 +17,7 @@ const Tickets = () => {
   const { data, isLoading, isError, mutate, isValidating } = GetTicketsDataSwr(page, rowsPerPage, {
     status: { $nin: ["new"] },
   });
-
+console.log("data", data)
   useEffect(() => {
     if (isValidating) {
       toastUp.handleStatus("loading");
@@ -75,7 +75,7 @@ const Tickets = () => {
             {data && (
               <TicketsTable
                 count={data.data.count}
-                items={data.data.quote}
+                items={data.data.ticket}
                 onPageChange={handlePageChange}
                 mutateData={mutate}
                 onRowsPerPageChange={handleRowsPerPageChange}
