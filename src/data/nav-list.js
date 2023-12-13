@@ -10,6 +10,7 @@ import BuildingOfficeIcon from '@heroicons/react/24/solid/BuildingOfficeIcon';
 import PencilSquareIcon from '@heroicons/react/24/solid/PencilSquareIcon';
 import PuzzlePieceIcon from '@heroicons/react/24/solid/PuzzlePieceIcon';
 import EmailIcon from '@mui/icons-material/Email';
+import InventoryIcon from '@mui/icons-material/Inventory';
 import { SvgIcon } from '@mui/material';
 
 export const items = [
@@ -67,7 +68,18 @@ export const items = [
       <SvgIcon fontSize="small">
         <ClipboardDocumentIcon />
       </SvgIcon>
-    )
+    ),
+    subMenu: [
+      {
+        title: 'Inventory',
+        path: '/products/inventory',
+        icon: (
+          <SvgIcon fontSize="small">
+            <InventoryIcon />
+          </SvgIcon>
+        ),
+      },
+    ]
   },
   {
     title: 'Companies',
@@ -87,7 +99,18 @@ export const items = [
       <SvgIcon fontSize="small">
         <EmailIcon />
       </SvgIcon>
-    )
+    ),
+    subMenu: [
+      {
+        title: 'Create Ticket',
+        path: '/tickets/add-ticket',
+        icon: (
+          <SvgIcon fontSize="small">
+            <PencilSquareIcon />
+          </SvgIcon>
+        ),
+      },
+    ]
   },
   {
     title: 'Account',

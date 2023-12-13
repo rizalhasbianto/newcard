@@ -2,7 +2,8 @@ import { useCallback, useState, useEffect } from "react";
 import Link from "next/link";
 import { DeleteQuoteFromMongo } from "src/service/use-mongo";
 import PropTypes from "prop-types";
-import { format } from "date-fns-tz";
+import { intervalToDuration } from "date-fns";
+import { utcToZonedTime } from "date-fns-tz";
 import {
   Avatar,
   Box,
@@ -17,7 +18,10 @@ import {
   TableRow,
   Typography,
   SvgIcon,
+  CardContent,
+  Unstable_Grid2 as Grid,
 } from "@mui/material";
+import { Tags } from "src/components/tags";
 import PencilIcon from "@heroicons/react/24/solid/PencilIcon";
 import TrashIcon from "@heroicons/react/24/solid/TrashIcon";
 import { Scrollbar } from "src/components/scrollbar";
@@ -25,6 +29,7 @@ import { getInitials } from "src/utils/get-initials";
 import { usePopover } from "src/hooks/use-popover";
 import AlertConfirm from "src/components/alert-confirm";
 import { ticketsHead } from "src/data/tableList";
+import { MessageList } from "src/sections/tickets/message-list";
 
 export const TicketsTable = (props) => {
   const {
@@ -39,6 +44,7 @@ export const TicketsTable = (props) => {
   } = props;
 
   const [deleteQuoteId, setDeleteQuoteId] = useState();
+  const [selectedTicket, setSelectedTicket] = useState(items[0]);
 
   const listNumber = page * 10;
   const modalPopUp = usePopover();
@@ -63,103 +69,86 @@ export const TicketsTable = (props) => {
         "Error Delete",
         "Error when deleting the quote, Please try again later!"
       );
-      return; 
+      return;
     }
     modalPopUp.handleClose();
     mutateData();
   };
 
+  const CountDownTime = useCallback(
+    (props) => {
+      if (!props.time) return "";
+
+      const now = utcToZonedTime(new Date(), "America/Los_Angeles");
+      const time = intervalToDuration({
+        start: new Date(props.time),
+        end: now,
+      });
+
+      if (time.days !== 0) {
+        return time.days + " days ago";
+      }
+      if (time.hours !== 0) {
+        return time.hours + " hours ago";
+      }
+      if (time.minutes !== 0) {
+        return time.minutes + " min ago";
+      }
+      if (time.seconds !== 0) {
+        return time.seconds + " sec ago";
+      }
+      return "";
+    },
+    [items]
+  );
+console.log("selectedTicket", selectedTicket)
   return (
-    <Card>
-      <AlertConfirm
-        title={modalPopUp.message.title}
-        content={modalPopUp.message.content}
-        open={modalPopUp.open}
-        handleClose={modalPopUp.handleClose}
-        handleContinue={continueDelete}
-      />
-      <Scrollbar>
-        <Box sx={{ minWidth: 800 }}>
-          <Table>
-            <TableHead>
-              <TableRow>
-                <TableCell padding="checkbox"></TableCell>
-                {ticketsHead.map((head) => {
-                  return <TableCell key={head.title}>{head.title}</TableCell>;
-                })}
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {items &&
-                items.map((ticket, index) => {
-                  const createdAt = ticket.createdAt ? format(new Date(ticket.createdAt), "dd/MM/yyyy") : "";
-                  const lastUpdate = ticket.lastUpdateAt ? format(new Date(ticket.lastUpdateAt), "dd/MM/yyyy") : "";
-                  return (
-                    <TableRow hover key={ticket._id}>
-                      <TableCell padding="checkbox">
-                        <Typography variant="subtitle2">{index + listNumber + 1}</Typography>
-                      </TableCell>
-                      <TableCell>
-                        <Typography variant="subtitle2">#{ticket._id.slice(-4)}
-                        </Typography>
-                      </TableCell>
-                      <TableCell>
-                            <Typography variant="subtitle2">
-                              {ticket.createdBy.company.companyName}, {ticket.createdBy.name}
-                            </Typography>
-                      </TableCell>
-                      <TableCell>
-                          <Typography variant="subtitle2">
-                            {ticket.subject}
-                          </Typography>
-                      </TableCell>
-                      <TableCell>
-                        <Stack alignItems="right" direction="column" spacing={1}>
-                          <Typography variant="subtitle2">
-                          {ticket.status}
-                          </Typography>
-                        </Stack>
-                      </TableCell>
-                      <TableCell>
-                        <Typography variant="subtitle2">{createdAt}</Typography>
-                      </TableCell>
-                      <TableCell>
-                        <Typography variant="subtitle2">{lastUpdate}</Typography>
-                      </TableCell>
-                      <TableCell>
-                        <Stack alignItems="flex-start" direction="row" spacing={1}>
-                          <Link href={`/tickets/${ticket._id}`} passHref>
-                            <SvgIcon className="action" color="action" fontSize="small">
-                              <PencilIcon />
-                            </SvgIcon>
-                          </Link>
-                          <SvgIcon
-                            className="action"
-                            color="action"
-                            fontSize="small"
-                            onClick={() => handleDelete(ticket._id)}
-                          >
-                            <TrashIcon />
-                          </SvgIcon>
-                        </Stack>
-                      </TableCell>
-                    </TableRow>
-                  );
-                })}
-            </TableBody>
-          </Table>
-        </Box>
-      </Scrollbar>
-      <TablePagination
-        component="div"
-        count={count}
-        onPageChange={onPageChange}
-        onRowsPerPageChange={onRowsPerPageChange}
-        page={page}
-        rowsPerPage={rowsPerPage}
-        rowsPerPageOptions={[10, 20, 50]}
-      />
-    </Card>
+    <Grid container spacing={4}>
+      <Grid xl={4}>
+        <Scrollbar sx={{ maxHeight: "calc(100vh - 230px)", pr:2 }}>
+          {items.map((item, i) => {
+            return (
+              <Card
+                key={i + 1}
+                sx={{ mb: 2, cursor: "pointer", border:selectedTicket._id === item._id ? "1px solid #000" : "1px solid #fff" }}
+                onClick={() => setSelectedTicket(item)}
+              >
+                <CardContent>
+                  <Stack direction={"row"} justifyContent={"space-between"} sx={{ mb: 1 }}>
+                    <Box>
+                      <Typography variant="subtitle1">
+                        {item.createdBy.company.companyName}, {item.createdBy.name}
+                      </Typography>
+                    </Box>
+                    <Box>
+                      <Typography variant="subtitle2" color={"neutral.500"}>
+                        <CountDownTime time={item.lastUpdateAt} />
+                      </Typography>
+                    </Box>
+                  </Stack>
+                  <Box sx={{ mb: 2 }}>
+                    <Typography variant="subtitle2" color={"neutral.800"}>
+                      {item.subject}
+                    </Typography>
+                  </Box>
+                  <Stack direction={"row"} spacing={2} alignItems={"center"}>
+                    <Typography variant="subtitle2">
+                      <Tags tag={item.status} />
+                    </Typography>
+                    <Typography variant="subtitle2"><Tags tag={item.category} /></Typography>
+                    <Typography variant="subtitle2" color={"neutral.500"}>
+                    <Tags tag={`#${item._id.slice(-4)}`} />
+                    </Typography>
+                  </Stack>
+                </CardContent>
+              </Card>
+            );
+          })}
+        </Scrollbar>
+      </Grid>
+      <Grid xl={8}>
+        <MessageList dataTicket={selectedTicket} />
+      </Grid>
+    </Grid>
   );
 };
-

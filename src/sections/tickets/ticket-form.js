@@ -23,18 +23,21 @@ export const NewTicketForm = () => {
   const [message, setMessage] = useState();
   const formik = useFormik({
     initialValues: {
+      category:"",
       subject: "",
       message: "",
       submit: null,
     },
     validationSchema: Yup.object({
-      subject: Yup.string().required("This field is required"),
+      category: Yup.string().required("This field is required"),
+      subject: Yup.string().max(60).required("This field is required"),
       message: Yup.string().max(10000).required("This field is required"),
     }),
     onSubmit: async (values, helpers) => {
       setLoading(true);
       const resNewTicket = await AddNewTicket({
         createdBy: data.user.detail,
+        category: values.category,
         subject: values.subject,
         ticketMessages: [
           {
@@ -43,7 +46,7 @@ export const NewTicketForm = () => {
             time:utcToZonedTime(new Date(), "America/Los_Angeles")
           },
         ],
-        status:"open",
+        status:"New",
         createdAt:utcToZonedTime(new Date(), 'America/Los_Angeles'),
         lastUpdateAt:utcToZonedTime(new Date(), 'America/Los_Angeles')
       });
@@ -77,17 +80,17 @@ export const NewTicketForm = () => {
             <Grid container spacing={2}>
               <Grid xl={4}>
                 <TextField
-                  id="subject"
-                  name="subject"
-                  label="Subject"
+                  id="category"
+                  name="category"
+                  label="Category"
                   variant="outlined"
                   fullWidth
                   select
                   onBlur={formik.handleBlur}
                   onChange={formik.handleChange}
-                  value={formik.values.subject}
-                  error={!!(formik.touched.subject && formik.errors.subject)}
-                  helperText={formik.touched.subject && formik.errors.subject}
+                  value={formik.values.category}
+                  error={!!(formik.touched.category && formik.errors.category)}
+                  helperText={formik.touched.category && formik.errors.category}
                 >
                   <MenuItem value="Quote">
                     <em>Quote</em>
@@ -102,6 +105,20 @@ export const NewTicketForm = () => {
                     <em>Other...</em>
                   </MenuItem>
                 </TextField>
+              </Grid>
+              <Grid xl={8}>
+              <TextField
+                  id="subject"
+                  name="subject"
+                  label="Subject"
+                  variant="outlined"
+                  fullWidth
+                  onBlur={formik.handleBlur}
+                  onChange={formik.handleChange}
+                  value={formik.values.subject}
+                  error={!!(formik.touched.subject && formik.errors.subject)}
+                  helperText={formik.touched.subject && formik.errors.subject}
+                />
               </Grid>
               <Grid xl={12}>
                 <TextField
