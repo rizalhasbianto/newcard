@@ -1,5 +1,7 @@
 import { useSession } from "next-auth/react";
-
+import { useCallback, useState, useEffect } from "react";
+import { intervalToDuration } from "date-fns";
+import { utcToZonedTime } from "date-fns-tz";
 import {
   Card,
   CardContent,
@@ -18,8 +20,30 @@ import { Tags } from "src/components/tags";
 export const MessageList = (props) => {
   const { data } = useSession();
   const myName = data.user.name;
-  console.log("props", props);
-  console.log("data", data);
+  const CountDownTime = useCallback((props) => {
+    if (!props.time) return "";
+
+    const now = utcToZonedTime(new Date(), "America/Los_Angeles");
+    const time = intervalToDuration({
+      start: new Date(props.time),
+      end: now,
+    });
+
+    if (time.days !== 0) {
+      return time.days + " days ago";
+    }
+    if (time.hours !== 0) {
+      return time.hours + " hours ago";
+    }
+    if (time.minutes !== 0) {
+      return time.minutes + " min ago";
+    }
+    if (time.seconds !== 0) {
+      return time.seconds + " sec ago";
+    }
+    return "";
+  }, []);
+
   return (
     <Card sx={{ mb: 2 }}>
       <CardContent>
@@ -41,14 +65,30 @@ export const MessageList = (props) => {
         <Box>
           {props.dataTicket.ticketMessages.map((item, i) => {
             return item.from === myName ? (
-              <Grid container spacing={2} key={i + 1}>
-                <Grid xl={2}>test</Grid>
-                <Grid xl={10}>Status:</Grid>
+              <Grid container spacing={2} key={i + 1} sx={{mb:2, backgroundColor:"neutral.50"}}>
+                <Grid item xl={2}>
+                  <Typography variant="subtitle1">You</Typography>
+                  <Typography variant="subtitle2">{item.role}</Typography>
+                  <Typography variant="body3">
+                    <CountDownTime time={item.time} />
+                  </Typography>
+                </Grid>
+                <Grid item xl={10} sx={{borderLeft:"1px solid #e0e0e0"}}>
+                  <Typography variant="body1" >{item.message}</Typography>
+                </Grid>
               </Grid>
             ) : (
-              <Grid container spacing={2} key={i + 1}>
-                <Grid xl={10}>ID:</Grid>
-                <Grid xl={2}>Status:</Grid>
+              <Grid container spacing={2} key={i + 1} sx={{mb:2, backgroundColor:"neutral.100"}}>
+                <Grid item xl={10} sx={{textAlign:"right", borderRight:"1px solid #e0e0e0"}}>
+                  <Typography variant="body1">{item.message}</Typography>
+                </Grid>
+                <Grid item xl={2} sx={{textAlign:"right"}}>
+                  <Typography variant="subtitle1">{item.from}</Typography>
+                  <Typography variant="subtitle2">{item.role}</Typography>
+                  <Typography variant="body3">
+                    <CountDownTime time={item.time} />
+                  </Typography>
+                </Grid>
               </Grid>
             );
           })}

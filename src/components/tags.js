@@ -1,6 +1,4 @@
-import {
-  Chip,
-} from "@mui/material";
+import { Chip } from "@mui/material";
 
 export const Tags = ({ tag }) => {
   const colorTag = () => {
@@ -9,10 +7,14 @@ export const Tags = ({ tag }) => {
         return "success";
       case "Open":
         return "primary";
+      case "Process":
+        return "warning";
+      case "Closed":
+        return "error";
       default:
         return "primary";
     }
   };
-  
-  return (<Chip label={tag} color={colorTag()} variant="outlined"/>);
+
+  return <Chip label={tag} color={colorTag()} variant="outlined" />;
 };

@@ -384,3 +384,11 @@ export const GetTicketsDataSwr = (page, rowsPerPage, query, sort, type) => {
 
   return quotesRes;
 };
+
+export const UpdateTicket = async (props) => {
+  const mongoRes = await useDataService("/api/tickets/update-ticket", "POST", {
+    id:props.id,
+    data:props.data
+  });
+  return mongoRes;
+};

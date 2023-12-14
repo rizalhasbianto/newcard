@@ -15,7 +15,7 @@ import {
   TextField,
 } from "@mui/material";
 
-import { AddNewTicket } from "src/service/use-mongo";
+import { AddNewTicket, UpdateTicket } from "src/service/use-mongo";
 
 export const NewTicketForm = () => {
   const { data } = useSession();
@@ -42,6 +42,7 @@ export const NewTicketForm = () => {
         ticketMessages: [
           {
             from: data.user.name,
+            role: data.user.detail.role,
             message: values.message,
             time:utcToZonedTime(new Date(), "America/Los_Angeles")
           },
@@ -160,12 +161,13 @@ export const NewTicketForm = () => {
   );
 };
 
-export const ReplyTicketForm = () => {
+export const ReplyTicketForm = ({oldMessage, id, mutateData}) => {
   const { data } = useSession();
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState();
   const formik = useFormik({
     initialValues: {
+      status:"Open",
       message: "",
       submit: null,
     },
@@ -174,22 +176,28 @@ export const ReplyTicketForm = () => {
     }),
     onSubmit: async (values, helpers) => {
       setLoading(true);
-      const resNewTicket = await AddNewTicket({
-        createdBy: data.user.detail,
-        subject: values.subject,
-        ticketMessages: [
-          {
-            from: data.user.name,
-            message: values.message,
-          },
-        ],
-        status:"open",
-        lastUpdateAt:new Date()
+      const resNewTicket = await UpdateTicket({
+        id:id,
+        data: {
+          ticketMessages: [
+            ...oldMessage,
+            {
+              from: data.user.name,
+              role: data.user.detail.role,
+              message: values.message,
+              time:utcToZonedTime(new Date(), 'America/Los_Angeles')
+            },
+          ],
+          status:values.status,
+          lastUpdateAt:utcToZonedTime(new Date(), 'America/Los_Angeles')
+        }
       });
+
       if (!resNewTicket) {
         setMessage("Error send message, please try again later!");
       } else {
-        setMessage("Your message has been sent, we will respon as soon as possible");
+        formik.resetForm()
+        mutateData()
       }
       formik.values.submit = "submited";
       setLoading(false);
@@ -202,6 +210,31 @@ export const ReplyTicketForm = () => {
         <form noValidate onSubmit={formik.handleSubmit}>
           <Box>
             <Grid container spacing={2}>
+            <Grid xl={4}>
+                <TextField
+                  id="status"
+                  name="status"
+                  label="Status"
+                  variant="outlined"
+                  fullWidth
+                  select
+                  onBlur={formik.handleBlur}
+                  onChange={formik.handleChange}
+                  value={formik.values.status}
+                  error={!!(formik.touched.status && formik.errors.status)}
+                  helperText={formik.touched.status && formik.errors.status}
+                >
+                  <MenuItem value="Open">
+                    <em>Open</em>
+                  </MenuItem>
+                  <MenuItem value="Process">
+                    <em>Process</em>
+                  </MenuItem>
+                  <MenuItem value="Closed">
+                    <em>Closed</em>
+                  </MenuItem>
+                </TextField>
+              </Grid>
               <Grid xl={12}>
                 <TextField
                   id="message"
@@ -211,7 +244,6 @@ export const ReplyTicketForm = () => {
                   fullWidth
                   multiline
                   minRows={3}
-                  onBlur={formik.handleBlur}
                   onChange={formik.handleChange}
                   value={formik.values.message}
                   error={!!(formik.touched.message && formik.errors.message)}
@@ -219,10 +251,7 @@ export const ReplyTicketForm = () => {
                 />
               </Grid>
               <Grid xl={12}>
-                {formik.values.submit ? (
-                  message
-                ) : (
-                  <LoadingButton
+              <LoadingButton
                     color="primary"
                     loading={loading}
                     loadingPosition="start"
@@ -232,7 +261,8 @@ export const ReplyTicketForm = () => {
                   >
                     Submit
                   </LoadingButton>
-                )}
+                  <br/>
+                {formik.values.submit &&  message}
               </Grid>
             </Grid>
           </Box>

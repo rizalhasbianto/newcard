@@ -36,7 +36,7 @@ export default async function getSingleProduct(req, res) {
                   value
                 }
                 image{
-                  url: url(transform: { maxWidth: 270})
+                  url: url(transform: { maxWidth: 270, preferredContentType:WEBP})
                 }
                 product {
                   id

@@ -30,17 +30,13 @@ import { usePopover } from "src/hooks/use-popover";
 import AlertConfirm from "src/components/alert-confirm";
 import { ticketsHead } from "src/data/tableList";
 import { MessageList } from "src/sections/tickets/message-list";
+import { ReplyTicketForm } from "src/sections/tickets/ticket-form"
 
 export const TicketsTable = (props) => {
   const {
-    count = 0,
     items = [],
-    onPageChange = () => {},
     mutateData = () => {},
-    onRowsPerPageChange,
     page = 0,
-    rowsPerPage = 0,
-    selected = [],
   } = props;
 
   const [deleteQuoteId, setDeleteQuoteId] = useState();
@@ -101,11 +97,19 @@ export const TicketsTable = (props) => {
     },
     [items]
   );
-console.log("selectedTicket", selectedTicket)
+
+  useEffect(
+    () => {
+      const newUpdateTicket = items.find((item) => item._id === selectedTicket._id)
+      setSelectedTicket(newUpdateTicket)
+    },[items]
+  )
+  console.log("selectedTicket", selectedTicket)
+
   return (
     <Grid container spacing={4}>
       <Grid xl={4}>
-        <Scrollbar sx={{ maxHeight: "calc(100vh - 230px)", pr:2 }}>
+        <Scrollbar sx={{ maxHeight: "calc(100vh - 230px)", pr:2, position:"sticky", top:"100px" }}>
           {items.map((item, i) => {
             return (
               <Card
@@ -148,6 +152,7 @@ console.log("selectedTicket", selectedTicket)
       </Grid>
       <Grid xl={8}>
         <MessageList dataTicket={selectedTicket} />
+        <ReplyTicketForm oldMessage={selectedTicket.ticketMessages} id={selectedTicket._id} mutateData={mutateData}/>
       </Grid>
     </Grid>
   );
