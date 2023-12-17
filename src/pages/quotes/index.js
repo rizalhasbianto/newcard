@@ -1,6 +1,7 @@
 import { useCallback, useMemo, useState, useEffect } from "react";
 import Head from "next/head";
 import Link from "next/link";
+import { useSession } from "next-auth/react";
 import ArrowDownOnSquareIcon from "@heroicons/react/24/solid/ArrowDownOnSquareIcon";
 import ArrowUpOnSquareIcon from "@heroicons/react/24/solid/ArrowUpOnSquareIcon";
 import PlusIcon from "@heroicons/react/24/solid/PlusIcon";
@@ -12,33 +13,42 @@ import { QuotesSearch } from "src/sections/quotes/quotes-search";
 import { applyPagination } from "src/utils/apply-pagination";
 import { GetQuotesDataSwr } from "src/service/use-mongo";
 import TableLoading from "src/components/table-loading";
-import { useToast } from 'src/hooks/use-toast'
-import Toast from 'src/components/toast'
+import { useToast } from "src/hooks/use-toast";
+import Toast from "src/components/toast";
 
 const Page = () => {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const toastUp = useToast();
+  const { data: dataUser } = useSession();
 
-  const { data, isLoading, isError, mutate, isValidating } = GetQuotesDataSwr(page, rowsPerPage, {
-    status: { $nin: ["new", "draft"]}, "company.name": "rizkyJr"
-  });
+  const quoteQuery =
+    dataUser?.user?.detail?.role !== "admin"
+      ? {
+          status: { $nin: ["new", "draft"] },
+          "company.name": dataUser?.user?.detail?.company.companyName,
+        }
+      : {
+          status: { $nin: ["new", "draft"] },
+        };
 
-  useEffect(
-    () => {
-      if(isValidating) {
-        toastUp.handleStatus("loading");
-        toastUp.handleMessage("Validating data");
-      }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    },[isValidating]
-  )
-
-  const handlePageChange = useCallback(
-    async (event, value) => {
-      setPage(value);
-    },[]
+  const { data, isLoading, isError, mutate, isValidating } = GetQuotesDataSwr(
+    page,
+    rowsPerPage,
+    quoteQuery
   );
+
+  useEffect(() => {
+    if (isValidating) {
+      toastUp.handleStatus("loading");
+      toastUp.handleMessage("Validating data");
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isValidating]);
+
+  const handlePageChange = useCallback(async (event, value) => {
+    setPage(value);
+  }, []);
 
   const handleRowsPerPageChange = useCallback(async (event) => {
     setPage(0);
@@ -58,11 +68,11 @@ const Page = () => {
         }}
       >
         <Container maxWidth="xl">
-        <Toast
-          toastStatus={toastUp.toastStatus}
-          handleStatus={toastUp.handleStatus}
-          toastMessage={toastUp.toastMessage}
-        />
+          <Toast
+            toastStatus={toastUp.toastStatus}
+            handleStatus={toastUp.handleStatus}
+            toastMessage={toastUp.toastMessage}
+          />
           <Stack spacing={3}>
             <Stack direction="row" justifyContent="space-between" spacing={4}>
               <Stack spacing={1}>
@@ -106,7 +116,7 @@ const Page = () => {
               </div>
             </Stack>
             <QuotesSearch />
-            {(isLoading) && <TableLoading />}
+            {isLoading && <TableLoading />}
             {isError && <h2>Error loading data</h2>}
             {data && (
               <QuotesTable

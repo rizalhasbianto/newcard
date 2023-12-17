@@ -138,7 +138,6 @@ export const SideNav = (props) => {
               } else {
                 active = item.path ? (pathname?.includes(item.path)) : false;
               }
-              console.log("data?.user?.detail?.company?.role", data?.user?.detail?.company?.role)
               if(item.role && item.role !== data?.user?.detail?.role) {
                 return
               }
