@@ -174,7 +174,6 @@ export default function AddCompany(props) {
           const page = 0,
             rowsPerPage = 50;
           const newCompaniesData = await GetCompanies(page, rowsPerPage);
-          console.log("newCompaniesData", newCompaniesData);
           setCompanies(newCompaniesData.data.company);
           setCompanyName(values.companyName);
           setShipTo(values.companyShippingLocation);
@@ -397,7 +396,6 @@ export default function AddCompany(props) {
                 />
               )}
               onChange={(event, newValue) => {
-                console.log("newValue", newValue);
                 formik.setFieldValue("stateName", newValue);
               }}
               onBlur={() => formik.setTouched({ ["stateName"]: true })}

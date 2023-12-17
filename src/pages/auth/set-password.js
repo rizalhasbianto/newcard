@@ -5,7 +5,9 @@ import { useRouter } from 'next/router';
 import { useSession } from "next-auth/react"
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
-import { Box, Button, Link, Stack, TextField, Typography } from '@mui/material';
+import { Box, Button, Link, Stack, TextField, Typography, InputAdornment, IconButton } from '@mui/material';
+import Visibility from "@mui/icons-material/Visibility";
+import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import { Layout as AuthLayout } from 'src/layouts/auth/layout';
 import { FindUserById, UpdatePassword } from 'src/service/use-mongo'
 
@@ -15,6 +17,7 @@ const Page = () => {
   const { status } = useSession()
   const [errorUser, setErrorUser] = useState()
   const [successUpdate, setSuccessUpdate] = useState()
+  const [openPass, setOpenPass] = useState(false);
   const getUser = useCallback(
     async (id) => {
       if (id) {
@@ -148,8 +151,22 @@ const Page = () => {
                     name="password"
                     onBlur={formik.handleBlur}
                     onChange={formik.handleChange}
-                    type="password"
+                    type={openPass ? "text" : "password"}
                     value={formik.values.password}
+                    InputProps={{
+                      endAdornment: (
+                        <InputAdornment position="end">
+                          <IconButton
+                            aria-label="toggle password visibility"
+                            onClick={() => setOpenPass(!openPass)}
+                            onMouseDown={() => setOpenPass(!openPass)}
+                            edge="end"
+                          >
+                            {openPass ? <VisibilityOff /> : <Visibility />}
+                          </IconButton>
+                        </InputAdornment>
+                      ),
+                    }}
                   />
                 </Stack>
                 {formik.errors.submit && (

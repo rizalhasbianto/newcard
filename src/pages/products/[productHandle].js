@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
+import { useSession } from "next-auth/react";
 import { GetProductByhandleSwr } from "src/service/use-shopify";
 import Head from "next/head";
 import { Layout as DashboardLayout } from "src/layouts/dashboard/layout";
@@ -15,6 +16,7 @@ import { ProductFrom } from "src/sections/singleProduct/product-form";
 const Page = () => {
   const router = useRouter();
   const toastUp = useToast();
+  const { data: session } = useSession();
 
   const { data, isLoading, isError } = GetProductByhandleSwr(router.query.productHandle);
   const quoteId = router.query?.quoteId;
@@ -63,6 +65,7 @@ const Page = () => {
                         setSelectedTab={setSelectedTab}
                         quoteId={quoteId}
                         toastUp={toastUp}
+                        session={session}
                       />
                     </Grid>
                   </Grid>

@@ -2,7 +2,7 @@ import Head from "next/head";
 import { useState, useCallback, useEffect } from "react";
 import { GetInventorySwr } from "src/service/use-shopify";
 import { Layout as DashboardLayout } from "src/layouts/dashboard/layout";
-import { Box, Container } from "@mui/material";
+import { Box, Container, Typography, Stack } from "@mui/material";
 import TableLoading from "src/components/table-loading";
 import { InventoryTable } from "src/sections/products/invetory-table";
 
@@ -55,6 +55,12 @@ const Page = () => {
         }}
       >
         <Container maxWidth="xl">
+        <Stack spacing={3}>
+        <Stack direction="row" justifyContent="space-between" spacing={4}>
+              <Stack spacing={1}>
+                <Typography variant="h4">Inventory</Typography>
+              </Stack>
+            </Stack>
           {isLoading && <TableLoading />}
           {isError && <h2>Error loading data</h2>}
           {data && (
@@ -66,6 +72,7 @@ const Page = () => {
               pageNumber={pageNumber}
             />
           )}
+          </Stack>
         </Container>
       </Box>
     </>

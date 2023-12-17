@@ -19,7 +19,7 @@ export default async function createQuote(req, res) {
 
     const sendQuote = await db.collection(collection).updateOne(
         { _id: new ObjectId(bodyObject.userId) },
-        { $set: { password: hashedPassword } }
+        { $set: { password: password ? hashedPassword : "" } }
     );
     res.json({ status: 200, data: sendQuote });
 }

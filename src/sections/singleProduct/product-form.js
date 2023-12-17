@@ -23,7 +23,8 @@ export const ProductFrom = (props) => {
     setSelectedImgVariant,
     setSelectedTab,
     quoteId,
-    toastUp
+    toastUp,
+    session
   } = props;
 
   const [buttonloading, setButtonloading] = useState(false);
@@ -95,9 +96,12 @@ export const ProductFrom = (props) => {
   };
 
   const handleOpenQuoteList = useCallback(async () => {
-    const query = { $or: [{ status: "draft" }, { status: "new" }] };
+    const quoteQuery = {
+      $or: [{ status: "draft" }, { status: "new" }],
+      createdBy: session?.user?.detail?.company.companyName,
+      }
     const sort = "DSC";
-    const resQuotes = await GetQuotesData(0, 50, query, sort);
+    const resQuotes = await GetQuotesData(0, 50, quoteQuery, sort);
     if (!resQuotes) {
       toastUp.handleStatus("error");
       toastUp.handleMessage("Error when get quote list!!!");

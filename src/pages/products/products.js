@@ -1,5 +1,6 @@
 import Head from "next/head";
 import { useRouter } from "next/router";
+import { useSession } from "next-auth/react";
 import PlusIcon from "@heroicons/react/24/solid/PlusIcon";
 import LoadingButton from "@mui/lab/LoadingButton";
 import AutorenewIcon from "@mui/icons-material/Autorenew";
@@ -45,6 +46,7 @@ const Products = () => {
   const [quoteList, setQuoteList] = useState(false);
   const toastUp = useToast();
   const router = useRouter();
+  const { data: session } = useSession();
   const quoteId = router.query?.quoteId;
 
   const productPerPage = 12;
@@ -63,9 +65,12 @@ const Products = () => {
   };
 
   const handleOpenQuoteList = useCallback(async () => {
-    const query = { $or: [{ status: "draft" }, { status: "new" }] };
+    const quoteQuery = {
+      $or: [{ status: "draft" }, { status: "new" }],
+      createdBy: session?.user?.detail?.company.companyName,
+      }
     const sort = "DSC";
-    const resQuotes = await GetQuotesData(0, 50, query, sort);
+    const resQuotes = await GetQuotesData(0, 50, quoteQuery, sort);
     if (!resQuotes) {
       console.log("resQuotes", resQuotes);
       return;

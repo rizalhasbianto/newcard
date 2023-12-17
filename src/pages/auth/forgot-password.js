@@ -1,20 +1,20 @@
 import { useCallback, useEffect, useState } from "react";
 import Head from "next/head";
 import NextLink from "next/link";
-import { useRouter } from "next/router";
 import { useSession } from "next-auth/react";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import { Box, Button, Link, Stack, TextField, Typography } from "@mui/material";
+import LoadingButton from "@mui/lab/LoadingButton";
+import SendIcon from '@mui/icons-material/Send';
 import { Layout as AuthLayout } from "src/layouts/auth/layout";
-import { CheckUserEmail, ResetPassword } from "src/service/use-mongo";
+import { CheckUserEmail, ResetPassword, UpdatePassword } from "src/service/use-mongo";
 
 const Page = () => {
-  const router = useRouter();
-  const { id } = router.query;
   const { status } = useSession();
   const [errorUser, setErrorUser] = useState();
   const [successUpdate, setSuccessUpdate] = useState();
+  const [loadingLogin, setLoadingLogin] = useState(false);
 
   useEffect(() => {
     if (status === "authenticated") {
@@ -35,17 +35,33 @@ const Page = () => {
         .required("Email is required"),
     }),
     onSubmit: async (values, helpers) => {
+      setLoadingLogin(true)
       const checkUser = await CheckUserEmail(values.contactEmail);
-      if (checkUser?.data.length > 0) {
-        const resInvite = await ResetPassword(checkUser.data[0]);
-        if (resInvite) {
-          setSuccessUpdate("done");
-        } else {
-          setErrorUser("Error when send email, please try again later!!");
-        }
-      } else {
-        formik.setErrors({ contactEmail: "user not found!!" });
+      if(!checkUser || checkUser.data.length <= 0) {
+        helpers.setStatus({ success: false });
+        helpers.setErrors({ submit: "user not found!!" });
+        helpers.setSubmitting(false);
+        return
       }
+
+      const resUpdatePassword = await UpdatePassword("", checkUser.data[0]._id);
+
+      if(!resUpdatePassword) {
+        helpers.setStatus({ success: false });
+        helpers.setErrors({ submit: "Reset pasword failed!!" });
+        helpers.setSubmitting(false);
+        return
+      }
+
+      const resInvite = await ResetPassword(checkUser.data[0]);
+      if (!resInvite) {
+        helpers.setStatus({ success: false });
+        helpers.setErrors({ submit: "Error when send email, please try again later!!" });
+        helpers.setSubmitting(false);
+        return
+      }
+      setLoadingLogin(false)
+      setSuccessUpdate("done");
     },
   });
 
@@ -72,7 +88,7 @@ const Page = () => {
         >
           <div>
             <Stack spacing={1} sx={{ mb: 3 }}>
-              <Typography variant="h4">Set Password</Typography>
+              <Typography variant="h4">Reset Password</Typography>
               {(successUpdate || errorUser) && (
                 <Typography color="text.secondary" variant="body2">
                   Back to &nbsp;
@@ -117,9 +133,18 @@ const Page = () => {
                     {formik.errors.submit}
                   </Typography>
                 )}
-                <Button fullWidth size="large" sx={{ mt: 3 }} type="submit" variant="contained">
-                  Send link to my email
-                </Button>
+                <LoadingButton
+                    fullWidth
+                    color="primary"
+                    sx={{ mt: 3 }}
+                    loading={loadingLogin}
+                    loadingPosition="start"
+                    startIcon={<SendIcon />}
+                    variant="contained"
+                    type="submit"
+                  >
+                    Send link to my email
+                  </LoadingButton>
               </form>
             )}
           </div>

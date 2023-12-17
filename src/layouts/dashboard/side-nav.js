@@ -151,6 +151,7 @@ export const SideNav = (props) => {
                   path={item.path}
                   title={item.title}
                   subMenu={item.subMenu}
+                  role={data?.user?.detail?.role}
                 />
               );
             })}
