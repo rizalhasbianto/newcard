@@ -106,8 +106,8 @@ export const QuotesForm = (props) => {
         payment,
         tabContent.draftOrderId
       );
-
-      if (!shopifyResponse || shopifyResponse.response.createDraft.errors) {
+        console.log("shopifyResponse", shopifyResponse)
+      if (!shopifyResponse || shopifyResponse.response?.createDraft?.errors || !shopifyResponse.response) {
         // error when sync data to shopify
         toastUp.handleStatus("warning");
         toastUp.handleMessage("Error sync to Shopify!");

@@ -6,6 +6,7 @@ export default async function createDraftOrder(req, res) {
   const firstName = name && name[0];
   const lastName = name && name[1];
   let query;
+  console.log("bodyObject.payment", bodyObject.payment);
   if (bodyObject.draftOrderId) {
     query = `
       mutation {
@@ -43,9 +44,9 @@ export default async function createDraftOrder(req, res) {
                 ? `paymentTerms: {
                 paymentTermsTemplateId:"${bodyObject.payment.id}",
                 ${
-                  bodyObject.payment.date &&
-                  `
-                paymentSchedules: {
+                  bodyObject.payment.date
+                    ? `
+                 paymentSchedules: {
                   ${
                     bodyObject.payment.id === "gid://shopify/PaymentTermsTemplate/7"
                       ? `dueAt:"${bodyObject.payment.date}"`
@@ -53,6 +54,7 @@ export default async function createDraftOrder(req, res) {
                   }
                 }
                 `
+                    : ""
                 }
               },`
                 : `paymentTerms: {
@@ -118,13 +120,13 @@ export default async function createDraftOrder(req, res) {
                   ${
                     bodyObject.payment.date &&
                     `
-                  paymentSchedules: {
-                    ${
-                      bodyObject.payment.id === "gid://shopify/PaymentTermsTemplate/7"
-                        ? `dueAt:"${bodyObject.payment.date}"`
-                        : `issuedAt:"${bodyObject.payment.date}"`
+                    paymentSchedules: {
+                      ${
+                        bodyObject.payment.id === "gid://shopify/PaymentTermsTemplate/7"
+                          ? `dueAt:"${bodyObject.payment.date}"`
+                          : `issuedAt:"${bodyObject.payment.date}"`
+                      }
                     }
-                  }
                   `
                   }
                 },`
@@ -150,7 +152,7 @@ export default async function createDraftOrder(req, res) {
         }
       `;
   }
-
+  console.log(query);
   const createDraft = await adminAPi(query);
   res.json({ status: 200, createDraft });
 }
