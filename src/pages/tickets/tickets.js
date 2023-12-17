@@ -37,7 +37,7 @@ console.log("data", data)
   return (
     <>
       <Head>
-        <title>Tickets | Devias Kit</title>
+        <title>Tickets | Skratch</title>
       </Head>
       <Box
         component="main"

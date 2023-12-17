@@ -49,7 +49,7 @@ const Companies = () => {
   return (
     <>
       <Head>
-        <title>Companies | Devias Kit</title>
+        <title>Companies | Skratch</title>
       </Head>
       <Box
         component="main"

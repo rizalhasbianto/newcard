@@ -37,7 +37,7 @@ const Page = () => {
   return (
     <>
     <Head>
-      <title>Account | Skratch B2B</title>
+      <title>Account | Skratch</title>
     </Head>
     <Box
       component="main"

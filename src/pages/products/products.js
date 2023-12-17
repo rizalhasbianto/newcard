@@ -88,7 +88,7 @@ const Products = () => {
   return (
     <>
       <Head>
-        <title>Products | Devias Kit</title>
+        <title>Products | Skratch</title>
       </Head>
       <Box
         component="main"

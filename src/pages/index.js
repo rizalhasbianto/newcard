@@ -18,7 +18,7 @@ function Page() {
   <>
     <Head>
       <title>
-        Overview | Devias Kit
+        Overview | Skratch
       </title>
     </Head>
     <Box

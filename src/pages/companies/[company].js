@@ -36,7 +36,7 @@ const Page = () => {
   return (
     <>
       <Head>
-        <title>Company | Devias Kit</title>
+        <title>Company | Skratch</title>
       </Head>
       <Box
         component="main"
