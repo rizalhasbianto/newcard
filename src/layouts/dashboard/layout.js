@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
+import { useSession } from "next-auth/react";
 import { usePathname } from 'next/navigation';
 import { styled } from '@mui/material/styles';
 import { SideNav } from './side-nav';
@@ -27,6 +28,7 @@ export const Layout = (props) => {
   const { children } = props;
   const pathname = usePathname();
   const [openNav, setOpenNav] = useState(false);
+  const { data: session } = useSession();
 
   const handlePathnameChange = useCallback(
     () => {
@@ -56,7 +58,9 @@ export const Layout = (props) => {
       />
       <LayoutRoot>
         <LayoutContainer>
-          {children}
+          {
+            session ? children : <h4>Session Empty</h4>
+          }
         </LayoutContainer>
       </LayoutRoot>
     </>

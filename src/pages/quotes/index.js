@@ -20,13 +20,13 @@ const Page = () => {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const toastUp = useToast();
-  const { data: dataUser } = useSession();
+  const { data: session } = useSession();
 
   const quoteQuery =
-    dataUser?.user?.detail?.role !== "admin"
+    session?.user?.detail?.role !== "admin"
       ? {
           status: { $nin: ["new", "draft"] },
-          "company.name": dataUser?.user?.detail?.company.companyName,
+          "company.name": session?.user?.detail?.company.companyName,
         }
       : {
           status: { $nin: ["new", "draft"] },

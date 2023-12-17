@@ -31,7 +31,6 @@ import { signIn } from "next-auth/react";
 const Page = () => {
   const router = useRouter();
   const { status } = useSession();
-  const [method, setMethod] = useState("email");
   const [openPass, setOpenPass] = useState(false);
   const [loadingLogin, setLoadingLogin] = useState(false);
 
@@ -60,12 +59,17 @@ const Page = () => {
       } else {
         window.location.replace("/");
       }
+      setLoadingLogin(false);
     },
   });
 
-  const handleMethodChange = useCallback((event, value) => {
-    setMethod(value);
-  }, []);
+  useEffect(() => {
+    if (status === "authenticated") {
+      router.push('/')
+      return
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [status]);
 
   return (
     <>
@@ -104,11 +108,6 @@ const Page = () => {
                 </Link>
               </Typography>
             </Stack>
-            <Tabs onChange={handleMethodChange} sx={{ mb: 3 }} value={method}>
-              <Tab label="Email" value="email" />
-              <Tab label="Phone Number" value="phoneNumber" />
-            </Tabs>
-            {method === "email" && (
               <form noValidate onSubmit={formik.handleSubmit}>
                 <Stack spacing={3}>
                   <Grid container spacing={2} alignItems={"center"}>
@@ -179,7 +178,7 @@ const Page = () => {
                       Forgot password? &nbsp;
                       <Link
                         component={NextLink}
-                        href="/auth/login"
+                        href="/auth/forgot-password"
                         underline="hover"
                         variant="subtitle2"
                       >
@@ -189,17 +188,6 @@ const Page = () => {
                   </div>
                 </Alert>
               </form>
-            )}
-            {method === "phoneNumber" && (
-              <div>
-                <Typography sx={{ mb: 1 }} variant="h6">
-                  Not available Temporary
-                </Typography>
-                <Typography color="text.secondary">
-                  To prevent unnecessary costs we disabled this feature Temporary.
-                </Typography>
-              </div>
-            )}
           </div>
         </Box>
       </Box>

@@ -1,6 +1,7 @@
 import { useCallback, useRef, useState, useEffect } from 'react';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
+import { useSession } from "next-auth/react";
 import {
   Box,
   Container,
@@ -18,6 +19,7 @@ const Page = () => {
   const slideRef = useRef(null);
   const router = useRouter();
   const { quoteId } = router.query;
+  const { data: session } = useSession();
 
   const reqQuotesData = async () => {
     setLoading(true)
@@ -82,6 +84,7 @@ const Page = () => {
                   <QuotesForm
                     tabContent={tabContent}
                     reqQuotesData={reqQuotesData}
+                    session={session}
                   />
                 }
               </Grid>

@@ -65,7 +65,7 @@ export const SaveQuoteToMongoDb = async (
   return mongoRes;
 };
 
-export const AddNewQuoteToMongoDb = async () => {
+export const AddNewQuoteToMongoDb = async (props) => {
   const today = new Date();
   const mongoRes = await useDataService("/api/quotes/create-quote", "POST", {
     company: {
@@ -78,7 +78,8 @@ export const AddNewQuoteToMongoDb = async () => {
       item: 0,
     },
     status: "new",
-    createdAt: today,
+    createdBy: props.createdBy,
+    createdAt: props.createdAt,
     updatedAt: "",
     draftOrderId: "",
     draftOrderNumber: "",
@@ -310,14 +311,14 @@ export const RegisterUser = async (userData, companyId) => {
   const mongoRes = await useDataService("/api/auth/register-user", "POST", {
     name: userData.contactFirstName + " " + userData.contactLastName,
     email: userData.contactEmail,
-    phone: "",
+    phone: userData.phoneLocation,
     password: "",
     company: {
       companyId: companyId,
       companyName: userData.companyName,
     },
     status: "invite",
-    role: "customer",
+    role: userData.role ? userData.role : "customer",
   });
   return mongoRes;
 };
@@ -327,6 +328,15 @@ export const InviteUser = async (userData, userId) => {
     name: userData.contactFirstName + " " + userData.contactLastName,
     email: userData.contactEmail,
     userId: userId,
+  });
+  return mongoRes;
+};
+
+export const ResetPassword = async (userData) => {
+  const mongoRes = await useDataService("/api/email/reset-password", "POST", {
+    name: userData.name,
+    email: userData.email,
+    userId: userData._id,
   });
   return mongoRes;
 };

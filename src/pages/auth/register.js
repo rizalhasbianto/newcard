@@ -25,6 +25,15 @@ const Page = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [status]);
 
+  useEffect(() => {
+    console.log("addNewCompany", addNewCompany)
+    if (addNewCompany === undefined) {
+      router.push('/auth/login')
+      return
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [addNewCompany]);
+
   return (
     <>
       <Head>
@@ -86,6 +95,7 @@ const Page = () => {
               setAddNewCompany={setAddNewCompany}
               toastUp={toastUp}
               getSelectedVal={false}
+              type="register"
             />
           </Collapse>
         </Box>

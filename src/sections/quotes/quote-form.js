@@ -1,4 +1,5 @@
 import { useCallback, useState, useEffect } from "react";
+import { format } from "date-fns-tz";
 import LoadingButton from "@mui/lab/LoadingButton";
 import SaveIcon from "@mui/icons-material/Save";
 import ClearIcon from "@mui/icons-material/Clear";
@@ -35,7 +36,7 @@ import {
 import { SyncQuoteToShopify } from "src/service/use-shopify";
 
 export const QuotesForm = (props) => {
-  const { tabContent, reqQuotesData, tabIndex } = props;
+  const { tabContent, reqQuotesData, tabIndex, session } = props;
   const [companies, setCompanies] = useState([]);
   const [companyName, setCompanyName] = useState("");
   const [shipTo, setShipTo] = useState("");
@@ -202,8 +203,13 @@ export const QuotesForm = (props) => {
           console.log("error get company data!");
           return;
         }
-        companyList = resGetCompanyList.data.company;
-        setCompanies(resGetCompanyList.data.company);
+        companyList =
+          session?.user?.detail.role === "admin"
+            ? resGetCompanyList.data.company
+            : resGetCompanyList.data.company.filter(
+                (item) => item._id === session?.user?.detail.company.companyId
+              );
+        setCompanies(companyList);
       } else {
         companyList = companies;
       }
@@ -283,10 +289,12 @@ export const QuotesForm = (props) => {
               </Typography>
             </Grid>
             <Grid xs={6} md={3}>
-              <Typography variant="body2">Created By: Admin</Typography>
+              <Typography variant="body2">Created By: {tabContent?.createdBy}</Typography>
             </Grid>
             <Grid xs={6} md={3}>
-              <Typography variant="body2">LastUpdate: {tabContent?.updatedAt}</Typography>
+              <Typography variant="body2">
+                LastUpdate: {format(new Date(tabContent?.updatedAt), "MM-dd-yyyy")}
+              </Typography>
             </Grid>
           </Grid>
         </Card>
@@ -311,9 +319,11 @@ export const QuotesForm = (props) => {
               paddingRight: "25px",
             }}
           >
-            <Button variant="outlined" onClick={() => setAddNewCompany(true)}>
-              Add New Company
-            </Button>
+            {session.user.detail.role === "admin" && (
+              <Button variant="outlined" onClick={() => setAddNewCompany(true)}>
+                Add New Company
+              </Button>
+            )}
           </Grid>
         </Grid>
         <CardContent sx={{ pt: 0 }}>
@@ -368,7 +378,10 @@ export const QuotesForm = (props) => {
         <Card>
           <Grid container justify="flex-end" alignItems="center">
             <Grid xs={6} md={6}>
-              <CardHeader subheader={`${quotesList.length} item's (${total.countQty}Qty) at $${total.subTotal}`} title="Selected Products" />
+              <CardHeader
+                subheader={`${quotesList.length} item's (${total.countQty}Qty) at $${total.subTotal}`}
+                title="Selected Products"
+              />
             </Grid>
             <Grid
               xs={6}
@@ -431,25 +444,25 @@ export const QuotesForm = (props) => {
           </CardContent>
           <Divider />
           <CardActions sx={{ justifyContent: "space-between", padding: "20px" }}>
-            <Typography variant="body1">
-              Current Status: {tabContent?.status}
-            </Typography>
+            <Typography variant="body1">Current Status: {tabContent?.status}</Typography>
             <Stack direction="row" spacing={2} justifyContent={"flex-end"}>
-            {saveQuoteButton.map((button) => {
-              return (
-                <LoadingButton
-                  color="primary"
-                  onClick={() => handleSubmit(button.action)}
-                  loading={buttonloading === button.action ? true : false}
-                  loadingPosition="start"
-                  startIcon={<SaveIcon />}
-                  variant="contained"
-                  key={button.action}
-                >
-                  {button.action === tabContent?.status && button.action !== "invoiced"? "Save" : button.title}
-                </LoadingButton>
-              );
-            })}
+              {saveQuoteButton.map((button) => {
+                return (
+                  <LoadingButton
+                    color="primary"
+                    onClick={() => handleSubmit(button.action)}
+                    loading={buttonloading === button.action ? true : false}
+                    loadingPosition="start"
+                    startIcon={<SaveIcon />}
+                    variant="contained"
+                    key={button.action}
+                  >
+                    {button.action === tabContent?.status && button.action !== "invoiced"
+                      ? "Save"
+                      : button.title}
+                  </LoadingButton>
+                );
+              })}
             </Stack>
           </CardActions>
         </Card>

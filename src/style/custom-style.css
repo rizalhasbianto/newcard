@@ -42,3 +42,7 @@ a {
 .onScroll .MuiTabs-indicator {
     bottom: 15px;
 }
+.selected_file span {
+    white-space: nowrap;
+    overflow: hidden;
+}

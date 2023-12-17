@@ -74,7 +74,9 @@ export const SelectProducts = ({ quotesList, setQuotesList, quoteId }) => {
               setActiveTab("search");
             }}
             onInputChange={(event, newInputValue) => {
-              setInputValue(newInputValue);
+              if(newInputValue.length > 2) {
+                setInputValue(newInputValue);
+              }
             }}
             renderInput={(params) => <TextField {...params} label="Type for start search" />}
             renderOption={(props, option) => {

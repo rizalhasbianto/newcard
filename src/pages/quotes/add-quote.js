@@ -1,5 +1,7 @@
 import { useCallback, useRef, useState, useEffect } from "react";
 import Head from "next/head";
+import { useSession } from "next-auth/react";
+import { utcToZonedTime } from "date-fns-tz";
 import {
   Box,
   Container,
@@ -15,9 +17,9 @@ import AddIcon from "@mui/icons-material/Add";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { Layout as DashboardLayout } from "src/layouts/dashboard/layout";
 import { QuotesForm } from "src/sections/quotes/quote-form";
-import { GetQuotesData } from "src/service/use-mongo";
-import { AddNewQuoteToMongoDb, DeleteQuoteFromMongo } from "src/service/use-mongo";
+import { GetQuotesData, AddNewQuoteToMongoDb, DeleteQuoteFromMongo } from "src/service/use-mongo";
 import CardLoading from "src/components/grid-loading";
+
 
 const Page = () => {
   const [quotesData, setQuotesData] = useState([]);
@@ -26,6 +28,7 @@ const Page = () => {
   const [isDataLoading, setDataLoading] = useState(false);
   const [tabContent, setTabContent] = useState();
   const [offset, setOffset] = useState(0);
+  const { data: session } = useSession();
   const slideRef = useRef(null);
 
   const handleChange = useCallback(
@@ -41,9 +44,13 @@ const Page = () => {
   );
 
   const reqQuotesData = async (page, rowsPerPage, tabIdx) => {
-    const query = { $or: [{ status: "draft" }, { status: "new" }] };
+    const quoteQuery = {
+      $or: [{ status: "draft" }, { status: "new" }],
+      createdBy: session?.user?.detail?.company.companyName,
+      }
     const sort = "DSC";
-    const resQuotes = await GetQuotesData(page, rowsPerPage, query, sort);
+    const resQuotes = await GetQuotesData(page, rowsPerPage, quoteQuery, sort);
+
     if (!resQuotes) {
       console.log("error get quotes data!");
       setDataLoading(false);
@@ -66,7 +73,10 @@ const Page = () => {
 
   const handleAddQuote = useCallback(async () => {
     setLoading(true);
-    const resCreateQuote = await AddNewQuoteToMongoDb();
+    const resCreateQuote = await AddNewQuoteToMongoDb({
+      createdBy:session?.user?.detail?.company.companyName,
+      createdAt:utcToZonedTime(new Date(), "America/Los_Angeles")
+    });
     if (!resCreateQuote) {
       setLoading(false);
       return;
@@ -200,6 +210,7 @@ const Page = () => {
                           tabContent={tabContent}
                           reqQuotesData={reqQuotesData}
                           tabIndex={tabIndex}
+                          session={session}
                         />
                       )}
                     </Grid>
