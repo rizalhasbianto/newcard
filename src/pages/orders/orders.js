@@ -1,19 +1,15 @@
-import { useCallback, useMemo, useState, useEffect } from "react";
+import { useCallback, useState, useEffect } from "react";
 import Head from "next/head";
 import Link from "next/link";
 import ArrowDownOnSquareIcon from "@heroicons/react/24/solid/ArrowDownOnSquareIcon";
-import ArrowUpOnSquareIcon from "@heroicons/react/24/solid/ArrowUpOnSquareIcon";
-import PlusIcon from "@heroicons/react/24/solid/PlusIcon";
 import { Box, Button, Container, Stack, SvgIcon, Typography } from "@mui/material";
-import { useSelection } from "src/hooks/use-selection";
 import { Layout as DashboardLayout } from "src/layouts/dashboard/layout";
 import { OrdersTable } from "src/sections/orders/orders-table";
 import { QuotesSearch } from "src/sections/quotes/quotes-search";
-import { applyPagination } from "src/utils/apply-pagination";
 import { GetOrdersDataSwr } from "src/service/use-shopify";
 import TableLoading from "src/components/table-loading";
 
-const Page = () => {
+const Orders = () => {
   const [fetchData, setFetchData] = useState({
     direction: "",
     startCursor: "",
@@ -25,7 +21,7 @@ const Page = () => {
   const [hasNext, setHasNext] = useState(false);
 
   const { data, isLoading, isError } = GetOrdersDataSwr(fetchData);
-console.log("data", data)
+
   const handlePageChange = useCallback(
     async (value) => {
       setFetchData({
@@ -66,18 +62,6 @@ console.log("data", data)
             <Stack direction="row" justifyContent="space-between" spacing={4}>
               <Stack spacing={1}>
                 <Typography variant="h4">Orders</Typography>
-                <Stack alignItems="center" direction="row" spacing={1}>
-                  <Button
-                    color="inherit"
-                    startIcon={
-                      <SvgIcon fontSize="small">
-                        <ArrowDownOnSquareIcon />
-                      </SvgIcon>
-                    }
-                  >
-                    Export
-                  </Button>
-                </Stack>
               </Stack>
             </Stack>
             <QuotesSearch />
@@ -99,6 +83,4 @@ console.log("data", data)
   );
 };
 
-Page.getLayout = (page) => <DashboardLayout>{page}</DashboardLayout>;
-
-export default Page;
+export default Orders;

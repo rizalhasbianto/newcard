@@ -138,7 +138,10 @@ export const SideNav = (props) => {
               } else {
                 active = item.path ? (pathname?.includes(item.path)) : false;
               }
-
+              console.log("data?.user?.detail?.company?.role", data?.user?.detail?.company?.role)
+              if(item.role && item.role !== data?.user?.detail?.role) {
+                return
+              }
               return (
                 <SideNavItem
                   active={active}
@@ -165,7 +168,7 @@ export const SideNav = (props) => {
             color="neutral.100"
             variant="subtitle2"
           >
-            IonB.co
+            Skratch.co
           </Typography>
           <Typography
             color="neutral.500"

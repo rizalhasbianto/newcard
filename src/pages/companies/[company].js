@@ -28,8 +28,7 @@ const Page = () => {
   const [value, setValue] = useState("1");
   const toastUp = useToast();
   const router = useRouter();
-  const { id } = router.query; 
-  const { data, isLoading, isError, mutate, isValidating } = GetSingleCompaniesSwr(router.query.companyId, 0, 1);
+  const { data, isLoading, isError, mutate, isValidating } = GetSingleCompaniesSwr(router.query.company, 0, 1);
   const handleChange = (event, newValue) => {
     setValue(newValue);
   };

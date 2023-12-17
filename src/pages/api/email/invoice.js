@@ -5,7 +5,6 @@ import Handlebars from "handlebars";
 
 export default async function addCompany(req, res) {
     const bodyObject = req.body;
-console.log(bodyObject)
     const readHTMLFile = function (paths, callback) {
         fs.readFile(paths, { encoding: 'utf-8' }, function (err, html) {
             if (err) {

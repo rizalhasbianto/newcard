@@ -58,3 +58,12 @@ export const ticketsHead = [
     { title: "Last Update" },
     { title: "Action" }
 ]
+
+export const inventoryHead = [
+    { title: "Product" },
+    { title: "Sku" },
+    { title: "Committed" },
+    { title: "Available" },
+    { title: "On Hand" },
+    { title: "Incoming" },
+]

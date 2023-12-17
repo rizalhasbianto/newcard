@@ -160,7 +160,7 @@ export const QuotesForm = (props) => {
         companyName: companyName,
         orderNumber: draftOrderId.name,
         poNumber: "#" + quoteId,
-        checkoutUrl: checkoutUrl.utl,
+        checkoutUrl: checkoutUrl.url,
         quoteId: quoteId,
       };
       const sendInvoiceRes = await SendInvoice(quoteDataInvoice);
@@ -446,7 +446,7 @@ export const QuotesForm = (props) => {
                   variant="contained"
                   key={button.action}
                 >
-                  {button.action === tabContent?.status ? "Save" : button.title}
+                  {button.action === tabContent?.status && button.action !== "invoiced"? "Save" : button.title}
                 </LoadingButton>
               );
             })}

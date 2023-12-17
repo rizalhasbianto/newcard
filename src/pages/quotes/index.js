@@ -21,7 +21,7 @@ const Page = () => {
   const toastUp = useToast();
 
   const { data, isLoading, isError, mutate, isValidating } = GetQuotesDataSwr(page, rowsPerPage, {
-    status: { $nin: ["new"] },
+    status: { $nin: ["new", "draft"]}, "company.name": "rizkyJr"
   });
 
   useEffect(

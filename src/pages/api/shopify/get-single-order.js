@@ -10,11 +10,14 @@ export default async function getSingleOrder(req, res) {
         paymentTermsName
         paymentTermsType
         overdue
+        dueInDays
       }
       paymentGatewayNames
       processedAt
       customer{
         displayName
+        email
+        phone
       }
       shippingAddress {
         name
@@ -24,21 +27,43 @@ export default async function getSingleOrder(req, res) {
         company
         country
         province
+        zip
+      }
+      billingAddressMatchesShippingAddress
+      billingAddress {
+        name
+        phone
+        address1
+        city
+        company
+        country
+        province
+        zip
+      }
+      shippingLine {
+        title
+        originalPriceSet {
+          shopMoney {
+            amount
+          }
+        }
       }
       currentTotalPriceSet {
         shopMoney {
             amount
         }
       }
-      taxLines {
-        title
-        priceSet {
-          shopMoney {
-            amount
-          }
+      currentTotalTaxSet {
+        shopMoney {
+          amount
         }
       }
       totalDiscountsSet {
+        shopMoney {
+          amount
+        }
+      }
+      originalTotalPriceSet {
         shopMoney {
           amount
         }
@@ -74,5 +99,6 @@ export default async function getSingleOrder(req, res) {
   }`;
 
   const resGetOrders = await adminAPi(query);
-  res.status(200).json({ newData: resGetOrders });
+  console.log("resGetOrders", resGetOrders)
+  res.status(200).json({ newData: resGetOrders.data.order });
 }

@@ -159,3 +159,15 @@ export const GetProductByhandleSwr = (handle) => {
   const productRes = useSwrData("/api/shopify/get-product-byhandle", queryPath);
   return productRes;
 }
+
+export const GetSingleOrderSwr = (id) => {
+  const queryPath = "id=" + id ;
+  const productRes = useSwrData("/api/shopify/get-single-order", queryPath);
+  return productRes;
+}
+export const GetInventorySwr = (page) => {
+  const queryPath =
+    "page=" + page.direction + "&startCursor=" + page.startCursor + "&endCursor=" + page.endCursor;
+  const dataRes = useSwrData("/api/shopify/inventory", queryPath);
+  return dataRes;
+}

@@ -45,9 +45,6 @@ export const authOptions = {
     ],
     callbacks: {
         async jwt({ token, user, account }) {
-            if (token.email === "jon@hellomuto.com") {
-                return null;
-            } 
             if (account && user) {
                 return {
                     ...token,

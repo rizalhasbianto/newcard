@@ -47,6 +47,7 @@ export default async function getProducts(req, res) {
                           title
                           sku
                           currentlyNotInStock
+                          quantityAvailable
                           price {
                             amount
                           }

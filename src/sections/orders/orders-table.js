@@ -1,5 +1,5 @@
 import { useCallback, useState, useEffect } from "react";
-import Link from "next/link";
+import { useRouter } from 'next/router'
 import { DeleteQuoteFromMongo } from "src/service/use-mongo";
 import PropTypes from "prop-types";
 import { format } from "date-fns";
@@ -39,9 +39,9 @@ export const OrdersTable = (props) => {
     hasPrev,
     hasNext
   } = props;
-
+  const router = useRouter()
   const listNumber = pageNumber * 10;
-
+console.log("items", items)
   return (
     <Card>
       <Scrollbar>
@@ -60,8 +60,9 @@ export const OrdersTable = (props) => {
                 items.map((item, index) => {
                   const order = item.node;
                   const lastUpdate = format(new Date(order.createdAt), "dd/MM/yyyy");
+                  const orderID = order.id.replace("gid://shopify/Order/", "")
                   return (
-                    <TableRow hover key={index + 1}>
+                    <TableRow hover key={index + 1} sx={{cursor:"pointer"}} onClick={() => router.push(`/orders/${orderID}`)}>
                       <TableCell padding="checkbox">
                         <Typography variant="subtitle2">{index + listNumber + 1}</Typography>
                       </TableCell>
