@@ -95,10 +95,6 @@ export const Layout = (props) => {
             >
               A professional app for B2B app.
             </Typography>
-            <img
-              alt=""
-              src="/assets/auth-illustration.webp"
-            />
           </Box>
         </Grid>
       </Grid>
