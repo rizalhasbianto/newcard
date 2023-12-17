@@ -118,7 +118,7 @@ export default async function createDraftOrder(req, res) {
                 `paymentTerms: {
                   paymentTermsTemplateId:"${bodyObject.payment.id}",
                   ${
-                    bodyObject.payment.date &&
+                    bodyObject.payment.date ?
                     `
                     paymentSchedules: {
                       ${
@@ -128,6 +128,7 @@ export default async function createDraftOrder(req, res) {
                       }
                     }
                   `
+                  :""
                   }
                 },`
               }
