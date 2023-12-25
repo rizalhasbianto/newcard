@@ -9,7 +9,7 @@ import {
   Autocomplete,
   CardActions,
   Stack,
-  Typography
+  Typography,
 } from "@mui/material";
 import LoadingButton from "@mui/lab/LoadingButton";
 import CancelIcon from "@mui/icons-material/Cancel";
@@ -21,10 +21,16 @@ import { usaState } from "src/data/state-usa";
 import { useFormik, ErrorMessage } from "formik";
 import * as Yup from "yup";
 import Image from "next/image";
-import { GetCompanies, CheckUserEmail, RegisterUser, InviteUser } from "src/service/use-mongo";
+import {
+  GetCompanies,
+  CheckUserEmail,
+  RegisterUser,
+  InviteUser,
+  AddNewUserToCompanyMongo,
+} from "src/service/use-mongo";
 
 export default function UsersAdd(props) {
-  const { session } = props;
+  const { session, toastUp, setAddNewUser } = props;
   const [loadSave, setLoadSave] = useState(false);
   const [companies, setCompanies] = useState([]);
   const phoneRegExp =
@@ -41,6 +47,7 @@ export default function UsersAdd(props) {
       avatar: "",
       role: "",
       companyName: "",
+      default: false,
       submit: null,
     },
     validationSchema: Yup.object({
@@ -53,38 +60,41 @@ export default function UsersAdd(props) {
         .email("Must be a valid email")
         .max(255)
         .required("Email is required"),
-      password: Yup.string().max(255).required("This field is required").matches(
-        /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[?!@#\$%\^&\*])(?=.{8,})/,
-        "Must Contain 8 Characters, One Uppercase, One Lowercase, One Number and One Special Case Character"
-      ),
-      confirmPassword: Yup.string().oneOf([Yup.ref('password')], 'Passwords must match'),
+      password: Yup.string()
+        .max(255)
+        .matches(
+          /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[?!@#\$%\^&\*])(?=.{8,})/,
+          "Must Contain 8 Characters, One Uppercase, One Lowercase, One Number and One Special Case Character"
+        ),
+      confirmPassword: Yup.string().oneOf([Yup.ref("password")], "Passwords must match"),
       role: Yup.string().max(255).required("This field is required"),
     }),
     onSubmit: async (values, helpers) => {
       setLoadSave(true);
-      if(values.role === "Customer" && !values.companyName) {
-        formik.setErrors({companyName : "This field is required"});
+      if (values.role === "Customer" && !values.companyName) {
+        formik.setErrors({ companyName: "This field is required" });
         setLoadSave(false);
-        return
+        return;
       }
 
-      const companyId = companies.find((item) => item.name === values.companyName)
+      const selectedCompany = companies.find((item) => item.name === values.companyName);
+      const companyId = values.companyName ? selectedCompany._id : ""
       const checkUser = await CheckUserEmail(values.contactEmail);
       if (!checkUser) {
         helpers.setStatus({ success: false });
         helpers.setErrors({ submit: "Error sync with database!" });
         helpers.setSubmitting(false);
         setLoadSave(false);
-        return
+        return;
       }
 
       if (checkUser.data.length > 0) {
-        formik.setErrors({contactEmail : "Is already taken"});
+        formik.setErrors({ contactEmail: "Is already taken" });
         setLoadSave(false);
-        return
+        return;
       }
 
-      const resAddUser = await RegisterUser(values, companyId._id);
+      const resAddUser = await RegisterUser(values, companyId);
       if (!resAddUser) {
         helpers.setStatus({ success: false });
         helpers.setErrors({ submit: "Error sync with database!" });
@@ -93,22 +103,37 @@ export default function UsersAdd(props) {
         return; 
       }
 
-      const resInvite = await InviteUser(values, resAddUser.data.insertedId);
-      if (!resInvite && resInvite.status !== 200) {
-        helpers.setStatus({ success: true });
-        helpers.setErrors({ submit: "Error when sent invite email!" });
-        helpers.setSubmitting(true);
-        setLoadSave(false);
-        return;
+      if(!values.password) {
+        const resInvite = await InviteUser(values, resAddUser.data.insertedId);
+        if (!resInvite && resInvite.status !== 200) {
+          helpers.setStatus({ success: true });
+          helpers.setErrors({ submit: "Error when sent invite email! Please resend invite" });
+          helpers.setSubmitting(true);
+          setLoadSave(false);
+          return;
+        }
       }
 
+      if(values.default) {
+        selectedCompany.contact.map((item) => item.default = false);
+      }
       
+      if(values.role === "Customer") {
+        const addNewUser = await AddNewUserToCompanyMongo(companyId, values, selectedCompany.contact);
+        if (!addNewUser) {
+          helpers.setStatus({ success: false });
+          helpers.setErrors({ submit: "Error sync with database!" });
+          helpers.setSubmitting(false);
+          setLoadSave(false);
+          return; 
+        }
+      }
 
-      console.log("values", values)
-      console.log("companies", companies)
-      console.log("companyId", companyId)
-
+      formik.resetForm()
+      toastUp.handleStatus("success");
+      toastUp.handleMessage("Register user is success!");
       setLoadSave(false);
+      setAddNewUser(false)
     },
   });
 
@@ -299,12 +324,21 @@ export default function UsersAdd(props) {
               helperText={formik.touched.confirmPassword && formik.errors.confirmPassword}
             />
           </Grid>
+          {
+            formik.values.role === "Customer" &&
+            <Grid md={12}>
+            <Typography variant="body2">
+              Set as default contact
+              <Checkbox id="default" name="default" onChange={formik.handleChange} />
+            </Typography>
+          </Grid>
+          }
         </Grid>
       </Stack>
       <CardActions sx={{ justifyContent: "flext-start", mt: 3 }}>
         <LoadingButton
           color="primary"
-          //onClick={() => setAddNewCompany()}
+          onClick={() => setAddNewUser(false)}
           loading={false}
           loadingPosition="start"
           startIcon={<CancelIcon />}
@@ -323,12 +357,12 @@ export default function UsersAdd(props) {
         >
           Save
         </LoadingButton>
-        <br/>
+        <br />
         {formik.errors.submit && (
-                  <Typography color="error" sx={{ mt: 3 }} variant="body2">
-                    {formik.errors.submit}
-                  </Typography>
-                )}
+          <Typography color="error" sx={{ mt: 3 }} variant="body2">
+            {formik.errors.submit}
+          </Typography>
+        )}
       </CardActions>
     </form>
   );

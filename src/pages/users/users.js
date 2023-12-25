@@ -132,7 +132,7 @@ const Users = () => {
                   <Card sx={{maxWidth:"800px",margin:"auto"}}>
                   <CardHeader subheader="Please fill the form" title="Add new user" />
                     <CardContent>
-                      <UsersAdd session={session}/>
+                      <UsersAdd session={session} toastUp={toastUp} setAddNewUser={setAddNewUser}/>
                     </CardContent>
                   </Card>
                 </Collapse>

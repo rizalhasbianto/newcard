@@ -180,6 +180,7 @@ export const AddCompanyToMongo = async (companyData) => {
         email: companyData.contactEmail,
         name: companyData.contactFirstName + " " + companyData.contactLastName,
         phone: companyData.phoneLocation,
+        default:true
       },
     ],
     shipTo: [
@@ -211,15 +212,8 @@ export const UpdateCompanyInfoToMongo = async (companyData) => {
         city: "",
         state: "",
         zip: "",
-      },
-      contact: [
-        {
-          email: companyData.contactEmail,
-          name: companyData.contactFirstName + " " + companyData.contactLastName,
-          phone: companyData.phoneLocation,
-        },
-      ],
-    },
+      }
+    }
   });
   return mongoRes;
 };
@@ -273,6 +267,25 @@ export const AddNewShipToMongo = async (id, companyData, shipToData) => {
   return mongoRes;
 };
 
+export const AddNewUserToCompanyMongo = async (id, newUserData, userData) => {
+  const userDataNew = [
+    ...userData,
+    {
+        email: newUserData.contactEmail,
+        name: newUserData.contactFirstName + " " + newUserData.contactLastName,
+        phone: newUserData.phoneLocation,
+        default:newUserData.default ? true : false,
+      },
+  ];
+  const mongoRes = await useDataService("/api/company/update-company", "POST", {
+    id: id,
+    updateData: {
+      contact: userDataNew,
+    },
+  });
+  return mongoRes;
+};
+
 export const UpdateCompanyAvatarToMongo = async (id, companyPhoto) => {
   const mongoRes = await useDataService("/api/company/update-company", "POST", {
     id: id,
@@ -312,14 +325,14 @@ export const RegisterUser = async (userData, companyId) => {
     name: userData.contactFirstName + " " + userData.contactLastName,
     email: userData.contactEmail,
     phone: userData.phoneLocation,
-    password: "",
+    password: userData.password,
     company: {
       companyId: companyId,
       companyName: userData.companyName,
     },
-    status: "invited",
+    status: userData.password ? "active" : "invited",
     role: userData.role ? userData.role : "customer",
-    signUpDate: "",
+    signUpDate: userData.password ? utcToZonedTime(new Date(), "America/Los_Angeles") : "",
   });
   return mongoRes;
 };
