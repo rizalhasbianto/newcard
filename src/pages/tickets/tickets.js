@@ -17,7 +17,7 @@ const Tickets = () => {
   const { data, isLoading, isError, mutate, isValidating } = GetTicketsDataSwr(page, rowsPerPage, {
     status: { $nin: ["new"] },
   });
-console.log("data", data)
+
   useEffect(() => {
     if (isValidating) {
       toastUp.handleStatus("loading");
@@ -72,7 +72,7 @@ console.log("data", data)
             </Stack>
             {isLoading && <TableLoading />}
             {isError && <h2>Error loading data</h2>}
-            {data && (
+            {data && data.data.ticket.length > 0 && (
               <TicketsTable
                 count={data.data.count}
                 items={data.data.ticket}

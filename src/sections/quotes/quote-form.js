@@ -106,8 +106,12 @@ export const QuotesForm = (props) => {
         payment,
         tabContent.draftOrderId
       );
-        console.log("shopifyResponse", shopifyResponse)
-      if (!shopifyResponse || shopifyResponse.response?.createDraft?.errors || !shopifyResponse.response) {
+      console.log("shopifyResponse", shopifyResponse);
+      if (
+        !shopifyResponse ||
+        shopifyResponse.response?.createDraft?.errors ||
+        !shopifyResponse.response
+      ) {
         // error when sync data to shopify
         toastUp.handleStatus("warning");
         toastUp.handleMessage("Error sync to Shopify!");
@@ -194,21 +198,29 @@ export const QuotesForm = (props) => {
     ]
   );
 
+  const companyQuery = (role) => {
+    switch (role) {
+      case "customer":
+        return { _id: session.user.detail.company.companyId };
+      case "sales":
+        return { sales: session.user.name };
+      default:
+        return;
+    }
+  };
+
   const GetCompaniesData = useCallback(
     async (page, rowsPerPage) => {
       let companyList;
       if (companies.length === 0) {
-        const resGetCompanyList = await Promise.resolve(GetCompanies(page, rowsPerPage));
+        const resGetCompanyList = await Promise.resolve(
+          GetCompanies(page, rowsPerPage, companyQuery(session.user.detail.role))
+        );
         if (!resGetCompanyList) {
           console.log("error get company data!");
           return;
         }
-        companyList =
-          session?.user?.detail.role === "admin"
-            ? resGetCompanyList.data.company
-            : resGetCompanyList.data.company.filter(
-                (item) => item._id === session?.user?.detail.company.companyId
-              );
+        companyList = resGetCompanyList.data.company;
         setCompanies(companyList);
       } else {
         companyList = companies;
@@ -238,6 +250,7 @@ export const QuotesForm = (props) => {
         setDiscount(tabContent.discount);
       }
     },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [companies, tabContent]
   );
 
@@ -362,7 +375,7 @@ export const QuotesForm = (props) => {
       </Card>
       <Collapse in={companyName ? true : false}>
         <Card sx={{ mb: 2 }}>
-          <CardHeader subheader="Product search" title="Add quotes Item" />
+          <CardHeader subheader="Product search" title="Add products" />
           <CardContent sx={{ pt: 0, pb: 0 }}>
             <Box sx={{ m: -1.5 }}>
               <SelectProducts

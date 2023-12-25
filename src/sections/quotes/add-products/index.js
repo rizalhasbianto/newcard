@@ -78,7 +78,7 @@ export const SelectProducts = ({ quotesList, setQuotesList, quoteId }) => {
                 setInputValue(newInputValue);
               }
             }}
-            renderInput={(params) => <TextField {...params} label="Type for start search" />}
+            renderInput={(params) => <TextField {...params} label="Type product name" />}
             renderOption={(props, option) => {
               return (
                 <li {...props}>
@@ -121,7 +121,7 @@ export const SelectProducts = ({ quotesList, setQuotesList, quoteId }) => {
             }}
             onClick={() => setActiveTab("quick")}
           >
-            Quick Add
+            Bulk Add
           </Button>
         </Grid>
         <Grid md={2}>

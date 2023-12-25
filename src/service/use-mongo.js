@@ -1,4 +1,5 @@
 import { useDataService, useSwrData } from "src/lib/fetchData";
+import { utcToZonedTime } from "date-fns-tz";
 
 export const GetQuotesData = async (page, rowsPerPage, query, sort, type) => {
   const quotesRes = await useDataService("/api/quotes/get-quotes", "POST", {
@@ -43,7 +44,7 @@ export const SaveQuoteToMongoDb = async (
   const tax = (Number(countSubtotal) * 0.1).toFixed(2);
   const total = (Number(countSubtotal) + Number(tax)).toFixed(2);
 
-  const today = new Date();
+  const today = utcToZonedTime(new Date(), "America/Los_Angeles");
   const mongoRes = await useDataService("/api/quotes/update-quote", "POST", {
     quoteId: quoteId,
     data: {
@@ -66,7 +67,6 @@ export const SaveQuoteToMongoDb = async (
 };
 
 export const AddNewQuoteToMongoDb = async (props) => {
-  const today = new Date();
   const mongoRes = await useDataService("/api/quotes/create-quote", "POST", {
     company: {
       name: "",
@@ -133,10 +133,11 @@ export const SendInvoice = async (quoteDataInvoice) => {
   return mongoRes;
 };
 
-export const GetCompanies = async (page, rowsPerPage) => {
+export const GetCompanies = async (page, rowsPerPage, query) => {
   const comapanyRes = await useDataService("/api/company/get-companies", "POST", {
     page: page,
     postPerPage: rowsPerPage,
+    query:query
   });
 
   return comapanyRes;
@@ -284,7 +285,6 @@ export const UpdateCompanyAvatarToMongo = async (id, companyPhoto) => {
 
 export const CheckCompanyName = async (companyData) => {
   const mongoRes = await useDataService("/api/company/get-companies", "POST", {
-    type: "check",
     query: {
       name: companyData,
     },
@@ -317,8 +317,9 @@ export const RegisterUser = async (userData, companyId) => {
       companyId: companyId,
       companyName: userData.companyName,
     },
-    status: "invite",
+    status: "invited",
     role: userData.role ? userData.role : "customer",
+    signUpDate: "",
   });
   return mongoRes;
 };
@@ -341,21 +342,28 @@ export const ResetPassword = async (userData) => {
   return mongoRes;
 };
 
-export const UpdatePassword = async (newPassword, userId) => {
-  const mongoRes = await useDataService("/api/auth/update-password", "POST", {
-    newPassword: newPassword,
-    userId: userId,
-  });
+export const UpdatePassword = async (newPassword, userId, type) => {
+  const userData =
+    type === "reset"
+      ? {
+          newPassword: newPassword,
+          userId: userId,
+        }
+      : {
+          newPassword: newPassword,
+          userId: userId,
+          status: "active",
+          signUpDate: utcToZonedTime(new Date(), "America/Los_Angeles"),
+        };
+
+  const mongoRes = await useDataService("/api/auth/update-password", "POST", userData);
   return mongoRes;
 };
 
-export const SaveCollectionToMongoDb = async (
-  collectionName,
-  quotesList,
-) => {
+export const SaveCollectionToMongoDb = async (collectionName, quotesList) => {
   const mongoRes = await useDataService("/api/quotes/create-quote-collection", "POST", {
-      collectionName: collectionName,
-      quotesList: quotesList || [],
+    collectionName: collectionName,
+    quotesList: quotesList || [],
   });
   return mongoRes;
 };
@@ -397,8 +405,25 @@ export const GetTicketsDataSwr = (page, rowsPerPage, query, sort, type) => {
 
 export const UpdateTicket = async (props) => {
   const mongoRes = await useDataService("/api/tickets/update-ticket", "POST", {
-    id:props.id,
-    data:props.data
+    id: props.id,
+    data: props.data,
   });
+  return mongoRes;
+};
+
+export const GetUsers = (page, rowsPerPage, query, sort, type) => {
+  const theType = type ? type : "any";
+  const queryPath =
+    "page=" +
+    page +
+    "&postPerPage=" +
+    rowsPerPage +
+    "&query=" +
+    JSON.stringify(query) +
+    "&sort=" +
+    sort +
+    "&type=" +
+    theType;
+  const mongoRes = useSwrData("/api/users/get-users", queryPath);
   return mongoRes;
 };

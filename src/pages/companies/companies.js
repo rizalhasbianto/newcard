@@ -2,6 +2,7 @@ import Head from "next/head";
 import ArrowUpOnSquareIcon from "@heroicons/react/24/solid/ArrowUpOnSquareIcon";
 import ArrowDownOnSquareIcon from "@heroicons/react/24/solid/ArrowDownOnSquareIcon";
 import PlusIcon from "@heroicons/react/24/solid/PlusIcon";
+import CloseIcon from '@mui/icons-material/Close';
 import {
   Box,
   Button,
@@ -74,17 +75,19 @@ const Companies = () => {
                 <Button
                   startIcon={
                     <SvgIcon fontSize="small">
-                      <PlusIcon />
+                      {!addNewCompany ? <PlusIcon /> : <CloseIcon />}
                     </SvgIcon>
                   }
                   variant="contained"
-                  onClick={() => setAddNewCompany(true)}
+                  onClick={() => setAddNewCompany(!addNewCompany)}
                 >
-                  Add
+                  {!addNewCompany ? "Add" : "Cancel"}
                 </Button>
               </div>
             </Stack>
-            <CompaniesSearch />
+            {
+              //<CompaniesSearch />
+            }
             <Collapse in={addNewCompany}>
               <Card>
                 <CardContent>
@@ -113,7 +116,12 @@ const Companies = () => {
                       (item) => item.company.name === company.name
                     );
                     return (
-                      <Grid xs={12} md={6} lg={4} key={i + 1}>
+                      <Grid 
+                        xs={12} 
+                        md={6} 
+                        lg={4} 
+                        key={i + 1}
+                      >
                         <CompanyCard company={company} quoteTotal={getCurrentQuote.length} />
                       </Grid>
                     );
@@ -126,7 +134,12 @@ const Companies = () => {
                 justifyContent: "center",
               }}
             >
-              <Pagination count={count} page={page} size="small" onChange={handleChange} />
+              <Pagination 
+                count={count} 
+                page={page} 
+                size="small" 
+                onChange={handleChange} 
+              />
             </Box>
           </Stack>
         </Container>

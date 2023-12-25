@@ -64,7 +64,9 @@ const Orders = () => {
                 <Typography variant="h4">Orders</Typography>
               </Stack>
             </Stack>
-            <QuotesSearch />
+            {
+              //<QuotesSearch />
+            }
             {isLoading && <TableLoading />}
             {isError && <h2>Error loading data</h2>}
             {data && (

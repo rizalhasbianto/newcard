@@ -68,7 +68,7 @@ const Products = () => {
     const quoteQuery = {
       $or: [{ status: "draft" }, { status: "new" }],
       createdBy: session?.user?.detail?.company.companyName,
-      }
+    };
     const sort = "DSC";
     const resQuotes = await GetQuotesData(0, 50, quoteQuery, sort);
     if (!resQuotes) {
@@ -132,17 +132,23 @@ const Products = () => {
                 </Stack>
               </Stack>
               <div>
-                <Button
-                  startIcon={
-                    <SvgIcon fontSize="small">
-                      <PlusIcon />
-                    </SvgIcon>
-                  }
-                  variant="contained"
-                  onClick={handleOpenQuoteList}
-                >
-                  Choose Quote
-                </Button>
+                {!quoteId ? (
+                  <Button
+                    startIcon={
+                      <SvgIcon fontSize="small">
+                        <PlusIcon />
+                      </SvgIcon>
+                    }
+                    variant="contained"
+                    onClick={handleOpenQuoteList}
+                  >
+                    Choose Quote
+                  </Button>
+                ) : (
+                  <Button variant="contained" onClick={handleOpenQuoteList}>
+                    Selected Quote #{quoteId.slice(-4)}
+                  </Button>
+                )}
               </div>
             </Stack>
             <ProductsSearch
@@ -160,25 +166,25 @@ const Products = () => {
               <Typography variant="h4">No Products Found!</Typography>
             )}
             <Stack spacing={3}>
-            <Grid container spacing={3}>
-              {isError && <Typography variant="h5">No data found</Typography>}
-              {layout === "card" ? (
-                <ProductGrid
-                  handleOpenQuoteList={handleOpenQuoteList}
-                  data={data}
-                  toastUp={toastUp}
-                  quoteId={quoteId}
-                />
-              ) : (
-                <ProductTable
-                  handleOpenQuoteList={handleOpenQuoteList}
-                  data={data}
-                  toastUp={toastUp}
-                  productPerPage={productPerPage}
-                  quoteId={quoteId}
-                />
-              )}
-            </Grid>
+              <Grid container spacing={3}>
+                {isError && <Typography variant="h5">No data found</Typography>}
+                {layout === "card" ? (
+                  <ProductGrid
+                    handleOpenQuoteList={handleOpenQuoteList}
+                    data={data}
+                    toastUp={toastUp}
+                    quoteId={quoteId}
+                  />
+                ) : (
+                  <ProductTable
+                    handleOpenQuoteList={handleOpenQuoteList}
+                    data={data}
+                    toastUp={toastUp}
+                    productPerPage={productPerPage}
+                    quoteId={quoteId}
+                  />
+                )}
+              </Grid>
             </Stack>
             {hasNextPage ? (
               <Box

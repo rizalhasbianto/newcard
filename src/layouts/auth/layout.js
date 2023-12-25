@@ -2,6 +2,7 @@ import PropTypes from 'prop-types';
 import NextLink from 'next/link';
 import { Box, Typography, Unstable_Grid2 as Grid } from '@mui/material';
 import { Logo } from 'src/components/logo';
+import { ImageComponent } from 'src/components/image'
 
 // TODO: Change subtitle text
 
@@ -45,11 +46,12 @@ export const Layout = (props) => {
               href="/"
               sx={{
                 display: 'inline-flex',
-                height: 32,
-                width: 32
+                height: 40,
+                width: 150,
+                position:"relative"
               }}
             >
-              <Logo />
+              <ImageComponent title="Certor" img="/certor.png" />
             </Box>
           </Box>
           {children}
@@ -85,7 +87,7 @@ export const Layout = (props) => {
                 sx={{ color: '#15B79E' }}
                 target="_blank"
               >
-                Skratch
+                Certor
               </Box>
             </Typography>
             <Typography
@@ -93,7 +95,7 @@ export const Layout = (props) => {
               sx={{ mb: 3 }}
               variant="subtitle1"
             >
-              A professional app for B2B app.
+              Powered by SKRATCH
             </Typography>
           </Box>
         </Grid>

@@ -3,8 +3,8 @@ import { CircularProgress, Stack } from "@mui/material";
 import { useEffect, useState, useRef } from "react";
 
 export const ImageComponent = (props) => {
-  const [loading, setLoading] = useState(true);
   const { img, title } = props;
+  const [loading, setLoading] = useState(true);
   const image = img ? img : "/assets/default.png";
   const alt = title ? title : "skratch b2b";
   const imageLoad = useRef()

@@ -29,7 +29,7 @@ const Page = () => {
             </Stack>
             {isLoading && <TableLoading />}
             {isError && <h2>Error loading data</h2>}
-            {data && (
+            {data && data.data.collections.length > 0 && (
               <QuotesCollection
                 collections={data.data.collections}
                 DeleteQuoteCollections={DeleteQuoteCollections}

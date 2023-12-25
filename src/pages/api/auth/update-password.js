@@ -17,9 +17,16 @@ export default async function createQuote(req, res) {
         });
     })
 
+    const userData = {
+        ...bodyObject,
+        password: password ? hashedPassword : ""
+    }
+
+    delete userData.newPassword
+
     const sendQuote = await db.collection(collection).updateOne(
         { _id: new ObjectId(bodyObject.userId) },
-        { $set: { password: password ? hashedPassword : "" } }
+        { $set: userData }
     );
     res.json({ status: 200, data: sendQuote });
 }

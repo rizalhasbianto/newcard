@@ -18,17 +18,19 @@ function stringToColor(string) {
     return color;
   }
   
-  export function stringAvatar(name) {
-    
+  export function stringAvatar(name, type) {
+    const size = type === "small" ? "40px" : "80px"
+    const fontSize = type === "small" ? "16px" : "28px"
     const splitName = name.split(' ')
     let inisial
     if(splitName.length > 1) {
       inisial = {
         sx: {
           bgcolor: stringToColor(name),
-          width:"80px",
-          height:"80px",
-          fontSize: "28px"
+          width:size,
+          height:size,
+          fontSize: fontSize,
+          textTransform:"uppercase"
         },
         children: `${splitName[0][0]}${splitName[1][0]}`,
       }

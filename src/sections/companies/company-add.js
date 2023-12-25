@@ -141,7 +141,7 @@ export default function AddCompany(props) {
           toastUp.handleStatus("error");
           toastUp.handleMessage("Error when create user!");
           setLoadSave(false);
-          return;
+          return; 
         }
 
         const resInvite = await InviteUser(values, resAddUser.data.insertedId);

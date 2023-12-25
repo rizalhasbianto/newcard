@@ -44,14 +44,14 @@ const Page = () => {
         return
       }
 
-      const resUpdatePassword = await UpdatePassword("", checkUser.data[0]._id);
+      //const resUpdatePassword = await UpdatePassword("", checkUser.data[0]._id);
 
-      if(!resUpdatePassword) {
-        helpers.setStatus({ success: false });
-        helpers.setErrors({ submit: "Reset pasword failed!!" });
-        helpers.setSubmitting(false);
-        return
-      }
+      //if(!resUpdatePassword) {
+      //  helpers.setStatus({ success: false });
+      //  helpers.setErrors({ submit: "Reset pasword failed!!" });
+      //  helpers.setSubmitting(false);
+      //  return
+      //}
 
       const resInvite = await ResetPassword(checkUser.data[0]);
       if (!resInvite) {

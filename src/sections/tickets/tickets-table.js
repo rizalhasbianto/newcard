@@ -152,7 +152,7 @@ export const TicketsTable = (props) => {
       </Grid>
       <Grid xl={8}>
         <MessageList dataTicket={selectedTicket} />
-        <ReplyTicketForm oldMessage={selectedTicket.ticketMessages} id={selectedTicket._id} mutateData={mutateData}/>
+        <ReplyTicketForm oldMessage={selectedTicket?.ticketMessages} id={selectedTicket?._id} mutateData={mutateData}/>
       </Grid>
     </Grid>
   );

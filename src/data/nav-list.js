@@ -73,7 +73,7 @@ export const items = [
       {
         title: 'Inventory',
         path: '/products/inventory',
-        role: 'admin',
+        role: ['admin', 'sales'],
         icon: (
           <SvgIcon fontSize="small">
             <InventoryIcon />
@@ -85,7 +85,7 @@ export const items = [
   {
     title: 'Companies',
     path: '/companies',
-    role: 'admin',
+    role: ['admin', 'sales'],
     icon: (
       <SvgIcon fontSize="small">
         <BuildingOfficeIcon />
@@ -95,7 +95,6 @@ export const items = [
   {
     title: 'Tickets',
     path: '/tickets',
-    role: 'admin',
     icon: (
       <SvgIcon fontSize="small">
         <EmailIcon />
@@ -114,9 +113,19 @@ export const items = [
     ]
   },
   {
+    title: 'Users',
+    path: '/users',
+    role: ["admin", "sales"],
+    icon: (
+      <SvgIcon fontSize="small">
+        <UserIcon />
+      </SvgIcon>
+    )
+  },
+  {
     title: 'Account',
     path: '/account',
-    role: 'customer',
+    role: ['customer'],
     icon: (
       <SvgIcon fontSize="small">
         <UserIcon />

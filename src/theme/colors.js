@@ -24,6 +24,10 @@ export const neutral = {
   900: '#111927'
 };
 
+export const original = {
+  50: 'rgb(50,62,72)',
+};
+
 export const indigo = withAlphas({
   lightest: 'red',
   light: '#EBEEFE',

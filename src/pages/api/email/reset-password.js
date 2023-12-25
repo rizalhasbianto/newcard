@@ -5,7 +5,8 @@ import Handlebars from "handlebars";
 
 export default async function addCompany(req, res) {
     const bodyObject = req.body;
-console.log("bodyObject", bodyObject)
+    const domain = process.env.NEXTAUTH_DOMAIN
+
     const readHTMLFile = function (paths, callback) {
         fs.readFile(paths, { encoding: 'utf-8' }, function (err, html) {
             if (err) {
@@ -22,8 +23,8 @@ console.log("bodyObject", bodyObject)
         port: 465,
         secure: true,
         auth: {
-            user: 'rizalhasbianto@gmail.com',
-            pass: 'lokdkjpslmtlnegf'
+            user: 'dev@skratch.co',
+            pass: 'kniibqqnfeyshtjt'
         }
     });
     const postsDirectory = path.join(process.cwd(), 'public')
@@ -37,13 +38,14 @@ console.log("bodyObject", bodyObject)
         const template = Handlebars.compile(html);
         const data = {
             email: bodyObject.email,
-            userId: bodyObject.userId
+            userId: bodyObject.userId,
+            domain:domain
         }
         const htmlEmail = template(data);
         const mailOptions = {
-            from: 'rizalhasbianto@gmail.com',
+            from: 'Skratch B2B <dev@skratch.co>',
             to: data.email,
-            subject: 'Welcome email for set password',
+            subject: 'Reset password link',
             html: htmlEmail
         };
 

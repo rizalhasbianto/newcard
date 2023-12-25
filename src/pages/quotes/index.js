@@ -77,28 +77,6 @@ const Page = () => {
             <Stack direction="row" justifyContent="space-between" spacing={4}>
               <Stack spacing={1}>
                 <Typography variant="h4">Quotes</Typography>
-                <Stack alignItems="center" direction="row" spacing={1}>
-                  <Button
-                    color="inherit"
-                    startIcon={
-                      <SvgIcon fontSize="small">
-                        <ArrowUpOnSquareIcon />
-                      </SvgIcon>
-                    }
-                  >
-                    Import
-                  </Button>
-                  <Button
-                    color="inherit"
-                    startIcon={
-                      <SvgIcon fontSize="small">
-                        <ArrowDownOnSquareIcon />
-                      </SvgIcon>
-                    }
-                  >
-                    Export
-                  </Button>
-                </Stack>
               </Stack>
               <div>
                 <Link href="/quotes/add-quote" passHref>
@@ -115,7 +93,9 @@ const Page = () => {
                 </Link>
               </div>
             </Stack>
-            <QuotesSearch />
+            {
+              //<QuotesSearch />
+            }
             {isLoading && <TableLoading />}
             {isError && <h2>Error loading data</h2>}
             {data && (

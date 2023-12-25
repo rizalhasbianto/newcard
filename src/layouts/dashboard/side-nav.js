@@ -16,6 +16,7 @@ import {
 } from '@mui/material';
 import LoadingButton from '@mui/lab/LoadingButton';
 import { Logo } from 'src/components/logo';
+import { ImageComponent } from 'src/components/image'
 import { Scrollbar } from 'src/components/scrollbar';
 import { items } from '../../data/nav-list';
 import { SideNavItem } from './side-nav-item';
@@ -59,11 +60,12 @@ export const SideNav = (props) => {
             href="/"
             sx={{
               display: 'inline-flex',
-              height: 32,
-              width: 32
+              height: 50,
+              width: 50,
+              position:"relative"
             }}
           >
-            <Logo />
+            <ImageComponent title="Certor" img="/certor1.png" />
           </Box>
           <Box
             sx={{
@@ -138,7 +140,7 @@ export const SideNav = (props) => {
               } else {
                 active = item.path ? (pathname?.includes(item.path)) : false;
               }
-              if(item.role && item.role !== data?.user?.detail?.role) {
+              if(item.role && !item.role.includes(data?.user?.detail?.role) ) {
                 return
               }
               return (
@@ -158,41 +160,6 @@ export const SideNav = (props) => {
           </Stack>
         </Box>
         <Divider sx={{ borderColor: 'neutral.700' }} />
-        <Box
-          sx={{
-            px: 2,
-            py: 3
-          }}
-        >
-          <Typography
-            color="neutral.100"
-            variant="subtitle2"
-          >
-            Skratch.co
-          </Typography>
-          <Typography
-            color="neutral.500"
-            variant="body2"
-          >
-            Best solution for B2B app.
-          </Typography>
-          <Box
-            sx={{
-              display: 'flex',
-              mt: 2,
-              mx: 'auto',
-              width: '160px',
-              '& img': {
-                width: '100%'
-              }
-            }}
-          >
-            <img
-              alt="Go to pro"
-              src="/assets/devias-kit-pro.png"
-            />
-          </Box>
-        </Box>
       </Box>
     </Scrollbar>
   );
@@ -204,7 +171,7 @@ export const SideNav = (props) => {
         open
         PaperProps={{
           sx: {
-            backgroundColor: 'neutral.800',
+            backgroundColor: 'original.50',
             color: 'common.white',
             width: 280
           }

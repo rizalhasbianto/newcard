@@ -13,13 +13,13 @@ import { FindUserById, UpdatePassword } from 'src/service/use-mongo'
 
 const Page = () => {
   const router = useRouter();
-  const { id } = router.query;
+  const { id, type } = router.query;
   const { status } = useSession()
   const [errorUser, setErrorUser] = useState()
   const [successUpdate, setSuccessUpdate] = useState()
   const [openPass, setOpenPass] = useState(false);
   const getUser = useCallback(
-    async (id) => {
+    async (id, type) => {
       if (id) {
         const resUser = await FindUserById(id)
         if (!resUser) {
@@ -28,10 +28,6 @@ const Page = () => {
         }
         if (resUser.data.length === 0) {
           setErrorUser("User not found!")
-          return
-        }
-        if (resUser.data[0].password !== "") {
-          setErrorUser("User already have password!")
           return
         }
       }
@@ -43,7 +39,7 @@ const Page = () => {
       setErrorUser("You are loged in!")
       return
     }
-    getUser(id)
+    getUser(id, type)
   }, [getUser, id, status]);
 
   const formik = useFormik({
@@ -62,7 +58,7 @@ const Page = () => {
         )
     }),
     onSubmit: async (values, helpers) => {
-      const resUpdatePassword = await UpdatePassword(values.password, id)
+      const resUpdatePassword = await UpdatePassword(values.password, id, type)
       if (resUpdatePassword) {
         setSuccessUpdate("done")
       }

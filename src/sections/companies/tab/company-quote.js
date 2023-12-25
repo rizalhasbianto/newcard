@@ -1,4 +1,5 @@
 import { format } from "date-fns";
+import NextLink from "next/link";
 import {
   Avatar,
   Box,
@@ -9,6 +10,7 @@ import {
   TableHead,
   TableRow,
   Typography,
+  Link
 } from "@mui/material";
 import { Scrollbar } from "src/components/scrollbar";
 import { getInitials } from "src/utils/get-initials";
@@ -19,7 +21,14 @@ export const CompanyQuote = (props) => {
   return (
     <Box>
       {items.length <= 0 ? (
-        <Typography variant="subtitle2">This company is not have quote yet!</Typography>
+        <Typography variant="subtitle2">No quotes have been created. <Link
+        component={NextLink}
+        href="/quotes/add-quote"
+        underline="hover"
+        variant="subtitle2"
+      >
+        Start a new quote
+      </Link></Typography>
       ) : (
         <Scrollbar>
           <Box sx={{ minWidth: 800 }}>

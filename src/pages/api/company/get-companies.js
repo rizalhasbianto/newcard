@@ -1,4 +1,5 @@
 import clientPromise from "src/lib/mongodb";
+import { ObjectId } from 'mongodb'
 
 export default async function getQuotes(req, res) {
   const client = await clientPromise;
@@ -6,12 +7,21 @@ export default async function getQuotes(req, res) {
   const collection = process.env.MONGODB_COLLECTION_COMPANY;
   const quote = process.env.MONGODB_COLLECTION_QUOTES;
   const bodyObject = req.method === "POST" ? req.body : req.query;
-  const queryCompany = bodyObject.type === "check" ? bodyObject.query : {};
   const postPerPage = bodyObject.postPerPage ? Number(bodyObject.postPerPage) : 10;
   const skip = (Number(bodyObject.page) + 1) * bodyObject.postPerPage - bodyObject.postPerPage;
+
+  const queryCompany = (bodyObject) => {
+    if(!bodyObject.query) return
+    if(bodyObject.query._id) {
+      return { _id: new ObjectId(bodyObject.query._id)}
+    } 
+    return  bodyObject.query
+  }
+
+
   const data = await db
     .collection(collection)
-    .find(queryCompany)
+    .find(queryCompany(bodyObject))
     .project(!bodyObject.avatar ? { avatar: 0 } : "")
     .sort({ _id: -1 })
     .skip(skip)

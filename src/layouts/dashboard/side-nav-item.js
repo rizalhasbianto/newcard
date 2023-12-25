@@ -93,12 +93,12 @@ export const SideNavItem = (props) => {
               borderBottom: 1,
               pt: "10px",
               pb: "10px",
-              borderColor: "#243046",
+              borderColor: "#364650",
             }}
           >
             {" "}
             {subMenu?.map((sub, i) => {
-              if (sub.role && sub.role !== role) {
+              if (sub.role && !sub.role.includes(role)) {
                 return;
               }
               return <SubMenu key={"sub-" + i} icon={sub.icon} path={sub.path} title={sub.title} />;
