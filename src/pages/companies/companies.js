@@ -1,8 +1,5 @@
-import Head from "next/head";
-import ArrowUpOnSquareIcon from "@heroicons/react/24/solid/ArrowUpOnSquareIcon";
-import ArrowDownOnSquareIcon from "@heroicons/react/24/solid/ArrowDownOnSquareIcon";
-import PlusIcon from "@heroicons/react/24/solid/PlusIcon";
-import CloseIcon from '@mui/icons-material/Close';
+import Head from "next/head"; 
+import { useSession } from "next-auth/react";
 import {
   Box,
   Button,
@@ -16,6 +13,10 @@ import {
   CardContent,
   Unstable_Grid2 as Grid,
 } from "@mui/material";
+import ArrowUpOnSquareIcon from "@heroicons/react/24/solid/ArrowUpOnSquareIcon";
+import ArrowDownOnSquareIcon from "@heroicons/react/24/solid/ArrowDownOnSquareIcon";
+import PlusIcon from "@heroicons/react/24/solid/PlusIcon";
+import CloseIcon from '@mui/icons-material/Close';
 import { CompanyCard } from "src/sections/companies/company-card";
 import AddCompany from "src/sections/companies/company-add";
 import { CompaniesSearch } from "src/sections/companies/companies-search";
@@ -34,6 +35,8 @@ const Companies = () => {
   const [shipTo, setShipTo] = useState();
   const [companyName, setCompanyName] = useState();
   const [companyContact, setCompanyContact] = useState();
+
+  const { data: session } = useSession();
   const toastUp = useToast();
   const postPerPage = 6;
   const { data, isLoading, isError } = GetCompaniesSwr(page - 1, postPerPage);
@@ -102,6 +105,7 @@ const Companies = () => {
                     setCompanyName={setCompanyName}
                     GetCompanies={GetCompanies}
                     setCompanyContact={setCompanyContact}
+                    session={session}
                   />
                 </CardContent>
               </Card>

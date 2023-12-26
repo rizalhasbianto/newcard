@@ -5,9 +5,10 @@ export default async function getUsers(req, res) {
   const db = client.db(process.env.DB_NAME);
   const collection = process.env.MONGODB_COLLECTION_USER;
   const bodyObject = req.method === "POST" ? req.body : req.query;
-  const queryUsers = bodyObject.type === "single" ? bodyObject.query : {role: { $nin: ["admin"] }};
+  const queryUsers = bodyObject.query ? JSON.parse(bodyObject.query) : {role: { $nin: ["admin"] }};
   const postPerPage = bodyObject.postPerPage ? Number(bodyObject.postPerPage) : 10;
   const skip = (Number(bodyObject.page) + 1) * bodyObject.postPerPage - bodyObject.postPerPage;
+
   const data = await db
     .collection(collection) 
     .find(queryUsers)

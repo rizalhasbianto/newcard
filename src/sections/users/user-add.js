@@ -30,7 +30,7 @@ import {
 } from "src/service/use-mongo";
 
 export default function UsersAdd(props) {
-  const { session, toastUp, setAddNewUser } = props;
+  const { session, toastUp, setAddNewUser, mutateData = () => {} } = props;
   const [loadSave, setLoadSave] = useState(false);
   const [companies, setCompanies] = useState([]);
   const phoneRegExp =
@@ -78,7 +78,7 @@ export default function UsersAdd(props) {
       }
 
       const selectedCompany = companies.find((item) => item.name === values.companyName);
-      const companyId = values.companyName ? selectedCompany._id : ""
+      const companyId = values.companyName ? selectedCompany._id : "";
       const checkUser = await CheckUserEmail(values.contactEmail);
       if (!checkUser) {
         helpers.setStatus({ success: false });
@@ -100,10 +100,10 @@ export default function UsersAdd(props) {
         helpers.setErrors({ submit: "Error sync with database!" });
         helpers.setSubmitting(false);
         setLoadSave(false);
-        return; 
+        return;
       }
 
-      if(!values.password) {
+      if (!values.password) {
         const resInvite = await InviteUser(values, resAddUser.data.insertedId);
         if (!resInvite && resInvite.status !== 200) {
           helpers.setStatus({ success: true });
@@ -114,26 +114,31 @@ export default function UsersAdd(props) {
         }
       }
 
-      if(values.default) {
-        selectedCompany.contact.map((item) => item.default = false);
+      if (values.default) {
+        selectedCompany.contact.map((item) => (item.default = false));
       }
-      
-      if(values.role === "Customer") {
-        const addNewUser = await AddNewUserToCompanyMongo(companyId, values, selectedCompany.contact);
+
+      if (values.role === "Customer") {
+        const addNewUser = await AddNewUserToCompanyMongo(
+          companyId,
+          values,
+          selectedCompany.contact
+        );
         if (!addNewUser) {
           helpers.setStatus({ success: false });
           helpers.setErrors({ submit: "Error sync with database!" });
           helpers.setSubmitting(false);
           setLoadSave(false);
-          return; 
+          return;
         }
       }
 
-      formik.resetForm()
+      formik.resetForm();
       toastUp.handleStatus("success");
       toastUp.handleMessage("Register user is success!");
       setLoadSave(false);
-      setAddNewUser(false)
+      setAddNewUser(false);
+      mutateData();
     },
   });
 
@@ -324,15 +329,14 @@ export default function UsersAdd(props) {
               helperText={formik.touched.confirmPassword && formik.errors.confirmPassword}
             />
           </Grid>
-          {
-            formik.values.role === "Customer" &&
+          {formik.values.role === "Customer" && (
             <Grid md={12}>
-            <Typography variant="body2">
-              Set as default contact
-              <Checkbox id="default" name="default" onChange={formik.handleChange} />
-            </Typography>
-          </Grid>
-          }
+              <Typography variant="body2">
+                Set as default contact
+                <Checkbox id="default" name="default" onChange={formik.handleChange} />
+              </Typography>
+            </Grid>
+          )}
         </Grid>
       </Stack>
       <CardActions sx={{ justifyContent: "flext-start", mt: 3 }}>

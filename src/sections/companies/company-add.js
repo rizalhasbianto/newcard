@@ -1,4 +1,5 @@
 import React, { useState, useRef } from "react";
+import { GetUsers } from "src/service/use-mongo";
 import {
   Box,
   TextField,
@@ -41,6 +42,7 @@ export default function AddCompany(props) {
     GetCompanies,
     setCompanyContact,
     type,
+    session,
   } = props;
 
   const [file, setFile] = useState();
@@ -141,7 +143,7 @@ export default function AddCompany(props) {
           toastUp.handleStatus("error");
           toastUp.handleMessage("Error when create user!");
           setLoadSave(false);
-          return; 
+          return;
         }
 
         const resInvite = await InviteUser(values, resAddUser.data.insertedId);
@@ -218,6 +220,11 @@ export default function AddCompany(props) {
       setFileError(true);
     }
   }
+
+  const page = 0;
+  const postPerPage = 50;
+  const query = { role: "sales" };
+  const { data: users, isLoading } = GetUsers(page, postPerPage, query);
 
   return (
     <form noValidate onSubmit={formik.handleSubmit}>
@@ -495,6 +502,41 @@ export default function AddCompany(props) {
               helperText={formik.touched.phoneLocation && formik.errors.phoneLocation}
             />
           </Grid>
+          {session.user.detail.role === "admin" && (
+            <>
+              <Grid xs={12} md={12}>
+                <Divider textAlign="left">Sales</Divider>
+              </Grid>
+              <Grid xs={12} md={type === "register" ? 6 : 3}>
+                <TextField
+                  id="sales"
+                  name="sales"
+                  label="Sales"
+                  variant="outlined"
+                  fullWidth
+                  select
+                  onBlur={formik.handleBlur}
+                  onChange={formik.handleChange}
+                  value={formik.values.sales}
+                  error={!!(formik.touched.sales && formik.errors.sales)}
+                  helperText={formik.touched.sales && formik.errors.sales}
+                >
+                  {isLoading && (
+                    <MenuItem value="">
+                      <em>None</em>
+                    </MenuItem>
+                  )}
+                  {users &&
+                    users.data.user.map((item, i) => (
+                      <MenuItem value={item} key={i + 1}>
+                        <em>{item.name}</em>
+                      </MenuItem>
+                    ))}
+                </TextField>
+              </Grid>
+              <Grid xs={12} md={12}></Grid>
+            </>
+          )}
           <CardActions sx={{ justifyContent: "flex-end" }}>
             <LoadingButton
               color="primary"

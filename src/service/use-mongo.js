@@ -320,6 +320,22 @@ export const FindUserById = async (userId) => {
   return mongoRes;
 };
 
+export const GetUsers = (page, rowsPerPage, query, type) => {
+  const theType = type ? type : "any";
+  const queryString = query ? JSON.stringify(query) : ""
+  const queryPath =
+    "page=" +
+    page +
+    "&postPerPage=" +
+    rowsPerPage +
+    "&query=" +
+    queryString +
+    "&type=" +
+    theType;
+  const mongoRes = useSwrData("/api/users/get-users", queryPath);
+  return mongoRes;
+};
+
 export const RegisterUser = async (userData, companyId) => {
   const mongoRes = await useDataService("/api/auth/register-user", "POST", {
     name: userData.contactFirstName + " " + userData.contactLastName,
@@ -422,21 +438,4 @@ export const UpdateTicket = async (props) => {
     data: props.data,
   });
   return mongoRes;
-};
-
-export const GetUsers = (page, rowsPerPage, query, sort, type) => {
-  const theType = type ? type : "any";
-  const queryPath =
-    "page=" +
-    page +
-    "&postPerPage=" +
-    rowsPerPage +
-    "&query=" +
-    JSON.stringify(query) +
-    "&sort=" +
-    sort +
-    "&type=" +
-    theType;
-  const mongoRes = useSwrData("/api/users/get-users", queryPath);
-  return mongoRes;
-};
+}; 
