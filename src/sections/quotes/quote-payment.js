@@ -75,7 +75,7 @@ export default function PaymentOptions(props) {
             <TextField
               id="paymentType"
               name="paymentType"
-              label="Type"
+              label="Term"
               variant="outlined"
               select
               fullWidth

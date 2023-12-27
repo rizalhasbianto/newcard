@@ -71,7 +71,7 @@ export default function UsersAdd(props) {
     }),
     onSubmit: async (values, helpers) => {
       setLoadSave(true);
-      if (values.role === "Customer" && !values.companyName) {
+      if (values.role === "customer" && !values.companyName) {
         formik.setErrors({ companyName: "This field is required" });
         setLoadSave(false);
         return;
@@ -118,7 +118,7 @@ export default function UsersAdd(props) {
         selectedCompany.contact.map((item) => (item.default = false));
       }
 
-      if (values.role === "Customer") {
+      if (values.role === "customer") {
         const addNewUser = await AddNewUserToCompanyMongo(
           companyId,
           values,
@@ -264,12 +264,12 @@ export default function UsersAdd(props) {
               <MenuItem value="sales">
                 <em>Sales</em>
               </MenuItem>
-              <MenuItem value="Customer">
+              <MenuItem value="customer">
                 <em>Customer</em>
               </MenuItem>
             </TextField>
           </Grid>
-          {formik.values.role === "Customer" && (
+          {formik.values.role === "customer" && (
             <Grid xs={12} md={3}>
               <TextField
                 id="companyName"
@@ -329,7 +329,7 @@ export default function UsersAdd(props) {
               helperText={formik.touched.confirmPassword && formik.errors.confirmPassword}
             />
           </Grid>
-          {formik.values.role === "Customer" && (
+          {formik.values.role === "customer" && (
             <Grid md={12}>
               <Typography variant="body2">
                 Set as default contact

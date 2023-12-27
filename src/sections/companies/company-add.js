@@ -74,6 +74,7 @@ export default function AddCompany(props) {
       contactFirstName: "",
       contactLastName: "",
       contactEmail: "",
+      sales:"",
       submit: null,
     },
     validationSchema: Yup.object({
@@ -95,6 +96,7 @@ export default function AddCompany(props) {
         .email("Must be a valid email")
         .max(255)
         .required("Email is required"),
+      sales: Yup.object().required("This field is required"),
     }),
     onSubmit: async (values, helpers) => {
       setLoadSave(true);
@@ -523,7 +525,7 @@ export default function AddCompany(props) {
                 >
                   {isLoading && (
                     <MenuItem value="">
-                      <em>None</em>
+                      <em>Loading...</em>
                     </MenuItem>
                   )}
                   {users &&

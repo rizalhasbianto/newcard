@@ -15,9 +15,9 @@ import TabPanel from "@mui/lab/TabPanel";
 import { Layout as DashboardLayout } from "src/layouts/dashboard/layout";
 import { CompanyProfile } from "src/sections/companies/company-avatar";
 import { CompanyProfileDetails } from "src/sections/companies/tab/company-profile-details";
-import { CompanyAddresses } from "src/sections/companies/tab/company-addresses";
+import { CompanyAddresses } from "src/sections/companies/tab/company-shipping";
 import { useState } from "react";
-import { CompanyEditDetails } from "src/sections/companies/tab/company-profile-edit";
+import { CompanyEditDetails } from "src/sections/companies/tab/company-details";
 import { CompanyQuote } from "src/sections/companies/tab/company-quote";
 import { useRouter } from 'next/router';
 import { useToast } from 'src/hooks/use-toast'

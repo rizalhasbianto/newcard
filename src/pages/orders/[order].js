@@ -10,17 +10,9 @@ import {
   Divider,
   Unstable_Grid2 as Grid,
 } from "@mui/material";
-import TabContext from "@mui/lab/TabContext";
-import TabList from "@mui/lab/TabList";
-import TabPanel from "@mui/lab/TabPanel";
 import { Layout as DashboardLayout } from "src/layouts/dashboard/layout";
-import { CompanyProfile } from "src/sections/companies/company-avatar";
-import { CompanyProfileDetails } from "src/sections/companies/tab/company-profile-details";
-import { CompanyAddresses } from "src/sections/companies/tab/company-addresses";
 import { GetSingleOrderSwr } from "src/service/use-shopify";
 import { useState } from "react";
-import { CompanyEditDetails } from "src/sections/companies/tab/company-profile-edit";
-import { CompanyQuote } from "src/sections/companies/tab/company-quote";
 import { useRouter } from "next/router";
 import { useToast } from "src/hooks/use-toast";
 import Toast from "src/components/toast";

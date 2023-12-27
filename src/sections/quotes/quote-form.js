@@ -332,7 +332,7 @@ export const QuotesForm = (props) => {
               paddingRight: "25px",
             }}
           >
-            {session.user.detail.role === "admin" && (
+            {(session.user.detail.role === "admin" || session.user.detail.role === "sales") && (
               <Button variant="outlined" onClick={() => setAddNewCompany(true)}>
                 Add New Company
               </Button>
@@ -368,6 +368,7 @@ export const QuotesForm = (props) => {
                 setCompanyName={setCompanyName}
                 GetCompanies={GetCompanies}
                 setCompanyContact={setCompanyContact}
+                session={session}
               />
             </Collapse>
           </Box>

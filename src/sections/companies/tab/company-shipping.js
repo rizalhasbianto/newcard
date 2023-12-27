@@ -128,9 +128,9 @@ export const CompanyAddresses = (props) => {
         >
           {data &&
             data.shipTo.map((ship, i) => (
-              <Tab label={ship.locationName} value={i + 1} key={i + 1} />
+              <Tab label={ship.locationName} value={i + 1} key={i + 1} sx={{pr:1}}/>
             ))}
-          <Tab label="Add address" value={data.shipTo.length + 1} />
+          <Tab label="Add address" value={data.shipTo.length + 1} sx={{pr:1}}/>
         </Tabs>
       </Box>
       <TabPanel value="2" sx={{ padding: "0 24px" }}>

@@ -167,6 +167,10 @@ export const AddCompanyToMongo = async (companyData) => {
   const mongoRes = await useDataService("/api/company/add-company", "POST", {
     name: companyData.companyName,
     about: companyData.companyAbout,
+    sales:{
+      id:companyData.sales._id,
+      name:companyData.sales.name
+    },
     marked: companyData.marked ? true : false,
     location: {
       address: "",
@@ -208,10 +212,10 @@ export const UpdateCompanyInfoToMongo = async (companyData) => {
       about: companyData.companyAbout,
       marked: companyData.marked ? true : false,
       location: {
-        address: "",
-        city: "",
-        state: "",
-        zip: "",
+        address: companyData.address,
+        city: companyData.city,
+        state: companyData.state,
+        zip: companyData.postal,
       }
     }
   });

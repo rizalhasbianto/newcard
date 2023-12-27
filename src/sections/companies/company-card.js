@@ -1,6 +1,6 @@
 import PropTypes from "prop-types";
-import ArrowDownOnSquareIcon from "@heroicons/react/24/solid/ArrowDownOnSquareIcon";
 import ClockIcon from "@heroicons/react/24/solid/ClockIcon";
+import PersonIcon from "@mui/icons-material/Person";
 import { Avatar, Box, Card, CardContent, Divider, Stack, SvgIcon, Typography } from "@mui/material";
 import { ImageComponent } from "src/components/image";
 import { stringAvatar } from "src/helper/handelCompanyAvatar";
@@ -8,7 +8,7 @@ import Link from "next/link";
 
 export const CompanyCard = (props) => {
   const { company, quoteTotal } = props;
-console.log("company", company)
+  console.log("company", company);
   return (
     <Card
       sx={{
@@ -58,14 +58,16 @@ console.log("company", company)
             {quoteTotal} open quote&lsquo;s
           </Typography>
         </Stack>
-        <Stack alignItems="center" direction="row" spacing={1}>
-          <SvgIcon color="action" fontSize="small">
-            <ArrowDownOnSquareIcon />
-          </SvgIcon>
-          <Typography color="text.secondary" display="inline" variant="body2">
-            Detail
-          </Typography>
-        </Stack>
+        {company.sales?.name && (
+          <Stack alignItems="center" direction="row" spacing={1}>
+            <SvgIcon color="action" fontSize="small">
+              <PersonIcon />
+            </SvgIcon>
+            <Typography color="text.secondary" display="inline" variant="body2">
+              {company.sales?.name}
+            </Typography>
+          </Stack>
+        )}
       </Stack>
     </Card>
   );
