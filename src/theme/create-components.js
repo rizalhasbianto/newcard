@@ -170,6 +170,14 @@ export function createComponents(config) {
             color: palette.text.secondary,
           },
         },
+        underline: {
+          "&::before": {
+            borderColor: palette.neutral[200]
+          },
+          "&:hover:not(.Mui-disabled, .Mui-error):before": {
+              borderBottom:"1px solid #d2d2d2"
+          }
+        }
       },
     },
     MuiFilledInput: {
@@ -216,6 +224,9 @@ export function createComponents(config) {
         select: {
           padding: "14px 32px 14px 12px",
         },
+        standard: {
+          padding: "0px 32px 0px 12px",
+        }
       },
     },
     MuiCheckbox: {

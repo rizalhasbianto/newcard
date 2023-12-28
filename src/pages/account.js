@@ -14,7 +14,6 @@ import TabList from "@mui/lab/TabList";
 import TabPanel from "@mui/lab/TabPanel";
 import { Layout as DashboardLayout } from "src/layouts/dashboard/layout";
 import { CompanyProfile } from "src/sections/companies/company-profile";
-import { CompanyProfileDetails } from "src/sections/companies/tab/company-profile-details";
 import { CompanyAddresses } from "src/sections/companies/tab/company-shipping";
 import { useState } from "react";
 import { CompanyEditDetails } from "src/sections/companies/tab/company-details";
