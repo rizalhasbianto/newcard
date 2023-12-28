@@ -65,6 +65,7 @@ export const CompanyProfile = ({ company, toastUp }) => {
     setLoadSave(false);
     toastUp.handleStatus("success");
     toastUp.handleMessage("Company updated!");
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [file]);
 
   const contact = company.contact.find((item) => item.default === true)
