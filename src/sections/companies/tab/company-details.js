@@ -1,12 +1,13 @@
 import { Box, Button, Divider, Unstable_Grid2 as Grid, Typography } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
+import { Stack } from "@mui/system";
 
 export const CompanyDetails = (props) => {
   const { data, toastUp, setSwitchEditDetails } = props;
 
   return (
     <Box sx={{ m: -1.5 }}>
-      <Grid container spacing={1} alignItems={"center"}>
+      <Grid container spacing={1} alignItems={"flex-start"} justifyItems={"flex-start"}>
         <Grid item xs={4} md={3}>
           <Typography variant="subtitle2" color="neutral.500">
             Name
@@ -21,7 +22,10 @@ export const CompanyDetails = (props) => {
           </Typography>
         </Grid>
         <Grid item xs={8} md={9}>
-          <Typography variant="subtitle2">: {data.about}</Typography>
+          <Stack direction={"row"}>
+          <Typography variant="subtitle2" sx={{mr:"4px"}}>:</Typography>
+          <Typography variant="subtitle2"> {data.about}</Typography>
+          </Stack>
         </Grid>
         <Grid item xs={4} md={3}>
           <Typography variant="subtitle2" color="neutral.500">
@@ -29,7 +33,10 @@ export const CompanyDetails = (props) => {
           </Typography>
         </Grid>
         <Grid item xs={8} md={9}>
-          <Typography variant="subtitle2">: {data.location.address}</Typography>
+          <Typography variant="subtitle2">
+            : {data.location.address} {data.location.city} {data.location.state.label},{" "}
+            {data.location.zip + " "} United States
+          </Typography>
         </Grid>
         <Grid item xs={4} md={3}>
           <Typography variant="subtitle2" color="neutral.500">
@@ -37,7 +44,9 @@ export const CompanyDetails = (props) => {
           </Typography>
         </Grid>
         <Grid item xs={8} md={9}>
-          <Typography variant="subtitle2">: {data?.contact.find((item) => item.default).name}</Typography>
+          <Typography variant="subtitle2">
+            : {data?.contact.find((item) => item.default).name}
+          </Typography>
         </Grid>
         <Grid item xs={4} md={3}>
           <Typography variant="subtitle2" color="neutral.500">
@@ -45,7 +54,9 @@ export const CompanyDetails = (props) => {
           </Typography>
         </Grid>
         <Grid item xs={8} md={9}>
-          <Typography variant="subtitle2">: {data?.shipTo.find((item) => item.default).locationName}</Typography>
+          <Typography variant="subtitle2">
+            : {data?.shipTo.find((item) => item.default).locationName}
+          </Typography>
         </Grid>
         <Grid item xs={4} md={3}>
           <Typography variant="subtitle2" color="neutral.500">
@@ -53,7 +64,7 @@ export const CompanyDetails = (props) => {
           </Typography>
         </Grid>
         <Grid item xs={8} md={9}>
-          <Typography variant="subtitle2">: Same as Shipping</Typography>
+          <Typography variant="subtitle2">: {data.defaultBilling}</Typography>
         </Grid>
         <Grid item xs={4} md={3}>
           <Typography variant="subtitle2" color="neutral.500">
@@ -69,7 +80,7 @@ export const CompanyDetails = (props) => {
           </Typography>
         </Grid>
         <Grid item xs={8} md={9}>
-          <Typography variant="subtitle2">: 7 days</Typography>
+          <Typography variant="subtitle2">: {data.defaultpaymentType}</Typography>
         </Grid>
         <Grid item xs={4} md={3}>
           <Typography variant="subtitle2" color="neutral.500">
@@ -77,7 +88,7 @@ export const CompanyDetails = (props) => {
           </Typography>
         </Grid>
         <Grid item xs={8} md={9}>
-          <Typography variant="subtitle2">: No</Typography>
+          <Typography variant="subtitle2">: {data.defaultpaymentTypeChange}</Typography>
         </Grid>
         <Grid item xs={4} md={3}>
           <Typography variant="subtitle2" color="neutral.500">

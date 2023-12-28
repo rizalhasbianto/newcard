@@ -25,7 +25,6 @@ export const CompanyProfile = ({ company, toastUp }) => {
   const [onAddFile, setOnAddFile] = useState(false);
 
   const avatarHeight = company.avatar ? "150px" : "100px";
-  console.log("company", company)
 
   const convertToBase64 = (file) => {
     return new Promise((resolve, reject) => {
@@ -68,6 +67,8 @@ export const CompanyProfile = ({ company, toastUp }) => {
     toastUp.handleMessage("Company updated!");
   }, [file]);
 
+  const contact = company.contact.find((item) => item.default === true)
+
   return (
     <Card>
       <CardContent>
@@ -107,7 +108,7 @@ export const CompanyProfile = ({ company, toastUp }) => {
             {company.name}
           </Typography>
           <Typography color="text.secondary" variant="body2">
-            {company.about}
+            {contact.name} / {contact.email}
           </Typography>
         </Box>
       </CardContent>

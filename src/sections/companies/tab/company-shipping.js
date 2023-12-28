@@ -1,11 +1,7 @@
 import { useCallback, useState } from "react";
 import {
   Box,
-  Button,
-  Card,
-  CardActions,
-  CardContent,
-  CardHeader,
+  Typography,
   Divider,
   TextField,
   Tab,
@@ -27,12 +23,12 @@ import { UpdateCompanyShipToMongo, AddNewShipToMongo } from "src/service/use-mon
 import { useFormik, ErrorMessage } from "formik";
 import * as Yup from "yup";
 
-export const CompanyAddresses = (props) => {
+export const CompanyShipping = (props) => {
   const { data, toastUp, mutate } = props;
   const [value, setValue] = useState(1);
   const [loadSave, setLoadSave] = useState(false);
   const [newAddress, setNewAddress] = useState(false);
-
+console.log("data ship", data)
   const handleChange = useCallback((event, newValue) => {
     setValue(newValue);
     if (newValue > data?.shipTo.length) {
@@ -95,7 +91,7 @@ export const CompanyAddresses = (props) => {
     onSubmit: async (values, helpers) => {
       setLoadSave(true);
       let resSaveCompany;
-      console.log("newAddress", newAddress)
+
       if (newAddress) {
         resSaveCompany = await AddNewShipToMongo(data._id, values, data.shipTo);
       } else {
@@ -116,6 +112,20 @@ export const CompanyAddresses = (props) => {
   });
 
   return (
+    <Box>
+      <Grid container spacing={1} alignItems={"flex-start"} justifyItems={"flex-start"}>
+        <Grid item xs={4} md={3}>
+          <Typography variant="subtitle2" color="neutral.500">
+            Default Shipping
+          </Typography>
+        </Grid>
+        <Grid itemxs={8} md={9}>
+          <Typography variant="subtitle2">: {data.name}</Typography>
+        </Grid>
+        <Grid item xs={12} md={12}>
+            <Divider sx={{mt:2,mb:2}}/>
+        </Grid>
+      </Grid>
     <Box sx={{ flexGrow: 1, bgcolor: "background.paper", display: "flex", height: 345 }}>
       <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
         <Tabs
@@ -133,7 +143,7 @@ export const CompanyAddresses = (props) => {
           <Tab label="Add address" value={data.shipTo.length + 1} sx={{pr:1}}/>
         </Tabs>
       </Box>
-      <TabPanel value="2" sx={{ padding: "0 24px" }}>
+      <TabPanel value="3" sx={{ padding: "0 24px" }}>
         <Stack>
           <form noValidate onSubmit={formik.handleSubmit}>
             <Grid container spacing={2} sx={{ padding: 0 }}>
@@ -275,6 +285,7 @@ export const CompanyAddresses = (props) => {
           </form>
         </Stack>
       </TabPanel>
+    </Box>
     </Box>
   );
 };

@@ -14,12 +14,13 @@ import TabContext from "@mui/lab/TabContext";
 import TabList from "@mui/lab/TabList";
 import TabPanel from "@mui/lab/TabPanel";
 import { Layout as DashboardLayout } from "src/layouts/dashboard/layout";
-import { CompanyProfile } from "src/sections/companies/company-avatar";
-import { CompanyAddresses } from "src/sections/companies/tab/company-shipping";
+import { CompanyProfile } from "src/sections/companies/company-profile";
+import { CompanyShipping} from "src/sections/companies/tab/company-shipping";
 import { GetSingleCompaniesSwr } from "src/service/use-mongo";
 import { useState } from "react";
 import { CompanyDetails } from "src/sections/companies/tab/company-details";
 import { CompanyDetailsEdit } from "src/sections/companies/tab/company-details-edit";
+import { CompanyUsers } from "src/sections/companies/tab/company-users";
 import { CompanyQuote } from "src/sections/companies/tab/company-quote";
 import { useRouter } from "next/router";
 import { useToast } from "src/hooks/use-toast";
@@ -66,8 +67,9 @@ const Page = () => {
                         <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
                           <TabList onChange={handleChange} aria-label="lab API tabs example">
                             <Tab label="Details" value="1" />
-                            <Tab label="Shipping" value="2" />
-                            <Tab label="Quote" value="3" />
+                            <Tab label="Users" value="2" />
+                            <Tab label="Shipping" value="3" />
+                            <Tab label="Quote" value="4" />
                           </TabList>
                         </Box>
                         <TabPanel value="1">
@@ -85,6 +87,7 @@ const Page = () => {
                                   data={data && data.data.company[0]}
                                   toastUp={toastUp}
                                   setSwitchEditDetails={setSwitchEditDetails}
+                                  mutate={mutate}
                                 />
                               </Collapse>
                             </>
@@ -92,14 +95,22 @@ const Page = () => {
                         </TabPanel>
                         <TabPanel value="2">
                           {data && (
-                            <CompanyAddresses
+                                <CompanyUsers
+                                  data={data && data.data.company[0]}
+                                  toastUp={toastUp}
+                                />
+                          )}
+                        </TabPanel>
+                        <TabPanel value="3">
+                          {data && (
+                            <CompanyShipping
                               data={data && data.data.company[0]}
                               toastUp={toastUp}
                               mutate={mutate}
                             />
                           )}
                         </TabPanel>
-                        <TabPanel value="3">
+                        <TabPanel value="4">
                           {data && <CompanyQuote items={data && data.data.relatedQuote} />}
                         </TabPanel>
                       </TabContext>

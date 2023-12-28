@@ -216,7 +216,12 @@ export const UpdateCompanyInfoToMongo = async (companyData) => {
         city: companyData.city,
         state: companyData.state,
         zip: companyData.postal,
-      }
+      },
+      contact:companyData.newContact,
+      sales:companyData.newSales,
+      defaultBilling: companyData.billing,
+      defaultpaymentType: companyData.paymentType,
+      defaultpaymentTypeChange: companyData.paymentTypeChange
     }
   });
   return mongoRes;

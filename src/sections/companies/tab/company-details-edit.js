@@ -24,7 +24,7 @@ import { paymentOptions } from "src/data/payment-options";
 import * as Yup from "yup";
 
 export const CompanyDetailsEdit = (props) => {
-  const { data, toastUp, setSwitchEditDetails } = props;
+  const { data, toastUp, setSwitchEditDetails, mutate } = props;
   const [loadSave, setLoadSave] = useState(false);
 
   const newUsaState = usaState.map((st) => {
@@ -38,7 +38,7 @@ export const CompanyDetailsEdit = (props) => {
   const postPerPage = 50;
   const query = { role: "sales" };
   const { data: users, isLoading } = GetUsers(page, postPerPage, query);
-console.log("data", data)
+
   const contactName = data?.contact[0].name.split(" ");
   const formik = useFormik({
     initialValues: {
@@ -49,13 +49,13 @@ console.log("data", data)
       country: "USA",
       state: data?.location.state,
       city: data?.location.city,
-      postal: data?.location.postal,
+      postal: data?.location.zip,
       contact: data?.contact.find((item) => item.default).email,
       sales: data?.sales.id,
       shipping: data?.shipTo.find((item) => item.default).locationName,
-      billing: data?.defaultBilling,
-      paymentType: data?.defaultpaymentType,
-      paymentTypeChange: data?.defaultpaymentTypeChange,
+      billing: data?.defaultBilling || "",
+      paymentType: data?.defaultpaymentType || "",
+      paymentTypeChange: data?.defaultpaymentTypeChange || "No",
       submit: null,
     },
     validationSchema: Yup.object({
@@ -96,23 +96,43 @@ console.log("data", data)
       }
 
       if (submitCondition) {
-        const newSalesDefault = users.data.user.find((item) => item.id === values.sales)
-        values.sales = {
-          id: newSalesDefault.id,
-          name: newSalesDefault.name
+        if (values.sales !== data.sales.id) {
+          const newSalesDefault = users.data.user.find((item) => item._id === values.sales);
+          values.newSales = {
+            id: newSalesDefault._id,
+            name: newSalesDefault.name,
+          };
+        } else {
+          values.newSales = data.sales;
         }
 
-        const resSaveCompany = await UpdateCompanyInfoToMongo(values, data);
+        const defaultContact = data?.contact.find((item) => item.default).email;
+        if (defaultContact !== values.contact) {
+          const newContactDefault = [...data.contact];
+          newContactDefault.map((item, i) => {
+            if (item.email === values.contact) {
+              item.default = true;
+            } else {
+              item.default = false;
+            }
+          });
+          values.newContact = newContactDefault;
+        } else {
+          values.newContact = data.contact;
+        }
+
+        const resSaveCompany = await UpdateCompanyInfoToMongo(values);
         if (!resSaveCompany) {
           toastUp.handleStatus("error");
           toastUp.handleMessage("Error when create company!");
           setLoadSave(false);
           return;
         }
-
+        mutate();
         setLoadSave(false);
         toastUp.handleStatus("success");
         toastUp.handleMessage("Company updated!");
+        setSwitchEditDetails(true);
       }
     },
   });
@@ -166,9 +186,9 @@ console.log("data", data)
               fullWidth
               onBlur={formik.handleBlur}
               onChange={formik.handleChange}
-              value={formik.values.addressLocation}
-              error={!!(formik.touched.addressLocation && formik.errors.addressLocation)}
-              helperText={formik.touched.addressLocation && formik.errors.addressLocation}
+              value={formik.values.address}
+              error={!!(formik.touched.address && formik.errors.address)}
+              helperText={formik.touched.address && formik.errors.address}
             />
           </Grid>
           <Grid xs={12} md={4}></Grid>
@@ -267,31 +287,27 @@ console.log("data", data)
             </TextField>
           </Grid>
           <Grid xs={12} md={6}>
-            <TextField
-              id="sales"
-              name="sales"
-              label="Sales"
-              variant="outlined"
-              fullWidth
-              select
-              onBlur={formik.handleBlur}
-              onChange={formik.handleChange}
-              value={formik.values.sales}
-              error={!!(formik.touched.sales && formik.errors.sales)}
-              helperText={formik.touched.sales && formik.errors.sales}
-            >
-              {isLoading && (
-                <MenuItem value="">
-                  <em>Loading...</em>
-                </MenuItem>
-              )}
-              {users &&
-                users.data.user.map((item, i) => (
+            {users && (
+              <TextField
+                id="sales"
+                name="sales"
+                label="Sales"
+                variant="outlined"
+                fullWidth
+                select
+                onBlur={formik.handleBlur}
+                onChange={formik.handleChange}
+                value={formik.values.sales}
+                error={!!(formik.touched.sales && formik.errors.sales)}
+                helperText={formik.touched.sales && formik.errors.sales}
+              >
+                {users.data.user.map((item, i) => (
                   <MenuItem value={item._id} key={i + 1}>
                     <em>{item.name}</em>
                   </MenuItem>
                 ))}
-            </TextField>
+              </TextField>
+            )}
           </Grid>
           <Grid xs={12} md={6}>
             <TextField
@@ -328,6 +344,9 @@ console.log("data", data)
               error={!!(formik.touched.billing && formik.errors.billing)}
               helperText={formik.touched.billing && formik.errors.billing}
             >
+              <MenuItem value="">
+                <em>None</em>
+              </MenuItem>
               <MenuItem value={"Company Address"}>
                 <em>Company Address</em>
               </MenuItem>
@@ -354,7 +373,7 @@ console.log("data", data)
                 <em>No payment plan</em>
               </MenuItem>
               {paymentOptions.map((item, i) => (
-                <MenuItem value={item.id} key={i + 1}>
+                <MenuItem value={item.description} key={i + 1}>
                   <em>{item.description}</em>
                 </MenuItem>
               ))}
@@ -364,7 +383,7 @@ console.log("data", data)
             <TextField
               id="paymentTypeChange"
               name="paymentTypeChange"
-              label="Default Payment Term Change"
+              label="Allow customer change payment term"
               variant="outlined"
               fullWidth
               select
@@ -374,10 +393,10 @@ console.log("data", data)
               error={!!(formik.touched.paymentTypeChange && formik.errors.paymentTypeChange)}
               helperText={formik.touched.paymentTypeChange && formik.errors.paymentTypeChange}
             >
-              <MenuItem value={"Company Address"}>
+              <MenuItem value={"Yes"}>
                 <em>Yes</em>
               </MenuItem>
-              <MenuItem value={"Same as Shipping"}>
+              <MenuItem value={"No"}>
                 <em>No</em>
               </MenuItem>
             </TextField>
