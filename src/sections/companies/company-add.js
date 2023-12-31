@@ -18,6 +18,7 @@ import BookmarkBorderIcon from "@mui/icons-material/BookmarkBorder";
 import BookmarkIcon from "@mui/icons-material/Bookmark";
 import { MuiFileInput } from "mui-file-input";
 import { usaState } from "src/data/state-usa";
+import { phoneRegExp } from "src/data/company";
 import { useFormik, ErrorMessage } from "formik";
 import * as Yup from "yup";
 import Image from "next/image";
@@ -55,8 +56,6 @@ export default function AddCompany(props) {
       name: st.abbreviation,
     };
   });
-  const phoneRegExp =
-    /^((\\+[1-9]{1,4}[ \\-]*)|(\\([0-9]{2,3}\\)[ \\-]*)|([0-9]{2,4})[ \\-]*)*?[0-9]{3,4}?[ \\-]*[0-9]{3,4}?$/;
 
   const formik = useFormik({
     initialValues: {

@@ -15,7 +15,7 @@ import TabList from "@mui/lab/TabList";
 import TabPanel from "@mui/lab/TabPanel";
 import { Layout as DashboardLayout } from "src/layouts/dashboard/layout";
 import { CompanyProfile } from "src/sections/companies/company-profile";
-import { CompanyShipping} from "src/sections/companies/tab/company-shipping";
+import { CompanyShipping } from "src/sections/companies/tab/company-shipping";
 import { GetSingleCompaniesSwr } from "src/service/use-mongo";
 import { useState } from "react";
 import { CompanyDetails } from "src/sections/companies/tab/company-details";
@@ -31,7 +31,11 @@ const Page = () => {
   const [switchEditDetails, setSwitchEditDetails] = useState(true);
   const toastUp = useToast();
   const router = useRouter();
-  const { data, isLoading, isError, mutate, isValidating } = GetSingleCompaniesSwr(router.query.company, 0, 1);
+  const { data, isLoading, isError, mutate, isValidating } = GetSingleCompaniesSwr(
+    router.query.company,
+    0,
+    1
+  );
   const handleChange = (event, newValue) => {
     setValue(newValue);
   };
@@ -95,10 +99,11 @@ const Page = () => {
                         </TabPanel>
                         <TabPanel value="2">
                           {data && (
-                                <CompanyUsers
-                                  data={data && data.data.company[0]}
-                                  toastUp={toastUp}
-                                />
+                            <CompanyUsers
+                              data={data && data.data.company[0]}
+                              toastUp={toastUp}
+                              mutate={mutate}
+                            />
                           )}
                         </TabPanel>
                         <TabPanel value="3">

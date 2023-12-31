@@ -137,7 +137,7 @@ export const GetCompanies = async (page, rowsPerPage, query) => {
   const comapanyRes = await useDataService("/api/company/get-companies", "POST", {
     page: page,
     postPerPage: rowsPerPage,
-    query:query
+    query: query,
   });
 
   return comapanyRes;
@@ -167,9 +167,9 @@ export const AddCompanyToMongo = async (companyData) => {
   const mongoRes = await useDataService("/api/company/add-company", "POST", {
     name: companyData.companyName,
     about: companyData.companyAbout,
-    sales:{
-      id:companyData.sales._id,
-      name:companyData.sales.name
+    sales: {
+      id: companyData.sales._id,
+      name: companyData.sales.name,
     },
     marked: companyData.marked ? true : false,
     location: {
@@ -184,7 +184,7 @@ export const AddCompanyToMongo = async (companyData) => {
         email: companyData.contactEmail,
         name: companyData.contactFirstName + " " + companyData.contactLastName,
         phone: companyData.phoneLocation,
-        default:true
+        default: true,
       },
     ],
     shipTo: [
@@ -217,12 +217,48 @@ export const UpdateCompanyInfoToMongo = async (companyData) => {
         state: companyData.state,
         zip: companyData.postal,
       },
-      contact:companyData.newContact,
-      sales:companyData.newSales,
+      contact: companyData.contact,
+      sales: companyData.newSales,
       defaultBilling: companyData.billing,
       defaultpaymentType: companyData.paymentType,
-      defaultpaymentTypeChange: companyData.paymentTypeChange
+      defaultpaymentTypeChange: companyData.paymentTypeChange,
+    },
+  });
+  return mongoRes;
+};
+
+export const UpdateCompanyContactDefault = async (id, defaultContact, userData) => {
+  const newContactDefault = [...userData];
+  newContactDefault.map((item, i) => {
+    if (item.email === defaultContact.email) {
+      item.default = true;
+    } else {
+      item.default = false;
     }
+  });
+  const mongoRes = await useDataService("/api/company/update-company", "POST", {
+    id: id,
+    updateData: {
+      contact: newContactDefault,
+    },
+  });
+  return mongoRes;
+};
+
+export const UpdateCompanyUserToMongo = async (id, updatedData, userData) => {
+  const findUserTarget = userData.findIndex((item) => item.email === updatedData.email);
+  const contactUpdate = [...userData];
+  contactUpdate[findUserTarget] = {
+    name: updatedData.firstName + " " + updatedData.lastName,
+    email: updatedData.email,
+    phone: updatedData.phone,
+    default: updatedData.default,
+  };
+  const mongoRes = await useDataService("/api/company/update-company", "POST", {
+    id: id,
+    updateData: {
+      contact: contactUpdate,
+    },
   });
   return mongoRes;
 };
@@ -231,8 +267,8 @@ export const UpdateCompanyShipToMongo = async (id, companyData, shipToData) => {
   const findShipTarget = shipToData.findIndex(
     (item) => item.locationName === companyData.companyShippingLocation
   );
-  const shipToNew = [...shipToData];
-  shipToNew[findShipTarget] = {
+  const shipToUpdate = [...shipToData];
+  shipToUpdate[findShipTarget] = {
     locationName: companyData.companyShippingLocation,
     location: {
       attention: companyData.attentionLocation,
@@ -241,7 +277,7 @@ export const UpdateCompanyShipToMongo = async (id, companyData, shipToData) => {
       state: companyData.stateName.name,
       zip: companyData.postalLocation,
     },
-    default: companyData.default ? true : false,
+    default: companyData.default,
   };
   const mongoRes = await useDataService("/api/company/update-company", "POST", {
     id: id,
@@ -280,11 +316,11 @@ export const AddNewUserToCompanyMongo = async (id, newUserData, userData) => {
   const userDataNew = [
     ...userData,
     {
-        email: newUserData.contactEmail,
-        name: newUserData.contactFirstName + " " + newUserData.contactLastName,
-        phone: newUserData.phoneLocation,
-        default:newUserData.default ? true : false,
-      },
+      email: newUserData.contactEmail,
+      name: newUserData.contactFirstName + " " + newUserData.contactLastName,
+      phone: newUserData.phoneLocation,
+      default: newUserData.default ? true : false,
+    },
   ];
   const mongoRes = await useDataService("/api/company/update-company", "POST", {
     id: id,
@@ -331,16 +367,9 @@ export const FindUserById = async (userId) => {
 
 export const GetUsers = (page, rowsPerPage, query, type) => {
   const theType = type ? type : "any";
-  const queryString = query ? JSON.stringify(query) : ""
+  const queryString = query ? JSON.stringify(query) : "";
   const queryPath =
-    "page=" +
-    page +
-    "&postPerPage=" +
-    rowsPerPage +
-    "&query=" +
-    queryString +
-    "&type=" +
-    theType;
+    "page=" + page + "&postPerPage=" + rowsPerPage + "&query=" + queryString + "&type=" + theType;
   const mongoRes = useSwrData("/api/users/get-users", queryPath);
   return mongoRes;
 };
@@ -447,4 +476,4 @@ export const UpdateTicket = async (props) => {
     data: props.data,
   });
   return mongoRes;
-}; 
+};

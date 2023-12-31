@@ -40,6 +40,7 @@ export const CompanyDetailsEdit = (props) => {
   const { data: users, isLoading } = GetUsers(page, postPerPage, query);
 
   const contactName = data?.contact[0].name.split(" ");
+  const defaultContact = data?.contact.find((item) => item.default);
   const formik = useFormik({
     initialValues: {
       id: data?._id,
@@ -50,7 +51,7 @@ export const CompanyDetailsEdit = (props) => {
       state: data?.location.state,
       city: data?.location.city,
       postal: data?.location.zip,
-      contact: data?.contact.find((item) => item.default).email,
+      contact: defaultContact.email,
       sales: data?.sales.id,
       shipping: data?.shipTo.find((item) => item.default).locationName,
       billing: data?.defaultBilling || "",
@@ -106,8 +107,8 @@ export const CompanyDetailsEdit = (props) => {
           values.newSales = data.sales;
         }
 
-        const defaultContact = data?.contact.find((item) => item.default).email;
-        if (defaultContact !== values.contact) {
+
+        if (defaultContact.email !== values.email) {
           const newContactDefault = [...data.contact];
           newContactDefault.map((item, i) => {
             if (item.email === values.contact) {
@@ -116,15 +117,15 @@ export const CompanyDetailsEdit = (props) => {
               item.default = false;
             }
           });
-          values.newContact = newContactDefault;
+          values.contact = newContactDefault;
         } else {
-          values.newContact = data.contact;
+          values.contact = data.contact;
         }
 
         const resSaveCompany = await UpdateCompanyInfoToMongo(values);
         if (!resSaveCompany) {
           toastUp.handleStatus("error");
-          toastUp.handleMessage("Error when create company!");
+          toastUp.handleMessage("Error when update company!");
           setLoadSave(false);
           return;
         }

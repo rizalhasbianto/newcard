@@ -32,7 +32,6 @@ export const CompanyShipping = (props) => {
       setValue(newValue);
       if (newValue > data?.shipTo.length) {
         setNewAddress(true);
-        formik.resetForm();
         formik.setValues({
           companyShippingLocation: "",
           countryName: "USA",
@@ -67,7 +66,7 @@ export const CompanyShipping = (props) => {
     };
   });
   const defaultAddress = data?.shipTo?.find((item) => item.default);
-  const initialAddress = defaultAddress ? defaultAddress : data.shipTo[0];
+  const initialAddress = data.shipTo[0];
 
   const formik = useFormik({
     initialValues: {

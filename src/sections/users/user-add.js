@@ -87,7 +87,6 @@ export default function UsersAdd(props) {
         setLoadSave(false);
         return;
       }
-
       if (checkUser.data.length > 0) {
         formik.setErrors({ contactEmail: "Is already taken" });
         setLoadSave(false);
@@ -102,18 +101,6 @@ export default function UsersAdd(props) {
         setLoadSave(false);
         return;
       }
-
-      if (!values.password) {
-        const resInvite = await InviteUser(values, resAddUser.data.insertedId);
-        if (!resInvite && resInvite.status !== 200) {
-          helpers.setStatus({ success: true });
-          helpers.setErrors({ submit: "Error when sent invite email! Please resend invite" });
-          helpers.setSubmitting(true);
-          setLoadSave(false);
-          return;
-        }
-      }
-
       if (values.default) {
         selectedCompany.contact.map((item) => (item.default = false));
       }
@@ -128,6 +115,17 @@ export default function UsersAdd(props) {
           helpers.setStatus({ success: false });
           helpers.setErrors({ submit: "Error sync with database!" });
           helpers.setSubmitting(false);
+          setLoadSave(false);
+          return;
+        }
+      }
+
+      if (!values.password) {
+        const resInvite = await InviteUser(values, resAddUser.data.insertedId);
+        if (!resInvite && resInvite.status !== 200) {
+          helpers.setStatus({ success: true });
+          helpers.setErrors({ submit: "Error when sent invite email! Please resend invite" });
+          helpers.setSubmitting(true);
           setLoadSave(false);
           return;
         }
@@ -279,6 +277,7 @@ export default function UsersAdd(props) {
                 value={formik.values.companyName}
                 select
                 fullWidth
+                required
                 onChange={formik.handleChange}
                 error={!!(formik.touched.companyName && formik.errors.companyName)}
                 helperText={formik.touched.companyName && formik.errors.companyName}
@@ -305,7 +304,6 @@ export default function UsersAdd(props) {
               variant="outlined"
               type="password"
               fullWidth
-              required
               onBlur={formik.handleBlur}
               onChange={formik.handleChange}
               value={formik.values.password}
@@ -321,7 +319,6 @@ export default function UsersAdd(props) {
               variant="outlined"
               type="password"
               fullWidth
-              required
               onBlur={formik.handleBlur}
               onChange={formik.handleChange}
               value={formik.values.confirmPassword}

@@ -6,7 +6,7 @@ import {
   paperClasses,
   tableCellClasses,
 } from "@mui/material";
-import { height } from "@mui/system";
+import { height, padding } from "@mui/system";
 
 // Used only to create transitions
 const muiTheme = createTheme();
@@ -52,6 +52,9 @@ export function createComponents(config) {
           borderRadius: "5px",
           textTransform: "none",
         },
+        standardSizeSmall: {
+          padding:0
+        },
         sizeSmall: {
           padding: "6px 16px",
         },
@@ -70,6 +73,7 @@ export function createComponents(config) {
         textSizeLarge: {
           padding: "12px 16px",
         },
+      
       },
     },
     MuiCard: {
