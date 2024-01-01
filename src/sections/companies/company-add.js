@@ -503,7 +503,7 @@ export default function AddCompany(props) {
               helperText={formik.touched.phoneLocation && formik.errors.phoneLocation}
             />
           </Grid>
-          {session.user.detail.role === "admin" && (
+          {(session && session.user.detail.role === "admin") && (
             <>
               <Grid xs={12} md={12}>
                 <Divider textAlign="left">Sales</Divider>

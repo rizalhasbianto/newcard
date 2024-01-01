@@ -14,7 +14,7 @@ const Page = () => {
   const [addNewCompany, setAddNewCompany] = useState(true);
 
   const router = useRouter();
-  const { status } = useSession()
+  const { data:session, status } = useSession()
   const toastUp = useToast();
 
   useEffect(() => {
@@ -96,6 +96,7 @@ const Page = () => {
               toastUp={toastUp}
               getSelectedVal={false}
               type="register"
+              session={session}
             />
           </Collapse>
         </Box>

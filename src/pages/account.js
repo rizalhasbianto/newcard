@@ -14,9 +14,9 @@ import TabList from "@mui/lab/TabList";
 import TabPanel from "@mui/lab/TabPanel";
 import { Layout as DashboardLayout } from "src/layouts/dashboard/layout";
 import { CompanyProfile } from "src/sections/companies/company-profile";
-import { CompanyAddresses } from "src/sections/companies/tab/company-shipping";
+import { CompanyShipping } from "src/sections/companies/tab/company-shipping";
 import { useState } from "react";
-import { CompanyEditDetails } from "src/sections/companies/tab/company-details";
+import { CompanyDetails } from "src/sections/companies/tab/company-details";
 import { CompanyQuote } from "src/sections/companies/tab/company-quote";
 import { useRouter } from 'next/router';
 import { useToast } from 'src/hooks/use-toast'
@@ -72,10 +72,10 @@ const Page = () => {
                         </TabList>
                       </Box>
                       <TabPanel value="1">
-                        { data && <CompanyEditDetails data={data && data.data.company[0]} toastUp={toastUp} /> }
+                        { data && <CompanyDetails data={data && data.data.company[0]} toastUp={toastUp} /> }
                       </TabPanel>
                       <TabPanel value="2">
-                      { data && <CompanyAddresses data={data && data.data.company[0]} toastUp={toastUp} mutate={mutate}/> }
+                      { data && <CompanyShipping data={data && data.data.company[0]} toastUp={toastUp} mutate={mutate}/> }
                       </TabPanel>
                       <TabPanel value="3">
                         <CompanyQuote items={data && data.data.relatedQuote}/>
