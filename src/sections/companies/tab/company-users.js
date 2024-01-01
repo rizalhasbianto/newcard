@@ -1,3 +1,4 @@
+/* eslint-disable react/jsx-max-props-per-line */
 import { useCallback, useState } from "react";
 import {
   Box,
@@ -186,7 +187,12 @@ export const CompanyUsers = (props) => {
 
   return (
     <Box sx={{ m: -1.5 }}>
-      <Grid container spacing={1} alignItems={"center"} justifyItems={"flex-start"}>
+      <Grid 
+      container 
+      spacing={1} 
+      alignItems={"center"} 
+      justifyItems={"flex-start"}
+    >
         <Grid item xs={4} md={3}>
           <Typography variant="subtitle2" color="neutral.500">
             Default Contact
