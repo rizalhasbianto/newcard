@@ -39,7 +39,7 @@ const Companies = () => {
   const { data: session } = useSession();
   const toastUp = useToast();
   const postPerPage = 6;
-  const { data, isLoading, isError } = GetCompaniesSwr(page - 1, postPerPage);
+  const { data, isLoading, isError, mutate } = GetCompaniesSwr(page - 1, postPerPage);
   const [count, setCount] = useState(0);
   const handleChange = (event, value) => {
     setPage(value);
@@ -106,6 +106,7 @@ const Companies = () => {
                     GetCompanies={GetCompanies}
                     setCompanyContact={setCompanyContact}
                     session={session}
+                    mutate={mutate}
                   />
                 </CardContent>
               </Card>

@@ -23,8 +23,7 @@ const Quotes = () => {
   const { data: session } = useSession();
 
   const quoteQuery = (session) => {
-    console.log("session", session)
-    switch(session.user.detail.role) {
+    switch(session?.user.detail.role) {
       case "admin":
         return {
           status: { $nin: ["new", "draft"] },
@@ -32,12 +31,12 @@ const Quotes = () => {
       case "sales":
         return {
           status: { $nin: ["new", "draft"] },
-          "company.sales.id":session.user.detail.id,
+          "company.sales.id":session?.user.detail.id,
         }
       default:
         return {
           status: { $nin: ["new", "draft"] },
-          "company.name":session.user.detail.company.companyName
+          "company.name":session?.user.detail.company.companyName
         }
     }
   }

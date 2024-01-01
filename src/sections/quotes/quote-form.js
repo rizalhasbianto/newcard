@@ -205,7 +205,7 @@ export const QuotesForm = (props) => {
       case "customer":
         return { _id: session.user.detail.company.companyId };
       case "sales":
-        return { sales: session.user.name };
+        return { "sales.name": session.user.name };
       default:
         return;
     }

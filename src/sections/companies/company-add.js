@@ -44,6 +44,7 @@ export default function AddCompany(props) {
     setCompanyContact,
     type,
     session,
+    mutate,
   } = props;
 
   const [file, setFile] = useState();
@@ -73,7 +74,7 @@ export default function AddCompany(props) {
       contactFirstName: "",
       contactLastName: "",
       contactEmail: "",
-      sales:"",
+      sales: "",
       submit: null,
     },
     validationSchema: Yup.object({
@@ -173,21 +174,24 @@ export default function AddCompany(props) {
           },
         ];
 
-        if (getSelectedVal) {
-          const page = 0,
-            rowsPerPage = 50;
-          const newCompaniesData = await GetCompanies(page, rowsPerPage);
-          setCompanies(newCompaniesData.data.company);
-          setCompanyName(values.companyName);
-          setShipTo(values.companyShippingLocation);
-          setShipToList(shipToSelected);
-          setLocation(shipToSelected[0].location);
-          setCompanyContact({
-            email: values.contactEmail,
-            name: values.contactFirstName + " " + values.contactLastName,
-          });
+        if (mutate) {
+          mutate();
+        } else {
+          if (getSelectedVal) {
+            const page = 0,
+              rowsPerPage = 50;
+            const newCompaniesData = await GetCompanies(page, rowsPerPage);
+            setCompanies(newCompaniesData.data.company);
+            setCompanyName(values.companyName);
+            setShipTo(values.companyShippingLocation);
+            setShipToList(shipToSelected);
+            setLocation(shipToSelected[0].location);
+            setCompanyContact({
+              email: values.contactEmail,
+              name: values.contactFirstName + " " + values.contactLastName,
+            });
+          }
         }
-
         setAddNewCompany(false);
       }
     },
@@ -503,7 +507,7 @@ export default function AddCompany(props) {
               helperText={formik.touched.phoneLocation && formik.errors.phoneLocation}
             />
           </Grid>
-          {(session && session.user.detail.role === "admin") && (
+          {session && session.user.detail.role === "admin" && (
             <>
               <Grid xs={12} md={12}>
                 <Divider textAlign="left">Sales</Divider>
