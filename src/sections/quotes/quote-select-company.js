@@ -15,11 +15,13 @@ export default function QuoteSelectCompany(props) {
         shipTo,
         companyName,
         companyContact,
+        companySales,
         setShipToList,
         setLocation,
         setShipTo,
         setCompanyName,
-        setCompanyContact
+        setCompanyContact,
+        setCompanySales
     } = props
 
     const handleChange = useCallback(
@@ -37,6 +39,7 @@ export default function QuoteSelectCompany(props) {
                 setCompanyContact(selectedCompany.contact[0])
                 setShipToList(selectedCompany.shipTo)
                 setLocation(selectedCompany.shipTo[0].location)
+                setCompanySales(selectedCompany.sales)
             } else {
                 const locationList = data.find((ship) => ship.locationName === event.target.value)
                 setShipTo(event.target.value)

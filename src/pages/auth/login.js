@@ -111,7 +111,7 @@ const Page = () => {
               <form noValidate onSubmit={formik.handleSubmit}>
                 <Stack spacing={3}>
                   <Grid container spacing={2} alignItems={"center"}>
-                    <Grid lg={11}>
+                    <Grid xs={12} lg={11}>
                       <TextField
                         error={!!(formik.touched.email && formik.errors.email)}
                         fullWidth
@@ -124,7 +124,7 @@ const Page = () => {
                         value={formik.values.email}
                       />
                     </Grid>
-                    <Grid lg={11}>
+                    <Grid xs={12} lg={11}>
                       <TextField
                         error={!!(formik.touched.password && formik.errors.password)}
                         fullWidth
@@ -158,7 +158,7 @@ const Page = () => {
                     {formik.errors.submit}
                   </Typography>
                 )}
-                <Grid lg={11}>
+                <Grid xs={12} lg={11}>
                   <LoadingButton
                     fullWidth
                     color="primary"
@@ -172,7 +172,7 @@ const Page = () => {
                     Continue
                   </LoadingButton>
                 </Grid>
-                <Alert color="primary" severity="info" sx={{ mt: 3 }}>
+                <Alert color="primary" severity="info" sx={{ mt: 3, p:{xs: 0}}}>
                   <div>
                     <Typography color="text.secondary" variant="body2">
                       Forgot password? &nbsp;

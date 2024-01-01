@@ -67,7 +67,8 @@ export const Layout = (props) => {
             justifyContent: 'center',
             '& img': {
               maxWidth: '100%'
-            }
+            },
+            display: { xs: 'none', sm: 'block' }
           }}
         >
           <Box sx={{ p: 3 }}>

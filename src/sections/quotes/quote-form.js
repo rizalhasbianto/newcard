@@ -42,6 +42,7 @@ export const QuotesForm = (props) => {
   const [shipTo, setShipTo] = useState("");
   const [shipToList, setShipToList] = useState([]);
   const [companyContact, setCompanyContact] = useState([]);
+  const [companySales, setCompanySales] = useState();
   const [location, setLocation] = useState();
   const [quotesList, setQuotesList] = useState([]);
   const [buttonloading, setButtonLoading] = useState();
@@ -69,6 +70,7 @@ export const QuotesForm = (props) => {
 
       const mongoReponse = await SaveQuoteToMongoDb(
         companyName,
+        companySales,
         shipTo,
         quotesList,
         discount,
@@ -237,6 +239,7 @@ export const QuotesForm = (props) => {
           setShipToList(selectedCompany?.shipTo);
           setLocation(selectedLocation?.location);
           setCompanyContact(selectedCompany?.contact[0]);
+          setCompanySales(selectedCompany?.sales)
         } else {
           setShipToList([]);
           setCompanyContact();
@@ -302,7 +305,12 @@ export const QuotesForm = (props) => {
               </Typography>
             </Grid>
             <Grid xs={6} md={3}>
-              <Typography variant="body2">Created By: {tabContent?.createdBy}</Typography>
+              <Typography variant="body2">
+                Created By: {tabContent?.createdBy.name} /{" "}
+                {tabContent?.createdBy.role === "customer"
+                  ? tabContent?.createdBy.company
+                  : tabContent?.createdBy.role}
+              </Typography>
             </Grid>
             <Grid xs={6} md={3}>
               <Typography variant="body2">
@@ -349,11 +357,13 @@ export const QuotesForm = (props) => {
                 shipTo={shipTo}
                 companyName={companyName}
                 companyContact={companyContact}
+                companySales={companySales}
                 setShipToList={setShipToList}
                 setLocation={setLocation}
                 setShipTo={setShipTo}
                 setCompanyName={setCompanyName}
                 setCompanyContact={setCompanyContact}
+                setCompanySales={setCompanySales}
               />
             </Collapse>
             <Collapse in={addNewCompany}>
@@ -368,6 +378,7 @@ export const QuotesForm = (props) => {
                 setCompanyName={setCompanyName}
                 GetCompanies={GetCompanies}
                 setCompanyContact={setCompanyContact}
+                setCompanySales={setCompanySales}
                 session={session}
               />
             </Collapse>

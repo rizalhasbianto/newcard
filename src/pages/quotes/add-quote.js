@@ -46,7 +46,7 @@ const Page = () => {
   const reqQuotesData = async (page, rowsPerPage, tabIdx) => {
     const quoteQuery = {
       $or: [{ status: "draft" }, { status: "new" }],
-      createdBy: session?.user?.detail?.company.companyName,
+      "createdBy.name": session.user.detail.name,
       }
     const sort = "DSC";
     const resQuotes = await GetQuotesData(page, rowsPerPage, quoteQuery, sort);
@@ -74,7 +74,11 @@ const Page = () => {
   const handleAddQuote = useCallback(async () => {
     setLoading(true);
     const resCreateQuote = await AddNewQuoteToMongoDb({
-      createdBy:session?.user?.detail?.company.companyName,
+      createdBy:{
+        name: session.user.detail.name,
+        role: session.user.detail.role,
+        company: session.user.detail.company.companyName
+      },
       createdAt:utcToZonedTime(new Date(), "America/Los_Angeles")
     });
     if (!resCreateQuote) {

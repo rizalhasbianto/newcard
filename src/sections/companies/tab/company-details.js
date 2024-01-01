@@ -70,7 +70,7 @@ export const CompanyDetails = (props) => {
         </Grid>
         <Grid item xs={8} md={9}>
           <Typography variant="subtitle2" color={data.defaultBilling ? "#000" : "neutral.500"}>
-            : {data.defaultBilling ? data.defaultBilling : "No default billing set"}
+            : {data.defaultBilling ? data.defaultBilling : "Default billing not set"}
           </Typography>
         </Grid>
         <Grid item xs={4} md={3}>
@@ -83,17 +83,17 @@ export const CompanyDetails = (props) => {
         </Grid>
         <Grid item xs={4} md={3}>
           <Typography variant="subtitle2" color="neutral.500">
-            Default payment type
+            Default payment term
           </Typography>
         </Grid>
         <Grid item xs={8} md={9}>
           <Typography variant="subtitle2" color={data.defaultpaymentType ? "#000" : "neutral.500"}>
-            : {data.defaultpaymentType ? data.defaultpaymentType : "No default payment type set"}
+            : {data.defaultpaymentType ? data.defaultpaymentType : "Default payment term not set"}
           </Typography>
         </Grid>
         <Grid item xs={4} md={3}>
           <Typography variant="subtitle2" color="neutral.500">
-            Allow customer change payment type
+            Allow customer change payment term
           </Typography>
         </Grid>
         <Grid item xs={8} md={9}>

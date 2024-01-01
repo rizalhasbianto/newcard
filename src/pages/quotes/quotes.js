@@ -22,20 +22,30 @@ const Quotes = () => {
   const toastUp = useToast();
   const { data: session } = useSession();
 
-  const quoteQuery =
-    session?.user?.detail?.role !== "admin"
-      ? {
+  const quoteQuery = (session) => {
+    console.log("session", session)
+    switch(session.user.detail.role) {
+      case "admin":
+        return {
           status: { $nin: ["new", "draft"] },
-          "company.name": session?.user?.detail?.company.companyName,
         }
-      : {
+      case "sales":
+        return {
           status: { $nin: ["new", "draft"] },
-        };
+          "company.sales.id":session.user.detail.id,
+        }
+      default:
+        return {
+          status: { $nin: ["new", "draft"] },
+          "company.name":session.user.detail.company.companyName
+        }
+    }
+  }
 
   const { data, isLoading, isError, mutate, isValidating } = GetQuotesDataSwr(
     page,
     rowsPerPage,
-    quoteQuery
+    quoteQuery(session)
   );
 
   useEffect(() => {

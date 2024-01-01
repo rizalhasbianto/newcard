@@ -35,7 +35,8 @@ export const authOptions = {
                         name: response[0].name,
                         email: response[0].email,
                         company: response[0].company,
-                        role: response[0].role
+                        role: response[0].role,
+                        id:response[0]._id
                     }
                 } else {
                     throw new Error("Invalid password");
@@ -62,7 +63,8 @@ export const authOptions = {
                 name: token.name,
                 email: token.email,
                 company: token.company,
-                role: token.role
+                role: token.role,
+                id: token.id
             }
             return session;
         },

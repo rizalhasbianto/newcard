@@ -33,6 +33,7 @@ export const GetQuotesDataSwr = (page, rowsPerPage, query, sort, type) => {
 
 export const SaveQuoteToMongoDb = async (
   companyName,
+  companySales,
   shipTo,
   quotesList,
   discount,
@@ -51,6 +52,7 @@ export const SaveQuoteToMongoDb = async (
       company: {
         name: companyName,
         shipTo: shipTo,
+        sales: companySales,
       },
       quotesList: quotesList || [],
       quoteInfo: {
