@@ -19,6 +19,7 @@ import TabPanel from "@mui/lab/TabPanel";
 import {
   AddNewUserToCompanyMongo,
   UpdateCompanyUserToMongo,
+  UpdateCompanyContactDefault,
   CheckUserEmail,
   RegisterUser,
   InviteUser,
@@ -46,7 +47,7 @@ export const CompanyUsers = (props) => {
       firstName: splitName(data?.contact[0].name)[0],
       lastName:
         splitName(data?.contact[0].name)[1] +
-        (splitName(data?.contact[0].name)[2] && " " + splitName(data?.contact[0].name)[2]),
+        (splitName(data?.contact[0].name)[2] ? " " + splitName(data?.contact[0].name)[2] : ""),
       phone: data?.contact[0].phone,
       default: data?.contact[0].default,
       submit: null,
@@ -61,19 +62,21 @@ export const CompanyUsers = (props) => {
     }),
     onSubmit: async (values, helpers) => {
       setLoadSave(true);
-
-      const checkUser = await CheckUserEmail(values.email);
-      if (!checkUser) {
-        helpers.setStatus({ success: false });
-        helpers.setErrors({ submit: "Error sync with database!" });
-        helpers.setSubmitting(false);
-        setLoadSave(false);
-        return;
-      }
-      if (checkUser.data.length > 0) {
-        formik.setErrors({ email: "Is already taken" });
-        setLoadSave(false);
-        return;
+      
+      if (values.email !== data?.contact[value - 1].email) {
+        const checkUser = await CheckUserEmail(values.email);
+        if (!checkUser) {
+          helpers.setStatus({ success: false });
+          helpers.setErrors({ submit: "Error sync with database!" });
+          helpers.setSubmitting(false);
+          setLoadSave(false);
+          return;
+        }
+        if (checkUser.data.length > 0) {
+          formik.setErrors({ email: "Is already taken" });
+          setLoadSave(false);
+          return;
+        }
       }
 
       if (!newUser) {
@@ -104,11 +107,7 @@ export const CompanyUsers = (props) => {
           return;
         }
 
-        const addNewUser = await AddNewUserToCompanyMongo(
-          data._id,
-          userData,
-          data.contact
-        );
+        const addNewUser = await AddNewUserToCompanyMongo(data._id, userData, data.contact);
         if (!addNewUser) {
           helpers.setStatus({ success: false });
           helpers.setErrors({ submit: "Error sync with database!" });
@@ -120,7 +119,9 @@ export const CompanyUsers = (props) => {
         const resInvite = await InviteUser(userData, resAddUser.data.insertedId);
         if (!resInvite && resInvite.status !== 200) {
           toastUp.handleStatus("warning");
-          toastUp.handleMessage("User Added but Error when sent invite email! Please resend invite");
+          toastUp.handleMessage(
+            "User Added but Error when sent invite email! Please resend invite"
+          );
           helpers.setSubmitting(true);
           setLoadSave(false);
           return;
@@ -187,12 +188,7 @@ export const CompanyUsers = (props) => {
 
   return (
     <Box sx={{ m: -1.5 }}>
-      <Grid 
-      container 
-      spacing={1} 
-      alignItems={"center"} 
-      justifyItems={"flex-start"}
-    >
+      <Grid container spacing={1} alignItems={"center"} justifyItems={"flex-start"}>
         <Grid item xs={4} md={3}>
           <Typography variant="subtitle2" color="neutral.500">
             Default Contact

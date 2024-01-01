@@ -16,7 +16,7 @@ import {
   Collapse,
   Card,
   CardContent,
-  CardHeader
+  CardHeader,
 } from "@mui/material";
 
 import { UsersTable } from "src/sections/users/users-table";
@@ -34,7 +34,7 @@ const Users = () => {
   const [addNewUser, setAddNewUser] = useState(false);
   const toastUp = useToast();
   const { data: session } = useSession();
- 
+
   const { data: users, isLoading, isError, mutate, isValidating } = GetUsers(page, rowsPerPage);
 
   const handlePageChange = useCallback((event, value) => {
@@ -112,27 +112,40 @@ const Users = () => {
             </Stack>
 
             {isLoading && <TableLoading />}
-            {isError && <h2>Error loading data</h2>}
+
+            {(isError || (users && users.data.user.length === 0)) && (
+              <Typography variant="h5" textAlign={"center"}>
+                No data found!
+              </Typography>
+            )}
+
             {users && (
               <Box>
-                <Collapse in={!addNewUser}>
-                  <Box sx={{mb:2}}>
-                    <UsersSearch/>
-                  </Box>
-                  <UsersTable
-                    count={users.data.count}
-                    items={users.data.user}
-                    onPageChange={handlePageChange}
-                    onRowsPerPageChange={handleRowsPerPageChange}
-                    page={page}
-                    rowsPerPage={rowsPerPage}
-                  />
-                </Collapse>
+                {users.data.user.length > 0 && (
+                  <Collapse in={!addNewUser}>
+                    <Box sx={{ mb: 2 }}>
+                      <UsersSearch />
+                    </Box>
+                    <UsersTable
+                      count={users.data.count}
+                      items={users.data.user}
+                      onPageChange={handlePageChange}
+                      onRowsPerPageChange={handleRowsPerPageChange}
+                      page={page}
+                      rowsPerPage={rowsPerPage}
+                    />
+                  </Collapse>
+                )}
                 <Collapse in={addNewUser}>
-                  <Card sx={{maxWidth:"800px",margin:"auto"}}>
-                  <CardHeader subheader="Please fill the form" title="Add new user" />
+                  <Card sx={{ maxWidth: "800px", margin: "auto" }}>
+                    <CardHeader subheader="Please fill the form" title="Add new user" />
                     <CardContent>
-                      <UsersAdd session={session} toastUp={toastUp} setAddNewUser={setAddNewUser} mutateData={mutate}/>
+                      <UsersAdd
+                        session={session}
+                        toastUp={toastUp}
+                        setAddNewUser={setAddNewUser}
+                        mutateData={mutate}
+                      />
                     </CardContent>
                   </Card>
                 </Collapse>

@@ -38,9 +38,9 @@ export const CompanyDetails = (props) => {
           </Typography>
         </Grid>
         <Grid item xs={8} md={9}>
-          <Typography variant="subtitle2">
-            : {data.location.address} {data.location.city} {data.location.state.label},{" "}
-            {data.location.zip + " "} United States
+          <Typography variant="subtitle2" color={data.location.address ? "#000" : "neutral.500"}>
+            : {data.location.address} {data.location.city} {data.location.state.label} { data.location.address && ","} {" "}
+            {data.location.zip + " "} { data.location.address ? "United States" : "Address not set"}
           </Typography>
         </Grid>
         <Grid item xs={4} md={3}>
@@ -69,7 +69,9 @@ export const CompanyDetails = (props) => {
           </Typography>
         </Grid>
         <Grid item xs={8} md={9}>
-          <Typography variant="subtitle2">: {data.defaultBilling}</Typography>
+          <Typography variant="subtitle2" color={data.defaultBilling ? "#000" : "neutral.500"}>
+            : {data.defaultBilling ? data.defaultBilling : "No default billing set"}
+          </Typography>
         </Grid>
         <Grid item xs={4} md={3}>
           <Typography variant="subtitle2" color="neutral.500">
@@ -85,7 +87,9 @@ export const CompanyDetails = (props) => {
           </Typography>
         </Grid>
         <Grid item xs={8} md={9}>
-          <Typography variant="subtitle2">: {data.defaultpaymentType}</Typography>
+          <Typography variant="subtitle2" color={data.defaultpaymentType ? "#000" : "neutral.500"}>
+            : {data.defaultpaymentType ? data.defaultpaymentType : "No default payment type set"}
+          </Typography>
         </Grid>
         <Grid item xs={4} md={3}>
           <Typography variant="subtitle2" color="neutral.500">

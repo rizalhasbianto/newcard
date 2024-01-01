@@ -1,22 +1,42 @@
+import { useCallback, useMemo, useState, useEffect } from "react";
 import Head from "next/head";
 import Link from "next/link";
-import { useCallback, useMemo, useState, useEffect } from "react";
-import { GetTicketsDataSwr } from "src/service/use-mongo";
-import { Box, Button, Container, Stack, SvgIcon, Typography } from "@mui/material";
+import { useSession } from "next-auth/react";
+import ArrowDownOnSquareIcon from "@heroicons/react/24/solid/ArrowDownOnSquareIcon";
+import ArrowUpOnSquareIcon from "@heroicons/react/24/solid/ArrowUpOnSquareIcon";
 import PlusIcon from "@heroicons/react/24/solid/PlusIcon";
+import { Box, Button, Container, Stack, SvgIcon, Typography } from "@mui/material";
+import { useSelection } from "src/hooks/use-selection";
+import { Layout as DashboardLayout } from "src/layouts/dashboard/layout";
+import { QuotesTable } from "src/sections/quotes/quotes-table";
+import { QuotesSearch } from "src/sections/quotes/quotes-search";
+import { applyPagination } from "src/utils/apply-pagination";
+import { GetQuotesDataSwr } from "src/service/use-mongo";
+import TableLoading from "src/components/table-loading";
 import { useToast } from "src/hooks/use-toast";
 import Toast from "src/components/toast";
-import TableLoading from "src/components/table-loading";
-import { TicketsTable } from "src/sections/tickets/tickets-table";
 
-const Tickets = () => {
+const Quotes = () => {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const toastUp = useToast();
+  const { data: session } = useSession();
 
-  const { data, isLoading, isError, mutate, isValidating } = GetTicketsDataSwr(page, rowsPerPage, {
-    status: { $nin: ["new"] },
-  });
+  const quoteQuery =
+    session?.user?.detail?.role !== "admin"
+      ? {
+          status: { $nin: ["new", "draft"] },
+          "company.name": session?.user?.detail?.company.companyName,
+        }
+      : {
+          status: { $nin: ["new", "draft"] },
+        };
+
+  const { data, isLoading, isError, mutate, isValidating } = GetQuotesDataSwr(
+    page,
+    rowsPerPage,
+    quoteQuery
+  );
 
   useEffect(() => {
     if (isValidating) {
@@ -34,10 +54,11 @@ const Tickets = () => {
     setPage(0);
     setRowsPerPage(event.target.value);
   }, []);
+
   return (
     <>
       <Head>
-        <title>Tickets | Skratch</title>
+        <title>Quotes | skratch</title>
       </Head>
       <Box
         component="main"
@@ -54,9 +75,11 @@ const Tickets = () => {
           />
           <Stack spacing={3}>
             <Stack direction="row" justifyContent="space-between" spacing={4}>
-              <Typography variant="h4">Tickets</Typography>
+              <Stack spacing={1}>
+                <Typography variant="h4">Quotes</Typography>
+              </Stack>
               <div>
-                <Link href="/tickets/add-ticket" passHref>
+                <Link href="/quotes/add-quote" passHref>
                   <Button
                     startIcon={
                       <SvgIcon fontSize="small">
@@ -70,16 +93,19 @@ const Tickets = () => {
                 </Link>
               </div>
             </Stack>
+            {
+              //<QuotesSearch />
+            }
             {isLoading && <TableLoading />}
-            {(isError || (data && data.data.ticket.length === 0)) && (
+            {(isError || (data && data.data.quote.length === 0)) && (
               <Typography variant="h5" textAlign={"center"}>
                 No data found!
               </Typography>
             )}
-            {data && data.data.ticket.length > 0 && (
-              <TicketsTable
+            {data && data.data.quote.length > 0 && (
+              <QuotesTable
                 count={data.data.count}
-                items={data.data.ticket}
+                items={data.data.quote}
                 onPageChange={handlePageChange}
                 mutateData={mutate}
                 onRowsPerPageChange={handleRowsPerPageChange}
@@ -94,4 +120,4 @@ const Tickets = () => {
   );
 };
 
-export default Tickets;
+export default Quotes;

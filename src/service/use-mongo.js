@@ -172,6 +172,7 @@ export const AddCompanyToMongo = async (companyData) => {
       name: companyData.sales.name,
     },
     marked: companyData.marked ? true : false,
+    defaultpaymentTypeChange:"No",
     location: {
       address: "",
       city: "",
@@ -230,7 +231,7 @@ export const UpdateCompanyInfoToMongo = async (companyData) => {
 export const UpdateCompanyContactDefault = async (id, defaultContact, userData) => {
   const newContactDefault = [...userData];
   newContactDefault.map((item, i) => {
-    if (item.email === defaultContact.email) {
+    if (item.email === defaultContact) {
       item.default = true;
     } else {
       item.default = false;
@@ -283,6 +284,24 @@ export const UpdateCompanyShipToMongo = async (id, companyData, shipToData) => {
     id: id,
     updateData: {
       shipTo: shipToNew,
+    },
+  });
+  return mongoRes;
+};
+
+export const UpdateCompanyShipToDefault = async (id, defaultShip, shipData) => {
+  const newShippingDefault = [...shipData];
+  newShippingDefault.map((item, i) => {
+    if (item.locationName === defaultShip) {
+      item.default = true;
+    } else {
+      item.default = false;
+    }
+  });
+  const mongoRes = await useDataService("/api/company/update-company", "POST", {
+    id: id,
+    updateData: {
+      shipTo: newShippingDefault,
     },
   });
   return mongoRes;

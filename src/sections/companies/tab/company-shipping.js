@@ -16,7 +16,7 @@ import SaveIcon from "@mui/icons-material/Save";
 import TabPanel from "@mui/lab/TabPanel";
 import { usaState } from "src/data/state-usa";
 
-import { UpdateCompanyShipToMongo, AddNewShipToMongo } from "src/service/use-mongo";
+import { UpdateCompanyShipToMongo, AddNewShipToMongo, UpdateCompanyShipToDefault } from "src/service/use-mongo";
 
 import { useFormik, ErrorMessage } from "formik";
 import * as Yup from "yup";
@@ -26,8 +26,12 @@ export const CompanyShipping = (props) => {
   const [value, setValue] = useState(1);
   const [loadSave, setLoadSave] = useState(false);
   const [newAddress, setNewAddress] = useState(false);
-
-  const handleChange = useCallback(
+  const [loadSaveShiping, setLoadSaveShiping] = useState(false);
+  const [defaultShipping, setdefaultShipping] = useState(data?.shipTo?.find((item) => item.default));
+  const initialDefaultShipping = data?.shipTo?.find((item) => item.default);
+console.log("data", data)
+console.log("initialDefaultShipping", initialDefaultShipping)
+  const handleTabChange = useCallback(
     (event, newValue) => {
       setValue(newValue);
       if (newValue > data?.shipTo.length) {
@@ -65,7 +69,7 @@ export const CompanyShipping = (props) => {
       name: st.abbreviation,
     };
   });
-  const defaultAddress = data?.shipTo?.find((item) => item.default);
+
   const initialAddress = data.shipTo[0];
 
   const formik = useFormik({
@@ -111,17 +115,80 @@ export const CompanyShipping = (props) => {
     },
   });
 
+  const handleSavedefaultShipping = useCallback(async () => {
+    setLoadSaveShiping(true);
+
+    const resSaveData = await UpdateCompanyShipToDefault(
+      data._id,
+      defaultShipping.locationName,
+      data.shipTo
+    );
+
+    if (!resSaveData) {
+      toastUp.handleStatus("error");
+      toastUp.handleMessage("Error when update default shipping!");
+      setLoadSaveContact(false);
+    }
+
+    toastUp.handleStatus("success");
+    toastUp.handleMessage("Success update default shipping!");
+    setLoadSaveShiping(false);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [defaultShipping]);
+
   return (
     <Box sx={{ m: -1.5 }}>
-      <Grid container spacing={1} alignItems={"flex-start"} justifyItems={"flex-start"}>
+      <Grid 
+        container 
+        spacing={1} 
+        alignItems={"flex-start"} 
+        justifyItems={"flex-start"}
+      >
         <Grid item xs={4} md={3}>
           <Typography variant="subtitle2" color="neutral.500">
             Default Shipping
           </Typography>
         </Grid>
-        <Grid itemxs={8} md={9}>
-          <Typography variant="subtitle2">: {data.name}</Typography>
+        <Grid item xs={6} md={4}>
+          <Stack direction={"row"} spacing={1}>
+            <Typography variant="subtitle2" color="neutral.500">
+              :
+            </Typography>
+            <TextField
+              id="defaultShipping"
+              name="defaultShipping"
+              label=""
+              variant="standard"
+              value={defaultShipping.locationName}
+              select
+              fullWidth
+              required
+              onChange={(event) =>
+                setdefaultShipping(data?.shipTo.find((item) => item.locationName === event.target.value))
+              }
+            >
+              {data.shipTo.map((item, i) => (
+                <MenuItem value={item.locationName} key={i + 1}>
+                  <em>{item.locationName}</em>
+                </MenuItem>
+              ))}
+            </TextField>
+          </Stack>
         </Grid>
+        {defaultShipping.locationName !== initialDefaultShipping.locationName && (
+          <Grid item xs={8} md={2}>
+            <LoadingButton
+              color="primary"
+              loading={loadSaveShiping}
+              loadingPosition="start"
+              startIcon={<SaveIcon />}
+              variant="standard"
+              type="submit"
+              size="small"
+              onClick={() => handleSavedefaultShipping()}
+            />
+          </Grid>
+        )}
         <Grid item xs={12} md={12}>
           <Divider sx={{ mt: 2, mb: 2 }} />
         </Grid>
@@ -132,7 +199,7 @@ export const CompanyShipping = (props) => {
             orientation="vertical"
             variant="scrollable"
             value={value}
-            onChange={handleChange}
+            onChange={handleTabChange}
             aria-label="Vertical tabs example"
             sx={{ borderRight: 1, borderColor: "divider", height: "100%" }}
           >

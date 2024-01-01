@@ -1,4 +1,4 @@
-import Head from "next/head"; 
+import Head from "next/head";
 import { useSession } from "next-auth/react";
 import {
   Box,
@@ -16,7 +16,7 @@ import {
 import ArrowUpOnSquareIcon from "@heroicons/react/24/solid/ArrowUpOnSquareIcon";
 import ArrowDownOnSquareIcon from "@heroicons/react/24/solid/ArrowDownOnSquareIcon";
 import PlusIcon from "@heroicons/react/24/solid/PlusIcon";
-import CloseIcon from '@mui/icons-material/Close';
+import CloseIcon from "@mui/icons-material/Close";
 import { CompanyCard } from "src/sections/companies/company-card";
 import AddCompany from "src/sections/companies/company-add";
 import { CompaniesSearch } from "src/sections/companies/companies-search";
@@ -113,19 +113,20 @@ const Companies = () => {
             <Collapse in={!addNewCompany}>
               {isLoading && <CardLoading count={3} />}
               <Grid container spacing={3}>
-                {isError && <Typography variant="h5">No data found!</Typography>}
+                {(isError || (data && data.data.company.length === 0)) && (
+                  <Grid xl={12} justifyItems={"center"} alignItems={"center"}>
+                    <Typography variant="h5" textAlign={"center"}>
+                      No data found!
+                    </Typography>
+                  </Grid>
+                )}
                 {data &&
                   data.data.company.map((company, i) => {
                     const getCurrentQuote = data.data.relatedQuote.filter(
                       (item) => item.company.name === company.name
                     );
                     return (
-                      <Grid 
-                        xs={12} 
-                        md={6} 
-                        lg={4} 
-                        key={i + 1}
-                      >
+                      <Grid xs={12} md={6} lg={4} key={i + 1}>
                         <CompanyCard company={company} quoteTotal={getCurrentQuote.length} />
                       </Grid>
                     );
@@ -138,12 +139,7 @@ const Companies = () => {
                 justifyContent: "center",
               }}
             >
-              <Pagination 
-                count={count} 
-                page={page} 
-                size="small" 
-                onChange={handleChange} 
-              />
+              <Pagination count={count} page={page} size="small" onChange={handleChange} />
             </Box>
           </Stack>
         </Container>
