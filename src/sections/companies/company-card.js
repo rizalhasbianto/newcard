@@ -8,7 +8,7 @@ import Link from "next/link";
 
 export const CompanyCard = (props) => {
   const { company, quoteTotal } = props;
-  console.log("company", company);
+
   return (
     <Card
       sx={{

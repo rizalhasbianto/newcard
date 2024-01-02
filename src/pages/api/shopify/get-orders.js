@@ -10,7 +10,7 @@ export default async function getOrders(req, res) {
       cursor = `, after: "${req.query?.endCursor}"`
     }
     const query = `{
-        orders(${param}: 10, reverse:true, query:"tag:b2b" ${cursor}) {
+        orders(${param}: 10, reverse:true, query:"(tag:b2b) OR (tag:Steve)" ${cursor}) {
           pageInfo {
             hasNextPage
             hasPreviousPage

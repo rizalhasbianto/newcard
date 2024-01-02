@@ -30,7 +30,7 @@ import { GetUsers } from "src/service/use-mongo";
 
 const Users = () => {
   const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(5);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
   const [addNewUser, setAddNewUser] = useState(false);
   const toastUp = useToast();
   const { data: session } = useSession();

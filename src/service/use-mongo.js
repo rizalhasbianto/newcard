@@ -145,8 +145,9 @@ export const GetCompanies = async (page, rowsPerPage, query) => {
   return comapanyRes;
 };
 
-export const GetCompaniesSwr = (page, postPerPage) => {
-  const queryPath = "withQuote=true&page=" + page + "&postPerPage=" + postPerPage + "&avatar=true";
+export const GetCompaniesSwr = (page, postPerPage, query) => {
+  const queryString = query ? JSON.stringify(query) : "";
+  const queryPath = "withQuote=true&page=" + page + "&postPerPage=" + postPerPage + "&query=" + queryString +"&avatar=true";
   const comapanyRes = useSwrData("/api/company/get-companies", queryPath);
 
   return comapanyRes;

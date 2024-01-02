@@ -39,7 +39,18 @@ const Companies = () => {
   const { data: session } = useSession();
   const toastUp = useToast();
   const postPerPage = 6;
-  const { data, isLoading, isError, mutate } = GetCompaniesSwr(page - 1, postPerPage);
+  const companyQuery = (session) => {
+    switch (session.user.detail.role) {
+      case "customer":
+        return { _id: session.user.detail.company.companyId };
+      case "sales":
+        return { "sales.name": session.user.name };
+      default:
+        return;
+    }
+  };
+
+  const { data, isLoading, isError, mutate } = GetCompaniesSwr(page - 1, postPerPage, companyQuery(session));
   const [count, setCount] = useState(0);
   const handleChange = (event, value) => {
     setPage(value);
