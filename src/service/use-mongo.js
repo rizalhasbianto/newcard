@@ -147,7 +147,14 @@ export const GetCompanies = async (page, rowsPerPage, query) => {
 
 export const GetCompaniesSwr = (page, postPerPage, query) => {
   const queryString = query ? JSON.stringify(query) : "";
-  const queryPath = "withQuote=true&page=" + page + "&postPerPage=" + postPerPage + "&query=" + queryString +"&avatar=true";
+  const queryPath =
+    "withQuote=true&page=" +
+    page +
+    "&postPerPage=" +
+    postPerPage +
+    "&query=" +
+    queryString +
+    "&avatar=true";
   const comapanyRes = useSwrData("/api/company/get-companies", queryPath);
 
   return comapanyRes;
@@ -166,7 +173,7 @@ export const GetSingleCompaniesSwr = (id, quotePage, quotePostPerPage) => {
   return comapanyRes;
 };
 
-export const AddCompanyToMongo = async (companyData) => {
+export const AddCompanyToMongo = async (companyData, shopifyCustomerId) => {
   const mongoRes = await useDataService("/api/company/add-company", "POST", {
     name: companyData.companyName,
     about: companyData.companyAbout,
@@ -175,7 +182,7 @@ export const AddCompanyToMongo = async (companyData) => {
       name: companyData.sales.name,
     },
     marked: companyData.marked ? true : false,
-    defaultpaymentTypeChange:"No",
+    defaultpaymentTypeChange: "No",
     location: {
       address: "",
       city: "",
@@ -188,6 +195,7 @@ export const AddCompanyToMongo = async (companyData) => {
         email: companyData.contactEmail,
         name: companyData.contactFirstName + " " + companyData.contactLastName,
         phone: companyData.phoneLocation,
+        shopifyCustomerId: shopifyCustomerId,
         default: true,
       },
     ],
@@ -334,7 +342,7 @@ export const AddNewShipToMongo = async (id, companyData, shipToData) => {
   return mongoRes;
 };
 
-export const AddNewUserToCompanyMongo = async (id, newUserData, userData) => {
+export const AddNewUserToCompanyMongo = async (id, newUserData, userData, shopifyCustomerId) => {
   const userDataNew = [
     ...userData,
     {
@@ -342,6 +350,7 @@ export const AddNewUserToCompanyMongo = async (id, newUserData, userData) => {
       name: newUserData.contactFirstName + " " + newUserData.contactLastName,
       phone: newUserData.phoneLocation,
       default: newUserData.default ? true : false,
+      shopifyCustomerId: shopifyCustomerId,
     },
   ];
   const mongoRes = await useDataService("/api/company/update-company", "POST", {
@@ -387,16 +396,26 @@ export const FindUserById = async (userId) => {
   return mongoRes;
 };
 
-export const GetUsers = (page, rowsPerPage, query, type) => {
+export const GetUsers = (page, rowsPerPage, sessionRole, query, type) => {
   const theType = type ? type : "any";
   const queryString = query ? JSON.stringify(query) : "";
+  const querySessionRole = sessionRole ? JSON.stringify(sessionRole) : "";
   const queryPath =
-    "page=" + page + "&postPerPage=" + rowsPerPage + "&query=" + queryString + "&type=" + theType;
-  const mongoRes = useSwrData("/api/users/get-users", queryPath);
+    "page=" +
+    page +
+    "&postPerPage=" +
+    rowsPerPage +
+    "&sessionRole=" +
+    querySessionRole +
+    "&query=" +
+    queryString +
+    "&type=" +
+    theType;
+  const mongoRes = useSwrData("/api/auth/get-users", queryPath);
   return mongoRes;
 };
 
-export const RegisterUser = async (userData, companyId) => {
+export const RegisterUser = async (userData, companyId, shopifyCustomerId) => {
   const mongoRes = await useDataService("/api/auth/register-user", "POST", {
     name: userData.contactFirstName + " " + userData.contactLastName,
     email: userData.contactEmail,
@@ -409,7 +428,9 @@ export const RegisterUser = async (userData, companyId) => {
     status: userData.password ? "active" : "invited",
     role: userData.role ? userData.role : "customer",
     signUpDate: userData.password ? utcToZonedTime(new Date(), "America/Los_Angeles") : "",
+    shopifyCustomerId: shopifyCustomerId,
   });
+
   return mongoRes;
 };
 

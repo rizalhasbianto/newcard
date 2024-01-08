@@ -1,6 +1,6 @@
 import { useCallback, useState, useEffect } from "react";
 import Head from "next/head";
-import Link from "next/link";
+import { useSession } from "next-auth/react";
 import ArrowDownOnSquareIcon from "@heroicons/react/24/solid/ArrowDownOnSquareIcon";
 import { Box, Button, Container, Stack, SvgIcon, Typography } from "@mui/material";
 import { Layout as DashboardLayout } from "src/layouts/dashboard/layout";
@@ -16,11 +16,30 @@ const Orders = () => {
     endCursor: "",
   });
   const [pageNumber, setPageNumber] = useState(0);
-
   const [hasPrev, setHasPrev] = useState(false);
   const [hasNext, setHasNext] = useState(false);
+  const { data: session } = useSession();
 
-  const { data, isLoading, isError } = GetOrdersDataSwr(fetchData);
+  const orderSession = (session) => {
+    switch(session?.user.detail.role) {
+      case "admin":
+        return {
+          session: "admin",
+        }
+      case "sales":
+        return {
+          session: "sales",
+          id: session.user.name
+        }
+      default:
+        return {
+          session: "customer",
+          id: session.user.detail.email
+        }
+    }
+  }
+
+  const { data, isLoading, isError } = GetOrdersDataSwr(fetchData, orderSession(session));
 
   const handlePageChange = useCallback(
     async (value) => {

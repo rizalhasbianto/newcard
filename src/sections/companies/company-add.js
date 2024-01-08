@@ -30,6 +30,8 @@ import {
   InviteUser,
 } from "src/service/use-mongo";
 
+import { SyncUserShopify, GetUserShopify } from "src/service/use-shopify";
+
 export default function AddCompany(props) {
   const {
     setAddNewCompany,
@@ -132,7 +134,33 @@ export default function AddCompany(props) {
       }
 
       if (submitCondition) {
-        const resSaveCompany = await AddCompanyToMongo(values);
+        let shopifyCustomerId;
+        const resSyncUser = await SyncUserShopify(values);
+        const shopifyRes = resSyncUser.resSyncCustomer.data.customerCreate.userErrors;
+        if (!resSyncUser || shopifyRes.length > 0) {
+          const errorMessage =
+            shopifyRes.length > 0 ? shopifyRes[0].message : "Error sync with Shopify!";
+
+          if (errorMessage === "Email has already been taken") {
+            const resGetUser = await GetUserShopify(values.contactEmail);
+            if (!resGetUser) {
+              toastUp.handleStatus("error");
+              toastUp.handleMessage("Error sync with Shopify!");
+              setLoadSave(false);
+              return;
+            }
+            shopifyCustomerId = resGetUser.newData.data.customers.edges[0].node.id.replace("gid://shopify/Customer/", "");
+          } else {
+            toastUp.handleStatus("error");
+            toastUp.handleMessage(errorMessage);
+            setLoadSave(false);
+            return;
+          }
+        } else {
+          shopifyCustomerId = resSyncUser.resSyncCustomer.data.customerCreate.customer.id.replace("gid://shopify/Customer/", "");
+        }
+
+        const resSaveCompany = await AddCompanyToMongo(values, shopifyCustomerId);
         if (!resSaveCompany) {
           toastUp.handleStatus("error");
           toastUp.handleMessage("Error when create company!");
@@ -140,7 +168,7 @@ export default function AddCompany(props) {
           return;
         }
 
-        const resAddUser = await RegisterUser(values, resSaveCompany.data.insertedId);
+        const resAddUser = await RegisterUser(values, resSaveCompany.data.insertedId, shopifyCustomerId);
         if (!resAddUser) {
           toastUp.handleStatus("error");
           toastUp.handleMessage("Error when create user!");

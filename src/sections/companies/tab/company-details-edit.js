@@ -37,7 +37,7 @@ export const CompanyDetailsEdit = (props) => {
   const page = 0;
   const postPerPage = 50;
   const query = { role: "sales" };
-  const { data: users, isLoading } = GetUsers(page, postPerPage, query);
+  const { data: users, isLoading } = GetUsers(page, postPerPage, "admin", query);
 
   const contactName = data?.contact[0].name.split(" ");
   const defaultContact = data?.contact.find((item) => item.default);

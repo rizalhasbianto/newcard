@@ -99,6 +99,5 @@ export default async function getSingleOrder(req, res) {
   }`;
 
   const resGetOrders = await adminAPi(query);
-  console.log("resGetOrders", resGetOrders)
   res.status(200).json({ newData: resGetOrders.data.order });
 }

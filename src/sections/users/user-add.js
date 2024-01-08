@@ -29,6 +29,8 @@ import {
   AddNewUserToCompanyMongo,
 } from "src/service/use-mongo";
 
+import { SyncUserShopify, GetUserShopify } from "src/service/use-shopify";
+
 export default function UsersAdd(props) {
   const { session, toastUp, setAddNewUser, mutateData = () => {} } = props;
   const [loadSave, setLoadSave] = useState(false);
@@ -93,7 +95,37 @@ export default function UsersAdd(props) {
         return;
       }
 
-      const resAddUser = await RegisterUser(values, companyId);
+      let shopifyCustomerId;
+      if (values.role === "customer") {
+        const resSyncUser = await SyncUserShopify(values);
+        const shopifyRes = resSyncUser.resSyncCustomer.data.customerCreate.userErrors;
+        if (!resSyncUser || shopifyRes.length > 0) {
+          const errorMessage =
+            shopifyRes.length > 0 ? shopifyRes[0].message : "Error sync with Shopify!";
+
+          if (errorMessage === "Email has already been taken") {
+            const resGetUser = await GetUserShopify(values.contactEmail);
+            if (!resGetUser) {
+              helpers.setStatus({ success: false });
+              helpers.setErrors({ submit: "Error sync with Shopify!" });
+              helpers.setSubmitting(false);
+              setLoadSave(false);
+              return;
+            }
+            shopifyCustomerId = resGetUser.newData.data.customers.edges[0].node.id.replace("gid://shopify/Customer/", "");
+          } else {
+            helpers.setStatus({ success: false });
+            helpers.setErrors({ submit: errorMessage });
+            helpers.setSubmitting(false);
+            setLoadSave(false);
+            return;
+          }
+        } else {
+          shopifyCustomerId = resSyncUser.resSyncCustomer.data.customerCreate.customer.id.replace("gid://shopify/Customer/", "");
+        }
+      }
+
+      const resAddUser = await RegisterUser(values, companyId, shopifyCustomerId);
       if (!resAddUser) {
         helpers.setStatus({ success: false });
         helpers.setErrors({ submit: "Error sync with database!" });
@@ -109,7 +141,8 @@ export default function UsersAdd(props) {
         const addNewUser = await AddNewUserToCompanyMongo(
           companyId,
           values,
-          selectedCompany.contact
+          selectedCompany.contact,
+          shopifyCustomerId
         );
         if (!addNewUser) {
           helpers.setStatus({ success: false });
@@ -358,13 +391,12 @@ export default function UsersAdd(props) {
         >
           Save
         </LoadingButton>
-        <br />
-        {formik.errors.submit && (
-          <Typography color="error" sx={{ mt: 3 }} variant="body2">
-            {formik.errors.submit}
-          </Typography>
-        )}
       </CardActions>
+      {formik.errors.submit && (
+        <Typography color="error" sx={{ mt: 3 }} variant="body2">
+          {formik.errors.submit}
+        </Typography>
+      )}
     </form>
   );
 }

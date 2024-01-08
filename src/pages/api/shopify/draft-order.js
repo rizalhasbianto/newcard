@@ -6,7 +6,7 @@ export default async function createDraftOrder(req, res) {
   const firstName = name && name[0];
   const lastName = name && name[1];
   let query;
-  console.log("bodyObject.payment", bodyObject.payment);
+
   if (bodyObject.draftOrderId) {
     query = `
       mutation {
@@ -153,7 +153,7 @@ export default async function createDraftOrder(req, res) {
         }
       `;
   }
-  console.log(query);
+
   const createDraft = await adminAPi(query);
   res.json({ status: 200, createDraft });
 }

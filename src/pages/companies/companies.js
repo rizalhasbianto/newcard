@@ -46,7 +46,7 @@ const Companies = () => {
       case "sales":
         return { "sales.name": session.user.name };
       default:
-        return;
+        return {};
     }
   };
 

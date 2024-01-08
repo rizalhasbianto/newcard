@@ -31,11 +31,14 @@ import { GetUsers } from "src/service/use-mongo";
 const Users = () => {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
-  const [addNewUser, setAddNewUser] = useState(false);
+  const [addNewUser, setAddNewUser] = useState(false); 
   const toastUp = useToast();
   const { data: session } = useSession();
-
-  const { data: users, isLoading, isError, mutate, isValidating } = GetUsers(page, rowsPerPage);
+  const sessionRole = {
+    role:session?.user.detail.role,
+    id:session?.user.detail.id
+  }
+  const { data: users, isLoading, isError, mutate, isValidating } = GetUsers(page, rowsPerPage, sessionRole);
 
   const handlePageChange = useCallback((event, value) => {
     setPage(value);

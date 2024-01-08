@@ -54,19 +54,10 @@ export const QuotesForm = (props) => {
   const [collectionName, setCollectionName] = useState();
   const [total, setTotal] = useState(10);
   const toastUp = useToast();
-  const handleTemplate = useCallback(() => {
-    setButtonLoading();
-    toastUp.handleStatus("success");
-    toastUp.handleMessage("Line item saved to template!!!");
-  }, [toastUp]);
 
   const handleSubmit = useCallback(
     async (type) => {
       setButtonLoading(type);
-      if (type === "template") {
-        handleTemplate();
-        return;
-      }
 
       const mongoReponse = await SaveQuoteToMongoDb(
         companyName,
@@ -108,7 +99,7 @@ export const QuotesForm = (props) => {
         payment,
         tabContent.draftOrderId
       );
-      console.log("shopifyResponse", shopifyResponse);
+
       if (
         !shopifyResponse ||
         shopifyResponse.response?.createDraft?.errors ||
@@ -184,12 +175,12 @@ export const QuotesForm = (props) => {
       toastUp.handleStatus("success");
       toastUp.handleMessage("Invoice sent!!!");
     },
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [
       companyContact,
       companyName,
       discount,
-      handleTemplate,
       location,
       quoteId,
       quotesList,

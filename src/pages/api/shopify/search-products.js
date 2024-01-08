@@ -8,7 +8,7 @@ export default async function getProducts(req, res) {
   const prodFilter = req.query.selectedFilter
     ? `, productFilters:${req.query.selectedFilter.replace(/"([^(")"]+)":/g, "$1:")}`
     : "";
-
+console.log(prodFilter)
   const gQl = `
     { search(
         first:${productPerPage}, 

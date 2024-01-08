@@ -203,7 +203,7 @@ const Page = () => {
                               Payment Terms:
                             </Typography>
                             <Typography variant="subtitle1">
-                              {data.newData.paymentTerms.paymentTermsName}
+                              {data.newData.paymentTerms?.paymentTermsName}
                             </Typography>
                           </Stack>
                           <Stack direction={"row"}>
@@ -211,7 +211,7 @@ const Page = () => {
                               Due In days:
                             </Typography>
                             <Typography variant="subtitle1">
-                              {data.newData.paymentTerms.dueInDays}
+                              {data.newData.paymentTerms?.dueInDays}
                             </Typography>
                           </Stack>
                           <Stack direction={"row"}>

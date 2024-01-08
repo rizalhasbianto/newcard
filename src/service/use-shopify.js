@@ -49,12 +49,12 @@ export const GetProductsShopify = async (selectedFilter, productPerPage, lastCur
     if (!newParam[key]) delete newParam[key];
     if (newParam[key] === "*") delete newParam[key];
   });
-  
+
   const queryParam = new URLSearchParams(newParam).toString();
-  const productNameForCollection = productName.replace("*", "")
+  const productNameForCollection = productName.replace("*", "");
   const sendToShopify = await useDataService("/api/shopify/get-products", "POST", {
     queryParam,
-    productName:productNameForCollection,
+    productName: productNameForCollection,
     productType,
     tag,
     productVendor,
@@ -100,7 +100,7 @@ export const SearchProducts = (
       productVendor,
       collection,
       productPerPage,
-    }; 
+    };
     queryParam = new URLSearchParams(params).toString();
     url = "/api/shopify/get-products-swr";
   } else {
@@ -109,11 +109,11 @@ export const SearchProducts = (
       url = "/api/shopify/smart-search";
     } else {
       if (!selectedFilter.collection) {
-        const paramNoTitle = selectedVariantFilter.filter((item) => !item["productName"])
+        const paramNoTitle = selectedVariantFilter.filter((item) => !item["productName"]);
         queryParam =
-        selectedVariantFilter.length > 0
+          selectedVariantFilter.length > 0
             ? `selectedFilter=${JSON.stringify(
-              paramNoTitle
+                paramNoTitle
               )}&productPerPage=${productPerPage}&productName=${productName}`
             : "";
         url = "/api/shopify/search-products";
@@ -146,28 +146,51 @@ export const GetProductsMeta = async (inputValue) => {
   return sendToShopify;
 };
 
-export const GetOrdersDataSwr = (page) => {
+export const GetOrdersDataSwr = (page, session) => {
   const queryPath =
-    "page=" + page.direction + "&startCursor=" + page.startCursor + "&endCursor=" + page.endCursor;
+    "page=" +
+    page.direction +
+    "&startCursor=" +
+    page.startCursor +
+    "&endCursor=" +
+    page.endCursor +
+    "&session=" +
+    session.session +
+    "&sessionId=" +
+    session.id;
   const quotesRes = useSwrData("/api/shopify/get-orders", queryPath);
 
   return quotesRes;
 };
 
 export const GetProductByhandleSwr = (handle) => {
-  const queryPath = "productHandle=" + handle ;
+  const queryPath = "productHandle=" + handle;
   const productRes = useSwrData("/api/shopify/get-product-byhandle", queryPath);
   return productRes;
-}
+};
 
 export const GetSingleOrderSwr = (id) => {
-  const queryPath = "id=" + id ;
+  const queryPath = "id=" + id;
   const productRes = useSwrData("/api/shopify/get-single-order", queryPath);
   return productRes;
-}
+};
 export const GetInventorySwr = (page) => {
   const queryPath =
     "page=" + page.direction + "&startCursor=" + page.startCursor + "&endCursor=" + page.endCursor;
   const dataRes = useSwrData("/api/shopify/inventory", queryPath);
   return dataRes;
-}
+};
+
+export const SyncUserShopify = async (userData) => {
+  const shopifyRes = await useDataService("/api/shopify/sync-customer", "POST", {
+    firstName: userData.contactFirstName,
+    lastName: userData.contactLastName,
+    email: userData.contactEmail,
+  });
+  return shopifyRes;
+};
+
+export const GetUserShopify = async (email) => {
+  const shopifyRes = await useDataService(`/api/shopify/get-customer?email=${email}`, "GET");
+  return shopifyRes;
+};

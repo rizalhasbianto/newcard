@@ -27,6 +27,9 @@ export const authOptions = {
                 if (response.length === 0) {
                     throw new Error("User with that email is not found");
                 }
+                if (response[0].status !== "active") {
+                    throw new Error("User was not active");
+                }
 
                 const matchPass = await bcrypt.compare(password, response[0].password);
 
@@ -36,7 +39,7 @@ export const authOptions = {
                         email: response[0].email,
                         company: response[0].company,
                         role: response[0].role,
-                        id:response[0]._id
+                        id:response[0]._id,
                     }
                 } else {
                     throw new Error("Invalid password");
