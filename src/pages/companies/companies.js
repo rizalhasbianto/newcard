@@ -40,7 +40,7 @@ const Companies = () => {
   const toastUp = useToast();
   const postPerPage = 6;
   const companyQuery = (session) => {
-    switch (session.user.detail.role) {
+    switch (session?.user.detail.role) {
       case "customer":
         return { _id: session?.user.detail.company.companyId };
       case "sales":
