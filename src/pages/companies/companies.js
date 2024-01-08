@@ -42,9 +42,9 @@ const Companies = () => {
   const companyQuery = (session) => {
     switch (session.user.detail.role) {
       case "customer":
-        return { _id: session.user.detail.company.companyId };
+        return { _id: session?.user.detail.company.companyId };
       case "sales":
-        return { "sales.name": session.user.name };
+        return { "sales.name": session?.user.name };
       default:
         return {};
     }

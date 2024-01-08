@@ -29,12 +29,12 @@ const Orders = () => {
       case "sales":
         return {
           session: "sales",
-          id: session.user.name
+          id: session?.user.name
         }
       default:
         return {
           session: "customer",
-          id: session.user.detail.email
+          id: session?.user.detail.email
         }
     }
   }
