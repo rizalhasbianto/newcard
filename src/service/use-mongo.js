@@ -190,15 +190,7 @@ export const AddCompanyToMongo = async (companyData, shopifyCustomerId) => {
       zip: "",
     },
     avatar: companyData.companyPhoto,
-    contact: [
-      {
-        email: companyData.contactEmail,
-        name: companyData.contactFirstName + " " + companyData.contactLastName,
-        phone: companyData.phoneLocation,
-        shopifyCustomerId: shopifyCustomerId,
-        default: true,
-      },
-    ],
+    contact: [],
     shipTo: [
       {
         locationName: companyData.companyShippingLocation,
@@ -239,17 +231,44 @@ export const UpdateCompanyInfoToMongo = async (companyData) => {
   return mongoRes;
 };
 
-export const UpdateCompanyContactDefault = async (id, defaultContact, userData) => {
+export const AddNewUserToCompanyMongo = async (props) => {
+  const { companyId, newUserData, userData = [], shopifyCustomerId } = props;
+
+  if (newUserData.default && userData.length > 0) {
+    userData.map((item) => (item.default = false));
+  }
+
+  const userDataNew = [
+    ...userData,
+    {
+      userId: newUserData.id,
+      shopifyCustomerId: shopifyCustomerId,
+      default: newUserData.default ? true : false,
+    },
+  ];
+
+  const mongoRes = await useDataService("/api/company/update-company", "POST", {
+    id: companyId,
+    updateData: {
+      contact: userDataNew,
+    },
+  });
+  return mongoRes;
+};
+
+export const UpdateCompanyContactDefault = async (props) => {
+  const { companyId, defaultContact, userData } = props;
   const newContactDefault = [...userData];
   newContactDefault.map((item, i) => {
-    if (item.email === defaultContact) {
+    if (item.userId === defaultContact) {
       item.default = true;
     } else {
       item.default = false;
     }
   });
+
   const mongoRes = await useDataService("/api/company/update-company", "POST", {
-    id: id,
+    id: companyId,
     updateData: {
       contact: newContactDefault,
     },
@@ -342,26 +361,6 @@ export const AddNewShipToMongo = async (id, companyData, shipToData) => {
   return mongoRes;
 };
 
-export const AddNewUserToCompanyMongo = async (id, newUserData, userData, shopifyCustomerId) => {
-  const userDataNew = [
-    ...userData,
-    {
-      email: newUserData.contactEmail,
-      name: newUserData.contactFirstName + " " + newUserData.contactLastName,
-      phone: newUserData.phoneLocation,
-      default: newUserData.default ? true : false,
-      shopifyCustomerId: shopifyCustomerId,
-    },
-  ];
-  const mongoRes = await useDataService("/api/company/update-company", "POST", {
-    id: id,
-    updateData: {
-      contact: userDataNew,
-    },
-  });
-  return mongoRes;
-};
-
 export const UpdateCompanyAvatarToMongo = async (id, companyPhoto) => {
   const mongoRes = await useDataService("/api/company/update-company", "POST", {
     id: id,
@@ -396,7 +395,8 @@ export const FindUserById = async (userId) => {
   return mongoRes;
 };
 
-export const GetUsers = (page, rowsPerPage, sessionRole, query, type) => {
+export const GetUsers = (props) => {
+  const { page, rowsPerPage, sessionRole, query, type } = props;
   const theType = type ? type : "any";
   const queryString = query ? JSON.stringify(query) : "";
   const querySessionRole = sessionRole ? JSON.stringify(sessionRole) : "";
@@ -421,10 +421,7 @@ export const RegisterUser = async (userData, companyId, shopifyCustomerId) => {
     email: userData.contactEmail,
     phone: userData.phoneLocation,
     password: userData.password,
-    company: {
-      companyId: companyId,
-      companyName: userData.companyName,
-    },
+    companyId: companyId,
     status: userData.password ? "active" : "invited",
     role: userData.role ? userData.role : "customer",
     signUpDate: userData.password ? utcToZonedTime(new Date(), "America/Los_Angeles") : "",

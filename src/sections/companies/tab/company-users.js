@@ -40,18 +40,21 @@ export const CompanyUsers = (props) => {
   const [defaultContact, setDefaultContact] = useState(data?.contact.find((item) => item.default));
   const initialDefaultDataContact = data?.contact.find((item) => item.default);
   const splitName = (name) => {
+    if (!name) return [];
     return name.split(" ");
   };
 
   const formik = useFormik({
     initialValues: {
-      email: data?.contact[0].email,
-      firstName: splitName(data?.contact[0].name)[0],
+      email: data?.contact[0].detail?.email,
+      firstName: splitName(data?.contact[0].detail?.name)[0],
       lastName:
-        splitName(data?.contact[0].name)[1] +
-        (splitName(data?.contact[0].name)[2] ? " " + splitName(data?.contact[0].name)[2] : ""),
-      phone: data?.contact[0].phone,
-      default: data?.contact[0].default,
+        splitName(data?.contact[0].detail?.name)[1] +
+        (splitName(data?.contact[0].detail?.name)[2]
+          ? " " + splitName(data?.contact[0].detail?.name)[2]
+          : ""),
+      phone: data?.contact[0].detail?.phone,
+      default: data?.contact[0].detail?.default,
       submit: null,
     },
     validationSchema: Yup.object({
@@ -64,8 +67,7 @@ export const CompanyUsers = (props) => {
     }),
     onSubmit: async (values, helpers) => {
       setLoadSave(true);
-
-      if (values.email !== data?.contact[value - 1].email) {
+      if (newUser || values.email !== data?.contact[value - 1].detail.email) {
         const checkUser = await CheckUserEmail(values.email);
         if (!checkUser) {
           helpers.setStatus({ success: false });
@@ -82,13 +84,13 @@ export const CompanyUsers = (props) => {
       }
 
       if (!newUser) {
-        const resUpdateuser = await UpdateCompanyUserToMongo(data._id, values, data.contact);
-        if (!resUpdateuser) {
-          toastUp.handleStatus("error");
-          toastUp.handleMessage("Error update contact!");
-          setLoadSave(false);
-          return;
-        }
+        // const resUpdateuser = await UpdateCompanyUserToMongo(data._id, values, data.contact);
+        // if (!resUpdateuser) {
+        //   toastUp.handleStatus("error");
+        //   toastUp.handleMessage("Error update contact!");
+        //   setLoadSave(false);
+        //   return;
+        // }
         toastUp.handleStatus("success");
         toastUp.handleMessage("Success update contact!");
         setLoadSave(false);
@@ -102,31 +104,36 @@ export const CompanyUsers = (props) => {
         };
 
         let shopifyCustomerId;
-        const resSyncUser = await SyncUserShopify(values);
+        const resSyncUser = await SyncUserShopify(userData);
         const shopifyRes = resSyncUser.resSyncCustomer.data.customerCreate.userErrors;
         if (!resSyncUser || shopifyRes.length > 0) {
           const errorMessage =
             shopifyRes.length > 0 ? shopifyRes[0].message : "Error sync with Shopify!";
 
           if (errorMessage === "Email has already been taken") {
-            const resGetUser = await GetUserShopify(values.contactEmail);
+            const resGetUser = await GetUserShopify(userData.contactEmail);
             if (!resGetUser) {
-              helpers.setStatus({ success: false });
-              helpers.setErrors({ submit: "Error sync with Shopify!" });
-              helpers.setSubmitting(false);
+              toastUp.handleStatus("error");
+              toastUp.handleMessage("Error sync with Shopify!");
               setLoadSave(false);
               return;
             }
-            shopifyCustomerId = resGetUser.newData.data.customers.edges[0].node.id.replace("gid://shopify/Customer/", "");
+            console.log("resGetUser", resGetUser);
+            shopifyCustomerId = resGetUser.newData.data.customers.edges[0].node.id.replace(
+              "gid://shopify/Customer/",
+              ""
+            );
           } else {
-            helpers.setStatus({ success: false });
-            helpers.setErrors({ submit: errorMessage });
-            helpers.setSubmitting(false);
+            toastUp.handleStatus("error");
+            toastUp.handleMessage(errorMessage);
             setLoadSave(false);
             return;
           }
         } else {
-          shopifyCustomerId = resSyncUser.resSyncCustomer.data.customerCreate.customer.id.replace("gid://shopify/Customer/", "");
+          shopifyCustomerId = resSyncUser.resSyncCustomer.data.customerCreate.customer.id.replace(
+            "gid://shopify/Customer/",
+            ""
+          );
         }
 
         const resAddUser = await RegisterUser(userData, data._id, shopifyCustomerId);
@@ -138,12 +145,12 @@ export const CompanyUsers = (props) => {
           return;
         }
 
-        const addNewUser = await AddNewUserToCompanyMongo(
-          data._id,
-          userData,
-          data.contact,
-          shopifyCustomerId
-        );
+        const addNewUser = await AddNewUserToCompanyMongo({
+          companyId: data._id,
+          newUserData: { id: resAddUser.data.insertedId, default: false },
+          userData: data.contact,
+          shopifyCustomerId,
+        });
         if (!addNewUser) {
           helpers.setStatus({ success: false });
           helpers.setErrors({ submit: "Error sync with database!" });
@@ -185,15 +192,15 @@ export const CompanyUsers = (props) => {
         });
       } else {
         setNewUser(false);
-        const selectedAddress = data?.contact[newValue - 1];
+        const selectedUser = data?.contact[newValue - 1].detail;
         formik.setValues({
-          email: selectedAddress.email,
-          firstName: splitName(selectedAddress.name)[0],
+          email: selectedUser.email,
+          firstName: splitName(selectedUser.name)[0],
           lastName:
-            splitName(selectedAddress.name)[1] +
-            (splitName(selectedAddress.name)[2] ? " " + splitName(selectedAddress.name)[2] : ""),
-          phone: selectedAddress.phone,
-          default: selectedAddress.default,
+            splitName(selectedUser.name)[1] +
+            (splitName(selectedUser.name)[2] ? " " + splitName(selectedUser.name)[2] : ""),
+          phone: selectedUser.phone,
+          default: selectedUser.default,
         });
       }
     },
@@ -204,11 +211,11 @@ export const CompanyUsers = (props) => {
   const handleSaveDefaultContact = useCallback(async () => {
     setLoadSaveContact(true);
 
-    const resSaveData = await UpdateCompanyContactDefault(
-      data._id,
-      defaultContact.email,
-      data.contact
-    );
+    const resSaveData = await UpdateCompanyContactDefault({
+      companyId: data._id,
+      defaultContact: defaultContact.userId,
+      userData: data.contact,
+    });
 
     if (!resSaveData) {
       toastUp.handleStatus("error");
@@ -216,6 +223,7 @@ export const CompanyUsers = (props) => {
       setLoadSaveContact(false);
     }
 
+    mutate();
     toastUp.handleStatus("success");
     toastUp.handleMessage("Success update default contact!");
     setLoadSaveContact(false);
@@ -240,23 +248,23 @@ export const CompanyUsers = (props) => {
               name="defaultContact"
               label=""
               variant="standard"
-              value={defaultContact.email}
+              value={defaultContact.userId}
               select
               fullWidth
               required
               onChange={(event) =>
-                setDefaultContact(data?.contact.find((item) => item.email === event.target.value))
+                setDefaultContact(data?.contact.find((item) => item.userId === event.target.value))
               }
             >
               {data.contact.map((item, i) => (
-                <MenuItem value={item.email} key={i + 1}>
-                  <em>{item.name}</em>
+                <MenuItem value={item.userId} key={i + 1}>
+                  <em>{item.detail?.name}</em>
                 </MenuItem>
               ))}
             </TextField>
           </Stack>
         </Grid>
-        {defaultContact.email !== initialDefaultDataContact.email && (
+        {defaultContact?.userId !== initialDefaultDataContact?.userId && (
           <Grid item xs={8} md={2}>
             <LoadingButton
               color="primary"
@@ -286,7 +294,7 @@ export const CompanyUsers = (props) => {
           >
             {data &&
               data.contact.map((contact, i) => (
-                <Tab label={contact.name} value={i + 1} key={i + 1} sx={{ pr: 1 }} />
+                <Tab label={contact.detail?.name} value={i + 1} key={i + 1} sx={{ pr: 1 }} />
               ))}
             <Tab label="Add user" value={data.contact.length + 1} sx={{ pr: 1 }} />
           </Tabs>

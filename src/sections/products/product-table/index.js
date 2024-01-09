@@ -6,7 +6,7 @@ import {
   TableRow,
   Box,
   Card,
-  Unstable_Grid2 as Grid,
+  Grid,
 } from "@mui/material";
 
 import { Productlist } from "./product-list";
@@ -18,8 +18,14 @@ export const ProductTable = (props) => {
 
   return (
     data && (
-      <Card sx={{ minWidth: "100%" }}>
-        <Box sx={{ minWidth: "100%" }}>
+      <Grid 
+          item 
+          xs={12} 
+          md={12} 
+          lg={12}
+        >
+      <Card sx={{ minWidth: "100%"}}>
+        <Box sx={{ minWidth: "100%"}}>
           <Table>
             <TableHead>
               <TableRow>
@@ -45,6 +51,7 @@ export const ProductTable = (props) => {
           </Table>
         </Box>
       </Card>
+      </Grid>
     )
   );
 };

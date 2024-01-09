@@ -39,8 +39,7 @@ export const CompanyDetailsEdit = (props) => {
   const query = { role: "sales" };
   const { data: users, isLoading } = GetUsers(page, postPerPage, "admin", query);
 
-  const contactName = data?.contact[0].name.split(" ");
-  const defaultContact = data?.contact.find((item) => item.default);
+  const defaultContact = data?.contact.find((item) => item.default).detail;
   const formik = useFormik({
     initialValues: {
       id: data?._id,
@@ -106,7 +105,6 @@ export const CompanyDetailsEdit = (props) => {
         } else {
           values.newSales = data.sales;
         }
-
 
         if (defaultContact.email !== values.email) {
           const newContactDefault = [...data.contact];
@@ -281,8 +279,8 @@ export const CompanyDetailsEdit = (props) => {
               helperText={formik.touched.contact && formik.errors.contact}
             >
               {data.contact.map((item, i) => (
-                <MenuItem value={item.email} key={i + 1}>
-                  <em>{item.name}</em>
+                <MenuItem value={item.detail.email} key={i + 1}>
+                  <em>{item.detail.name}</em>
                 </MenuItem>
               ))}
             </TextField>

@@ -17,14 +17,13 @@ export default async function getUsers(req, res) {
     const data = await db
       .collection(collectionCompany)
       .find({ "sales.id": sessionRole.id })
-      .project({ password: 0 })
       .limit(100)
       .toArray();
 
     data.map((item) => companyList.push(new ObjectId(item._id).toString()));
   }
 
-  const queryRole = companyList.length > 0 ? { "company.companyId": { $in: companyList } } : {};
+  const queryRole = companyList.length > 0 ? { companyId: { $in: companyList } } : {};
   const queryObject = queryObjectParse.role
     ? { ...queryObjectParse }
     : { ...queryObjectParse, role: { $nin: ["admin"] } };

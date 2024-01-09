@@ -31,11 +31,7 @@ const Page = () => {
   const [switchEditDetails, setSwitchEditDetails] = useState(true);
   const toastUp = useToast();
   const router = useRouter();
-  const { data, isLoading, isError, mutate, isValidating } = GetSingleCompaniesSwr(
-    router.query.company,
-    0,
-    1
-  );
+  const { data, isLoading, isError, mutate } = GetSingleCompaniesSwr(router.query.company, 0, 1);
   const handleChange = (event, newValue) => {
     setValue(newValue);
   };

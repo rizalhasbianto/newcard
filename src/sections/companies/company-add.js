@@ -28,6 +28,7 @@ import {
   CheckUserEmail,
   RegisterUser,
   InviteUser,
+  AddNewUserToCompanyMongo
 } from "src/service/use-mongo";
 
 import { SyncUserShopify, GetUserShopify } from "src/service/use-shopify";
@@ -184,6 +185,19 @@ export default function AddCompany(props) {
           return;
         }
 
+        const resAddUserToCompany = await AddNewUserToCompanyMongo({
+          companyId:resSaveCompany.data.insertedId,
+          newUserData: {id:resAddUser.data.insertedId, default:true},
+          shopifyCustomerId: shopifyCustomerId
+        });
+
+        if (!resAddUserToCompany) {
+          toastUp.handleStatus("error");
+          toastUp.handleMessage("Error when sync user to company!");
+          setLoadSave(false);
+          return;
+        }
+
         setLoadSave(false);
         toastUp.handleStatus("success");
         toastUp.handleMessage("Company added, sent user invite!");
@@ -257,7 +271,7 @@ export default function AddCompany(props) {
   const page = 0;
   const postPerPage = 50;
   const query = { role: "sales" };
-  const { data: users, isLoading } = GetUsers(page, postPerPage, query);
+  const { data: users, isLoading } = GetUsers({page, postPerPage, query});
 
   return (
     <form noValidate onSubmit={formik.handleSubmit}>

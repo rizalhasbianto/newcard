@@ -38,7 +38,8 @@ const Users = () => {
     role:session?.user.detail.role,
     id:session?.user.detail.id
   }
-  const { data: users, isLoading, isError, mutate, isValidating } = GetUsers(page, rowsPerPage, sessionRole);
+
+  const { data: users, isLoading, isError, mutate, isValidating } = GetUsers({page, rowsPerPage, sessionRole});
 
   const handlePageChange = useCallback((event, value) => {
     setPage(value);

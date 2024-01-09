@@ -2,6 +2,7 @@ import ChartBarIcon from '@heroicons/react/24/solid/ChartBarIcon';
 import NewspaperIcon from '@heroicons/react/24/solid/NewspaperIcon';
 import CogIcon from '@heroicons/react/24/solid/CogIcon';
 import LockClosedIcon from '@heroicons/react/24/solid/LockClosedIcon';
+import CategoryIcon from '@mui/icons-material/Category';
 import ShoppingBagIcon from '@heroicons/react/24/solid/ShoppingBagIcon';
 import UserIcon from '@heroicons/react/24/solid/UserIcon';
 import ClipboardDocumentIcon from '@heroicons/react/24/solid/ClipboardDocumentIcon';
@@ -77,6 +78,16 @@ export const items = [
         icon: (
           <SvgIcon fontSize="small">
             <InventoryIcon />
+          </SvgIcon>
+        ),
+      },
+      {
+        title: 'Catalogs',
+        path: '/products/catalogs',
+        role: ['admin', 'sales'],
+        icon: (
+          <SvgIcon fontSize="small">
+            <CategoryIcon />
           </SvgIcon>
         ),
       },

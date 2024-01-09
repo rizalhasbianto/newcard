@@ -1,12 +1,10 @@
-import React, { useState, useMemo, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import {
-  Box,
   TextField,
   Checkbox,
   Divider,
   MenuItem,
   Unstable_Grid2 as Grid,
-  Autocomplete,
   CardActions,
   Stack,
   Typography,
@@ -14,13 +12,8 @@ import {
 import LoadingButton from "@mui/lab/LoadingButton";
 import CancelIcon from "@mui/icons-material/Cancel";
 import SaveIcon from "@mui/icons-material/Save";
-import BookmarkBorderIcon from "@mui/icons-material/BookmarkBorder";
-import BookmarkIcon from "@mui/icons-material/Bookmark";
-import { MuiFileInput } from "mui-file-input";
-import { usaState } from "src/data/state-usa";
-import { useFormik, ErrorMessage } from "formik";
+import { useFormik } from "formik";
 import * as Yup from "yup";
-import Image from "next/image";
 import {
   GetCompanies,
   CheckUserEmail,
@@ -112,7 +105,10 @@ export default function UsersAdd(props) {
               setLoadSave(false);
               return;
             }
-            shopifyCustomerId = resGetUser.newData.data.customers.edges[0].node.id.replace("gid://shopify/Customer/", "");
+            shopifyCustomerId = resGetUser.newData.data.customers.edges[0].node.id.replace(
+              "gid://shopify/Customer/",
+              ""
+            );
           } else {
             helpers.setStatus({ success: false });
             helpers.setErrors({ submit: errorMessage });
@@ -121,7 +117,10 @@ export default function UsersAdd(props) {
             return;
           }
         } else {
-          shopifyCustomerId = resSyncUser.resSyncCustomer.data.customerCreate.customer.id.replace("gid://shopify/Customer/", "");
+          shopifyCustomerId = resSyncUser.resSyncCustomer.data.customerCreate.customer.id.replace(
+            "gid://shopify/Customer/",
+            ""
+          );
         }
       }
 
@@ -138,12 +137,11 @@ export default function UsersAdd(props) {
       }
 
       if (values.role === "customer") {
-        const addNewUser = await AddNewUserToCompanyMongo(
+        const addNewUser = await AddNewUserToCompanyMongo({
           companyId,
-          values,
-          selectedCompany.contact,
-          shopifyCustomerId
-        );
+          newUserData: { id: resAddUser.data.insertedId, default: true },
+          shopifyCustomerId: shopifyCustomerId,
+        });
         if (!addNewUser) {
           helpers.setStatus({ success: false });
           helpers.setErrors({ submit: "Error sync with database!" });

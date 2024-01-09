@@ -36,16 +36,17 @@ export default function QuoteSelectCompany(props) {
                 }
                 const selectedCompany = companies.find((company) => company.name === event.target.value)
                 setShipTo(selectedCompany.shipTo[0].locationName)
-                setCompanyContact(selectedCompany.contact[0])
                 setShipToList(selectedCompany.shipTo)
                 setLocation(selectedCompany.shipTo[0].location)
                 setCompanySales(selectedCompany.sales)
+                
             } else {
                 const locationList = data.find((ship) => ship.locationName === event.target.value)
                 setShipTo(event.target.value)
                 setLocation(locationList.location)
             }
         },
+        // eslint-disable-next-line react-hooks/exhaustive-deps
         [companies, setCompanyContact, setCompanyName, setLocation, setShipTo, setShipToList]
     );
 

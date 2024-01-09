@@ -7,12 +7,7 @@ export const CompanyDetails = (props) => {
 
   return (
     <Box sx={{ m: -1.5 }}>
-      <Grid 
-        container 
-        spacing={1} 
-        alignItems={"flex-start"} 
-        justifyItems={"flex-start"}
-      >
+      <Grid container spacing={1} alignItems={"flex-start"} justifyItems={"flex-start"}>
         <Grid item xs={4} md={3}>
           <Typography variant="subtitle2" color="neutral.500">
             Name
@@ -28,8 +23,10 @@ export const CompanyDetails = (props) => {
         </Grid>
         <Grid item xs={8} md={9}>
           <Stack direction={"row"}>
-          <Typography variant="subtitle2" sx={{mr:"4px"}}>:</Typography>
-          <Typography variant="subtitle2"> {data.about}</Typography>
+            <Typography variant="subtitle2" sx={{ mr: "4px" }}>
+              :
+            </Typography>
+            <Typography variant="subtitle2"> {data.about}</Typography>
           </Stack>
         </Grid>
         <Grid item xs={4} md={3}>
@@ -39,8 +36,9 @@ export const CompanyDetails = (props) => {
         </Grid>
         <Grid item xs={8} md={9}>
           <Typography variant="subtitle2" color={data.location.address ? "#000" : "neutral.500"}>
-            : {data.location.address} {data.location.city} {data.location.state.label} { data.location.address && ","} {" "}
-            {data.location.zip + " "} { data.location.address ? "United States" : "Address not set"}
+            : {data.location.address} {data.location.city} {data.location.state.label}{" "}
+            {data.location.address && ","} {data.location.zip + " "}{" "}
+            {data.location.address ? "United States" : "Address not set"}
           </Typography>
         </Grid>
         <Grid item xs={4} md={3}>
@@ -50,7 +48,7 @@ export const CompanyDetails = (props) => {
         </Grid>
         <Grid item xs={8} md={9}>
           <Typography variant="subtitle2">
-            : {data?.contact.find((item) => item.default).name}
+            : {data?.contact.find((item) => item.default).detail.name}
           </Typography>
         </Grid>
         <Grid item xs={4} md={3}>
