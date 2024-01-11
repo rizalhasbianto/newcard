@@ -1,11 +1,7 @@
 import Head from "next/head";
 import { useRouter } from "next/router";
 import { useSession } from "next-auth/react";
-import PlusIcon from "@heroicons/react/24/solid/PlusIcon";
-import LoadingButton from "@mui/lab/LoadingButton";
-import AutorenewIcon from "@mui/icons-material/Autorenew";
-import DashboardIcon from "@mui/icons-material/Dashboard";
-import DvrIcon from "@mui/icons-material/Dvr";
+
 import {
   Box,
   Button,
@@ -16,10 +12,15 @@ import {
   Typography,
   Grid,
 } from "@mui/material";
+import PlusIcon from "@heroicons/react/24/solid/PlusIcon";
+import LoadingButton from "@mui/lab/LoadingButton";
+import AutorenewIcon from "@mui/icons-material/Autorenew";
+import DashboardIcon from "@mui/icons-material/Dashboard";
+import DvrIcon from "@mui/icons-material/Dvr";
 
-import { ProductGrid } from "src/sections/products/product-grid";
-import { ProductsSearch } from "src/sections/products/products-search";
-import { ProductTable } from "src/sections/products/product-table";
+import ProductsSearch from "src/sections/products/products-search";
+import ProductGrid from "src/sections/products/product-grid";
+import ProductTable from "src/sections/products/product-table";
 import ProductAlertDialogQuoteList from "src/sections/products/product-alert-dialog-quotelist";
 
 import Toast from "src/components/toast";

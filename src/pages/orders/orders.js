@@ -1,12 +1,11 @@
 import { useCallback, useState, useEffect } from "react";
 import Head from "next/head";
 import { useSession } from "next-auth/react";
-import ArrowDownOnSquareIcon from "@heroicons/react/24/solid/ArrowDownOnSquareIcon";
-import { Box, Button, Container, Stack, SvgIcon, Typography } from "@mui/material";
-import { Layout as DashboardLayout } from "src/layouts/dashboard/layout";
-import { OrdersTable } from "src/sections/orders/orders-table";
-import { QuotesSearch } from "src/sections/quotes/quotes-search";
+
 import { GetOrdersDataSwr } from "src/service/use-shopify";
+
+import { Box, Container, Stack, Typography } from "@mui/material";
+import OrdersTable from "src/sections/orders/orders-table";
 import TableLoading from "src/components/table-loading";
 
 const Orders = () => {

@@ -4,7 +4,7 @@ import { GetInventorySwr } from "src/service/use-shopify";
 import { Layout as DashboardLayout } from "src/layouts/dashboard/layout";
 import { Box, Container, Typography, Stack } from "@mui/material";
 import TableLoading from "src/components/table-loading";
-import { InventoryTable } from "src/sections/products/invetory-table";
+import InventoryTable from "src/sections/products/invetory-table";
 
 const Page = () => {
   const [fetchData, setFetchData] = useState({

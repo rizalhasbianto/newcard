@@ -20,7 +20,7 @@ import {
 } from "@mui/material";
 import { topFilterList } from "src/data/quickAddFilterList";
 
-export const ProductsSearch = (props) => {
+const ProductsSearch = (props) => {
   const {
     selectedFilter,
     setSelectedFilter,
@@ -347,3 +347,5 @@ export const ProductsSearch = (props) => {
     </>
   );
 };
+
+export default ProductsSearch 

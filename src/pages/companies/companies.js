@@ -1,4 +1,5 @@
 import Head from "next/head";
+import { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
 import {
   Box,
@@ -13,15 +14,14 @@ import {
   CardContent,
   Unstable_Grid2 as Grid,
 } from "@mui/material";
-import ArrowUpOnSquareIcon from "@heroicons/react/24/solid/ArrowUpOnSquareIcon";
-import ArrowDownOnSquareIcon from "@heroicons/react/24/solid/ArrowDownOnSquareIcon";
 import PlusIcon from "@heroicons/react/24/solid/PlusIcon";
 import CloseIcon from "@mui/icons-material/Close";
-import { CompanyCard } from "src/sections/companies/company-card";
+
+import CompanyCard from "src/sections/companies/company-card";
 import AddCompany from "src/sections/companies/company-add";
-import { CompaniesSearch } from "src/sections/companies/companies-search";
+import CompaniesSearch from "src/sections/companies/companies-search";
+
 import { GetCompaniesSwr, GetCompanies } from "src/service/use-mongo";
-import { useEffect, useState } from "react";
 import { useToast } from "src/hooks/use-toast";
 import Toast from "src/components/toast";
 import CardLoading from "src/components/grid-loading";

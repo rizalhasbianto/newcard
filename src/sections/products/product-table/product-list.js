@@ -17,7 +17,7 @@ import OptionsComponent from "src/components/products/options";
 import { ImageComponent } from "src/components/image";
 import { UpdateQuoteItem } from "src/service/use-mongo";
 
-export const Productlist = (props) => {
+const Productlist = (props) => {
   const { product, handleOpenQuoteList, toastUp, noUrut, quoteId } = props;
 
 
@@ -183,6 +183,4 @@ export const Productlist = (props) => {
   );
 };
 
-Productlist.propTypes = {
-  product: PropTypes.object.isRequired,
-};
+export default Productlist

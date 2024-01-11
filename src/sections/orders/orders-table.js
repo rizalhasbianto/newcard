@@ -1,37 +1,24 @@
-import { useCallback, useState, useEffect } from "react";
 import { useRouter } from 'next/router'
-import { DeleteQuoteFromMongo } from "src/service/use-mongo";
-import PropTypes from "prop-types";
 import { format } from "date-fns";
 import {
-  Avatar,
   Box,
   Card,
-  Checkbox,
-  Stack,
   Table,
   TableBody,
   TableCell,
   TableHead,
-  TablePagination,
   TableRow,
   Typography,
   SvgIcon,
-  Grid,
   TableFooter,
 } from "@mui/material";
-import PencilIcon from "@heroicons/react/24/solid/PencilIcon";
-import TrashIcon from "@heroicons/react/24/solid/TrashIcon";
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 
 import { Scrollbar } from "src/components/scrollbar";
-import { getInitials } from "src/utils/get-initials";
-import { usePopover } from "src/hooks/use-popover";
-import AlertConfirm from "src/components/alert-confirm";
 import { ordersListHead } from "src/data/tableList";
 
-export const OrdersTable = (props) => {
+const OrdersTable = (props) => {
   const {
     items = [],
     handlePageChange,
@@ -126,16 +113,4 @@ console.log("items", items)
   );
 };
 
-OrdersTable.propTypes = {
-  count: PropTypes.number,
-  items: PropTypes.array,
-  onDeselectAll: PropTypes.func,
-  onDeselectOne: PropTypes.func,
-  onPageChange: PropTypes.func,
-  onRowsPerPageChange: PropTypes.func,
-  onSelectAll: PropTypes.func,
-  onSelectOne: PropTypes.func,
-  page: PropTypes.number,
-  rowsPerPage: PropTypes.number,
-  selected: PropTypes.array,
-};
+export default OrdersTable

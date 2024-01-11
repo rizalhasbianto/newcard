@@ -20,7 +20,7 @@ import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 
 import { inventoryHead } from "src/data/tableList";
 
-export const InventoryTable = (props) => {
+const InventoryTable = (props) => {
   const { items = [], handlePageChange, pageNumber = 0, hasPrev, hasNext } = props;
   const listNumber = pageNumber * 10;
 
@@ -114,3 +114,5 @@ export const InventoryTable = (props) => {
     </Card>
   );
 };
+
+export default InventoryTable

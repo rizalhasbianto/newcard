@@ -6,7 +6,7 @@ import { ImageComponent } from "src/components/image";
 import { stringAvatar } from "src/helper/handelCompanyAvatar";
 import Link from "next/link";
 
-export const CompanyCard = (props) => {
+const CompanyCard = (props) => {
   const { company, quoteTotal } = props;
 
   return (
@@ -73,6 +73,4 @@ export const CompanyCard = (props) => {
   );
 };
 
-CompanyCard.propTypes = {
-  company: PropTypes.object.isRequired,
-};
+export default CompanyCard 

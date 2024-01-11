@@ -10,7 +10,7 @@ import {
   Typography,
   Button,
   TextField,
-  Unstable_Grid2 as Grid,
+  Grid,
 } from "@mui/material";
 import LoadingButton from "@mui/lab/LoadingButton";
 import RequestQuoteIcon from "@mui/icons-material/RequestQuote";
@@ -18,7 +18,7 @@ import OptionsComponent from "src/components/products/options";
 import { ImageComponent } from "src/components/image";
 import { UpdateQuoteItem } from "src/service/use-mongo";
 
-export const ProductCard = (props) => {
+const ProductCard = (props) => {
   const { product, handleOpenQuoteList, toastUp, quoteId } = props;
 
   const [buttonloading, setButtonloading] = useState(false);
@@ -146,60 +146,58 @@ export const ProductCard = (props) => {
       <Box sx={{ flexGrow: 1 }} />
       <Divider />
       {notAvilableOption && (
-          <Typography variant="body2" sx={{ mb: 1 }}>
-            No variant available for this selected options!
-          </Typography>
-        )}
+        <Typography variant="body2" sx={{ mb: 1 }}>
+          No variant available for this selected options!
+        </Typography>
+      )}
       <Stack
         direction="row"
         alignItems="center"
         justifyContent="center"
         spacing={2}
-        sx={{p:"20px"}}
+        sx={{ p: "20px" }}
       >
-            <TextField
-              id="qtySingle"
-              label="Quantity"
-              variant="outlined"
-              InputProps={{ inputProps: { min: 1 } }}
-              type="number"
-              sx={{
-                mt: "10px",
-                mb: "10px",
-                maxWidth:"70px"
-              }}
-              value={selectedQuantity}
-              onChange={(event) => {
-                setSelectedQuantity(event.target.value);
-              }}
-            />
-            {!quoteId ? (
-              <Button
-                variant="contained"
-                onClick={() => handleOpenQuoteList()}
-                disabled={selectedVariant.currentlyNotInStock ? true : false || notAvilableOption}
-              >
-                Choose Quote
-              </Button>
-            ) : (
-              <LoadingButton
-                color="primary"
-                disabled={selectedVariant.currentlyNotInStock ? true : false || notAvilableOption}
-                onClick={() => handleAddQuote()}
-                loading={buttonloading ? true : false}
-                loadingPosition="start"
-                startIcon={<RequestQuoteIcon />}
-                variant="contained"
-                sx={{ mr: 2 }}
-              >
-                Add to #{quoteId.slice(-4)}
-              </LoadingButton>
-            )}
+        <TextField
+          id="qtySingle"
+          label="Quantity"
+          variant="outlined"
+          InputProps={{ inputProps: { min: 1 } }}
+          type="number"
+          sx={{
+            mt: "10px",
+            mb: "10px",
+            maxWidth: "70px",
+          }}
+          value={selectedQuantity}
+          onChange={(event) => {
+            setSelectedQuantity(event.target.value);
+          }}
+        />
+        {!quoteId ? (
+          <Button
+            variant="contained"
+            onClick={() => handleOpenQuoteList()}
+            disabled={selectedVariant.currentlyNotInStock ? true : false || notAvilableOption}
+          >
+            Choose Quote
+          </Button>
+        ) : (
+          <LoadingButton
+            color="primary"
+            disabled={selectedVariant.currentlyNotInStock ? true : false || notAvilableOption}
+            onClick={() => handleAddQuote()}
+            loading={buttonloading ? true : false}
+            loadingPosition="start"
+            startIcon={<RequestQuoteIcon />}
+            variant="contained"
+            sx={{ mr: 2 }}
+          >
+            Add to #{quoteId.slice(-4)}
+          </LoadingButton>
+        )}
       </Stack>
     </Card>
   );
 };
 
-ProductCard.propTypes = {
-  product: PropTypes.object.isRequired,
-};
+export default ProductCard

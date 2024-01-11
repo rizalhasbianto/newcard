@@ -9,11 +9,11 @@ import {
   Grid,
 } from "@mui/material";
 
-import { Productlist } from "./product-list";
+import Productlist from "./product-list";
 import { quotesQuickAddHead } from "src/data/tableList";
 import { Scrollbar } from "src/components/scrollbar";
 
-export const ProductTable = (props) => {
+const ProductTable = (props) => {
   const { handleOpenQuoteList, data, toastUp, productPerPage, quoteId } = props;
 
   return (
@@ -55,3 +55,5 @@ export const ProductTable = (props) => {
     )
   );
 };
+
+export default ProductTable

@@ -1,8 +1,8 @@
 import { Box, Grid } from "@mui/material";
 
-import { ProductCard } from "./product-card";
+import ProductCard from "./product-card";
 
-export const ProductGrid = (props) => {
+const ProductGrid = (props) => {
   const { handleOpenQuoteList, data, toastUp, quoteId } = props;
   return (
     data &&
@@ -26,3 +26,5 @@ export const ProductGrid = (props) => {
     })
   );
 };
+
+export default ProductGrid 
