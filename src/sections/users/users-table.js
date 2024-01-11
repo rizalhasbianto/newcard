@@ -38,6 +38,7 @@ export const UsersTable = (props) => {
                 <TableCell padding="checkbox"></TableCell>
                 <TableCell>Name</TableCell>
                 <TableCell>Email</TableCell>
+                <TableCell>Company</TableCell>
                 <TableCell>Phone</TableCell>
                 <TableCell>Signed Up</TableCell>
                 <TableCell>Role</TableCell>
@@ -57,6 +58,7 @@ export const UsersTable = (props) => {
                       </Stack>
                     </TableCell>
                     <TableCell>{customer.email}</TableCell>
+                    <TableCell>{customer.companyData?.name}</TableCell>
                     <TableCell>{customer.phone}</TableCell>
                     <TableCell>{createdAt}</TableCell>
                     <TableCell>{customer.role}</TableCell>

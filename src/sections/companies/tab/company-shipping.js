@@ -18,10 +18,10 @@ import { usaState } from "src/data/state-usa";
 
 import { UpdateCompanyShipToMongo, AddNewShipToMongo, UpdateCompanyShipToDefault } from "src/service/use-mongo";
 
-import { useFormik, ErrorMessage } from "formik";
+import { useFormik } from "formik";
 import * as Yup from "yup";
 
-export const CompanyShipping = (props) => {
+const CompanyShipping = (props) => {
   const { data, toastUp, mutate } = props;
   const [value, setValue] = useState(1);
   const [loadSave, setLoadSave] = useState(false);
@@ -29,8 +29,7 @@ export const CompanyShipping = (props) => {
   const [loadSaveShiping, setLoadSaveShiping] = useState(false);
   const [defaultShipping, setdefaultShipping] = useState(data?.shipTo?.find((item) => item.default));
   const initialDefaultShipping = data?.shipTo?.find((item) => item.default);
-console.log("data", data)
-console.log("initialDefaultShipping", initialDefaultShipping)
+
   const handleTabChange = useCallback(
     (event, newValue) => {
       setValue(newValue);
@@ -357,3 +356,5 @@ console.log("initialDefaultShipping", initialDefaultShipping)
     </Box>
   );
 };
+
+export default CompanyShipping 

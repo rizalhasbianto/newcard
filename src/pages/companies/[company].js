@@ -1,4 +1,7 @@
 import Head from "next/head";
+import { useState } from "react";
+import { useRouter } from "next/router";
+
 import {
   Box,
   Container,
@@ -13,16 +16,16 @@ import {
 import TabContext from "@mui/lab/TabContext";
 import TabList from "@mui/lab/TabList";
 import TabPanel from "@mui/lab/TabPanel";
+
 import { Layout as DashboardLayout } from "src/layouts/dashboard/layout";
-import { CompanyProfile } from "src/sections/companies/company-profile";
-import { CompanyShipping } from "src/sections/companies/tab/company-shipping";
+import CompanyProfile from "src/sections/companies/company-profile";
+import CompanyShipping from "src/sections/companies/tab/company-shipping";
+import CompanyDetails from "src/sections/companies/tab/company-details";
+import CompanyDetailsEdit from "src/sections/companies/tab/company-details-edit";
+import CompanyUsers from "src/sections/companies/tab/company-users";
+import CompanyQuote from "src/sections/companies/tab/company-quote";
+
 import { GetSingleCompaniesSwr } from "src/service/use-mongo";
-import { useState } from "react";
-import { CompanyDetails } from "src/sections/companies/tab/company-details";
-import { CompanyDetailsEdit } from "src/sections/companies/tab/company-details-edit";
-import { CompanyUsers } from "src/sections/companies/tab/company-users";
-import { CompanyQuote } from "src/sections/companies/tab/company-quote";
-import { useRouter } from "next/router";
 import { useToast } from "src/hooks/use-toast";
 import Toast from "src/components/toast";
 

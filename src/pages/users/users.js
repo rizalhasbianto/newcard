@@ -40,6 +40,7 @@ const Users = () => {
   }
 
   const { data: users, isLoading, isError, mutate, isValidating } = GetUsers({page, rowsPerPage, sessionRole});
+  console.log("users", users)
 
   const handlePageChange = useCallback((event, value) => {
     setPage(value);

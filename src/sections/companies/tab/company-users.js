@@ -31,7 +31,7 @@ import { useFormik, ErrorMessage } from "formik";
 import * as Yup from "yup";
 import { phoneRegExp } from "src/data/company";
 
-export const CompanyUsers = (props) => {
+const CompanyUsers = (props) => {
   const { data, toastUp, mutate } = props;
   const [value, setValue] = useState(1);
   const [loadSave, setLoadSave] = useState(false);
@@ -381,3 +381,6 @@ export const CompanyUsers = (props) => {
     </Box>
   );
 };
+
+
+export default CompanyUsers

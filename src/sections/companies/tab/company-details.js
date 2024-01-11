@@ -2,7 +2,7 @@ import { Box, Button, Divider, Unstable_Grid2 as Grid, Typography } from "@mui/m
 import EditIcon from "@mui/icons-material/Edit";
 import { Stack } from "@mui/system";
 
-export const CompanyDetails = (props) => {
+const CompanyDetails = (props) => {
   const { data, toastUp, setSwitchEditDetails } = props;
 
   return (
@@ -130,3 +130,5 @@ export const CompanyDetails = (props) => {
     </Box>
   );
 };
+
+export default CompanyDetails

@@ -23,7 +23,7 @@ import { useFormik, ErrorMessage } from "formik";
 import { paymentOptions } from "src/data/payment-options";
 import * as Yup from "yup";
 
-export const CompanyDetailsEdit = (props) => {
+const CompanyDetailsEdit = (props) => {
   const { data, toastUp, setSwitchEditDetails, mutate } = props;
   const [loadSave, setLoadSave] = useState(false);
 
@@ -428,3 +428,5 @@ export const CompanyDetailsEdit = (props) => {
     </form>
   );
 };
+
+export default CompanyDetailsEdit

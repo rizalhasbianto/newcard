@@ -17,7 +17,7 @@ import { ImageComponent } from "src/components/image";
 import { stringAvatar } from "src/helper/handelCompanyAvatar";
 import { UpdateCompanyAvatarToMongo } from "src/service/use-mongo";
 
-export const CompanyProfile = ({ company, toastUp }) => {
+const CompanyProfile = ({ company, toastUp }) => {
   const [file, setFile] = useState();
   const [preview, setPreview] = useState();
   const [loadSave, setLoadSave] = useState(false);
@@ -159,3 +159,5 @@ export const CompanyProfile = ({ company, toastUp }) => {
     </Card>
   );
 };
+
+export default CompanyProfile

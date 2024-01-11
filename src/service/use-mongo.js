@@ -517,3 +517,11 @@ export const UpdateTicket = async (props) => {
   });
   return mongoRes;
 };
+
+export const CreateCatalog = async (type) => {
+  const mongoRes = await useDataService("/api/catalog/create-catalog", "POST", {
+    type:type
+  });
+  return mongoRes;
+};
+

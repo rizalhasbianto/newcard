@@ -41,6 +41,18 @@ export default async function getUsers(req, res) {
     .limit(postPerPage)
     .toArray();
 
+  data.map(async(item) => {
+    if(item.companyId) {
+      const data = await db
+      .collection(collectionCompany)
+      .find({ _id: new ObjectId(item.companyId)})
+      .project({ name: 1, marked: 1 })
+      .limit(1)
+      .toArray();
+      item.companyData = data[0]
+    }
+  })
+
   const numberOfDoc = await db.collection(collection).countDocuments(queryUsers);
   const resData = {
     user: data,

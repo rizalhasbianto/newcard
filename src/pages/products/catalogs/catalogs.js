@@ -85,7 +85,7 @@ const Quotes = () => {
           <Stack spacing={3}>
             <Stack direction="row" justifyContent="space-between" spacing={4}>
               <Stack spacing={1}>
-                <Typography variant="h4">Quotes</Typography>
+                <Typography variant="h4">Catalog</Typography>
               </Stack>
               <div>
                 <Link href="/quotes/add-quote" passHref>
@@ -102,26 +102,13 @@ const Quotes = () => {
                 </Link>
               </div>
             </Stack>
-            {
-              //<QuotesSearch />
-            }
             {isLoading && <TableLoading />}
             {(isError || (data && data.data.quote.length === 0)) && (
               <Typography variant="h5" textAlign={"center"}>
                 No data found!
               </Typography>
             )}
-            {data && data.data.quote.length > 0 && (
-              <QuotesTable
-                count={data.data.count}
-                items={data.data.quote}
-                onPageChange={handlePageChange}
-                mutateData={mutate}
-                onRowsPerPageChange={handleRowsPerPageChange}
-                page={page}
-                rowsPerPage={rowsPerPage}
-              />
-            )}
+            
           </Stack>
         </Container>
       </Box>

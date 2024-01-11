@@ -33,7 +33,7 @@ import {
 
 import { SyncUserShopify, GetUserShopify } from "src/service/use-shopify";
 
-export default function AddCompany(props) {
+const AddCompany = (props) => {
   const {
     setAddNewCompany,
     toastUp,
@@ -612,3 +612,5 @@ export default function AddCompany(props) {
     </form>
   );
 }
+
+export default AddCompany

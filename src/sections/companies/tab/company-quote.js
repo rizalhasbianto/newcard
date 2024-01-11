@@ -16,7 +16,7 @@ import { Scrollbar } from "src/components/scrollbar";
 import { getInitials } from "src/utils/get-initials";
 import { companyQuotesListHead } from "src/data/tableList";
 
-export const CompanyQuote = (props) => {
+const CompanyQuote = (props) => {
   const { items = [] } = props;
   return (
     <Box>
@@ -101,3 +101,5 @@ export const CompanyQuote = (props) => {
     </Box>
   );
 };
+
+export default CompanyQuote 

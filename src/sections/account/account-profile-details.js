@@ -30,7 +30,7 @@ const states = [
   }
 ];
 
-export const AccountProfileDetails = () => {
+const AccountProfileDetails = () => {
   const [values, setValues] = useState({
     firstName: 'Anika',
     lastName: 'Visser',
@@ -177,3 +177,5 @@ export const AccountProfileDetails = () => {
     </form>
   );
 };
+
+export default AccountProfileDetails

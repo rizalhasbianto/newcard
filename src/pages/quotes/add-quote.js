@@ -207,6 +207,7 @@ const Page = () => {
                       })}
                     </Tabs>
                   </Stack>
+                  <Stack>
                   <Grid container spacing={3}>
                     <Grid xs={12} md={12} lg={12}>
                       {tabContent && (
@@ -219,6 +220,7 @@ const Page = () => {
                       )}
                     </Grid>
                   </Grid>
+                  </Stack>
                 </Stack>
               )}
             </Box>
