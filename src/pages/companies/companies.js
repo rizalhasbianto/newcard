@@ -42,15 +42,20 @@ const Companies = () => {
   const companyQuery = (session) => {
     switch (session?.user.detail.role) {
       case "customer":
-        return { _id: session?.user.detail.company.companyId };
+        return { id: session?.user.detail.company.companyId };
       case "sales":
         return { "sales.name": session?.user.name };
       default:
-        return {};
+        return;
     }
   };
 
-  const { data, isLoading, isError, mutate } = GetCompaniesSwr(page - 1, postPerPage, companyQuery(session));
+  const { data, isLoading, isError, mutate } = GetCompaniesSwr({
+    page: page - 1, 
+    postPerPage: postPerPage, 
+    query: companyQuery(session)
+  });
+
   const [count, setCount] = useState(0);
   const handleChange = (event, value) => {
     setPage(value);
@@ -138,6 +143,7 @@ const Companies = () => {
                       (item) => item.company.name === company.name
                     );
                     return (
+                      // eslint-disable-next-line react/jsx-max-props-per-line
                       <Grid xs={12} md={6} lg={4} key={i + 1}>
                         <CompanyCard company={company} quoteTotal={getCurrentQuote.length} />
                       </Grid>
@@ -151,7 +157,12 @@ const Companies = () => {
                 justifyContent: "center",
               }}
             >
-              <Pagination count={count} page={page} size="small" onChange={handleChange} />
+              <Pagination 
+                count={count} 
+                page={page} 
+                size="small" 
+                onChange={handleChange} 
+              />
             </Box>
           </Stack>
         </Container>

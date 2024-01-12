@@ -1,7 +1,7 @@
 import MagnifyingGlassIcon from '@heroicons/react/24/solid/MagnifyingGlassIcon';
 import { Card, InputAdornment, OutlinedInput, SvgIcon } from '@mui/material';
 
-export const QuotesSearch = () => (
+const QuotesSearch = () => (
   <Card sx={{ p: 2 }}>
     <OutlinedInput
       defaultValue=""
@@ -20,3 +20,5 @@ export const QuotesSearch = () => (
     />
   </Card>
 );
+
+export default QuotesSearch

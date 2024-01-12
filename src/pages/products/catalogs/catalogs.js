@@ -5,7 +5,10 @@ import { useSession } from "next-auth/react";
 import ArrowDownOnSquareIcon from "@heroicons/react/24/solid/ArrowDownOnSquareIcon";
 import ArrowUpOnSquareIcon from "@heroicons/react/24/solid/ArrowUpOnSquareIcon";
 import PlusIcon from "@heroicons/react/24/solid/PlusIcon";
-import { Box, Button, Container, Stack, SvgIcon, Typography } from "@mui/material";
+import { Box, Button, Container, Stack, SvgIcon, Typography, Collapse } from "@mui/material";
+import LoadingButton from "@mui/lab/LoadingButton";
+import AddIcon from "@mui/icons-material/Add";
+import HighlightOffIcon from "@mui/icons-material/HighlightOff";
 import { useSelection } from "src/hooks/use-selection";
 import { Layout as DashboardLayout } from "src/layouts/dashboard/layout";
 import { QuotesTable } from "src/sections/quotes/quotes-table";
@@ -15,31 +18,33 @@ import { GetQuotesDataSwr } from "src/service/use-mongo";
 import TableLoading from "src/components/table-loading";
 import { useToast } from "src/hooks/use-toast";
 import Toast from "src/components/toast";
+import CatalogType from "src/sections/catalog/catalog-type";
 
 const Quotes = () => {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [addCatalog, setAddCatalog] = useState(false);
   const toastUp = useToast();
-  const { data: session } = useSession();
+  const { data: session } = useSession();;
 
   const quoteQuery = (session) => {
-    switch(session?.user.detail.role) {
+    switch (session?.user.detail.role) {
       case "admin":
         return {
           status: { $nin: ["new", "draft"] },
-        }
+        };
       case "sales":
         return {
           status: { $nin: ["new", "draft"] },
-          "company.sales.id":session?.user.detail.id,
-        }
+          "company.sales.id": session?.user.detail.id,
+        };
       default:
         return {
           status: { $nin: ["new", "draft"] },
-          "company.name":session?.user.detail.company.companyName
-        }
+          "company.name": session?.user.detail.company.companyName,
+        };
     }
-  }
+  };
 
   const { data, isLoading, isError, mutate, isValidating } = GetQuotesDataSwr(
     page,
@@ -88,27 +93,51 @@ const Quotes = () => {
                 <Typography variant="h4">Catalog</Typography>
               </Stack>
               <div>
-                <Link href="/quotes/add-quote" passHref>
-                  <Button
-                    startIcon={
+                <Button
+                  startIcon={
+                    !addCatalog ? (
                       <SvgIcon fontSize="small">
                         <PlusIcon />
                       </SvgIcon>
-                    }
-                    variant="contained"
-                  >
-                    Add
-                  </Button>
-                </Link>
+                    ) : (
+                      <SvgIcon fontSize="small">
+                        <HighlightOffIcon />
+                      </SvgIcon>
+                    )
+                  }
+                  variant="contained"
+                  onClick={() => setAddCatalog(!addCatalog)}
+                >
+                  {!addCatalog ? "Add" : "Cancel"}
+                </Button>
               </div>
             </Stack>
-            {isLoading && <TableLoading />}
-            {(isError || (data && data.data.quote.length === 0)) && (
-              <Typography variant="h5" textAlign={"center"}>
-                No data found!
-              </Typography>
-            )}
-            
+            <Collapse in={addCatalog}>
+              <CatalogType toastUp={toastUp} />
+            </Collapse>
+            <Collapse in={!addCatalog}>
+              {isLoading && <TableLoading />}
+              {(isError || (data && data.data.quote.length === 0)) && (
+                <Stack
+                  spacing={1}
+                  direction={"row"}
+                  alignItems={"center"}
+                  justifyContent={"center"}
+                >
+                  <Typography variant="subtitle1">Create new catalog</Typography>
+                  <LoadingButton
+                    color="primary"
+                    onClick={() => setAddCatalog(!addCatalog)}
+                    loading={false}
+                    loadingPosition="start"
+                    startIcon={<AddIcon />}
+                    variant="outlined"
+                  >
+                    Add
+                  </LoadingButton>
+                </Stack>
+              )}
+            </Collapse>
           </Stack>
         </Container>
       </Box>

@@ -2,6 +2,8 @@ import { useCallback, useRef, useState, useEffect } from "react";
 import Head from "next/head";
 import { useSession } from "next-auth/react";
 import { utcToZonedTime } from "date-fns-tz";
+import { GetQuotesData, AddNewQuoteToMongoDb, DeleteQuoteFromMongo } from "src/service/use-mongo";
+
 import {
   Box,
   Container,
@@ -16,8 +18,7 @@ import LoadingButton from "@mui/lab/LoadingButton";
 import AddIcon from "@mui/icons-material/Add";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { Layout as DashboardLayout } from "src/layouts/dashboard/layout";
-import { QuotesForm } from "src/sections/quotes/quote-form";
-import { GetQuotesData, AddNewQuoteToMongoDb, DeleteQuoteFromMongo } from "src/service/use-mongo";
+import QuotesForm from "src/sections/quotes/quote-form";
 import CardLoading from "src/components/grid-loading";
 
 

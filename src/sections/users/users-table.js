@@ -17,7 +17,7 @@ import { Scrollbar } from "src/components/scrollbar";
 import { getInitials } from "src/utils/get-initials";
 import { stringAvatar } from "src/helper/handelCompanyAvatar";
 
-export const UsersTable = (props) => {
+const UsersTable = (props) => {
   const {
     count = 0,
     items = [],
@@ -82,3 +82,5 @@ export const UsersTable = (props) => {
     </Card>
   );
 };
+
+export default UsersTable

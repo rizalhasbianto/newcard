@@ -1,13 +1,14 @@
 import Head from "next/head";
 import Link from "next/link";
-import { useCallback, useMemo, useState, useEffect } from "react";
+import { useCallback, useState, useEffect } from "react";
 import { GetTicketsDataSwr } from "src/service/use-mongo";
+
 import { Box, Button, Container, Stack, SvgIcon, Typography } from "@mui/material";
 import PlusIcon from "@heroicons/react/24/solid/PlusIcon";
 import { useToast } from "src/hooks/use-toast";
 import Toast from "src/components/toast";
 import TableLoading from "src/components/table-loading";
-import { TicketsTable } from "src/sections/tickets/tickets-table";
+import TicketsTable from "src/sections/tickets/tickets-table";
 
 const Tickets = () => {
   const [page, setPage] = useState(0);

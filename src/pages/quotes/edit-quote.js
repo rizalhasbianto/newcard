@@ -2,6 +2,8 @@ import { useCallback, useRef, useState, useEffect } from 'react';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
 import { useSession } from "next-auth/react";
+import QuotesForm from 'src/sections/quotes/quote-form';
+
 import {
   Box,
   Container,
@@ -9,7 +11,6 @@ import {
   Unstable_Grid2 as Grid
 } from '@mui/material';
 import { Layout as DashboardLayout } from 'src/layouts/dashboard/layout';
-import { QuotesForm } from 'src/sections/quotes/quote-form';
 import { GetQuotesData } from 'src/service/use-mongo'
 import CardLoading from "src/components/grid-loading";
 

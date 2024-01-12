@@ -17,7 +17,7 @@ import {
 
 import { AddNewTicket, UpdateTicket } from "src/service/use-mongo";
 
-export const NewTicketForm = () => {
+const NewTicketForm = () => {
   const { data } = useSession();
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState();
@@ -271,3 +271,5 @@ export const ReplyTicketForm = ({oldMessage, id, mutateData}) => {
     </Card>
   );
 };
+
+export default NewTicketForm

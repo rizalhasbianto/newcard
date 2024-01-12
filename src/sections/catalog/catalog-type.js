@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useRouter } from "next/router";
 import { CreateCatalog } from "src/service/use-mongo"
 
 import {
@@ -13,16 +14,27 @@ import {
 import LoadingButton from "@mui/lab/LoadingButton";
 import AddToHomeScreenIcon from "@mui/icons-material/AddToHomeScreen";
 
-const CatalogType = () => {
+
+const CatalogType = (props) => {
+  const { toastUp, session } = props
   const [type, setType] = useState("all");
   const [loading, setLoading] = useState(false);
+  const router = useRouter()
+
   const handleCreateCatalog = async(props) => {
     setLoading(true)
-    const resMongo = await CreateCatalog(type);
+    const resMongo = await CreateCatalog({
+      type:type,
+      createdBy:{
+        name:session.user.detail.name,
+        role:session.user.detail.role,
+      }
+    });
     if(!resMongo) {
-
+      toastUp.handleStatus("error");
+      toastUp.handleMessage("Failed create new catalog!!!");
     }
-
+    router.push("/products/catalogs/" + resMongo.data.insertedId)
     setLoading(false)
   };
   return (
@@ -31,7 +43,7 @@ const CatalogType = () => {
       <CardContent sx={{ pt: 0 }}>
         <RadioGroup
           aria-labelledby="demo-radio-buttons-group-label"
-          defaultValue={type}
+          value={type}
           name="radio-buttons-group"
           onChange={(e) => setType(e.target.value)}
         >

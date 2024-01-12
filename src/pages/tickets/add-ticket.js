@@ -4,8 +4,8 @@ import { Box, Button, Container, Stack, SvgIcon, Typography } from "@mui/materia
 import { Layout as DashboardLayout } from "src/layouts/dashboard/layout";
 import QuotesCollection from "src/sections/quotes/collections/QuotesCollection";
 import TableLoading from "src/components/table-loading";
-import { NewTicketForm } from "src/sections/tickets/ticket-form"
-import { useToast } from "src/hooks/use-toast";
+import NewTicketForm from "src/sections/tickets/ticket-form"
+import { useToast } from "src/hooks/use-toast"; 
 import Toast from "src/components/toast";
 
 const Page = () => {

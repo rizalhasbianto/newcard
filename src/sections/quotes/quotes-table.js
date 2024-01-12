@@ -26,7 +26,7 @@ import { usePopover } from "src/hooks/use-popover";
 import AlertConfirm from "src/components/alert-confirm";
 import { quotesListHead } from "src/data/tableList";
 
-export const QuotesTable = (props) => {
+const QuotesTable = (props) => {
   const {
     count = 0,
     items = [],
@@ -181,16 +181,4 @@ export const QuotesTable = (props) => {
   );
 };
 
-QuotesTable.propTypes = {
-  count: PropTypes.number,
-  items: PropTypes.array,
-  onDeselectAll: PropTypes.func,
-  onDeselectOne: PropTypes.func,
-  onPageChange: PropTypes.func,
-  onRowsPerPageChange: PropTypes.func,
-  onSelectAll: PropTypes.func,
-  onSelectOne: PropTypes.func,
-  page: PropTypes.number,
-  rowsPerPage: PropTypes.number,
-  selected: PropTypes.array,
-};
+export default QuotesTable 

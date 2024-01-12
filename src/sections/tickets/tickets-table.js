@@ -32,7 +32,7 @@ import { ticketsHead } from "src/data/tableList";
 import { MessageList } from "src/sections/tickets/message-list";
 import { ReplyTicketForm } from "src/sections/tickets/ticket-form"
 
-export const TicketsTable = (props) => {
+const TicketsTable = (props) => {
   const {
     items = [],
     mutateData = () => {},
@@ -157,3 +157,5 @@ export const TicketsTable = (props) => {
     </Grid>
   );
 };
+
+export default TicketsTable

@@ -19,8 +19,8 @@ import {
   CardHeader,
 } from "@mui/material";
 
-import { UsersTable } from "src/sections/users/users-table";
-import { UsersSearch } from "src/sections/users/users-search";
+import UsersTable from "src/sections/users/users-table"; 
+import UsersSearch from "src/sections/users/users-search";
 import UsersAdd from "src/sections/users/user-add";
 
 import TableLoading from "src/components/table-loading";

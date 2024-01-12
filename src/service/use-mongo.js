@@ -1,6 +1,8 @@
 import { useDataService, useSwrData } from "src/lib/fetchData";
 import { utcToZonedTime } from "date-fns-tz";
 
+const today = utcToZonedTime(new Date(), "America/Los_Angeles");
+
 export const GetQuotesData = async (page, rowsPerPage, query, sort, type) => {
   const quotesRes = await useDataService("/api/quotes/get-quotes", "POST", {
     page: page,
@@ -45,7 +47,6 @@ export const SaveQuoteToMongoDb = async (
   const tax = (Number(countSubtotal) * 0.1).toFixed(2);
   const total = (Number(countSubtotal) + Number(tax)).toFixed(2);
 
-  const today = utcToZonedTime(new Date(), "America/Los_Angeles");
   const mongoRes = await useDataService("/api/quotes/update-quote", "POST", {
     quoteId: quoteId,
     data: {
@@ -135,17 +136,24 @@ export const SendInvoice = async (quoteDataInvoice) => {
   return mongoRes;
 };
 
-export const GetCompanies = async (page, rowsPerPage, query) => {
-  const comapanyRes = await useDataService("/api/company/get-companies", "POST", {
-    page: page,
-    postPerPage: rowsPerPage,
-    query: query,
-  });
+export const GetCompanies = async (props) => {
+  const { page, postPerPage, query } = props;
+  const queryPath =
+    "withQuote=false&page=" +
+    page +
+    "&postPerPage=" +
+    postPerPage +
+    "&query=" +
+    query +
+    "&avatar=false";
+  const fetchPath = "/api/company/get-companies?" + queryPath;
+  const comapanyRes = await useDataService(fetchPath, "GET");
 
   return comapanyRes;
 };
 
-export const GetCompaniesSwr = (page, postPerPage, query) => {
+export const GetCompaniesSwr = (props) => {
+  const { page, postPerPage, query } = props;
   const queryString = query ? JSON.stringify(query) : "";
   const queryPath =
     "withQuote=true&page=" +
@@ -156,19 +164,6 @@ export const GetCompaniesSwr = (page, postPerPage, query) => {
     queryString +
     "&avatar=true";
   const comapanyRes = useSwrData("/api/company/get-companies", queryPath);
-
-  return comapanyRes;
-};
-
-export const GetSingleCompaniesSwr = (id, quotePage, quotePostPerPage) => {
-  const queryPath =
-    "withQuote=true&quotePage=" +
-    quotePage +
-    "&quotePostPerPage=" +
-    quotePostPerPage +
-    "&avatar=true&id=" +
-    id;
-  const comapanyRes = useSwrData("/api/company/get-company", queryPath);
 
   return comapanyRes;
 };
@@ -518,10 +513,26 @@ export const UpdateTicket = async (props) => {
   return mongoRes;
 };
 
-export const CreateCatalog = async (type) => {
+export const CreateCatalog = async (props) => {
+  const { type, createdBy } = props;
   const mongoRes = await useDataService("/api/catalog/create-catalog", "POST", {
-    type:type
+    type: type,
+    createdAt: today,
+    createdBy: createdBy,
   });
   return mongoRes;
 };
 
+export const GetCatalogSwr = (props) => {
+  const { page, postPerPage, query } = props;
+  const queryString = query ? JSON.stringify(query) : "";
+  const queryPath =
+    "&page=" +
+    page +
+    "&postPerPage=" +
+    postPerPage +
+    "&query=" +
+    queryString;
+  const mongoRes = useSwrData("/api/catalog/get-catalog", queryPath);
+  return mongoRes;
+};

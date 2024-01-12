@@ -2,7 +2,7 @@ import { adminAPi } from "src/lib/shopify";
 
 export default async function createDraftOrder(req, res) {
   const bodyObject = req.body;
-  const name = bodyObject.companyBill.contact && bodyObject.companyBill.contact.name.split(" ");
+  const name = bodyObject.companyBill.contact && bodyObject.companyBill.contact.detail.name.split(" ");
   const firstName = name && name[0];
   const lastName = name && name[1];
   let query;
@@ -13,7 +13,7 @@ export default async function createDraftOrder(req, res) {
         draftOrderUpdate(
           id: "${bodyObject.draftOrderId}",
           input: {
-            email: "${bodyObject.companyBill.contact.email}",
+            email: "${bodyObject.companyBill.contact.detail.email}",
             billingAddress: {
               address1:"${bodyObject.companyBill.location.address}",
               city:"${bodyObject.companyBill.location.city}",
@@ -21,7 +21,7 @@ export default async function createDraftOrder(req, res) {
               countryCode:US,
               firstName:"${firstName}"
               lastName:"${lastName}",
-              phone:"${bodyObject.companyBill.contact.phone}",
+              phone:"${bodyObject.companyBill.contact.detail.phone}",
               provinceCode:"${bodyObject.companyBill.location.state}",
               zip:"${bodyObject.companyBill.location.zip}"
             },
@@ -32,7 +32,7 @@ export default async function createDraftOrder(req, res) {
               countryCode:US,
               firstName:"${firstName}"
               lastName:"${lastName}",
-              phone:"${bodyObject.companyBill.contact.phone}",
+              phone:"${bodyObject.companyBill.contact.detail.phone}",
               provinceCode:"${bodyObject.companyBill.location.state}",
               zip:"${bodyObject.companyBill.location.zip}"
             }
@@ -87,7 +87,7 @@ export default async function createDraftOrder(req, res) {
         mutation {
           draftOrderCreate(
             input: {
-              email: "${bodyObject.companyBill.contact.email}",
+              email: "${bodyObject.companyBill.contact.detail.email}",
               billingAddress: {
                 address1:"${bodyObject.companyBill.location.address}",
                 city:"${bodyObject.companyBill.location.city}",
@@ -95,7 +95,7 @@ export default async function createDraftOrder(req, res) {
                 countryCode:US,
                 firstName:"${firstName}"
                 lastName:"${lastName}",
-                phone:"${bodyObject.companyBill.contact.phone}",
+                phone:"${bodyObject.companyBill.contact.detail.phone}",
                 provinceCode:"${bodyObject.companyBill.location.state}",
                 zip:"${bodyObject.companyBill.location.zip}"
               },
@@ -106,7 +106,7 @@ export default async function createDraftOrder(req, res) {
                 countryCode:US,
                 firstName:"${firstName}"
                 lastName:"${lastName}",
-                phone:"${bodyObject.companyBill.contact.phone}",
+                phone:"${bodyObject.companyBill.contact.detail.phone}",
                 provinceCode:"${bodyObject.companyBill.location.state}",
                 zip:"${bodyObject.companyBill.location.zip}"
               }

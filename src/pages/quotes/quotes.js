@@ -1,20 +1,16 @@
-import { useCallback, useMemo, useState, useEffect } from "react";
+import { useCallback, useState, useEffect } from "react";
 import Head from "next/head";
 import Link from "next/link";
 import { useSession } from "next-auth/react";
-import ArrowDownOnSquareIcon from "@heroicons/react/24/solid/ArrowDownOnSquareIcon";
-import ArrowUpOnSquareIcon from "@heroicons/react/24/solid/ArrowUpOnSquareIcon";
-import PlusIcon from "@heroicons/react/24/solid/PlusIcon";
-import { Box, Button, Container, Stack, SvgIcon, Typography } from "@mui/material";
-import { useSelection } from "src/hooks/use-selection";
-import { Layout as DashboardLayout } from "src/layouts/dashboard/layout";
-import { QuotesTable } from "src/sections/quotes/quotes-table";
-import { QuotesSearch } from "src/sections/quotes/quotes-search";
-import { applyPagination } from "src/utils/apply-pagination";
 import { GetQuotesDataSwr } from "src/service/use-mongo";
+
+import { Box, Button, Container, Stack, SvgIcon, Typography } from "@mui/material";
+import PlusIcon from "@heroicons/react/24/solid/PlusIcon";
+import QuotesTable from "src/sections/quotes/quotes-table";
+import QuotesSearch from "src/sections/quotes/quotes-search";
 import TableLoading from "src/components/table-loading";
-import { useToast } from "src/hooks/use-toast";
 import Toast from "src/components/toast";
+import { useToast } from "src/hooks/use-toast";
 
 const Quotes = () => {
   const [page, setPage] = useState(0);

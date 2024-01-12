@@ -35,7 +35,7 @@ import {
 } from "src/service/use-mongo";
 import { SyncQuoteToShopify } from "src/service/use-shopify";
 
-export const QuotesForm = (props) => {
+const QuotesForm = (props) => {
   const { tabContent, reqQuotesData, tabIndex, session } = props;
   const [companies, setCompanies] = useState([]);
   const [companyName, setCompanyName] = useState("");
@@ -194,7 +194,7 @@ export const QuotesForm = (props) => {
   const companyQuery = (role) => {
     switch (role) {
       case "customer":
-        return { _id: session.user.detail.company.companyId };
+        return { id: session.user.detail.company.companyId };
       case "sales":
         return { "sales.name": session.user.name };
       default:
@@ -207,7 +207,11 @@ export const QuotesForm = (props) => {
       let companyList;
       if (companies.length === 0) {
         const resGetCompanyList = await Promise.resolve(
-          GetCompanies(page, rowsPerPage, companyQuery(session.user.detail.role))
+          GetCompanies({
+            page: page, 
+            postPerPage: rowsPerPage, 
+            query: companyQuery(session.user.detail.role)
+          })
         );
         if (!resGetCompanyList) {
           console.log("error get company data!");
@@ -227,9 +231,12 @@ export const QuotesForm = (props) => {
           const selectedLocation = selectedCompany?.shipTo.find(
             (ship) => ship.locationName === tabContent.company.shipTo
           );
+          const defaultContact = selectedCompany?.contact.find(
+            (contact) => contact.default === true
+          )
           setShipToList(selectedCompany?.shipTo);
           setLocation(selectedLocation?.location);
-          setCompanyContact(selectedCompany?.contact[0]);
+          setCompanyContact(defaultContact);
           setCompanySales(selectedCompany?.sales)
         } else {
           setShipToList([]);
@@ -486,3 +493,5 @@ export const QuotesForm = (props) => {
     </>
   );
 };
+
+export default QuotesForm
