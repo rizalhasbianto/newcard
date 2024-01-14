@@ -41,6 +41,16 @@ export const quotesQuickAddHead = [
     { title: "ACTION" }
 ]
 
+export const catalogProductListHead = [
+    { title: "No." },
+    { title: "PRODUCT NAME" },
+    { title: "VARIANT" },
+    { title: "PRICE" },
+    { title: "TYPE" },
+    { title: "VENDOR" },
+    { title: "ACTION" }
+]
+
 export const quotesCollectionHead = [
     { title: "No." },
     { title: "COLLECTION NAME" },

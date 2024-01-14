@@ -50,7 +50,7 @@ const CatalogInfo = (props) => {
           <Typography variant="body2">Type: {catalog.type}</Typography>
         </Grid>
         <Grid xs={6} md={3}>
-          <Typography variant="body2">Applied: {catalog.applied ? catalog.applied : 0}</Typography>
+          <Typography variant="body2">Company: {catalog.applied ? catalog.applied : 0}</Typography>
         </Grid>
         <Grid xs={6} md={3}>
           <Typography variant="body2">LastUpdate: {format(new Date(lastUpdate), "MM-dd-yyyy")}</Typography>

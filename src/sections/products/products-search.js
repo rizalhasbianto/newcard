@@ -45,7 +45,8 @@ const ProductsSearch = (props) => {
     }));
     return orderedProdType;
   };
-  async function getGeneralFilter() {
+  
+  async function getFilterOpt() {
     const newFilterOpt = {
       collection: [],
       productType: [],
@@ -85,7 +86,7 @@ const ProductsSearch = (props) => {
 
   useEffect(() => {
     if (filterList) {
-      getGeneralFilter();
+      getFilterOpt();
       setVariantFilterOpt(filterList);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps

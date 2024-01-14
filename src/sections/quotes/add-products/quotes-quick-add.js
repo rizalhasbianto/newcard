@@ -50,6 +50,13 @@ export const QuickAddProducts = ({ quotesList, setQuotesList }) => {
   const productPerPage = 5;
   const modalPopUp = usePopover();
 
+  //initial load prod data
+  useEffect(() => {
+    handleFilterChange();
+    getFilterOpt();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   const handleFilterChange = useCallback(
     async (event) => {
       let newSelectedFilter = selectedFilter;
@@ -61,30 +68,30 @@ export const QuickAddProducts = ({ quotesList, setQuotesList }) => {
       }
 
       setSelectedFilter(newSelectedFilter);
-      const filterData = {...newSelectedFilter}
-      filterData.productName = `${newSelectedFilter.productName}*`
+      const filterData = { ...newSelectedFilter };
+      filterData.productName = `${newSelectedFilter.productName}*`;
       const resData = await GetProductsShopify(filterData, productPerPage);
       if (resData) {
         setProdList(resData.newData.edges);
         if (resData.newData.pageInfo.hasNextPage) {
           setLastCursor(resData?.newData?.edges?.at(-1)?.cursor);
         } else {
-          setLastCursor()
+          setLastCursor();
         }
       }
     },
     [selectedFilter]
   );
 
-  //initial load prod data
-  useEffect(() => {
-    handleFilterChange();
-  }, []);
-
   const handleLoadMore = useCallback(async () => {
     setLoadMoreLoading(true);
-    const nextPageIndex = pageIndex + 1
-    const resData = await GetProductsShopify(selectedFilter, productPerPage, lastCursor, nextPageIndex);
+    const nextPageIndex = pageIndex + 1;
+    const resData = await GetProductsShopify(
+      selectedFilter,
+      productPerPage,
+      lastCursor,
+      nextPageIndex
+    );
     if (resData) {
       setProdList([...prodList, ...resData.newData.edges]);
       setLoadMoreLoading(false);
@@ -97,7 +104,7 @@ export const QuickAddProducts = ({ quotesList, setQuotesList }) => {
     }
   }, [lastCursor, pageIndex, prodList, selectedFilter]);
 
-  async function fetchData() {
+  async function getFilterOpt() {
     const newFilterOpt = {
       collection: [],
       productType: [],
@@ -173,10 +180,6 @@ export const QuickAddProducts = ({ quotesList, setQuotesList }) => {
       setAddQuoteLoading();
     }, 3000);
   };
-
-  useEffect(() => {
-    fetchData();
-  }, []);
 
   return (
     <Box
@@ -277,63 +280,66 @@ export const QuickAddProducts = ({ quotesList, setQuotesList }) => {
                       <TableCell></TableCell>
                     </TableRow>
                     {item.node.variants?.edges.map((varItem, idx) => {
-                      const findQty = qtyList.findIndex((qtyItem) => qtyItem.id === varItem.node.id);
-                      const qty = findQty >= 0 ?  qtyList[findQty].qty : 1
+                      const findQty = qtyList.findIndex(
+                        (qtyItem) => qtyItem.id === varItem.node.id
+                      );
+                      const qty = findQty >= 0 ? qtyList[findQty].qty : 1;
                       return (
-                      <TableRow key={varItem.node.id}>
-                        <TableCell padding="checkbox" sx={{ minWidth: "70px" }}>
-                          <Typography display={"inline-block"} sx={{ fontWeight: "bold" }}>
-                            {i + 1}.
-                          </Typography>
-                          <Typography display={"inline-block"}>{idx + 1}</Typography>
-                        </TableCell>
-                        <TableCell sx={{ padding: "0 0px 0 40px" }}>
-                          -- {varItem.node.title}
-                        </TableCell>
-                        <TableCell sx={{ padding: "0 16px" }}>
-                          ${varItem.node.price.amount}
-                        </TableCell>
-                        <TableCell sx={{ padding: "0 16px" }}>
-                          {!varItem.node.currentlyNotInStock ? "In stock" : "Out of stock"}
-                        </TableCell>
-                        <TableCell sx={{ padding: "0 16px" }}>
-                          <TextField
-                            placeholder="Qty"
-                            variant="standard"
-                            InputProps={{ inputProps: { min: 1 } }}
-                            type="number"
-                            value={qty}
-                            onChange={(event) => {
-                              handleAddQty(parseInt(event.target.value), varItem.node.id);
-                            }}
-                            size="small"
+                        <TableRow key={varItem.node.id}>
+                          <TableCell padding="checkbox" sx={{ minWidth: "70px" }}>
+                            <Typography display={"inline-block"} sx={{ fontWeight: "bold" }}>
+                              {i + 1}.
+                            </Typography>
+                            <Typography display={"inline-block"}>{idx + 1}</Typography>
+                          </TableCell>
+                          <TableCell sx={{ padding: "0 0px 0 40px" }}>
+                            -- {varItem.node.title}
+                          </TableCell>
+                          <TableCell sx={{ padding: "0 16px" }}>
+                            ${varItem.node.price.amount}
+                          </TableCell>
+                          <TableCell sx={{ padding: "0 16px" }}>
+                            {!varItem.node.currentlyNotInStock ? "In stock" : "Out of stock"}
+                          </TableCell>
+                          <TableCell sx={{ padding: "0 16px" }}>
+                            <TextField
+                              placeholder="Qty"
+                              variant="standard"
+                              InputProps={{ inputProps: { min: 1 } }}
+                              type="number"
+                              value={qty}
+                              onChange={(event) => {
+                                handleAddQty(parseInt(event.target.value), varItem.node.id);
+                              }}
+                              size="small"
+                              sx={{
+                                margin: "10px 0",
+                                maxWidth: "70px",
+                              }}
+                            />
+                          </TableCell>
+                          <TableCell
                             sx={{
-                              margin: "10px 0",
-                              maxWidth: "70px",
+                              padding: "0 16px",
+                              textAlign: "center",
                             }}
-                          />
-                        </TableCell>
-                        <TableCell
-                          sx={{
-                            padding: "0 16px",
-                            textAlign: "center",
-                          }}
-                        >
-                          <SvgIcon
-                            color="action"
-                            fontSize="medium"
-                            onClick={() => handleAddQuote(item, varItem, `${i}${idx}`)}
-                            sx={{ cursor: "pointer" }}
                           >
-                            {addQuoteLoading === `${i}${idx}` ? (
-                              <PlaylistAddCheckIcon sx={{ color: "green" }} />
-                            ) : (
-                              <PlaylistAddIcon />
-                            )}
-                          </SvgIcon>
-                        </TableCell>
-                      </TableRow>
-                    )})}
+                            <SvgIcon
+                              color="action"
+                              fontSize="medium"
+                              onClick={() => handleAddQuote(item, varItem, `${i}${idx}`)}
+                              sx={{ cursor: "pointer" }}
+                            >
+                              {addQuoteLoading === `${i}${idx}` ? (
+                                <PlaylistAddCheckIcon sx={{ color: "green" }} />
+                              ) : (
+                                <PlaylistAddIcon />
+                              )}
+                            </SvgIcon>
+                          </TableCell>
+                        </TableRow>
+                      );
+                    })}
                   </Fragment>
                 ))}
               </TableBody>

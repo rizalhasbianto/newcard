@@ -194,3 +194,11 @@ export const GetUserShopify = async (email) => {
   const shopifyRes = await useDataService(`/api/shopify/get-customer?email=${email}`, "GET");
   return shopifyRes;
 };
+
+export const UpdateProductMetafield = async (props) => {
+  const shopifyRes = await useDataService(`/api/shopify/update-product-metafield`, "POST", {
+    productId:props.productId,
+    catalogId:props.catalogId,
+  });
+  return shopifyRes;
+};

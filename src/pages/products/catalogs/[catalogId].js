@@ -15,8 +15,10 @@ import {
   Unstable_Grid2 as Grid,
 } from "@mui/material";
 import { Layout as DashboardLayout } from "src/layouts/dashboard/layout";
-
+CatalogPriceRule
 import CatalogInfo from "src/sections/catalog/catalog-info";
+import CatalogPriceRule from "src/sections/catalog/catalog-price-rule";
+import CatalogProductList from "src/sections/catalog/catalog-products-list"
 
 const Page = () => {
   const router = useRouter();
@@ -44,7 +46,11 @@ console.log("catalog", catalog)
         <Container maxWidth="lg">
           <Box>
             {catalog &&
+            <>
             <CatalogInfo session={session} catalog={catalog.data[0]}/>
+            <CatalogPriceRule session={session} catalog={catalog.data[0]} />
+            <CatalogProductList catalog={catalog.data[0]}/>
+            </>
             }
             
           </Box>

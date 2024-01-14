@@ -113,7 +113,7 @@ const Quotes = () => {
               </div>
             </Stack>
             <Collapse in={addCatalog}>
-              <CatalogType toastUp={toastUp} />
+              <CatalogType toastUp={toastUp} session={session} />
             </Collapse>
             <Collapse in={!addCatalog}>
               {isLoading && <TableLoading />}

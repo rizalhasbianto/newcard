@@ -35,9 +35,22 @@ export default async function getProducts(req, res) {
               handle
               tags
               vendor
+              priceRange {
+                maxVariantPrice {
+                  amount
+                }
+                minVariantPrice {
+                  amount
+                }
+              }
               options {
                 name
                 values
+              }
+              metafield(namespace: "b2b", key: "catalog") {
+                id
+                value
+                type
               }
               variants(first: 100) {
                 edges {
