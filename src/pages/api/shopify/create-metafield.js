@@ -4,14 +4,16 @@ export default async function updateProductMetafield(req, res) {
   const bodyObject = req.body;
   const query = `
       mutation {
-        metafieldStorefrontVisibilityCreate(
-            input: {
-                namespace: "b2b"
-                key: "catalog"
-                ownerType: PRODUCT
+        metafieldDefinitionCreate(
+          definition: {
+              name:"catalogb2b-2"
+              ownerType:PRODUCT
+              type:"single_line_text_field"
+                namespace: "b2b-2"
+                key: "catalog-3"
               }
           ) {
-            metafieldStorefrontVisibility {
+            createdDefinition {
               id
             }
             userErrors {

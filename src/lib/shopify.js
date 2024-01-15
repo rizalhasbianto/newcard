@@ -32,7 +32,6 @@ export async function adminAPi(query) {
       method: "POST",
       headers: {
         "X-Shopify-Access-Token": apiPassword,
-        "Accept": "application/json",
         "Content-Type": "application/json"
       },
       body: JSON.stringify({ query })

@@ -9,6 +9,8 @@ export default async function getProducts(req, res) {
     ? `, productFilters:${req.query.selectedFilter.replace(/"([^(")"]+)":/g, "$1:")}`
     : "";
 
+  const metafieldProdFilter = `, productFilters:[{productMetafield:{namespace:"custom",key:"testlist", value:"6789"}}]`;
+
   const gQl = `
     { search(
         first:${productPerPage}, 
@@ -71,5 +73,6 @@ export default async function getProducts(req, res) {
 }`;
 
   const resGetData = await callShopify(gQl);
+  console.log("resGetData", resGetData.data.search.productFilters)
   res.status(200).json({ newData: resGetData.data.search });
 }

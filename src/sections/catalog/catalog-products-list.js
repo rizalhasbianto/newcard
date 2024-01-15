@@ -159,7 +159,7 @@ const CatalogProductList = (props) => {
 
     if (
       !resUpdateMetafield ||
-      resUpdateMetafield.updateMetafield.data.productUpdate.userErrors.length > 0
+      resUpdateMetafield.updateMetafield.data.productUpdate.userErrors
     ) {
       console.log(resUpdateMetafield);
       setAddCatalogLoading();
