@@ -51,16 +51,12 @@ const Products = () => {
   const quoteId = router.query?.quoteId;
 
   const productPerPage = 12;
-  const lastCursor = "";
-  const lodMoreCount = 0;
-  const { data, isLoading, isError, size, setSize } = SearchProducts(
+  const { data, isLoading, isError, size, setSize } = SearchProducts({
     selectedFilter,
     selectedVariantFilter,
     smartSearch,
     productPerPage,
-    lastCursor,
-    lodMoreCount
-  );
+  });
   const handleLoadMore = () => {
     setSize(size + 1);
   };

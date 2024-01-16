@@ -82,12 +82,20 @@ const GetProductsShopifySwr = (selectedFilter, productPerPage) => {
   return quotesRes;
 };
 
-export const SearchProducts = (
-  selectedFilter,
-  selectedVariantFilter,
-  smartSearch,
-  productPerPage
-) => {
+export const SearchProducts = (props) => {
+  const {
+    selectedFilter = {
+      productName: "",
+      collection: "",
+      productType: "",
+      productVendor: "",
+      tag: "",
+    },
+    selectedVariantFilter = [],
+    smartSearch,
+    productPerPage,
+    catalogId,
+  } = props;
   const { productName, productType, tag, productVendor, collection } = selectedFilter;
   let queryParam;
   let url;
@@ -110,16 +118,24 @@ export const SearchProducts = (
     } else {
       if (!selectedFilter.collection) {
         const paramNoTitle = selectedVariantFilter.filter((item) => !item["productName"]);
+        if (catalogId) {
+          paramNoTitle.push({
+            productMetafield: { namespace: "b2b", key: "catalog", value: catalogId },
+          });
+        }
+        console.log("paramNoTitle", paramNoTitle);
         queryParam =
-          selectedVariantFilter.length > 0
+          selectedVariantFilter.length > 0 || catalogId
             ? `selectedFilter=${JSON.stringify(
                 paramNoTitle
               )}&productPerPage=${productPerPage}&productName=${productName}`
             : "";
+        console.log("queryParam", queryParam);
         url = "/api/shopify/search-products";
       }
     }
   }
+
   const dataRes = useSWRInfiniteData(url, queryParam);
   return dataRes;
 };
@@ -196,9 +212,6 @@ export const GetUserShopify = async (email) => {
 };
 
 export const UpdateProductMetafield = async (props) => {
-  const shopifyRes = await useDataService(`/api/shopify/update-product-metafield`, "POST", {
-    productId:props.productId,
-    catalogId:props.catalogId,
-  });
+  const shopifyRes = await useDataService(`/api/shopify/update-product-metafield`, "POST", props);
   return shopifyRes;
 };

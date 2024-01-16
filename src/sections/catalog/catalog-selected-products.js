@@ -18,6 +18,7 @@ import {
   SvgIcon,
   Skeleton,
   Unstable_Grid2 as Grid,
+  CardHeader,
 } from "@mui/material";
 import LoadingButton from "@mui/lab/LoadingButton";
 import AutorenewIcon from "@mui/icons-material/Autorenew";
@@ -36,16 +37,9 @@ import { usePopover } from "src/hooks/use-popover";
 import PlaylistAddIcon from "@mui/icons-material/PlaylistAdd";
 import PlaylistAddCheckIcon from "@mui/icons-material/PlaylistAddCheck";
 
-const CatalogProductList = ({ quotesList, setQuotesList }) => {
-  const [selectedFilter, setSelectedFilter] = useState({
-    productName: "",
-    collection: "",
-    productType: "",
-    productVendor: "",
-    tag: "",
-  });
+const CatalogSelectedProduct = (props) => {
+  const { prodList } = props;
   const [filterOpt, setFilterOpt] = useState();
-  const [prodList, setProdList] = useState([]);
   const [lastCursor, setLastCursor] = useState();
   const [pageIndex, setPageIndex] = useState(0);
   const [loadMoreLoading, setLoadMoreLoading] = useState(false);
@@ -54,20 +48,15 @@ const CatalogProductList = ({ quotesList, setQuotesList }) => {
   const productPerPage = 10;
   const modalPopUp = usePopover();
 
-
   //initial load prod data
   useEffect(() => {
+    const lastData = prodList.at(-1)
+    console.log("lastData", lastData)
+  }, [prodList]);
 
-  }, []);
-
-
-
-  useEffect(() => {
-    
-  }, []);
-  console.log("prodList", prodList);
   return (
     <Card>
+      <CardHeader subheader="Included 100 products" title="Selected Products" />
       <CardContent>
         <AlertDialog
           title={modalPopUp.message.title}
@@ -75,56 +64,6 @@ const CatalogProductList = ({ quotesList, setQuotesList }) => {
           open={modalPopUp.open}
           handleClose={modalPopUp.handleClose}
         />
-        <Grid container spacing={2}>
-          <Grid lg={4}>
-            <TextField
-              id="productName"
-              name="productName"
-              label="Product Name"
-              variant="outlined"
-              value={selectedFilter.productName}
-              fullWidth
-              onChange={handleFilterChange}
-            />
-          </Grid>
-          {!filterOpt ? (
-            <Skeleton
-              variant="rectangular"
-              width={162}
-              height={55}
-              sx={{ marginTop: "12px", borderRadius: "5px" }}
-            />
-          ) : (
-            topFilterList.map((filter) => {
-              return (
-                filterOpt && (
-                  <Grid lg={2} key={filter.id}>
-                    <TextField
-                      id={filter.id}
-                      name={filter.id}
-                      label={filter.title}
-                      variant="outlined"
-                      value={selectedFilter[filter.id]}
-                      select
-                      fullWidth
-                      onChange={handleFilterChange}
-                      sx={{ maxHeight: 250 }}
-                    >
-                      <MenuItem value="">
-                        <em>None</em>
-                      </MenuItem>
-                      {filterOpt[filter.id]?.map((option) => (
-                        <MenuItem key={option} value={option}>
-                          {option}
-                        </MenuItem>
-                      ))}
-                    </TextField>
-                  </Grid>
-                )
-              );
-            })
-          )}
-        </Grid>
         <Grid lg={12} sx={{ mt: 2 }}>
           {!prodList ? (
             <TableLoading />
@@ -148,39 +87,49 @@ const CatalogProductList = ({ quotesList, setQuotesList }) => {
                   </TableRow>
                 </TableHead>
                 <TableBody sx={{ maxHeight: "500px" }}>
-                  {prodList.map((item, i) => {
-                    const price =
-                      item.node.priceRange.maxVariantPrice.amount ===
-                      item.node.priceRange.minVariantPrice.amount
-                        ? item.node.priceRange.maxVariantPrice.amount
-                        : item.node.priceRange.minVariantPrice.amount +
-                          " - " +
-                          item.node.priceRange.maxVariantPrice.amount;
-                    return (
-                      <Fragment key={item.node.id}>
-                        <TableRow>
-                          <TableCell padding="checkbox">
-                            <Typography>{i + 1}</Typography>
-                          </TableCell>
-                          <TableCell>
-                            <Stack direction={"row"} alignItems={"center"}>
-                              <Box sx={{ position: "relative", width: "50px", height: "50px", mr:1 }}>
-                                <ImageComponent
-                                  img={item.node.variants?.edges[0]?.node?.image?.url}
-                                  title={item.node.title}
-                                />
-                              </Box>
-                              <Typography variant="body2">{item.node.title}</Typography>
-                            </Stack>
-                          </TableCell>
-                          <TableCell>{item.node.variants.edges.length}</TableCell>
-                          <TableCell>${price}</TableCell>
-                          <TableCell>{item.node.productType}</TableCell>
-                          <TableCell>{item.node.vendor}</TableCell>
-                          <TableCell></TableCell>
-                        </TableRow>
-                      </Fragment>
-                    );
+                  {prodList.map((prod, idx) => {
+                    return prod.newData.edges.map((item, i) => {
+                      console.log("item", item)
+                      const price =
+                        item.node.priceRange.maxVariantPrice.amount ===
+                        item.node.priceRange.minVariantPrice.amount
+                          ? item.node.priceRange.maxVariantPrice.amount
+                          : item.node.priceRange.minVariantPrice.amount +
+                            " - " +
+                            item.node.priceRange.maxVariantPrice.amount;
+                      return (
+                        <Fragment key={item.node.id}>
+                          <TableRow>
+                            <TableCell padding="checkbox">
+                              <Typography>{i + 1}</Typography>
+                            </TableCell>
+                            <TableCell>
+                              <Stack direction={"row"} alignItems={"center"}>
+                                <Box
+                                  sx={{
+                                    position: "relative",
+                                    width: "50px",
+                                    height: "50px",
+                                    mr: 1,
+                                  }}
+                                >
+                                  <ImageComponent
+                                    img={item.node.variants?.edges[0]?.node?.image?.url}
+                                    title={item.node.title}
+                                  />
+                                </Box>
+                                <Typography variant="body2">{item.node.title}</Typography>
+                              </Stack>
+                            </TableCell>
+                            <TableCell>{item.node.variants.edges.length}</TableCell>
+                            <TableCell>${price}</TableCell>
+                            <TableCell>{item.node.productType}</TableCell>
+                            <TableCell>{item.node.vendor}</TableCell>
+                            <TableCell></TableCell>
+                          </TableRow>
+                        </Fragment>
+                      );
+                    });
                   })}
                 </TableBody>
                 {lastCursor && (
@@ -216,4 +165,4 @@ const CatalogProductList = ({ quotesList, setQuotesList }) => {
   );
 };
 
-export default CatalogProductList;
+export default CatalogSelectedProduct;

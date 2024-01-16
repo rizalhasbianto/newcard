@@ -47,7 +47,7 @@ export default async function getProducts(req, res) {
                 name
                 values
               }
-              metafield(namespace: "custom", key: "testlist") {
+              shopifyCatalog: metafield(namespace: "b2b", key: "catalog") { 
                 id
                 value
                 type

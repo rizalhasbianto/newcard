@@ -149,17 +149,18 @@ const CatalogProductList = (props) => {
     setFilterOpt(newFilterOpt);
   }, []);
 
-  const handleAddToCatalog = async (productId, catalogId, i) => {
+  const handleAddToCatalog = async (shopifyCatalog, productId, catalogId, i) => {
     setAddCatalogLoading(i);
 
     const resUpdateMetafield = await UpdateProductMetafield({
       productId: productId,
       catalogId: catalogId,
+      shopifyCatalog: shopifyCatalog
     });
 
     if (
       !resUpdateMetafield ||
-      resUpdateMetafield.updateMetafield.data.productUpdate.userErrors
+      resUpdateMetafield.updateMetafield.data.productUpdate.userErrors.length > 0
     ) {
       console.log(resUpdateMetafield);
       setAddCatalogLoading();
@@ -260,6 +261,9 @@ console.log("prodList", prodList)
                         : item.node.priceRange.minVariantPrice.amount +
                           " - " +
                           item.node.priceRange.maxVariantPrice.amount;
+                    
+                    const catalogIDs = item.node.shopifyCatalog?.value ? JSON.parse(item.node.shopifyCatalog?.value) : []
+
                     return (
                       <Fragment key={item.node.id}>
                         <TableRow>
@@ -284,7 +288,7 @@ console.log("prodList", prodList)
                           <TableCell>{item.node.productType}</TableCell>
                           <TableCell>{item.node.vendor}</TableCell>
                           <TableCell>
-                            {addedProductList.includes(item.node.id) ? (
+                            {addedProductList.includes(item.node.id) || catalogIDs.includes(catalog._id) ? (
                               <Box sx={{ textAlign: "center" }}>
                                 <PlaylistAddCheckIcon sx={{ color: "green" }}/>
                               </Box>
@@ -295,7 +299,7 @@ console.log("prodList", prodList)
                                 loading={addCatalogLoading === i ? true : false}
                                 loadingPosition="start"
                                 startIcon={<PlaylistAddIcon />}
-                                onClick={() => handleAddToCatalog(item.node.id, catalog._id, i)}
+                                onClick={() => handleAddToCatalog(item.node.shopifyCatalog, item.node.id, catalog._id, i)}
                               >
                                 Add
                               </LoadingButton>
