@@ -39,7 +39,7 @@ import PlaylistAddIcon from "@mui/icons-material/PlaylistAdd";
 import PlaylistAddCheckIcon from "@mui/icons-material/PlaylistAddCheck";
 
 const CatalogSelectedProduct = (props) => {
-  const { prodList } = props;
+  const { prodList, handlePageChange, handleRowsPerPageChange } = props;
   const [filterOpt, setFilterOpt] = useState();
   const [lastCursor, setLastCursor] = useState();
   const [pageIndex, setPageIndex] = useState(0);
@@ -48,12 +48,6 @@ const CatalogSelectedProduct = (props) => {
   const [addQuoteLoading, setAddQuoteLoading] = useState();
   const productPerPage = 10;
   const modalPopUp = usePopover();
-
-  //initial load prod data
-  useEffect(() => {
-    const lastData = prodList.at(-1);
-    console.log("lastData", lastData);
-  }, [prodList]);
 
   return (
     <Card>
@@ -88,49 +82,47 @@ const CatalogSelectedProduct = (props) => {
                   </TableRow>
                 </TableHead>
                 <TableBody sx={{ maxHeight: "500px" }}>
-                  {prodList.map((prod, idx) => {
-                    return prod.newData.edges.map((item, i) => {
-                      console.log("item", item);
-                      const price =
-                        item.node.priceRange.maxVariantPrice.amount ===
-                        item.node.priceRange.minVariantPrice.amount
-                          ? item.node.priceRange.maxVariantPrice.amount
-                          : item.node.priceRange.minVariantPrice.amount +
-                            " - " +
-                            item.node.priceRange.maxVariantPrice.amount;
-                      return (
-                        <Fragment key={item.node.id}>
-                          <TableRow>
-                            <TableCell padding="checkbox">
-                              <Typography>{i + 1}</Typography>
-                            </TableCell>
-                            <TableCell>
-                              <Stack direction={"row"} alignItems={"center"}>
-                                <Box
-                                  sx={{
-                                    position: "relative",
-                                    width: "50px",
-                                    height: "50px",
-                                    mr: 1,
-                                  }}
-                                >
-                                  <ImageComponent
-                                    img={item.node.variants?.edges[0]?.node?.image?.url}
-                                    title={item.node.title}
-                                  />
-                                </Box>
-                                <Typography variant="body2">{item.node.title}</Typography>
-                              </Stack>
-                            </TableCell>
-                            <TableCell>{item.node.variants.edges.length}</TableCell>
-                            <TableCell>${price}</TableCell>
-                            <TableCell>{item.node.productType}</TableCell>
-                            <TableCell>{item.node.vendor}</TableCell>
-                            <TableCell></TableCell>
-                          </TableRow>
-                        </Fragment>
-                      );
-                    });
+                  {prodList.newData.edges.map((item, i) => {
+                    console.log("item", item);
+                    const price =
+                      item.node.priceRange.maxVariantPrice.amount ===
+                      item.node.priceRange.minVariantPrice.amount
+                        ? item.node.priceRange.maxVariantPrice.amount
+                        : item.node.priceRange.minVariantPrice.amount +
+                          " - " +
+                          item.node.priceRange.maxVariantPrice.amount;
+                    return (
+                      <Fragment key={item.node.id}>
+                        <TableRow>
+                          <TableCell padding="checkbox">
+                            <Typography>{i + 1}</Typography>
+                          </TableCell>
+                          <TableCell>
+                            <Stack direction={"row"} alignItems={"center"}>
+                              <Box
+                                sx={{
+                                  position: "relative",
+                                  width: "50px",
+                                  height: "50px",
+                                  mr: 1,
+                                }}
+                              >
+                                <ImageComponent
+                                  img={item.node.variants?.edges[0]?.node?.image?.url}
+                                  title={item.node.title}
+                                />
+                              </Box>
+                              <Typography variant="body2">{item.node.title}</Typography>
+                            </Stack>
+                          </TableCell>
+                          <TableCell>{item.node.variants.edges.length}</TableCell>
+                          <TableCell>${price}</TableCell>
+                          <TableCell>{item.node.productType}</TableCell>
+                          <TableCell>{item.node.vendor}</TableCell>
+                          <TableCell></TableCell>
+                        </TableRow>
+                      </Fragment>
+                    );
                   })}
                 </TableBody>
                 {lastCursor && (
@@ -162,9 +154,9 @@ const CatalogSelectedProduct = (props) => {
           )}
           <TablePagination
             component="div"
-            count={prodList[0].newData.totalCount}
-            onPageChange={onPageChange}
-            onRowsPerPageChange={onRowsPerPageChange}
+            count={prodList.newData.totalCount}
+            onPageChange={handlePageChange}
+            onRowsPerPageChange={handleRowsPerPageChange}
             page={1}
             rowsPerPage={10}
             rowsPerPageOptions={[10, 20, 50]}

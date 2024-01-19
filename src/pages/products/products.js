@@ -26,7 +26,7 @@ import ProductAlertDialogQuoteList from "src/sections/products/product-alert-dia
 import Toast from "src/components/toast";
 import { useToast } from "src/hooks/use-toast";
 
-import { SearchProducts } from "src/service/use-shopify";
+import { GetProductsInfinite } from "src/service/use-shopify";
 import { GetQuotesData } from "src/service/use-mongo";
 import { useCallback, useEffect, useState } from "react";
 import CardLoading from "src/components/grid-loading";
@@ -51,7 +51,7 @@ const Products = () => {
   const quoteId = router.query?.quoteId;
 
   const productPerPage = 12;
-  const { data, isLoading, isError, size, setSize } = SearchProducts({
+  const { data, isLoading, isError, size, setSize } = GetProductsInfinite({
     selectedFilter,
     selectedVariantFilter,
     smartSearch,

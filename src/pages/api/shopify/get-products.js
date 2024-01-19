@@ -1,16 +1,13 @@
 import { callShopify } from "src/lib/shopify";
 
 export default async function getProducts(req, res) {
-  const searchByTitle = req.body?.productName ? `title:${req.body.productName}*` : "";
-  const searchByType = req.body?.productType ? `product_type:${req.body.productType}` : "";
-  const searchByTag = req.body?.tag ? `AND tag:${req.body.tag}` : "";
-  const searchByVendor = req.body?.productVendor ? `AND vendor:${req.body.productVendor}` : "";
-  const cursor = req.body?.lastCursor ? `, after: "${req.body.lastCursor}"` : "";
-  const productPerPage = req.body?.productPerPage ? req.body.productPerPage : 100;
-  const pageIndex = req.body?.pageIndex ? req.body.pageIndex : 0;
+  const bodyObject = req.body ? req.body : req.query;
+  const cursor = bodyObject?.lastCursor ? `, after: "${bodyObject.lastCursor}"` : "";
+  const productPerPage = bodyObject?.productPerPage ? bodyObject.productPerPage : 10;
+  const pageIndex = bodyObject?.pageIndex ? bodyObject.pageIndex : 0;
 
-  const searchTerm = req.body.queryParam
-    ? `, query:"${req.body.queryParam
+  const searchTerm = bodyObject.queryParam
+    ? `, query:"${bodyObject.queryParam
         .replace(/&/g, " AND ")
         .replace(/\+/g, " ")
         .replace(/=/g, ":")
@@ -81,9 +78,9 @@ export default async function getProducts(req, res) {
   };
 
   let resData;
-  if (!req.body?.collection) {
+  if (!bodyObject?.collection) {
     const queryWithoutCollection = `{
-      ${query(productPerPage, searchTerm, "")}
+      ${query(productPerPage, searchTerm, cursor)}
     }`;
     const resGetData = await callShopify(queryWithoutCollection);
     resData = resGetData.data.products;
@@ -93,26 +90,26 @@ export default async function getProducts(req, res) {
     let ProdData = [];
     while (hasNextPage) {
       const queryWithCollection = `{
-        collection(handle: "${req.body?.collection}") {
+        collection(handle: "${bodyObject?.collection}") {
           handle
           ${query(100, "", cursor)}
         }
       }`;
       const resGetData = await callShopify(queryWithCollection);
-      
+      console.log(resGetData)
       let resProdData = resGetData.data.collection.products.edges;
 
-      if (searchByTitle) {
-        resProdData = resProdData.filter((prod) => prod.node.title.includes(req.body?.productName));
+      if (bodyObject?.productName) {
+        resProdData = resProdData.filter((prod) => prod.node.title.includes(bodyObject?.productName));
       }
-      if (searchByType) {
-        resProdData = resProdData.filter((prod) => prod.node.productType === req.body?.productType);
+      if (bodyObject?.productType) {
+        resProdData = resProdData.filter((prod) => prod.node.productType === bodyObject?.productType);
       }
-      if (searchByTag) {
-        resProdData = resProdData.filter((prod) => prod.node.tags.includes(req.body?.tag));
+      if (bodyObject?.tag) {
+        resProdData = resProdData.filter((prod) => prod.node.tags.includes(bodyObject?.tag));
       }
-      if (searchByVendor) {
-        resProdData = resProdData.filter((prod) => prod.node.vendor === req.body?.productVendor);
+      if (bodyObject?.productVendor) {
+        resProdData = resProdData.filter((prod) => prod.node.vendor === bodyObject?.productVendor);
       }
       
       resProdData.map((prod) => ProdData.push(prod));

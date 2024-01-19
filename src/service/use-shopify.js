@@ -42,7 +42,79 @@ export const SendInvoiceByShopify = async (id) => {
   return sendToShopify;
 };
 
+const generateParams = (props) => {
+  const {
+    selectedFilter = {
+      productName: "",
+      collection: "",
+      productType: "",
+      productVendor: "",
+      tag: "",
+    },
+    selectedVariantFilter = [],
+    smartSearch,
+    productPerPage,
+    catalogId,
+  } = props;
+
+  const { productName, productType, tag, productVendor, collection } = selectedFilter;
+  let paramQuery;
+  let url;
+
+  if (collection) {
+    const params = {
+      productName,
+      productType,
+      tag,
+      productVendor,
+      collection,
+      productPerPage,
+    };
+    paramQuery = new URLSearchParams(params).toString();
+    url = "/api/shopify/get-products";
+  } else {
+    if (smartSearch) {
+      paramQuery = `selectedFilter=${smartSearch}&productPerPage=${productPerPage}`;
+      url = "/api/shopify/smart-search";
+    } else {
+      if (!selectedFilter.collection) {
+        const paramNoTitle = selectedVariantFilter.filter((item) => !item["productName"]);
+        if (catalogId) {
+          paramNoTitle.push({
+            productMetafield: { namespace: "b2b", key: "catalog", value: catalogId },
+          });
+        }
+        paramQuery =
+          selectedVariantFilter.length > 0 || catalogId
+            ? `selectedFilter=${JSON.stringify(
+                paramNoTitle
+              )}&productPerPage=${productPerPage}&productName=${productName}`
+            : "";
+        url = "/api/shopify/search-products";
+      }
+    }
+  }
+
+  return {
+    paramQuery,
+    url
+  }
+}
+
+export const GetProductsInfinite = (props) => {
+  const param = generateParams(props)
+  const dataRes = useSWRInfiniteData(param.url, param.paramQuery);
+  return dataRes;
+};
+
+export const GetProductsPaginate = (props) => {
+  const param = generateParams(props)
+  const dataRes = useSwrData(param.url, param.paramQuery);
+  return dataRes;
+};
+
 export const GetProductsShopify = async (selectedFilter, productPerPage, lastCursor, pageIndex) => {
+  console.log("lastCursor", lastCursor)
   const { productName, productType, tag, productVendor, collection } = selectedFilter;
   const newParam = { ...selectedFilter };
   Object.keys(newParam).forEach((key) => {
@@ -64,78 +136,6 @@ export const GetProductsShopify = async (selectedFilter, productPerPage, lastCur
     pageIndex,
   });
   return sendToShopify;
-};
-
-const GetProductsShopifySwr = (selectedFilter, productPerPage) => {
-  const { prodName, prodType, prodTag, prodVendor, collection } = selectedFilter;
-  const params = {
-    prodName,
-    prodType,
-    prodTag,
-    prodVendor,
-    collection,
-    productPerPage,
-  };
-  const queryParam = new URLSearchParams(params).toString();
-  const quotesRes = useSWRInfiniteData("/api/shopify/get-products-swr", queryParam);
-
-  return quotesRes;
-};
-
-export const SearchProducts = (props) => {
-  const {
-    selectedFilter = {
-      productName: "",
-      collection: "",
-      productType: "",
-      productVendor: "",
-      tag: "",
-    },
-    selectedVariantFilter = [],
-    smartSearch,
-    productPerPage,
-    catalogId,
-  } = props;
-  const { productName, productType, tag, productVendor, collection } = selectedFilter;
-  let queryParam;
-  let url;
-
-  if (collection) {
-    const params = {
-      productName,
-      productType,
-      tag,
-      productVendor,
-      collection,
-      productPerPage,
-    };
-    queryParam = new URLSearchParams(params).toString();
-    url = "/api/shopify/get-products-swr";
-  } else {
-    if (smartSearch) {
-      queryParam = `selectedFilter=${smartSearch}&productPerPage=${productPerPage}`;
-      url = "/api/shopify/smart-search";
-    } else {
-      if (!selectedFilter.collection) {
-        const paramNoTitle = selectedVariantFilter.filter((item) => !item["productName"]);
-        if (catalogId) {
-          paramNoTitle.push({
-            productMetafield: { namespace: "b2b", key: "catalog", value: catalogId },
-          });
-        }
-        queryParam =
-          selectedVariantFilter.length > 0 || catalogId
-            ? `selectedFilter=${JSON.stringify(
-                paramNoTitle
-              )}&productPerPage=${productPerPage}&productName=${productName}`
-            : "";
-        url = "/api/shopify/search-products";
-      }
-    }
-  }
-
-  const dataRes = useSWRInfiniteData(url, queryParam);
-  return dataRes;
 };
 
 export const GetProductsMeta = async (inputValue) => {
