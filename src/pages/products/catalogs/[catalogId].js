@@ -26,6 +26,15 @@ const Page = () => {
   const { data: session } = useSession();
   const catalogId = router.query?.catalogId;
 
+  const handlePageChange = useCallback(async (event, value) => {
+    setPage(value);
+  }, []);
+
+  const handleRowsPerPageChange = useCallback(async (event) => {
+    setPage(0);
+    setRowsPerPage(event.target.value);
+  }, []);
+
   const productPerPage = 10;
   const {
     data: catalog,

@@ -123,14 +123,12 @@ export const SearchProducts = (props) => {
             productMetafield: { namespace: "b2b", key: "catalog", value: catalogId },
           });
         }
-        console.log("paramNoTitle", paramNoTitle);
         queryParam =
           selectedVariantFilter.length > 0 || catalogId
             ? `selectedFilter=${JSON.stringify(
                 paramNoTitle
               )}&productPerPage=${productPerPage}&productName=${productName}`
             : "";
-        console.log("queryParam", queryParam);
         url = "/api/shopify/search-products";
       }
     }

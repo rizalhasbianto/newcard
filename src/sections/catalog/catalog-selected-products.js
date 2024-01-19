@@ -11,6 +11,7 @@ import {
   TableFooter,
   TableContainer,
   TableRow,
+  TablePagination,
   TextField,
   MenuItem,
   Typography,
@@ -50,8 +51,8 @@ const CatalogSelectedProduct = (props) => {
 
   //initial load prod data
   useEffect(() => {
-    const lastData = prodList.at(-1)
-    console.log("lastData", lastData)
+    const lastData = prodList.at(-1);
+    console.log("lastData", lastData);
   }, [prodList]);
 
   return (
@@ -89,7 +90,7 @@ const CatalogSelectedProduct = (props) => {
                 <TableBody sx={{ maxHeight: "500px" }}>
                   {prodList.map((prod, idx) => {
                     return prod.newData.edges.map((item, i) => {
-                      console.log("item", item)
+                      console.log("item", item);
                       const price =
                         item.node.priceRange.maxVariantPrice.amount ===
                         item.node.priceRange.minVariantPrice.amount
@@ -159,6 +160,15 @@ const CatalogSelectedProduct = (props) => {
               </Table>
             </TableContainer>
           )}
+          <TablePagination
+            component="div"
+            count={prodList[0].newData.totalCount}
+            onPageChange={onPageChange}
+            onRowsPerPageChange={onRowsPerPageChange}
+            page={1}
+            rowsPerPage={10}
+            rowsPerPageOptions={[10, 20, 50]}
+          />
         </Grid>
       </CardContent>
     </Card>
