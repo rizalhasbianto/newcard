@@ -20,6 +20,7 @@ import {
   Skeleton,
   Unstable_Grid2 as Grid,
   CardHeader,
+  Button,
 } from "@mui/material";
 import LoadingButton from "@mui/lab/LoadingButton";
 import AutorenewIcon from "@mui/icons-material/Autorenew";
@@ -29,30 +30,28 @@ import { Scrollbar } from "src/components/scrollbar";
 import { ImageComponent } from "src/components/image";
 
 import { catalogProductListHead } from "src/data/tableList";
-import { GetProductsMeta } from "src/service/use-shopify";
-import { topFilterList } from "src/data/quickAddFilterList";
-import { GetProductsShopify } from "src/service/use-shopify";
-import { addQuote } from "src/helper/handleAddQuote";
 import { usePopover } from "src/hooks/use-popover";
 
-import PlaylistAddIcon from "@mui/icons-material/PlaylistAdd";
-import PlaylistAddCheckIcon from "@mui/icons-material/PlaylistAddCheck";
 
 const CatalogSelectedProduct = (props) => {
-  const { prodList, handlePageChange, handleRowsPerPageChange } = props;
-  const [filterOpt, setFilterOpt] = useState();
-  const [lastCursor, setLastCursor] = useState();
-  const [pageIndex, setPageIndex] = useState(0);
-  const [loadMoreLoading, setLoadMoreLoading] = useState(false);
-  const [qtyList, setQtyList] = useState([]);
-  const [addQuoteLoading, setAddQuoteLoading] = useState();
-  const productPerPage = 10;
+  const { prodList, handlePageChange, handleRowsPerPageChange, page, productPerPage, productCount, setEditStatus } = props;
   const modalPopUp = usePopover();
 
   return (
-    <Card>
-      <CardHeader subheader="Included 100 products" title="Selected Products" />
-      <CardContent>
+    <Card >
+      <Grid container alignItems="center">
+        <Grid xl={6}>
+          <CardHeader subheader={`Included ${productCount} products`} title="Selected Products" />
+        </Grid>
+        <Grid xl={6} justify="flex-end" sx={{
+                textAlign: "right",
+                paddingRight: "25px",
+              }}>
+          <Button variant="outlined" sx={{mt:2}} onClick={() => setEditStatus(true)}>Edit</Button>
+        </Grid>
+      </Grid>
+      
+      <CardContent sx={{pt:0}}>
         <AlertDialog
           title={modalPopUp.message.title}
           content={modalPopUp.message.content}
@@ -60,11 +59,8 @@ const CatalogSelectedProduct = (props) => {
           handleClose={modalPopUp.handleClose}
         />
         <Grid lg={12} sx={{ mt: 2 }}>
-          {!prodList ? (
-            <TableLoading />
-          ) : (
-            <TableContainer sx={{ maxHeight: 600 }}>
-              <Table stickyHeader aria-label="sticky table">
+            <TableContainer>
+              <Table>
                 <TableHead>
                   <TableRow>
                     {catalogProductListHead.map((head) => {
@@ -83,7 +79,7 @@ const CatalogSelectedProduct = (props) => {
                 </TableHead>
                 <TableBody sx={{ maxHeight: "500px" }}>
                   {prodList.newData.edges.map((item, i) => {
-                    console.log("item", item);
+                    const numberItem = page * productPerPage + i + 1
                     const price =
                       item.node.priceRange.maxVariantPrice.amount ===
                       item.node.priceRange.minVariantPrice.amount
@@ -95,7 +91,7 @@ const CatalogSelectedProduct = (props) => {
                       <Fragment key={item.node.id}>
                         <TableRow>
                           <TableCell padding="checkbox">
-                            <Typography>{i + 1}</Typography>
+                            <Typography>{numberItem}</Typography>
                           </TableCell>
                           <TableCell>
                             <Stack direction={"row"} alignItems={"center"}>
@@ -125,40 +121,15 @@ const CatalogSelectedProduct = (props) => {
                     );
                   })}
                 </TableBody>
-                {lastCursor && (
-                  <TableFooter>
-                    <TableRow>
-                      <TableCell
-                        sx={{
-                          textAlign: "center",
-                        }}
-                        variant="footer"
-                        colSpan="6"
-                      >
-                        <LoadingButton
-                          color="primary"
-                          onClick={() => handleLoadMore()}
-                          loading={loadMoreLoading}
-                          loadingPosition="start"
-                          startIcon={<AutorenewIcon />}
-                          variant="contained"
-                        >
-                          LOAD MORE
-                        </LoadingButton>
-                      </TableCell>
-                    </TableRow>
-                  </TableFooter>
-                )}
               </Table>
             </TableContainer>
-          )}
           <TablePagination
             component="div"
             count={prodList.newData.totalCount}
             onPageChange={handlePageChange}
             onRowsPerPageChange={handleRowsPerPageChange}
-            page={1}
-            rowsPerPage={10}
+            page={page}
+            rowsPerPage={productPerPage}
             rowsPerPageOptions={[10, 20, 50]}
           />
         </Grid>

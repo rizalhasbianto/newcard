@@ -55,11 +55,23 @@ const generateParams = (props) => {
     smartSearch,
     productPerPage,
     catalogId,
+    cursor
   } = props;
 
   const { productName, productType, tag, productVendor, collection } = selectedFilter;
   let paramQuery;
   let url;
+  
+  const cursorId = (cursor) => {
+    if(cursor) {
+      if(cursor.firstCursor) {
+        return `&firstCursor=${cursor.firstCursor}`
+      } else {
+        return `&lastCursor=${cursor.lastCursor}`
+      }
+    }
+    return ""
+  }
 
   if (collection) {
     const params = {
@@ -69,12 +81,14 @@ const generateParams = (props) => {
       productVendor,
       collection,
       productPerPage,
+      firstCursor:cursor?.firstCursor,
+      lastCursor:cursor?.lastCursor
     };
     paramQuery = new URLSearchParams(params).toString();
     url = "/api/shopify/get-products";
   } else {
     if (smartSearch) {
-      paramQuery = `selectedFilter=${smartSearch}&productPerPage=${productPerPage}`;
+      paramQuery = `selectedFilter=${smartSearch}&productPerPage=${productPerPage}${cursorId(cursor)}`;
       url = "/api/shopify/smart-search";
     } else {
       if (!selectedFilter.collection) {
@@ -85,10 +99,10 @@ const generateParams = (props) => {
           });
         }
         paramQuery =
-          selectedVariantFilter.length > 0 || catalogId
+          selectedVariantFilter.length > 0 || catalogId 
             ? `selectedFilter=${JSON.stringify(
                 paramNoTitle
-              )}&productPerPage=${productPerPage}&productName=${productName}`
+              )}&productPerPage=${productPerPage}&productName=${productName}${cursorId(cursor)}`
             : "";
         url = "/api/shopify/search-products";
       }

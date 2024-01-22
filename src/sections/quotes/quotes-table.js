@@ -27,7 +27,7 @@ import AlertConfirm from "src/components/alert-confirm";
 import { quotesListHead } from "src/data/tableList";
 
 const QuotesTable = (props) => {
-  const {
+  const { 
     count = 0,
     items = [],
     onPageChange = () => {},

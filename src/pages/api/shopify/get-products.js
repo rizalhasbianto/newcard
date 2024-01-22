@@ -13,7 +13,7 @@ export default async function getProducts(req, res) {
         .replace(/=/g, ":")
         .replace("productType", "product_type")
         .replace("productVendor", "vendor")
-        .replace("productName", "title")}" ${cursor}`
+        .replace("productName", "title")}"`
     : "";
 
   const query = (productPerPage, searchTerm, cursor) => {

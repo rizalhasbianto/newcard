@@ -74,6 +74,7 @@ const Products = () => {
     }
     setQuoteList(resQuotes.data.quote);
     setOpenQuote(true);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {

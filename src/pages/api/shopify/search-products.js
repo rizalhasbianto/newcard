@@ -3,20 +3,29 @@ import { callShopify } from "src/lib/shopify";
 export default async function getProducts(req, res) {
   const productPerPage = req.query.productPerPage ? req.query.productPerPage : 12;
   const productName = req.query.productName ? req.query.productName : "";
-  const cursor = req.query?.lastCursor ? `, after: "${req.query.lastCursor}"` : "";
-  
+
+  const cursor = (cursor, productPerPage) => {
+    if (cursor?.lastCursor) {
+      return `, first:${productPerPage}, after: "${req.query.lastCursor}"`;
+    }
+    if (cursor?.firstCursor) {
+      return `, last:${productPerPage}, before: "${req.query.firstCursor}"`;
+    }
+    return `, first:${productPerPage}`;
+  };
+
   const prodFilter = req.query.selectedFilter
     ? `, productFilters:${req.query.selectedFilter.replace(/"([^(")"]+)":/g, "$1:")}`
     : "";
-
+console.log("cursor", cursor(req.query, productPerPage))
   const gQl = `
     { search(
-        first:${productPerPage}, 
         types:PRODUCT, 
-        query:"${productName}"${prodFilter}${cursor}
+        query:"${productName}"${prodFilter}${cursor(req.query, productPerPage)}
         ) {
             pageInfo {
               hasNextPage
+              startCursor
               endCursor
             }
             totalCount

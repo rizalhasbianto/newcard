@@ -3,6 +3,7 @@ import { useCallback, useEffect, useState, Fragment } from "react";
 import {
   Box,
   Card,
+  CardHeader,
   CardContent,
   Table,
   TableBody,
@@ -17,6 +18,7 @@ import {
   Stack,
   SvgIcon,
   Skeleton,
+  Button,
   Unstable_Grid2 as Grid,
 } from "@mui/material";
 import LoadingButton from "@mui/lab/LoadingButton";
@@ -37,7 +39,7 @@ import PlaylistAddIcon from "@mui/icons-material/PlaylistAdd";
 import PlaylistAddCheckIcon from "@mui/icons-material/PlaylistAddCheck";
 
 const CatalogProductList = (props) => {
-  const { catalog } = props;
+  const { catalog, setEditStatus, productMutate } = props;
   const [selectedFilter, setSelectedFilter] = useState({
     productName: "",
     collection: "",
@@ -162,7 +164,6 @@ const CatalogProductList = (props) => {
       !resUpdateMetafield ||
       resUpdateMetafield.updateMetafield.data.productUpdate.userErrors.length > 0
     ) {
-      console.log(resUpdateMetafield);
       setAddCatalogLoading();
       return;
     }
@@ -170,10 +171,24 @@ const CatalogProductList = (props) => {
     setAddedProductList([...addedProductList, productId]);
     setAddCatalogLoading();
   };
-console.log("prodList", prodList)
+
   return (
     <Card>
-      <CardContent>
+      <Grid container alignItems="center">
+      <Grid xl={6}>
+          <CardHeader subheader={`Add product for this catalog`} title="Selecte a Products" />
+        </Grid>
+        <Grid xl={6} justify="flex-end" sx={{
+                textAlign: "right",
+                paddingRight: "25px",
+              }}>
+          <Button variant="outlined" sx={{mt:2}} onClick={() => {
+            setEditStatus(false) 
+            productMutate()
+            }}>Done</Button>
+        </Grid>
+      </Grid>
+      <CardContent sx={{pt:0}}>
         <AlertDialog
           title={modalPopUp.message.title}
           content={modalPopUp.message.content}
@@ -318,7 +333,7 @@ console.log("prodList", prodList)
                           textAlign: "center",
                         }}
                         variant="footer"
-                        colSpan="6"
+                        colSpan="7"
                       >
                         <LoadingButton
                           color="primary"
@@ -337,6 +352,9 @@ console.log("prodList", prodList)
               </Table>
             </TableContainer>
           )}
+        </Grid>
+        <Grid lg={12} sx={{ mt: 2 }}>
+
         </Grid>
       </CardContent>
     </Card>
