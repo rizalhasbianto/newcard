@@ -29,7 +29,8 @@ export const Layout = (props) => {
   const { children } = props;
   const pathname = usePathname();
   const [openNav, setOpenNav] = useState(false);
-  const { data: session } = useSession();
+  const [sessionStatus, setSessionStatus] = useState();
+  const { data: session, status } = useSession();
 
   const handlePathnameChange = useCallback(() => {
     if (openNav) {
@@ -44,7 +45,19 @@ export const Layout = (props) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [pathname]
   );
-console.log("session layout", session)
+  useEffect(
+    () => {
+      console.log("session", session)
+      if(session === null || session === undefined) {
+        console.log("status", status)
+      } else {
+        setSessionStatus(session)
+      }
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [session]
+  );
+
   return (
     <>
       {
@@ -53,7 +66,7 @@ console.log("session layout", session)
       <SideNav onClose={() => setOpenNav(false)} open={openNav} />
       <LayoutRoot>
         <LayoutContainer>
-          {session ? (
+          {sessionStatus ? (
             children
           ) : (
             <Stack
