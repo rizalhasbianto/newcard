@@ -5,7 +5,6 @@ import { styled } from "@mui/material/styles";
 import { CircularProgress, Stack } from "@mui/material";
 import { SideNav } from "./side-nav";
 import { TopNav } from "./top-nav";
-import { TRACE_OUTPUT_VERSION } from "next/dist/shared/lib/constants";
 
 const SIDE_NAV_WIDTH = 280;
 
@@ -30,7 +29,7 @@ export const Layout = (props) => {
   const { children } = props;
   const pathname = usePathname();
   const [openNav, setOpenNav] = useState(false);
-  const session = true
+  const { data: session } = useSession();
 
   const handlePathnameChange = useCallback(() => {
     if (openNav) {

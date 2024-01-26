@@ -24,8 +24,9 @@ export const authOptions = {
                 const client = await clientPromise;
                 const db = client.db(process.env.DB_NAME);
                 const userTable = process.env.MONGODB_COLLECTION_USER
-                const response = await db.collection(userTable).find({ email: email }).limit(1).toArray();
                 console.log("call db again")
+                const response = await db.collection(userTable).find({ email: email }).limit(1).toArray();
+                
                 if (response.length === 0) {
                     throw new Error("User with that email is not found");
                 }
@@ -52,8 +53,6 @@ export const authOptions = {
     callbacks: {
         async jwt({ token, user, account }) {
             console.log("call JWT again")
-            console.log("user", user)
-            console.log("account", account)
             if (account && user) {
                 return {
                     ...token,
@@ -67,8 +66,6 @@ export const authOptions = {
 
         async session({ session, token }) {
             console.log("call SESSION again")
-            console.log("session", session)
-            console.log("token", token)
             session.user.accessToken = token?.accessToken;
             session.user.detail = {
                 name: token?.name,
