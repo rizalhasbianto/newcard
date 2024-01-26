@@ -168,6 +168,19 @@ export const GetCompaniesSwr = (props) => {
   return comapanyRes;
 };
 
+export const GetSingleCompaniesSwr = (id, quotePage, quotePostPerPage) => {
+  const queryPath =
+    "withQuote=true&quotePage=" +
+    quotePage +
+    "&quotePostPerPage=" +
+    quotePostPerPage +
+    "&avatar=true&id=" +
+    id;
+  const comapanyRes = useSwrData("/api/company/get-company", queryPath);
+
+  return comapanyRes;
+};
+
 export const AddCompanyToMongo = async (companyData, shopifyCustomerId) => {
   const mongoRes = await useDataService("/api/company/add-company", "POST", {
     name: companyData.companyName,
