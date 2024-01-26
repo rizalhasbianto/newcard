@@ -9,6 +9,7 @@ import {
   Unstable_Grid2 as Grid,
   Autocomplete,
   CardActions,
+  Collapse,
   Stack,
 } from "@mui/material";
 import LoadingButton from "@mui/lab/LoadingButton";
@@ -31,7 +32,7 @@ import {
   AddNewUserToCompanyMongo
 } from "src/service/use-mongo";
 
-import { SyncUserShopify, GetUserShopify } from "src/service/use-shopify";
+import { CreateCompanyShopify, GetUserShopify } from "src/service/use-shopify";
 
 const AddCompany = (props) => {
   const {
@@ -60,48 +61,72 @@ const AddCompany = (props) => {
       name: st.abbreviation,
     };
   });
-
+ 
   const formik = useFormik({
     initialValues: {
       companyName: "",
       companyAbout: "",
       marked: "",
-      companyShippingLocation: "",
+      useAsShipping: "yes",
       countryName: "USA",
-      stateName: "",
-      attentionLocation: "",
+      stateNameLocation: "",
       addressLocation: "",
       cityLocation: "",
       postalLocation: "",
       phoneLocation: "",
+      companyShippingName: "",
+      stateNameShipping: "",
+      addressShipping: "",
+      cityShipping: "",
+      postalShipping: "",
       contactFirstName: "",
       contactLastName: "",
       contactEmail: "",
+      contactPhone: "",
       sales: "",
       submit: null,
     },
     validationSchema: Yup.object({
       companyName: Yup.string().max(255).required("This field is required"),
       companyAbout: Yup.string().max(1000).required("This field is required"),
-      companyShippingLocation: Yup.string().max(255).required("This field is required"),
-      countryName: Yup.string().max(255).required("This field is required"),
-      stateName: Yup.object().required("This field is required"),
-      attentionLocation: Yup.string().max(255).required("This field is required"),
-      addressLocation: Yup.string().max(255).required("This field is required"),
+      useAsShipping: Yup.string().max(255).required("This field is required"),
+      stateNameLocation: Yup.object().required("This field is required"),
+      addressLocation: Yup.string().max(1000).required("This field is required"),
       cityLocation: Yup.string().max(255).required("This field is required"),
       postalLocation: Yup.number().required("This field is required"),
-      phoneLocation: Yup.string()
-        .matches(phoneRegExp, "Phone number is not valid")
-        .required("This field is required"),
+      companyShippingName: Yup.string().when("useAsShipping", {
+        is:"no",
+        then:() => Yup.string().max(255).required("This field is required")
+      }),
+      stateNameShipping: Yup.object().when("useAsShipping", {
+        is:"no",
+        then:() => Yup.object().required("This field is required")
+      }),
+      addressShipping: Yup.string().when("useAsShipping", {
+        is:"no",
+        then:() => Yup.string().max(1000).required("This field is required")
+      }),
+      cityShipping: Yup.string().when("useAsShipping", {
+        is:"no",
+        then:() => Yup.string().max(255).required("This field is required")
+      }),
+      postalShipping: Yup.string().when("useAsShipping", {
+        is:"no",
+        then:() => Yup.number().required("This field is required")
+      }),
       contactFirstName: Yup.string().max(255).required("This field is required"),
       contactLastName: Yup.string().max(255).required("This field is required"),
       contactEmail: Yup.string()
         .email("Must be a valid email")
         .max(255)
         .required("Email is required"),
+      contactPhone: Yup.string()
+      .matches(phoneRegExp, "Phone number is not valid")
+      .required("This field is required"),
       sales: Yup.object().required("This field is required"),
     }),
     onSubmit: async (values, helpers) => {
+      console.log("save run")
       setLoadSave(true);
       if (file) {
         values.companyPhoto = file.base64File;
@@ -136,104 +161,14 @@ const AddCompany = (props) => {
 
       if (submitCondition) {
         let shopifyCustomerId;
-        const resSyncUser = await SyncUserShopify(values);
-        const shopifyRes = resSyncUser.resSyncCustomer.data.customerCreate.userErrors;
-        if (!resSyncUser || shopifyRes.length > 0) {
-          const errorMessage =
-            shopifyRes.length > 0 ? shopifyRes[0].message : "Error sync with Shopify!";
-
-          if (errorMessage === "Email has already been taken") {
-            const resGetUser = await GetUserShopify(values.contactEmail);
-            if (!resGetUser) {
-              toastUp.handleStatus("error");
-              toastUp.handleMessage("Error sync with Shopify!");
-              setLoadSave(false);
-              return;
-            }
-            shopifyCustomerId = resGetUser.newData.data.customers.edges[0].node.id.replace("gid://shopify/Customer/", "");
-          } else {
-            toastUp.handleStatus("error");
-            toastUp.handleMessage(errorMessage);
-            setLoadSave(false);
-            return;
-          }
+        const resCreateCompany = await CreateCompanyShopify(values);
+        const shopifyRes = resCreateCompany.resSyncCustomer.data.customerCreate.userErrors;
+        if (!resCreateCompany || shopifyRes.length > 0) {
         } else {
-          shopifyCustomerId = resSyncUser.resSyncCustomer.data.customerCreate.customer.id.replace("gid://shopify/Customer/", "");
+          shopifyCustomerId = "12345678"
         }
 
-        const resSaveCompany = await AddCompanyToMongo(values, shopifyCustomerId);
-        if (!resSaveCompany) {
-          toastUp.handleStatus("error");
-          toastUp.handleMessage("Error when create company!");
-          setLoadSave(false);
-          return;
-        }
-
-        const resAddUser = await RegisterUser(values, resSaveCompany.data.insertedId, shopifyCustomerId);
-        if (!resAddUser) {
-          toastUp.handleStatus("error");
-          toastUp.handleMessage("Error when create user!");
-          setLoadSave(false);
-          return;
-        }
-
-        const resInvite = await InviteUser(values, resAddUser.data.insertedId);
-        if (!resInvite && resInvite.status !== 200) {
-          toastUp.handleStatus("warning");
-          toastUp.handleMessage("Company added, sent user invite failed!");
-          setLoadSave(false);
-          return;
-        }
-
-        const resAddUserToCompany = await AddNewUserToCompanyMongo({
-          companyId:resSaveCompany.data.insertedId,
-          newUserData: {id:resAddUser.data.insertedId, default:true},
-          shopifyCustomerId: shopifyCustomerId
-        });
-
-        if (!resAddUserToCompany) {
-          toastUp.handleStatus("error");
-          toastUp.handleMessage("Error when sync user to company!");
-          setLoadSave(false);
-          return;
-        }
-
-        setLoadSave(false);
-        toastUp.handleStatus("success");
-        toastUp.handleMessage("Company added, sent user invite!");
-
-        const shipToSelected = [
-          {
-            locationName: values.companyShippingLocation,
-            location: {
-              attention: values.attentionLocation,
-              address: values.addressLocation,
-              city: values.cityLocation,
-              state: values.stateName.name,
-              zip: values.postalLocation,
-            },
-            default: true,
-          },
-        ];
-
-        if (mutate) {
-          mutate();
-        } else {
-          if (getSelectedVal) {
-            const page = 0,
-              rowsPerPage = 50;
-            const newCompaniesData = await GetCompanies(page, rowsPerPage);
-            setCompanies(newCompaniesData.data.company);
-            setCompanyName(values.companyName);
-            setShipTo(values.companyShippingLocation);
-            setShipToList(shipToSelected);
-            setLocation(shipToSelected[0].location);
-            setCompanyContact({
-              email: values.contactEmail,
-              name: values.contactFirstName + " " + values.contactLastName,
-            });
-          }
-        }
+        
         setAddNewCompany(false);
       }
     },
@@ -275,6 +210,9 @@ const AddCompany = (props) => {
 
   return (
     <form noValidate onSubmit={formik.handleSubmit}>
+      {
+        // Company Info
+      }
       <Stack
         sx={{
           marginBottom: "30px",
@@ -357,47 +295,37 @@ const AddCompany = (props) => {
           </Grid>
         </Grid>
       </Stack>
+      {
+        // Company Address
+      }
       <Stack
-        sx={{
-          marginBottom: "30px",
-        }}
+      sx={{
+        marginBottom: "30px",
+      }}
       >
         <Grid container spacing={2}>
           <Grid xs={12} md={12}>
-            <Divider textAlign="left">Shipping</Divider>
+            <Divider textAlign="left">Company Address</Divider>
           </Grid>
-          <Grid xs={12} md={5}>
-            <TextField
-              id="company-shipping-location"
-              name="companyShippingLocation"
-              label="Shipping Location Name"
+          <Grid xs={12} md={4}>
+          <TextField
+              id="use-as-shipping"
+              name="useAsShipping"
+              label="Use as shipping address"
               variant="outlined"
+              value={formik.values.useAsShipping}
+              select
               fullWidth
-              onBlur={formik.handleBlur}
-              onChange={formik.handleChange}
-              value={formik.values.companyShippingLocation}
-              error={
-                !!(formik.touched.companyShippingLocation && formik.errors.companyShippingLocation)
-              }
-              helperText={
-                formik.touched.companyShippingLocation && formik.errors.companyShippingLocation
-              }
-            />
-          </Grid>
-          <Grid xs={12} md={5}></Grid>
-          <Grid xs={12} md={6}>
-            <TextField
-              id="attention-location"
-              name="attentionLocation"
-              label="Attention"
-              variant="outlined"
-              fullWidth
-              onBlur={formik.handleBlur}
-              onChange={formik.handleChange}
-              value={formik.values.attentionLocation}
-              error={!!(formik.touched.attentionLocation && formik.errors.attentionLocation)}
-              helperText={formik.touched.attentionLocation && formik.errors.attentionLocation}
-            />
+              required
+              onChange={(e) => formik.setFieldValue( "useAsShipping",e.target.value )}
+            >
+              <MenuItem value="yes">
+                <em>Yes</em>
+              </MenuItem>
+              <MenuItem value="no">
+                <em>No</em>
+              </MenuItem>
+            </TextField>
           </Grid>
           <Grid xs={12} md={6}>
             <TextField
@@ -406,6 +334,7 @@ const AddCompany = (props) => {
               label="Address"
               variant="outlined"
               fullWidth
+              required
               onBlur={formik.handleBlur}
               onChange={formik.handleChange}
               value={formik.values.addressLocation}
@@ -423,7 +352,7 @@ const AddCompany = (props) => {
               select
               fullWidth
               required
-              onChange={(e) => formik.setValues({ countryName: e.target.value })}
+              onChange={(e) => formik.setFieldValue("countryName", e.target.value)}
             >
               <MenuItem value="USA">
                 <em>USA</em>
@@ -434,7 +363,7 @@ const AddCompany = (props) => {
             <Autocomplete
               disablePortal
               id="state"
-              name="stateName"
+              name="stateNameLocation"
               options={newUsaState}
               fullWidth
               isOptionEqualToValue={() => {
@@ -445,15 +374,16 @@ const AddCompany = (props) => {
                   {...params}
                   label="State"
                   variant="outlined"
-                  error={!!(formik.touched.stateName && formik.errors.stateName)}
-                  helperText={formik.touched.stateName && formik.errors.stateName}
+                  required
+                  error={!!(formik.touched.stateNameLocation && formik.errors.stateNameLocation)}
+                  helperText={formik.touched.stateNameLocation && formik.errors.stateNameLocation}
                 />
               )}
               onChange={(event, newValue) => {
-                formik.setFieldValue("stateName", newValue);
+                formik.setFieldValue("stateNameLocation", newValue);
               }}
-              onBlur={() => formik.setTouched({ ["stateName"]: true })}
-              value={formik.values.stateName}
+              onBlur={() => formik.setTouched({ ["stateNameLocation"]: true })}
+              value={formik.values.stateNameLocation}
             />
           </Grid>
           <Grid xs={12} md={3}>
@@ -463,6 +393,7 @@ const AddCompany = (props) => {
               label="City"
               variant="outlined"
               fullWidth
+              required
               onBlur={formik.handleBlur}
               onChange={formik.handleChange}
               value={formik.values.cityLocation}
@@ -477,6 +408,7 @@ const AddCompany = (props) => {
               label="Postal"
               variant="outlined"
               fullWidth
+              required
               onBlur={formik.handleBlur}
               onChange={formik.handleChange}
               value={formik.values.postalLocation}
@@ -486,7 +418,127 @@ const AddCompany = (props) => {
           </Grid>
         </Grid>
       </Stack>
-      <Stack>
+      {
+        // Company Shipping
+      }
+      <Collapse in={formik.values.useAsShipping === "yes" ? false : true}>
+      <Stack sx={{
+          marginBottom: "30px",
+        }}>
+        <Grid container spacing={2}>
+          <Grid xs={12} md={12}>
+            <Divider textAlign="left">Shipping</Divider>
+          </Grid>
+          <Grid xs={12} md={4}>
+            <TextField
+              id="company-shipping-location"
+              name="companyShippingName"
+              label="Shipping Location Name"
+              variant="outlined"
+              fullWidth
+              onBlur={formik.handleBlur}
+              onChange={formik.handleChange}
+              value={formik.values.companyShippingName}
+              error={
+                !!(formik.touched.companyShippingName && formik.errors.companyShippingName)
+              }
+              helperText={
+                formik.touched.companyShippingName && formik.errors.companyShippingName
+              }
+            />
+          </Grid>
+          <Grid xs={12} md={6}>
+            <TextField
+              id="address-location"
+              name="addressShipping"
+              label="Address"
+              variant="outlined"
+              fullWidth
+              onBlur={formik.handleBlur}
+              onChange={formik.handleChange}
+              value={formik.values.addressShipping}
+              error={!!(formik.touched.addressShipping && formik.errors.addressShipping)}
+              helperText={formik.touched.addressShipping && formik.errors.addressShipping}
+            />
+          </Grid>
+          <Grid xs={12} md={2}>
+            <TextField
+              id="country-name-Shipping"
+              name="countryName"
+              label="Country"
+              variant="outlined"
+              value={formik.values.countryName}
+              select
+              fullWidth
+              required
+              onChange={(e) => formik.setValues({ countryName: e.target.value })}
+            >
+              <MenuItem value="USA">
+                <em>USA</em>
+              </MenuItem>
+            </TextField>
+          </Grid>
+          <Grid xs={12} md={3}>
+            <Autocomplete
+              disablePortal
+              id="state-Shipping"
+              name="stateNameShipping"
+              options={newUsaState}
+              fullWidth
+              isOptionEqualToValue={() => {
+                return true;
+              }}
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  label="State"
+                  variant="outlined"
+                  error={!!(formik.touched.stateNameShipping && formik.errors.stateNameShipping)}
+                  helperText={formik.touched.stateNameShipping && formik.errors.stateNameShipping}
+                />
+              )}
+              onChange={(event, newValue) => {
+                formik.setFieldValue("stateNameShipping", newValue);
+              }}
+              onBlur={() => formik.setTouched({ ["stateNameShipping"]: true })}
+              value={formik.values.stateNameShipping}
+            />
+          </Grid>
+          <Grid xs={12} md={3}>
+            <TextField
+              id="city-Shipping"
+              name="cityShipping"
+              label="City"
+              variant="outlined"
+              fullWidth
+              onBlur={formik.handleBlur}
+              onChange={formik.handleChange}
+              value={formik.values.cityShipping}
+              error={!!(formik.touched.cityShipping && formik.errors.cityShipping)}
+              helperText={formik.touched.cityShipping && formik.errors.cityShipping}
+            />
+          </Grid>
+          <Grid xs={12} md={3}>
+            <TextField
+              id="postal-Shipping"
+              name="postalShipping"
+              label="Postal"
+              variant="outlined"
+              fullWidth
+              onBlur={formik.handleBlur}
+              onChange={formik.handleChange}
+              value={formik.values.postalShipping}
+              error={!!(formik.touched.postalShipping && formik.errors.postalShipping)}
+              helperText={formik.touched.postalShipping && formik.errors.postalShipping}
+            />
+          </Grid>
+        </Grid>
+      </Stack>
+      </Collapse>
+      {
+        // Contact
+      }
+      <Stack >
         <Grid container spacing={2}>
           <Grid xs={12} md={12}>
             <Divider textAlign="left">Contact</Divider>
@@ -538,15 +590,15 @@ const AddCompany = (props) => {
           <Grid xs={12} md={type === "register" ? 6 : 3}>
             <TextField
               id="phone-location"
-              name="phoneLocation"
+              name="contactPhone"
               label="Phone"
               variant="outlined"
               fullWidth
               onBlur={formik.handleBlur}
               onChange={formik.handleChange}
-              value={formik.values.phoneLocation}
-              error={!!(formik.touched.phoneLocation && formik.errors.phoneLocation)}
-              helperText={formik.touched.phoneLocation && formik.errors.phoneLocation}
+              value={formik.values.contactPhone}
+              error={!!(formik.touched.contactPhone && formik.errors.contactPhone)}
+              helperText={formik.touched.contactPhone && formik.errors.contactPhone}
             />
           </Grid>
           {session && session.user.detail.role === "admin" && (

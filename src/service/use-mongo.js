@@ -366,12 +366,9 @@ export const UpdateCompanyAvatarToMongo = async (id, companyPhoto) => {
   return mongoRes;
 };
 
-export const CheckCompanyName = async (companyData) => {
-  const mongoRes = await useDataService("/api/company/get-companies", "POST", {
-    query: {
-      name: companyData,
-    },
-  });
+export const CheckCompanyName = async (companyName) => {
+  const query = JSON.stringify({name: companyName})
+  const mongoRes = await useDataService("/api/company/get-companies?query=" + query, "GET");
   return mongoRes;
 };
 

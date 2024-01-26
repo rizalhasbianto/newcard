@@ -7,6 +7,8 @@ import { GetProductsPaginate } from "src/service/use-shopify";
 
 import {
   Box,
+  Card,
+  CardContent,
   Container,
   Stack,
   Typography,
@@ -15,6 +17,7 @@ import {
   Slide,
   Collapse,
   Unstable_Grid2 as Grid,
+  Button,
 } from "@mui/material";
 import { Layout as DashboardLayout } from "src/layouts/dashboard/layout";
 import CatalogInfo from "src/sections/catalog/catalog-info";
@@ -66,16 +69,15 @@ const Page = () => {
     data: product,
     isLoading: prodLoading,
     isError: prodError,
-    mutate
+    mutate,
   } = GetProductsPaginate({
     productPerPage,
     catalogId,
     cursor: cursor,
   });
-
+  
   useEffect(() => {
     if (product) {
-      console.log("product", product)
       setPageInfo(product.newData.pageInfo);
     }
   }, [product]);
@@ -93,16 +95,31 @@ const Page = () => {
         }}
       >
         <Container maxWidth="lg">
-          <h1 onClick={() => mutate()}>test</h1>
           {catalog && (
             <Box>
               <CatalogInfo session={session} catalog={catalog.data[0]} />
               <CatalogPriceRule session={session} catalog={catalog.data[0]} />
               {prodLoading && <TableLoading />}
               {(prodError || (product && product.newData.totalCount === 0)) && (
-                <Typography variant="h5" textAlign={"center"}>
-                  No data found!
-                </Typography>
+                <Collapse in={!editStatus}>
+                <Card>
+                  <CardContent>
+                    <Stack
+                      spacing={1}
+                      direction={"row"}
+                      alignItems={"center"}
+                      justifyContent={"center"}
+                    >
+                      <Typography variant="subtitle1" textAlign={"center"}>
+                        No product found!
+                      </Typography>
+                      <Button variant="outlined" onClick={() => setEditStatus(true)}>
+                        Select a product
+                      </Button>
+                    </Stack>
+                  </CardContent>
+                </Card>
+                </Collapse>
               )}
               <Collapse in={!editStatus}>
                 {product && product.newData.totalCount > 0 && (
@@ -118,7 +135,11 @@ const Page = () => {
                 )}
               </Collapse>
               <Collapse in={editStatus}>
-                <CatalogProductList catalog={catalog.data[0]} setEditStatus={setEditStatus} productMutate={mutate}/>
+                <CatalogProductList
+                  catalog={catalog.data[0]}
+                  setEditStatus={setEditStatus}
+                  productMutate={mutate}
+                />
               </Collapse>
             </Box>
           )}

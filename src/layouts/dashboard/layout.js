@@ -44,7 +44,7 @@ export const Layout = (props) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [pathname]
   );
-
+console.log("session layout", session)
   return (
     <>
       {

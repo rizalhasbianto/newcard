@@ -128,7 +128,6 @@ export const GetProductsPaginate = (props) => {
 };
 
 export const GetProductsShopify = async (selectedFilter, productPerPage, lastCursor, pageIndex) => {
-  console.log("lastCursor", lastCursor)
   const { productName, productType, tag, productVendor, collection } = selectedFilter;
   const newParam = { ...selectedFilter };
   Object.keys(newParam).forEach((key) => {
@@ -215,6 +214,11 @@ export const SyncUserShopify = async (userData) => {
     lastName: userData.contactLastName,
     email: userData.contactEmail,
   });
+  return shopifyRes;
+};
+
+export const CreateCompanyShopify = async (userData) => {
+  const shopifyRes = await useDataService("/api/shopify/create-company", "POST", userData);
   return shopifyRes;
 };
 

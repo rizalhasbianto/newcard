@@ -171,7 +171,7 @@ const CatalogProductList = (props) => {
     setAddedProductList([...addedProductList, productId]);
     setAddCatalogLoading();
   };
-
+console.log("prodList", prodList)
   return (
     <Card>
       <Grid container alignItems="center">

@@ -3,7 +3,7 @@ import { NextResponse } from "next/server";
 
 export default withAuth(
   function middleware(req) {
-    if ( req.nextUrl.pathname.startsWith('/companies') && req.nextauth.token.role === "customer") {
+    if ( req.nextauth.token.role === "customer" && req.nextUrl.pathname.startsWith('/companies')) {
         return NextResponse.redirect(new URL('/', req.url));
     }
   },

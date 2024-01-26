@@ -10,6 +10,8 @@ if (!process.env.NEXTAUTH_SECRET) {
     );
 }
 
+console.log("session api call ")
+
 export const authOptions = {
     session: {
         strategy: "jwt",
@@ -31,15 +33,15 @@ export const authOptions = {
                     throw new Error("User was not active");
                 }
 
-                const matchPass = await bcrypt.compare(password, response[0].password);
+                const matchPass = await bcrypt.compare(password, response[0]?.password);
 
                 if (matchPass) {
                     return {
-                        name: response[0].name,
-                        email: response[0].email,
-                        company: response[0].company,
-                        role: response[0].role,
-                        id:response[0]._id,
+                        name: response[0]?.name,
+                        email: response[0]?.email,
+                        company: response[0]?.company,
+                        role: response[0]?.role,
+                        id:response[0]?._id,
                     }
                 } else {
                     throw new Error("Invalid password");
@@ -53,21 +55,21 @@ export const authOptions = {
                 return {
                     ...token,
                     ...user,
-                    accessToken: user.token,
-                    refreshToken: user.refreshToken,
+                    accessToken: user?.token,
+                    refreshToken: user?.refreshToken,
                 };
             }
             return token;
         },
 
         async session({ session, token }) {
-            session.user.accessToken = token.accessToken;
+            session.user.accessToken = token?.accessToken;
             session.user.detail = {
-                name: token.name,
-                email: token.email,
-                company: token.company,
-                role: token.role,
-                id: token.id
+                name: token?.name,
+                email: token?.email,
+                company: token?.company,
+                role: token?.role,
+                id: token?.id
             }
             return session;
         },

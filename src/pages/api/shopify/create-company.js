@@ -1,6 +1,6 @@
 import { adminAPi } from "src/lib/shopify";
 
-export default async function syncCustomer(req, res) {
+export default async function shopify(req, res) {
   const bodyObject = req.body;
 
   let query;
@@ -8,11 +8,21 @@ export default async function syncCustomer(req, res) {
   if (!bodyObject.shopifyCustomerId) {
     query = `
         mutation {
-            customerCreate (
+            companyCreate (
                 input: {
-                    email:"${bodyObject.email}",
-                    firstName:"${bodyObject.firstName}", 
-                    lastName:"${bodyObject.lastName}",
+                    company: {
+                        name:"brownka"
+                    }
+                    companyLocation: {
+                        billingAddress: {
+                            address1:""
+                            city:""
+                            countryCode: "US"
+                            zoneCode:"state"
+                            zip:""
+                        }
+                        billingSameAsShipping: true
+                    }
                 }
             ) {
                 customer {
@@ -48,7 +58,6 @@ export default async function syncCustomer(req, res) {
       `;
   }
 
-  const resSyncCustomer = await adminAPi(query);
-  console.log(resSyncCustomer)
-  res.json({ status: 200, resSyncCustomer });
+  const resCreateCompany= await adminAPi(query);
+  res.json({ status: 200, resCreateCompany });
 }

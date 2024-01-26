@@ -25,6 +25,7 @@ import {
 import LoadingButton from "@mui/lab/LoadingButton";
 import AutorenewIcon from "@mui/icons-material/Autorenew";
 import AlertDialog from "src/components/alert-dialog";
+import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
 import TableLoading from "src/components/table-loading";
 import { Scrollbar } from "src/components/scrollbar";
 import { ImageComponent } from "src/components/image";
@@ -115,7 +116,7 @@ const CatalogSelectedProduct = (props) => {
                           <TableCell>${price}</TableCell>
                           <TableCell>{item.node.productType}</TableCell>
                           <TableCell>{item.node.vendor}</TableCell>
-                          <TableCell></TableCell>
+                          <TableCell sx={{textAlign:"center"}}><DeleteForeverIcon sx={{cursor:"pointer"}}/></TableCell>
                         </TableRow>
                       </Fragment>
                     );
