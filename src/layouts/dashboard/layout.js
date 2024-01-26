@@ -48,14 +48,15 @@ export const Layout = (props) => {
   useEffect(
     () => {
       console.log("session", session)
+      console.log("status", status)
       if(session === null || session === undefined) {
-        console.log("status", status)
+        console.log("session empty")
       } else {
         setSessionStatus(session)
       }
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [session]
+    [session, status]
   );
 
   return (
