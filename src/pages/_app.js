@@ -40,6 +40,7 @@ const App = (props) => {
         <LocalizationProvider dateAdapter={AdapterDateFns}>
           <ThemeProvider theme={theme}>
             <CssBaseline />
+            <iframe width="1176" height="662" src="https://www.youtube.com/embed/hoRxxCb_tdY?list=RDCMUCYUYAKF7TmZgdEi4B0Wewfw" title="Pilih Aku Sebagai Presiden - Animasi Doracimin" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
             { 
               getLayout(<Component {...pageProps} />)
             }

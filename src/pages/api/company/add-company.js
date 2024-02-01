@@ -6,5 +6,5 @@ export default async function addCompany(req, res) {
     const collection = process.env.MONGODB_COLLECTION_COMPANY
     const bodyObject = req.body;
     const addCompany = await db.collection(collection).insertOne(bodyObject);
-    res.json({ status: 200, data: addCompany });
+    res.json({ status: 200, data: addCompany }); 
 }

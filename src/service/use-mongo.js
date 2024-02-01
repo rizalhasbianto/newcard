@@ -192,16 +192,16 @@ export const AddCompanyToMongo = async (companyData, shopifyCustomerId) => {
     marked: companyData.marked ? true : false,
     defaultpaymentTypeChange: "No",
     location: {
-      address: "",
-      city: "",
-      state: "",
-      zip: "",
+      address: companyData.addressLocation,
+      city: companyData.cityLocation,
+      state: companyData.companyData.stateNameLocation.name,
+      zip: companyData.postalLocation,
     },
     avatar: companyData.companyPhoto,
     contact: [],
     shipTo: [
       {
-        locationName: companyData.companyShippingLocation,
+        locationName: companyData.useAsShipping ? "default" : companyData.companyShippingName,
         location: {
           attention: companyData.attentionLocation,
           address: companyData.addressLocation,

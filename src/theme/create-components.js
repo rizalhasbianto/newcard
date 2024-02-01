@@ -240,6 +240,18 @@ export function createComponents(config) {
         },
       },
     },
+    MuiBackdrop: {
+      styleOverrides: {
+        root: {
+          position: "absolute",
+          backgroundColor: "rgba(255, 255, 255, 0.5)"
+        },
+        invisible: {
+          position: "fixed",
+          backgroundColor: "rgba(255, 255, 255, 0)"
+        }
+      },
+    },
     MuiOutlinedInput: {
       styleOverrides: {
         root: {

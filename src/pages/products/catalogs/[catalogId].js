@@ -22,7 +22,7 @@ import {
 import { Layout as DashboardLayout } from "src/layouts/dashboard/layout";
 import CatalogInfo from "src/sections/catalog/catalog-info";
 import CatalogPriceRule from "src/sections/catalog/catalog-price-rule";
-import CatalogSelectedProduct from "src/sections/catalog/catalog-selected-products";
+import CatalogSelectedProducts from "src/sections/catalog/catalog-selected-products";
 import CatalogProductList from "src/sections/catalog/catalog-products-list";
 import TableLoading from "src/components/table-loading";
 
@@ -31,6 +31,7 @@ const Page = () => {
   const [page, setPage] = useState(0);
   const [cursor, setCursor] = useState({ lastCursor: "" });
   const [pageInfo, setPageInfo] = useState();
+  const [productList, setProductList] = useState();
   const [productPerPage, setProductPerPage] = useState(10);
   const [editStatus, setEditStatus] = useState(false);
   const { data: session } = useSession();
@@ -79,6 +80,7 @@ const Page = () => {
   useEffect(() => {
     if (product) {
       setPageInfo(product.newData.pageInfo);
+      setProductList(product)
     }
   }, [product]);
 
@@ -99,8 +101,8 @@ const Page = () => {
             <Box>
               <CatalogInfo session={session} catalog={catalog.data[0]} />
               <CatalogPriceRule session={session} catalog={catalog.data[0]} />
-              {prodLoading && <TableLoading />}
-              {(prodError || (product && product.newData.totalCount === 0)) && (
+              {!productList && <TableLoading />}
+              {(prodError || (productList && productList.newData.totalCount === 0)) && (
                 <Collapse in={!editStatus}>
                 <Card>
                   <CardContent>
@@ -122,15 +124,16 @@ const Page = () => {
                 </Collapse>
               )}
               <Collapse in={!editStatus}>
-                {product && product.newData.totalCount > 0 && (
-                  <CatalogSelectedProduct
-                    prodList={product}
+                {productList && productList.newData.totalCount > 0 && (
+                  <CatalogSelectedProducts
+                    prodList={productList}
                     handleRowsPerPageChange={handleRowsPerPageChange}
                     handlePageChange={handlePageChange}
                     page={page}
                     productPerPage={productPerPage}
-                    productCount={product.newData.totalCount}
+                    productCount={productList.newData.totalCount}
                     setEditStatus={setEditStatus}
+                    prodLoading={prodLoading}
                   />
                 )}
               </Collapse>

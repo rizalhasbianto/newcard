@@ -126,7 +126,7 @@ const AddCompany = (props) => {
       sales: Yup.object().required("This field is required"),
     }),
     onSubmit: async (values, helpers) => {
-      console.log("save run")
+      console.log("save run", values)
       setLoadSave(true);
       if (file) {
         values.companyPhoto = file.base64File;
@@ -157,19 +157,31 @@ const AddCompany = (props) => {
         formik.setErrors(errorFields);
         setLoadSave(false);
         return;
-      }
+      } 
 
       if (submitCondition) {
         let shopifyCustomerId;
         const resCreateCompany = await CreateCompanyShopify(values);
-        const shopifyRes = resCreateCompany.resSyncCustomer.data.customerCreate.userErrors;
-        if (!resCreateCompany || shopifyRes.length > 0) {
+        console.log("resCreateCompany", resCreateCompany)
+        const shopifyErrRes = resCreateCompany.resCreateCompany.data.companyCreate;
+        console.log("shopifyErrRes", shopifyErrRes)
+        if (!resCreateCompany || shopifyErrRes.userErrors.length > 0) {
+          const errorMessage = shopifyErrRes.userErrors.length > 0 ? `Shopify Error: ${shopifyErrRes.userErrors[0].message}` : "Error sync with Shopify!";
+          toastUp.handleStatus("error");
+          toastUp.handleMessage(errorMessage);
+          setLoadSave(false);
+          return
         } else {
-          shopifyCustomerId = "12345678"
+          shopifyCompanyId = shopifyErrRes.company.id
         }
 
-        
-        setAddNewCompany(false);
+        const resSaveCompany = await AddCompanyToMongo(values, shopifyCompanyId);
+        if (!resSaveCompany) {
+          toastUp.handleStatus("error");
+          toastUp.handleMessage("Error when create company!");
+          setLoadSave(false);
+          return;
+        }
       }
     },
   });

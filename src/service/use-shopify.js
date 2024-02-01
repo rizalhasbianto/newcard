@@ -217,7 +217,7 @@ export const SyncUserShopify = async (userData) => {
   return shopifyRes;
 };
 
-export const CreateCompanyShopify = async (userData) => {
+export const CreateCompanyShopify = async (userData) => { 
   const shopifyRes = await useDataService("/api/shopify/create-company", "POST", userData);
   return shopifyRes;
 };
