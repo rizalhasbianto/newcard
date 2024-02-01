@@ -13,11 +13,11 @@ import TabContext from "@mui/lab/TabContext";
 import TabList from "@mui/lab/TabList";
 import TabPanel from "@mui/lab/TabPanel";
 import { Layout as DashboardLayout } from "src/layouts/dashboard/layout";
-import { CompanyProfile } from "src/sections/companies/company-profile";
-import { CompanyShipping } from "src/sections/companies/tab/company-shipping";
+import CompanyProfile from "src/sections/companies/company-profile";
+import CompanyShipping from "src/sections/companies/tab/company-shipping";
 import { useState } from "react";
-import { CompanyDetails } from "src/sections/companies/tab/company-details";
-import { CompanyQuote } from "src/sections/companies/tab/company-quote";
+import CompanyDetails from "src/sections/companies/tab/company-details";
+import CompanyQuote from "src/sections/companies/tab/company-quote";
 import { useRouter } from 'next/router';
 import { useToast } from 'src/hooks/use-toast'
 import Toast from 'src/components/toast'
