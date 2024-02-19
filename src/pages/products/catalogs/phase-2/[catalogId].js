@@ -29,7 +29,7 @@ import MenuItem from "@mui/material/MenuItem";
 import MenuList from "@mui/material/MenuList";
 import { Layout as DashboardLayout } from "src/layouts/dashboard/layout";
 import CatalogInfo from "src/sections/catalog/catalog-info";
-import CatalogPriceRule from "src/sections/catalog/catalog-price-rule";
+import CatalogPriceRule from "src/sections/catalog/phase-2/catalog-price-rule";
 import CatalogSelectedProducts from "src/sections/catalog/catalog-selected-products";
 import CatalogProductList from "src/sections/catalog/catalog-products-list";
 import CatalogCompany from "src/sections/catalog/catalog-company";
