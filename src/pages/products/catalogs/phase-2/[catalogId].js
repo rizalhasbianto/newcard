@@ -28,11 +28,11 @@ import Popper from "@mui/material/Popper";
 import MenuItem from "@mui/material/MenuItem";
 import MenuList from "@mui/material/MenuList";
 import { Layout as DashboardLayout } from "src/layouts/dashboard/layout";
-import CatalogInfo from "src/sections/catalog/catalog-info";
+import CatalogInfo from "src/sections/catalog/phase-2/catalog-info";
 import CatalogPriceRule from "src/sections/catalog/phase-2/catalog-price-rule";
-import CatalogSelectedProducts from "src/sections/catalog/catalog-selected-products";
-import CatalogProductList from "src/sections/catalog/catalog-products-list";
-import CatalogCompany from "src/sections/catalog/catalog-company";
+import CatalogSelectedProducts from "src/sections/catalog/phase-2/catalog-selected-products";
+import CatalogProductList from "src/sections/catalog/phase-2/catalog-products-list";
+import CatalogCompany from "src/sections/catalog/phase-2/catalog-company";
 import TableLoading from "src/components/table-loading";
 
 const Page = () => {

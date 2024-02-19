@@ -19,7 +19,7 @@ import { GetQuotesDataSwr } from "src/service/use-mongo";
 import TableLoading from "src/components/table-loading";
 import { useToast } from "src/hooks/use-toast";
 import Toast from "src/components/toast";
-import CatalogType from "src/sections/catalog/catalog-type";
+import CatalogType from "src/sections/catalog/phase-2/catalog-type";
 import CatalogListTable from "src/sections/catalog/catalog-list-table";
 
 import { GetShopifyCatalogs } from "src/service/use-shopify"
@@ -48,7 +48,7 @@ const Quotes = () => {
     setPage(0);
     setRowsPerPage(event.target.value);
   }, []);
-console.log("catalog", catalogs)
+
   return (
     <>
       <Head>

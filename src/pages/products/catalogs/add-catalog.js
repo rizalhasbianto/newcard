@@ -14,9 +14,10 @@ import {
 } from "@mui/material";
 import { Layout as DashboardLayout } from "src/layouts/dashboard/layout";
 
-import CatalogType from "src/sections/catalog/catalog-type"
+import CatalogType from "src/sections/catalog/phase-2/catalog-type"
 
 const Page = () => {
+  const { data: session } = useSession();
   return (
     <>
       <Head>
@@ -31,7 +32,7 @@ const Page = () => {
       >
         <Container maxWidth="lg">
             <Box>
-                <CatalogType />
+                <CatalogType session={session}/>
             </Box>
         </Container>
       </Box>
