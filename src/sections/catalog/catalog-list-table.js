@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState, Fragment } from "react";
+import Link from "next/link";
 
 import {
   Box,
@@ -66,7 +67,7 @@ const CatalogListTable = (props) => {
                   return (
                     <TableRow key={id}>
                       <TableCell padding="checkbox">
-                        <Typography>#{id}</Typography>
+                        <Typography><Link href={`/products/catalogs/${id}`}>#{id}</Link></Typography>
                       </TableCell>
                       <TableCell>{item.node.title}</TableCell>
                       <TableCell>{item.node.companyLocationsCount}</TableCell>
