@@ -2,6 +2,7 @@ import { useCallback, useMemo, useState, useEffect } from "react";
 import Head from "next/head";
 import Link from "next/link";
 import { useSession } from "next-auth/react";
+
 import ArrowDownOnSquareIcon from "@heroicons/react/24/solid/ArrowDownOnSquareIcon";
 import ArrowUpOnSquareIcon from "@heroicons/react/24/solid/ArrowUpOnSquareIcon";
 import PlusIcon from "@heroicons/react/24/solid/PlusIcon";
@@ -19,6 +20,9 @@ import TableLoading from "src/components/table-loading";
 import { useToast } from "src/hooks/use-toast";
 import Toast from "src/components/toast";
 import CatalogType from "src/sections/catalog/catalog-type";
+import CatalogListTable from "src/sections/catalog/catalog-list-table";
+
+import { GetShopifyCatalogs } from "src/service/use-shopify"
 
 const Quotes = () => {
   const [page, setPage] = useState(0);
@@ -26,31 +30,7 @@ const Quotes = () => {
   const [addCatalog, setAddCatalog] = useState(false);
   const toastUp = useToast();
   const { data: session } = useSession();;
-
-  const quoteQuery = (session) => {
-    switch (session?.user.detail.role) {
-      case "admin":
-        return {
-          status: { $nin: ["new", "draft"] },
-        };
-      case "sales":
-        return {
-          status: { $nin: ["new", "draft"] },
-          "company.sales.id": session?.user.detail.id,
-        };
-      default:
-        return {
-          status: { $nin: ["new", "draft"] },
-          "company.name": session?.user.detail.company.companyName,
-        };
-    }
-  };
-
-  const { data, isLoading, isError, mutate, isValidating } = GetQuotesDataSwr(
-    page,
-    rowsPerPage,
-    quoteQuery(session)
-  );
+  const { data: catalogs, isLoading, isError, mutate, isValidating } = GetShopifyCatalogs()
 
   useEffect(() => {
     if (isValidating) {
@@ -68,7 +48,7 @@ const Quotes = () => {
     setPage(0);
     setRowsPerPage(event.target.value);
   }, []);
-
+console.log("catalog", catalogs)
   return (
     <>
       <Head>
@@ -92,7 +72,7 @@ const Quotes = () => {
               <Stack spacing={1}>
                 <Typography variant="h4">Catalog</Typography>
               </Stack>
-              <div>
+              {/* <div>
                 <Button
                   startIcon={
                     !addCatalog ? (
@@ -110,35 +90,29 @@ const Quotes = () => {
                 >
                   {!addCatalog ? "Add" : "Cancel"}
                 </Button>
-              </div>
+              </div> */}
             </Stack>
             <Collapse in={addCatalog}>
               <CatalogType toastUp={toastUp} session={session} />
             </Collapse>
             <Collapse in={!addCatalog}>
               {isLoading && <TableLoading />}
-              {(isError || (data && data.data.quote.length === 0)) && (
+              {isError && (
                 <Stack
                   spacing={1}
                   direction={"row"}
                   alignItems={"center"}
                   justifyContent={"center"}
                 >
-                  <Typography variant="subtitle1">Create new catalog</Typography>
-                  <LoadingButton
-                    color="primary"
-                    onClick={() => setAddCatalog(!addCatalog)}
-                    loading={false}
-                    loadingPosition="start"
-                    startIcon={<AddIcon />}
-                    variant="outlined"
-                  >
-                    Add
-                  </LoadingButton>
+                  <Typography variant="subtitle1">Error loading data</Typography>
                 </Stack>
               )}
             </Collapse>
           </Stack>
+          {
+            catalogs && <CatalogListTable catalogs={catalogs} />
+          }
+                
         </Container>
       </Box>
     </>

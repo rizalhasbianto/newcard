@@ -32,7 +32,7 @@ import {
   AddNewUserToCompanyMongo
 } from "src/service/use-mongo";
 
-import { CreateCompanyShopify, GetUserShopify } from "src/service/use-shopify";
+import { CreateCompanyShopify } from "src/service/use-shopify";
 
 const AddCompany = (props) => {
   const {
@@ -73,7 +73,6 @@ const AddCompany = (props) => {
       addressLocation: "",
       cityLocation: "",
       postalLocation: "",
-      phoneLocation: "",
       companyShippingName: "",
       stateNameShipping: "",
       addressShipping: "",
@@ -160,29 +159,63 @@ const AddCompany = (props) => {
       } 
 
       if (submitCondition) {
-        let shopifyCustomerId;
+        let shopifyCompanyId, shopifyCompanyLocationId, shopifyCustomerId
         const resCreateCompany = await CreateCompanyShopify(values);
         console.log("resCreateCompany", resCreateCompany)
-        const shopifyErrRes = resCreateCompany.resCreateCompany.data.companyCreate;
-        console.log("shopifyErrRes", shopifyErrRes)
-        if (!resCreateCompany || shopifyErrRes.userErrors.length > 0) {
-          const errorMessage = shopifyErrRes.userErrors.length > 0 ? `Shopify Error: ${shopifyErrRes.userErrors[0].message}` : "Error sync with Shopify!";
+        if (!resCreateCompany || resCreateCompany.data.userErrors.length > 0) {
+          const errorMessage = resCreateCompany && resCreateCompany?.data.userErrors.length > 0 ? `Shopify Error: ${resCreateCompany.data.userErrors[0].message}` : "Error sync with Shopify!";
           toastUp.handleStatus("error");
           toastUp.handleMessage(errorMessage);
           setLoadSave(false);
           return
         } else {
-          shopifyCompanyId = shopifyErrRes.company.id
+
+          shopifyCompanyId = resCreateCompany.data.company.id.replace("gid://shopify/Company/","")
+          shopifyCompanyLocationId = resCreateCompany.data.company.locationID.replace("gid://shopify/CompanyLocation/","")
+          shopifyCustomerId = resCreateCompany.data.company.mainContact.customer.id.replace("gid://shopify/Customer/","")
         }
 
-        const resSaveCompany = await AddCompanyToMongo(values, shopifyCompanyId);
+        const resSaveCompany = await AddCompanyToMongo(values, shopifyCompanyId, shopifyCompanyLocationId);
         if (!resSaveCompany) {
           toastUp.handleStatus("error");
           toastUp.handleMessage("Error when create company!");
           setLoadSave(false);
           return;
         }
+
+        const resAddUser = await RegisterUser(values, resSaveCompany.data.insertedId, shopifyCustomerId);
+        if (!resAddUser) {
+          toastUp.handleStatus("error");
+          toastUp.handleMessage("Error when create user!");
+          setLoadSave(false);
+          return;
+        }
+
+        const resInvite = await InviteUser(values, resAddUser.data.insertedId);
+        if (!resInvite && resInvite.status !== 200) {
+          toastUp.handleStatus("warning");
+          toastUp.handleMessage("Company added, sent user invite failed!");
+          setLoadSave(false);
+          return;
+        }
+
+        const resAddUserToCompany = await AddNewUserToCompanyMongo({
+          companyId:resSaveCompany.data.insertedId,
+          newUserData: {id:resAddUser.data.insertedId, default:true},
+          shopifyCustomerId: shopifyCustomerId
+        });
+
+        if (!resAddUserToCompany) {
+          toastUp.handleStatus("error");
+          toastUp.handleMessage("Error when sync user to company!");
+          setLoadSave(false);
+          return;
+        }
       }
+
+      toastUp.handleStatus("success");
+      toastUp.handleMessage("New Company added, user has been invited!");
+      setLoadSave(false);
     },
   });
 

@@ -53,13 +53,52 @@ const CatalogProductList = (props) => {
   const [pageIndex, setPageIndex] = useState(0);
   const [loadMoreLoading, setLoadMoreLoading] = useState(false);
   const [addCatalogLoading, setAddCatalogLoading] = useState();
+  const [addedProductList, setAddedProductList] = useState([]);
   const productPerPage = 10;
   const modalPopUp = usePopover();
+
+  //initial load prod data
+  useEffect(() => {
+    handleFilterChange();
+    getFilterOpt();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const handleFilterChange = useCallback(
+    async (event) => {
+      let newSelectedFilter = selectedFilter;
+      if (event) {
+        newSelectedFilter = {
+          ...selectedFilter,
+          [event.target.name]: event.target.value,
+        };
+      }
+
+      setSelectedFilter(newSelectedFilter);
+      const filterData = { ...newSelectedFilter };
+      filterData.productName = `${newSelectedFilter.productName}*`;
+      const resData = await GetProductsShopify(filterData, productPerPage);
+      if (resData) {
+        setProdList(resData.newData.edges);
+        if (resData.newData.pageInfo.hasNextPage) {
+          setLastCursor(resData?.newData?.edges?.at(-1)?.cursor);
+        } else {
+          setLastCursor();
+        }
+      }
+    },
+    [selectedFilter]
+  );
 
   const handleLoadMore = useCallback(async () => {
     setLoadMoreLoading(true);
     const nextPageIndex = pageIndex + 1;
-    const resData = await GetProductsShopify();
+    const resData = await GetProductsShopify(
+      selectedFilter,
+      productPerPage,
+      lastCursor,
+      nextPageIndex
+    );
     if (resData) {
       setProdList([...prodList, ...resData.newData.edges]);
       setLoadMoreLoading(false);
@@ -70,14 +109,71 @@ const CatalogProductList = (props) => {
         setLastCursor();
       }
     }
-  }, [pageIndex, prodList]);
+  }, [lastCursor, pageIndex, prodList, selectedFilter]);
 
-  const handleAddToCatalog = async () => {
+  const getFilterOpt = useCallback(async () => {
+    const newFilterOpt = {
+      collection: [],
+      productType: [],
+      productVendor: [],
+      tag: [],
+    };
 
+    const resCollection = await GetProductsMeta("collections");
+    const resProdType = await GetProductsMeta("prodType");
+    const resProdVendor = await GetProductsMeta("prodVendor");
+    const resProdTag = await GetProductsMeta("prodTag");
+
+    if (resCollection) {
+      const orderedCollection = resCollection.newData.data.collections.edges.map(
+        (collection) => collection.node.handle
+      );
+      newFilterOpt.collection = orderedCollection;
+    }
+    if (resProdType) {
+      const orderedProdType = resProdType.newData.data.productTypes.edges.map(
+        (prodType) => prodType.node && prodType.node
+      );
+      newFilterOpt.productType = orderedProdType;
+    }
+    if (resProdVendor) {
+      const orderedProdVendor = resProdVendor.newData.data.shop.productVendors.edges.map(
+        (prodVendor) => prodVendor.node && prodVendor.node
+      );
+      newFilterOpt.productVendor = orderedProdVendor;
+    }
+    if (resProdTag) {
+      const orderedProdTag = resProdTag.newData.data.productTags.edges.map(
+        (prodTag) => prodTag.node && prodTag.node
+      );
+      newFilterOpt.tag = orderedProdTag;
+    }
+    setFilterOpt(newFilterOpt);
+  }, []);
+
+  const handleAddToCatalog = async (shopifyCatalog, productId, catalogId, i) => {
+    setAddCatalogLoading(i);
+
+    const resUpdateMetafield = await UpdateProductMetafield({
+      productId: productId,
+      catalogId: catalogId,
+      shopifyCatalog: shopifyCatalog
+    });
+
+    if (
+      !resUpdateMetafield ||
+      resUpdateMetafield.updateMetafield.data.productUpdate.userErrors.length > 0
+    ) {
+      setAddCatalogLoading();
+      return;
+    }
+
+    setAddedProductList([...addedProductList, productId]);
+    setAddCatalogLoading();
   };
 
   return (
-    <Card sx={{mb:2}}>
+    <Card>
       <Grid container alignItems="center">
       <Grid xl={6}>
           <CardHeader subheader={`Add product for this catalog`} title="Selecte a Products" />
@@ -99,6 +195,56 @@ const CatalogProductList = (props) => {
           open={modalPopUp.open}
           handleClose={modalPopUp.handleClose}
         />
+        <Grid container spacing={2}>
+          <Grid lg={4}>
+            <TextField
+              id="productName"
+              name="productName"
+              label="Product Name"
+              variant="outlined"
+              value={selectedFilter.productName}
+              fullWidth
+              onChange={handleFilterChange}
+            />
+          </Grid>
+          {!filterOpt ? (
+            <Skeleton
+              variant="rectangular"
+              width={162}
+              height={55}
+              sx={{ marginTop: "12px", borderRadius: "5px" }}
+            />
+          ) : (
+            topFilterList.map((filter) => {
+              return (
+                filterOpt && (
+                  <Grid lg={2} key={filter.id}>
+                    <TextField
+                      id={filter.id}
+                      name={filter.id}
+                      label={filter.title}
+                      variant="outlined"
+                      value={selectedFilter[filter.id]}
+                      select
+                      fullWidth
+                      onChange={handleFilterChange}
+                      sx={{ maxHeight: 250 }}
+                    >
+                      <MenuItem value="">
+                        <em>None</em>
+                      </MenuItem>
+                      {filterOpt[filter.id]?.map((option) => (
+                        <MenuItem key={option} value={option}>
+                          {option}
+                        </MenuItem>
+                      ))}
+                    </TextField>
+                  </Grid>
+                )
+              );
+            })
+          )}
+        </Grid>
         <Grid lg={12} sx={{ mt: 2 }}>
           {!prodList ? (
             <TableLoading />

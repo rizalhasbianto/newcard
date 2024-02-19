@@ -44,6 +44,9 @@ export function createComponents(config) {
         tooltip: {
           backgroundColor: "#fff",
         },
+        tooltipArrow: {
+          backgroundColor: "rgba(97, 97, 97, 0.9)",
+        }
       },
     },
     MuiButton: {

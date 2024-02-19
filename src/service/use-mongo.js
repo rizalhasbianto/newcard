@@ -138,13 +138,14 @@ export const SendInvoice = async (quoteDataInvoice) => {
 
 export const GetCompanies = async (props) => {
   const { page, postPerPage, query } = props;
+  const queryData = JSON.stringify(query);
   const queryPath =
     "withQuote=false&page=" +
     page +
     "&postPerPage=" +
     postPerPage +
     "&query=" +
-    query +
+    queryData +
     "&avatar=false";
   const fetchPath = "/api/company/get-companies?" + queryPath;
   const comapanyRes = await useDataService(fetchPath, "GET");
@@ -181,10 +182,17 @@ export const GetSingleCompaniesSwr = (id, quotePage, quotePostPerPage) => {
   return comapanyRes;
 };
 
-export const AddCompanyToMongo = async (companyData, shopifyCustomerId) => {
-  const mongoRes = await useDataService("/api/company/add-company", "POST", {
+export const AddCompanyToMongo = async (
+  companyData,
+  shopifyCompanyId,
+  shopifyCompanyLocationId
+) => {
+  const mongoRes = await useDataService("/api/company/create-company", "POST", {
     name: companyData.companyName,
     about: companyData.companyAbout,
+    catalogID: "",
+    shopifyCompanyId: shopifyCompanyId,
+    shopifyCompanyLocationId: shopifyCompanyLocationId,
     sales: {
       id: companyData.sales._id,
       name: companyData.sales.name,
@@ -194,20 +202,25 @@ export const AddCompanyToMongo = async (companyData, shopifyCustomerId) => {
     location: {
       address: companyData.addressLocation,
       city: companyData.cityLocation,
-      state: companyData.companyData.stateNameLocation.name,
+      state: companyData.stateNameLocation.name,
       zip: companyData.postalLocation,
     },
     avatar: companyData.companyPhoto,
     contact: [],
     shipTo: [
       {
-        locationName: companyData.useAsShipping ? "default" : companyData.companyShippingName,
+        locationName: companyData.useAsShipping
+          ? "Company Location"
+          : companyData.companyShippingName,
         location: {
-          attention: companyData.attentionLocation,
-          address: companyData.addressLocation,
-          city: companyData.cityLocation,
-          state: companyData.stateName.name,
-          zip: companyData.postalLocation,
+          address: companyData.useAsShipping
+            ? companyData.addressLocation
+            : companyData.addressShipping,
+          city: companyData.useAsShipping ? companyData.cityLocation : companyData.cityShipping,
+          state: companyData.useAsShipping
+            ? companyData.stateNameLocation.name
+            : companyData.stateNameShipping.name,
+          zip: companyData.useAsShipping ? companyData.postalLocation : companyData.postalShipping,
         },
         default: true,
       },
@@ -234,6 +247,18 @@ export const UpdateCompanyInfoToMongo = async (companyData) => {
       defaultBilling: companyData.billing,
       defaultpaymentType: companyData.paymentType,
       defaultpaymentTypeChange: companyData.paymentTypeChange,
+    },
+  });
+  return mongoRes;
+};
+
+export const UpdateCompanyCatalog = async (props) => {
+  const { companyID, catalogID, selected } = props;
+  console.log("selected", selected);
+  const mongoRes = await useDataService("/api/company/update-company", "POST", {
+    id: companyID,
+    updateData: {
+      catalogID: selected ? catalogID : "",
     },
   });
   return mongoRes;
@@ -380,7 +405,7 @@ export const UpdateCompanyAvatarToMongo = async (id, companyPhoto) => {
 };
 
 export const CheckCompanyName = async (companyName) => {
-  const query = JSON.stringify({name: companyName})
+  const query = JSON.stringify({ name: companyName });
   const mongoRes = await useDataService("/api/company/get-companies?query=" + query, "GET");
   return mongoRes;
 };
@@ -424,7 +449,7 @@ export const RegisterUser = async (userData, companyId, shopifyCustomerId) => {
   const mongoRes = await useDataService("/api/auth/register-user", "POST", {
     name: userData.contactFirstName + " " + userData.contactLastName,
     email: userData.contactEmail,
-    phone: userData.phoneLocation,
+    phone: userData.contactPhone,
     password: userData.password,
     companyId: companyId,
     status: userData.password ? "active" : "invited",
@@ -524,11 +549,26 @@ export const UpdateTicket = async (props) => {
 };
 
 export const CreateCatalog = async (props) => {
-  const { type, createdBy } = props;
-  const mongoRes = await useDataService("/api/catalog/create-catalog", "POST", {
-    type: type,
+  const { shopifyCatalog, session, catalogId } = props;
+  const createData = {
+    shopifyCatalogID: catalogId,
+    productsCount: shopifyCatalog.totalProducts,
     createdAt: today,
-    createdBy: createdBy,
+    createdBy: {
+      name: session.user.detail.name,
+      role: session.user.detail.role,
+    },
+    lastUpdateAt:"",
+  };
+  const mongoRes = await useDataService("/api/catalog/create-catalog", "POST", createData);
+  return mongoRes;
+};
+
+export const UpdateCatalog = async (props) => {
+  const { type, createdBy } = props;
+  const mongoRes = await useDataService("/api/catalog/update-catalog", "POST", {
+    id,
+    updateData,
   });
   return mongoRes;
 };
@@ -536,13 +576,7 @@ export const CreateCatalog = async (props) => {
 export const GetCatalogSwr = (props) => {
   const { page, postPerPage, query } = props;
   const queryString = query ? JSON.stringify(query) : "";
-  const queryPath =
-    "&page=" +
-    page +
-    "&postPerPage=" +
-    postPerPage +
-    "&query=" +
-    queryString;
+  const queryPath = "&page=" + page + "&postPerPage=" + postPerPage + "&query=" + queryString;
   const mongoRes = useSwrData("/api/catalog/get-catalog", queryPath);
   return mongoRes;
 };

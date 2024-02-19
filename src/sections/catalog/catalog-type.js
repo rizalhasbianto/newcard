@@ -10,6 +10,7 @@ import {
   FormLabel,
   RadioGroup,
   Radio,
+  TextField
 } from "@mui/material";
 import LoadingButton from "@mui/lab/LoadingButton";
 import AddToHomeScreenIcon from "@mui/icons-material/AddToHomeScreen";
@@ -18,13 +19,21 @@ import AddToHomeScreenIcon from "@mui/icons-material/AddToHomeScreen";
 const CatalogType = (props) => {
   const { toastUp, session } = props
   const [type, setType] = useState("all");
+  const [title, setTitle] = useState("");
+  const [titleError, setTitleError] = useState(false);
   const [loading, setLoading] = useState(false);
   const router = useRouter()
 
   const handleCreateCatalog = async(props) => {
+    if(!title) {
+      setTitleError(true)
+      return
+    }
     setLoading(true)
     const resMongo = await CreateCatalog({
+      title:title,
       type:type,
+      status:"draft",
       createdBy:{
         name:session.user.detail.name,
         role:session.user.detail.role,
@@ -33,6 +42,8 @@ const CatalogType = (props) => {
     if(!resMongo) {
       toastUp.handleStatus("error");
       toastUp.handleMessage("Failed create new catalog!!!");
+      setLoading(false)
+      return
     }
     router.push("/products/catalogs/" + resMongo.data.insertedId)
     setLoading(false)
@@ -41,6 +52,16 @@ const CatalogType = (props) => {
     <Card>
       <CardHeader subheader="Once selected can not be change!" title="Catalog Products Type" />
       <CardContent sx={{ pt: 0 }}>
+      <TextField
+            id="title"
+            name="catalogTitle"
+            label="Title"
+            variant="outlined"
+            value={title ?? ""}
+            sx={{mb:1}}
+            onChange={(e) => {setTitle(e.target.value); setTitleError(false)}}
+            error={titleError}
+          />
         <RadioGroup
           aria-labelledby="demo-radio-buttons-group-label"
           value={type}

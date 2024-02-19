@@ -22,6 +22,7 @@ export default async function handler(req, res) {
       break;
     case "GET":
       const getData = await db.collection("user").find({ email: "jane@abc.com" }).limit(10).toArray();
+      console.log("getData", getData)
       res.json({ status: 200, data: getData });
       break;
   }

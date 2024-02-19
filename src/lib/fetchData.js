@@ -11,7 +11,8 @@ export const useDataService = async (url, method, body = null) => {
       },
       ...(body && { body: JSON.stringify(body) }),
     });
-    if (response.ok) {
+
+    if (response.ok && response.status === 200) {
       return await response.json();
     } else {
       console.log(response);

@@ -3,7 +3,12 @@ import Head from "next/head";
 import { useRouter } from "next/router";
 import { useSession } from "next-auth/react";
 import { GetCatalogSwr } from "src/service/use-mongo";
-import { GetProductsPaginate } from "src/service/use-shopify";
+import {
+  GetProductsPaginate,
+  GetShopifyCatalog,
+  GetSyncCatalogProducts,
+  UpdateProductMetafield,
+} from "src/service/use-shopify";
 
 import {
   Box,
@@ -18,52 +23,43 @@ import {
   Collapse,
   Unstable_Grid2 as Grid,
   Button,
+  CircularProgress,
+  LinearProgress,
 } from "@mui/material";
+import ButtonGroup from "@mui/material/ButtonGroup";
+import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
+import ClickAwayListener from "@mui/material/ClickAwayListener";
+import Grow from "@mui/material/Grow";
+import Paper from "@mui/material/Paper";
+import Popper from "@mui/material/Popper";
+import MenuItem from "@mui/material/MenuItem";
+import MenuList from "@mui/material/MenuList";
 import { Layout as DashboardLayout } from "src/layouts/dashboard/layout";
 import CatalogInfo from "src/sections/catalog/catalog-info";
-import CatalogPriceRule from "src/sections/catalog/catalog-price-rule";
 import CatalogSelectedProducts from "src/sections/catalog/catalog-selected-products";
 import CatalogProductList from "src/sections/catalog/catalog-products-list";
+import CatalogCompany from "src/sections/catalog/catalog-company";
+import CatalogSync from "src/sections/catalog/catalog-sync";
 import TableLoading from "src/components/table-loading";
 
 const Page = () => {
   const router = useRouter();
   const [page, setPage] = useState(0);
+  const [productPerPage, setProductPerPage] = useState(10);
   const [cursor, setCursor] = useState({ lastCursor: "" });
   const [pageInfo, setPageInfo] = useState();
   const [productList, setProductList] = useState();
-  const [productPerPage, setProductPerPage] = useState(10);
-  const [editStatus, setEditStatus] = useState(false);
   const { data: session } = useSession();
   const catalogId = router.query?.catalogId;
 
-  const handlePageChange = useCallback(
-    async (event, value) => {
-      if (value > page) {
-        // go to next page
-        setCursor({ lastCursor: pageInfo.endCursor });
-      } else {
-        // go to prev page
-        setCursor({ firstCursor: pageInfo.startCursor });
-      }
-      setPage(value);
-    },
-    [page, pageInfo]
-  );
-
-  const handleRowsPerPageChange = useCallback(async (event) => {
-    setPage(0);
-    setProductPerPage(event.target.value);
-  }, []);
-
   const {
-    data: catalog,
-    isLoading,
-    isError,
+    data: mongoCatalog,
+    isLoading: mongoLoading,
+    isError: mongoError,
   } = GetCatalogSwr({
     page: 0,
     postPerPage: 1,
-    query: { id: catalogId },
+    query: { ShopifyCatalogID: catalogId },
   });
 
   const {
@@ -76,11 +72,17 @@ const Page = () => {
     catalogId,
     cursor: cursor,
   });
-  
+
+  const { 
+    data: shopifyCatalog, 
+    isLoading: shopifyCatalogLoading, 
+    isError: shopifyCatalogError 
+  } = GetShopifyCatalog(catalogId);
+
   useEffect(() => {
     if (product) {
       setPageInfo(product.newData.pageInfo);
-      setProductList(product)
+      setProductList(product);
     }
   }, [product]);
 
@@ -97,55 +99,36 @@ const Page = () => {
         }}
       >
         <Container maxWidth="lg">
-          {catalog && (
-            <Box>
-              <CatalogInfo session={session} catalog={catalog.data[0]} />
-              <CatalogPriceRule session={session} catalog={catalog.data[0]} />
-              {!productList && <TableLoading />}
-              {(prodError || (productList && productList.newData.totalCount === 0)) && (
-                <Collapse in={!editStatus}>
-                <Card>
-                  <CardContent>
-                    <Stack
-                      spacing={1}
-                      direction={"row"}
-                      alignItems={"center"}
-                      justifyContent={"center"}
-                    >
-                      <Typography variant="subtitle1" textAlign={"center"}>
-                        No product found!
-                      </Typography>
-                      <Button variant="outlined" onClick={() => setEditStatus(true)}>
-                        Select a product
-                      </Button>
-                    </Stack>
-                  </CardContent>
-                </Card>
-                </Collapse>
-              )}
-              <Collapse in={!editStatus}>
-                {productList && productList.newData.totalCount > 0 && (
-                  <CatalogSelectedProducts
-                    prodList={productList}
-                    handleRowsPerPageChange={handleRowsPerPageChange}
-                    handlePageChange={handlePageChange}
-                    page={page}
-                    productPerPage={productPerPage}
-                    productCount={productList.newData.totalCount}
-                    setEditStatus={setEditStatus}
-                    prodLoading={prodLoading}
-                  />
-                )}
-              </Collapse>
-              <Collapse in={editStatus}>
-                <CatalogProductList
-                  catalog={catalog.data[0]}
-                  setEditStatus={setEditStatus}
-                  productMutate={mutate}
+          {
+            (shopifyCatalogError || mongoError ) &&  <Typography>Error loading data</Typography>
+          }
+          {shopifyCatalog && mongoCatalog && (
+            mongoCatalog.data.length > 0 ? (
+              <Box>
+                <CatalogInfo
+                  session={session}
+                  mongoCatalog={mongoCatalog.data[0]}
+                  shopifyCatalog={shopifyCatalog.newData.data.catalog}
                 />
-              </Collapse>
-            </Box>
-          )}
+                <CatalogCompany
+                  session={session}
+                  mongoCatalog={mongoCatalog.data[0]}
+                  shopifyCatalog={shopifyCatalog.newData.data.catalog}
+                />
+                {!productList && <TableLoading />}
+                {/* <CatalogProductList
+                catalog={catalog.data[0]}
+                setEditStatus={setEditStatus}
+                productMutate={mutate}
+              /> */}
+              </Box>
+            ) : (
+              <Box>
+                <CatalogSync catalogId={catalogId} session={session} shopifyCatalog={shopifyCatalog} />
+              </Box>
+            )
+          ) 
+            }
         </Container>
       </Box>
     </>

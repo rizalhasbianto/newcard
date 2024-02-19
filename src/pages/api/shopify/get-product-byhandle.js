@@ -1,7 +1,6 @@
 import { callShopify } from "src/lib/shopify";
 
 export default async function getProducts(req, res) {
-  console.log(req.query);
   const query = `
     {productByHandle(handle:"${req.query.productHandle}") {
               id

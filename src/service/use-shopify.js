@@ -209,7 +209,7 @@ export const GetInventorySwr = (page) => {
 };
 
 export const SyncUserShopify = async (userData) => {
-  const shopifyRes = await useDataService("/api/shopify/sync-customer", "POST", {
+  const shopifyRes = await useDataService("/api/auth/sync-customer", "POST", {
     firstName: userData.contactFirstName,
     lastName: userData.contactLastName,
     email: userData.contactEmail,
@@ -218,16 +218,43 @@ export const SyncUserShopify = async (userData) => {
 };
 
 export const CreateCompanyShopify = async (userData) => { 
-  const shopifyRes = await useDataService("/api/shopify/create-company", "POST", userData);
+  const shopifyRes = await useDataService("/api/company/create-shopify-company", "POST", userData);
+  return shopifyRes;
+};
+
+export const GetCompanyLocation = async (companyID) => {
+  const shopifyRes = await useDataService(`/api/auth/get-customer?companyID=${companyID}`, "GET");
   return shopifyRes;
 };
 
 export const GetUserShopify = async (email) => {
-  const shopifyRes = await useDataService(`/api/shopify/get-customer?email=${email}`, "GET");
+  const shopifyRes = await useDataService(`/api/auth/get-customer?email=${email}`, "GET");
   return shopifyRes;
 };
 
 export const UpdateProductMetafield = async (props) => {
-  const shopifyRes = await useDataService(`/api/shopify/update-product-metafield`, "POST", props);
+  const shopifyRes = await useDataService(`/api/product/update-product-metafield`, "POST", props);
+  return shopifyRes;
+};
+
+export const GetCatalogProducts = async (props) => {
+  const shopifyRes = useSwrData(`/api/catalog/get-catalog-products`);
+  return shopifyRes;
+};
+
+export const GetShopifyCatalogs = (props) => {
+  const shopifyRes = useSwrData(`/api/catalog/get-shopify-catalogs`);
+  return shopifyRes;
+};
+
+export const GetShopifyCatalog = (catalogId) => {
+  const queryPath = `catalogID=${catalogId}`
+  const shopifyRes = useSwrData(`/api/catalog/get-shopify-catalog`, queryPath);
+  return shopifyRes;
+};
+
+export const GetSyncCatalogProducts = async (catalogID) => {
+  console.log("catalogID", catalogID)
+  const shopifyRes = useDataService(`/api/catalog/get-catalog-products-sync?catalogID=${catalogID}`, "GET");
   return shopifyRes;
 };

@@ -50,8 +50,8 @@ export default async function getQuotes(req, res) {
     });
   });
 
-  let relatedQuote;
-  if (bodyObject.withQuote) {
+  let relatedQuote = [];
+  if (bodyObject.withQuote === "true") {
     relatedQuote = await db
       .collection(collectionQuote)
       .find({ "company.name": { $in: companyNames }, status: "open" })

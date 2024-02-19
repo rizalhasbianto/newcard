@@ -3,7 +3,6 @@ import { adminAPi } from "src/lib/shopify";
 export default async function updateProductMetafield(req, res) {
   const bodyObject = req.body;
   const catalogList = bodyObject.shopifyCatalog ? JSON.parse(bodyObject.shopifyCatalog.value): [];
-  console.log("catalogList", bodyObject.shopifyCatalog)
   const arr = JSON.stringify(JSON.stringify([...catalogList, bodyObject.catalogId]));
   const query = `
       mutation {

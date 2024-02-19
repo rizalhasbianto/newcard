@@ -77,3 +77,19 @@ export const inventoryHead = [
     { title: "On Hand" },
     { title: "Incoming" },
 ]
+
+export const catalogCompany = [
+    { title: "Name" },
+    { title: "contact" },
+    { title: "address" },
+    { title: "Current Catalog" },
+    { title: "Sales" },
+]
+
+export const catalogTable = [
+    { title: "Id" },
+    { title: "Name" },
+    { title: "Company" },
+    { title: "Price overrides" },
+    { title: "Overall adjustment" },
+]

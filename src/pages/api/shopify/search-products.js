@@ -17,7 +17,7 @@ export default async function getProducts(req, res) {
   const prodFilter = req.query.selectedFilter
     ? `, productFilters:${req.query.selectedFilter.replace(/"([^(")"]+)":/g, "$1:")}`
     : "";
-console.log("cursor", cursor(req.query, productPerPage))
+
   const gQl = `
     { search(
         types:PRODUCT, 
@@ -72,7 +72,7 @@ console.log("cursor", cursor(req.query, productPerPage))
                             name
                             value
                           }
-                          image{
+                          image {
                             url: url(transform: { maxWidth: 270, preferredContentType:WEBP})
                           }
                           product {
