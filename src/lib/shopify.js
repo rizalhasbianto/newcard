@@ -3,7 +3,7 @@ const storefrontAccessToken = process.env.SHOPIFY_STORE_FRONT_ACCESS_TOKEN;
 const apiPassword = process.env.SHOPIFY_ADMIN_PASSWORD;
 
 export async function callShopify(query) {
-    const fetchUrl = `https://${domain}/api/2023-07/graphql.json`;
+    const fetchUrl = `https://${domain}/api/2024-01/graphql.json`;
   
     const fetchOptions = {
       endpoint: fetchUrl,
@@ -25,7 +25,7 @@ export async function callShopify(query) {
   }
 
 export async function adminAPi(query) {
-    const fetchUrl = `https://${domain}/admin/api/2023-07/graphql.json`;
+    const fetchUrl = `https://${domain}/admin/api/2024-01/graphql.json`;
   
     const fetchOptions = {
       endpoint: fetchUrl,

@@ -129,10 +129,25 @@ const CatalogSelectedProduct = (props) => {
                   const price =
                     item.node.priceRange.maxVariantPrice.amount ===
                     item.node.priceRange.minVariantPrice.amount
-                      ? item.node.priceRange.maxVariantPrice.amount
-                      : item.node.priceRange.minVariantPrice.amount +
+                      ? "$" + item.node.priceRange.maxVariantPrice.amount
+                      : "$" +
+                        item.node.priceRange.minVariantPrice.amount +
                         " - " +
+                        "$" +
                         item.node.priceRange.maxVariantPrice.amount;
+                  let overridePrice = "-";
+                  console.log("overridePrice", item.node.overridePrice)
+                  if (item.node.overridePrice) {
+                    overridePrice =
+                      item.node.overridePrice.maxVariantPrice.amount ===
+                      item.node.overridePrice.minVariantPrice.amount
+                        ? "$" + item.node.overridePrice.maxVariantPrice.amount
+                        : "$" +
+                          item.node.overridePrice.minVariantPrice.amount +
+                          " - " +
+                          "$" +
+                          item.node.overridePrice.maxVariantPrice.amount;
+                  }
                   return (
                     <Fragment key={item.node.id}>
                       <TableRow>
@@ -157,11 +172,11 @@ const CatalogSelectedProduct = (props) => {
                             <Typography variant="body2">{item.node.title}</Typography>
                           </Stack>
                         </TableCell>
-                        <TableCell>{item.node.variants.edges.length}</TableCell>
-                        <TableCell>${price}</TableCell>
-                        <TableCell>${price}</TableCell>
-                        <TableCell>{item.node.productType}</TableCell>
-                        <TableCell>{item.node.vendor}</TableCell>
+                        <TableCell><Typography variant="body2">{item.node.variants.edges.length}</Typography></TableCell>
+                        <TableCell><Typography variant="body2">{price}</Typography></TableCell>
+                        <TableCell><Typography variant="body2" sx={item.node.overrideType === "fixed" ? {borderBottom:"1px solid #e2e2e2",fontWeight:600} : {}}>{overridePrice}</Typography></TableCell>
+                        <TableCell><Typography variant="body2">{item.node.productType}</Typography></TableCell>
+                        <TableCell><Typography variant="body2">{item.node.vendor}</Typography></TableCell>
                       </TableRow>
                     </Fragment>
                   );

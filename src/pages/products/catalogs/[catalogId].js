@@ -6,34 +6,11 @@ import { GetCatalogSwr } from "src/service/use-mongo";
 import {
   GetProductsPaginate,
   GetShopifyCatalog,
-  GetSyncCatalogProducts,
-  UpdateProductMetafield,
+  GetPricelistPrices,
 } from "src/service/use-shopify";
 
-import {
-  Box,
-  Card,
-  CardContent,
-  Container,
-  Stack,
-  Typography,
-  Tabs,
-  Tab,
-  Slide,
-  Collapse,
-  Unstable_Grid2 as Grid,
-  Button,
-  CircularProgress,
-  LinearProgress,
-} from "@mui/material";
-import ButtonGroup from "@mui/material/ButtonGroup";
-import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
-import ClickAwayListener from "@mui/material/ClickAwayListener";
-import Grow from "@mui/material/Grow";
-import Paper from "@mui/material/Paper";
-import Popper from "@mui/material/Popper";
-import MenuItem from "@mui/material/MenuItem";
-import MenuList from "@mui/material/MenuList";
+import { Box, Container, Stack, Typography, Collapse, Button } from "@mui/material";
+
 import { Layout as DashboardLayout } from "src/layouts/dashboard/layout";
 import CatalogInfo from "src/sections/catalog/catalog-info";
 import CatalogSelectedProducts from "src/sections/catalog/catalog-selected-products";
@@ -84,11 +61,56 @@ const Page = () => {
   } = GetShopifyCatalog(catalogId);
 
   useEffect(() => {
-    if (product) {
+    if (product && shopifyCatalog) {
       setPageInfo(product.newData.pageInfo);
-      setProductList(product);
+      gassignPricelistPrices(product, shopifyCatalog);
     }
-  }, [product]);
+  }, [product, shopifyCatalog]);
+
+  const gassignPricelistPrices = async (product, shopifyCatalog) => {
+    const getPricelistPrices = await GetPricelistPrices(product);
+    const globalPrice = shopifyCatalog.newData.data.catalog.priceList.parent;
+    product.newData.edges.forEach((item) => {
+      const price =
+        getPricelistPrices.newData.data[
+          `prod_${item.node.id.replace("gid://shopify/Product/", "")}`
+        ];
+      if (price) {
+        const maxPrice = Math.max(...price.prices.edges.map((o) => o.node.price.amount));
+        const minPrice = Math.min(...price.prices.edges.map((o) => o.node.price.amount));
+        item.node.overrideType = "fixed"
+        item.node.overridePrice = {
+          maxVariantPrice: { amount: parseFloat(maxPrice).toFixed(2) },
+          minVariantPrice: { amount: parseFloat(minPrice).toFixed(2) },
+        };
+      } else {
+        if (globalPrice) {
+          let maxPrice;
+          let minPrice;
+          const maxPriceGap =
+          item.node.priceRange.maxVariantPrice.amount * (globalPrice.adjustment.value * 0.01);
+          const minPriceGap =
+          item.node.priceRange.minVariantPrice.amount * (globalPrice.adjustment.value * 0.01);
+          if (globalPrice.adjustment.type === "PERCENTAGE_DECREASE") {
+            maxPrice = item.node.priceRange.maxVariantPrice.amount - maxPriceGap;
+            minPrice = item.node.priceRange.minVariantPrice.amount - minPriceGap;
+          } else {
+            maxPrice = item.node.priceRange.maxVariantPrice.amount + maxPriceGap;
+            minPrice = item.node.priceRange.minVariantPrice.amount + minPriceGap;
+          }
+          item.node.overrideType = "parent"
+          item.node.overridePrice = {
+            maxVariantPrice: { amount: parseFloat(maxPrice).toFixed(2) },
+            minVariantPrice: { amount: parseFloat(minPrice).toFixed(2) },
+          };
+        } else {
+          item.node.overrideType = "parent"
+          item.node.overridePrice = null;
+        }
+      }
+    });
+    setProductList(product);
+  };
 
   return (
     <>

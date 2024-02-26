@@ -258,3 +258,8 @@ export const GetSyncCatalogProducts = async (catalogID) => {
   const shopifyRes = useDataService(`/api/catalog/get-catalog-products-sync?catalogID=${catalogID}`, "GET");
   return shopifyRes;
 };
+
+export const GetPricelistPrices = async (prices) => {
+  const shopifyRes = useDataService(`/api/catalog/get-shopify-pricelist-prices`, "POST", prices);
+  return shopifyRes;
+};
