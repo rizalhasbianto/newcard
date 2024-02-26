@@ -253,12 +253,22 @@ export const UpdateCompanyInfoToMongo = async (companyData) => {
 };
 
 export const UpdateCompanyCatalog = async (props) => {
-  const { companyID, catalogID, selected } = props;
-  console.log("selected", selected);
-  const mongoRes = await useDataService("/api/company/update-company", "POST", {
-    id: companyID,
+  const { catalogID, catalogList, companyLocationID, selected } = props;
+  const companyLocationIds = (catalogList, companyLocationID, selected) => {
+    if(selected) {
+      const catalogData = catalogList.map((item) => item.node.id)
+      return [...catalogData, `gid://shopify/CompanyLocation/${companyLocationID}`]
+    } else {
+      const findCatalog = catalogList.findIndex((item) => item.node.id.replace("gid://shopify/CompanyLocation/", "") === companyLocationID)
+      catalogList.splice(findCatalog, "1")
+      const catalogData = catalogList.map((item) => item.node.id)
+      return [...catalogData]
+    }
+  }
+  const mongoRes = await useDataService("/api/catalog/assign-company-catalog", "POST", {
+    catalogID,
     updateData: {
-      catalogID: selected ? catalogID : "",
+      companyLocationIds: companyLocationIds(catalogList, companyLocationID, selected)
     },
   });
   return mongoRes;

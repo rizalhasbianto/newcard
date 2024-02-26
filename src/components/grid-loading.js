@@ -1,18 +1,12 @@
 import {
   Box,
   Card,
-  Stack,
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableRow,
   Skeleton,
   CardContent,
   Unstable_Grid2 as Grid,
 } from "@mui/material";
 
-export default function TableLoading({ count }) {
+export default function GridLoading({ count }) {
   const gridCount = 12 / count;
   let loop = [];
   for (let i = 0; i < count; i++) {

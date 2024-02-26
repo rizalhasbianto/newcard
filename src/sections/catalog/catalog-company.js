@@ -45,8 +45,8 @@ import { catalogCompany } from "src/data/tableList";
 import { positions } from "@mui/system";
 
 const CatalogPriceRule = (props) => {
-  const { mongoCatalog, shopifyCatalog, session } = props;
-
+  const { mongoCatalog, shopifyCatalog, session, shopifyCatalogmutate } = props;
+  console.log("shopifyCatalog", shopifyCatalog);
   const [saveLoading, setSaveLoading] = useState(false);
   const [selectedCompany, setSelectedCompany] = useState([]);
   const [page, setPage] = useState(0);
@@ -102,8 +102,8 @@ const CatalogPriceRule = (props) => {
             zip: item.location.zip,
           },
           mongoCompany: {
-            id: item.id,
-            sales: item.sales
+            id: item._id,
+            sales: item.sales,
           },
           company: {
             id: item.shopifyCompanyId,
@@ -138,16 +138,18 @@ const CatalogPriceRule = (props) => {
 
   const handleSelectCompany = async (company, e) => {
     setSaveLoading(true);
-    //const resUpdateCompanyCatalog = await UpdateCompanyCatalog({
-    //  companyID: company._id,
-    //  catalogID: catalog._id,
-    //  selected:e.target.checked
-    //});
-    //if (!resUpdateCompanyCatalog) {
-    //  console.log("error");
-    //}
+    const resUpdateCompanyCatalog = await UpdateCompanyCatalog({
+      catalogID: shopifyCatalog.id,
+      catalogList: shopifyCatalog.companyLocations.edges,
+      companyLocationID: company.node.id,
+      selected:e.target.checked
+    });
+    if (!resUpdateCompanyCatalog) {
+      console.log("error");
+      return;
+    }
 
-    await handleGetCompanies();
+    shopifyCatalogmutate()
     setSaveLoading(false);
   };
   console.log("companyList", companyList);
@@ -204,6 +206,11 @@ const CatalogPriceRule = (props) => {
                   <TableBody sx={{ maxHeight: "500px" }}>
                     {companyList.map((item, i) => {
                       const numberItem = page * rowsPerPage + i + 1;
+                      const matchId = shopifyCatalog.companyLocations.edges.findIndex(
+                        (itm) =>
+                          itm.node.id.replace("gid://shopify/CompanyLocation/", "") === item.node.id
+                      );
+                      console.log()
                       return (
                         <Fragment key={i + 1}>
                           <Backdrop
@@ -216,14 +223,8 @@ const CatalogPriceRule = (props) => {
                             <TableCell padding="checkbox">
                               {editCompany ? (
                                 <Checkbox
-                                  //onChange={(e) => handleSelectCompany(item, e)}
-                                  checked={
-                                    item.id ===
-                                    shopifyCatalog.id.replace(
-                                      "gid://shopify/CompanyLocationCatalog/",
-                                      ""
-                                    )
-                                  }
+                                  onChange={(e) => handleSelectCompany(item, e)}
+                                  checked={matchId >= 0 ? true : false}
                                 />
                               ) : (
                                 <Typography>{numberItem}</Typography>
@@ -259,7 +260,7 @@ const CatalogPriceRule = (props) => {
                                     placement="right"
                                     arrow="true"
                                   >
-                                    <InfoOutlinedIcon fontSize="17px" />
+                                    <InfoOutlinedIcon fontSize="17px" color="success"/>
                                   </Tooltip>
                                 </Stack>
                               ) : (

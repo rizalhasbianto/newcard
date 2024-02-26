@@ -3,7 +3,15 @@ import { adminAPi } from "src/lib/shopify";
 export default async function updateProductMetafield(req, res) {
   const bodyObject = req.body;
   const catalogList = bodyObject.shopifyCatalog ? JSON.parse(bodyObject.shopifyCatalog.value): [];
-  const arr = JSON.stringify(JSON.stringify([...catalogList, bodyObject.catalogId]));
+  let CatalogIDArr = []
+  if(bodyObject.type === "add") {
+    CatalogIDArr = JSON.stringify(JSON.stringify([...catalogList, bodyObject.catalogId]));
+  } else {
+    const findCatalogIndex = catalogList.findIndex((item) => item === bodyObject.catalogId)
+    catalogList.splice(findCatalogIndex,"1")
+    CatalogIDArr = JSON.stringify(JSON.stringify([...catalogList]));
+  }
+  
   const query = `
       mutation {
         productUpdate(
@@ -12,7 +20,7 @@ export default async function updateProductMetafield(req, res) {
             metafields: { 
               namespace:"b2b"
               key:"catalog"
-              value:${arr}
+              value:${CatalogIDArr}
               ${
                 bodyObject.shopifyCatalog ? 
                 `id:"${bodyObject.shopifyCatalog.id}"` : 

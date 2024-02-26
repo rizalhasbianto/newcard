@@ -45,10 +45,10 @@ export const catalogProductListHead = [
     { title: "No." },
     { title: "PRODUCT NAME" },
     { title: "VARIANT" },
-    { title: "PRICE" },
+    { title: "ORIGINAL PRICE" },
+    { title: "OVERIDE PRICE" },
     { title: "TYPE" },
     { title: "VENDOR" },
-    { title: "ACTION" }
 ]
 
 export const quotesCollectionHead = [

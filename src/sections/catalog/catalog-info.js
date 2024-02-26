@@ -1,31 +1,19 @@
-import { Card, Unstable_Grid2 as Grid, Typography } from "@mui/material";
+import { Button, Card, Stack, Typography } from "@mui/material";
 
 const CatalogInfo = (props) => {
-  const { mongoCatalog, shopifyCatalog } = props;
+  const { mongoCatalog, shopifyCatalog, setOnSync } = props;
   //const lastUpdate = catalog.lastUpdateAt ? catalog.lastUpdateAt : catalog.createdAt
-
+console.log("mongoCatalog 5", mongoCatalog)
   return (
     <Card sx={{ mb: 2 }}>
-      <Grid
-        container
-        justify="flex-end"
-        alignItems="center"
-        sx={{
-          padding: "25px",
-        }}
-      >
-        <Grid xs={6} md={4}>
-          <Typography variant="body2">Title: {shopifyCatalog.title}</Typography>
-        </Grid>
-        <Grid xs={6} md={4}>
-          <Typography variant="body2">
-            Sync Status: {mongoCatalog ? "Last Sync 11-Jan-2015" : "Never Sync"}
-          </Typography>
-        </Grid>
-        <Grid xs={6} md={4}>
-          <Typography variant="body2">Company: {shopifyCatalog.companyLocationsCount}</Typography>
-        </Grid>
-      </Grid>
+      <Stack direction={"row"} alignItems={"center"} justifyContent={"space-between"} sx={{ p: 3 }}>
+        <Typography variant="body2">Title: {shopifyCatalog.title}</Typography>
+        <Typography variant="body2">Company: {shopifyCatalog.companyLocationsCount}</Typography>
+        <Typography variant="body2">
+          Last Sync: {mongoCatalog ? "11-Jan-2015" : "Never Sync"}
+        </Typography>
+        <Button variant="outlined" onClick={() => setOnSync(true)}>Re-sync</Button>
+      </Stack>
     </Card>
   );
 };

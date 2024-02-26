@@ -37,31 +37,29 @@ import { usePopover } from "src/hooks/use-popover";
 
 const CatalogSelectedProduct = (props) => {
   const {
-    prodList,
-    productCount,
-    setEditStatus,
+    productList,
+    shopifyCatalog,
     setProductPerPage,
-                    setPage,
-    pageInfo,
+    setPage,
     page,
     productPerPage,
     prodLoading,
-    setCursor
+    setCursor,
   } = props;
   const modalPopUp = usePopover();
-
+  const priceList = shopifyCatalog.priceList;
   const handlePageChange = useCallback(
     async (event, value) => {
       if (value > page) {
         // go to next page
-        setCursor({ lastCursor: pageInfo.endCursor });
+        setCursor({ lastCursor: productList.newData.pageInfo.endCursor });
       } else {
         // go to prev page
-        setCursor({ firstCursor: pageInfo.startCursor });
+        setCursor({ firstCursor: productList.newData.pageInfo.startCursor });
       }
       setPage(value);
     },
-    [page, pageInfo]
+    [page, productList]
   );
 
   const handleRowsPerPageChange = useCallback(async (event) => {
@@ -73,7 +71,10 @@ const CatalogSelectedProduct = (props) => {
     <Card sx={{ mb: 2 }}>
       <Grid container alignItems="center">
         <Grid xl={6}>
-          <CardHeader subheader={`Included ${productCount} products`} title="Selected Products" />
+          <CardHeader
+            subheader={`Included ${productList.newData.totalCount} products`}
+            title="Products"
+          />
         </Grid>
         <Grid
           xl={6}
@@ -83,9 +84,10 @@ const CatalogSelectedProduct = (props) => {
             paddingRight: "25px",
           }}
         >
-          <Button variant="outlined" sx={{ mt: 2 }} onClick={() => setEditStatus(true)}>
-            Edit
-          </Button>
+          <CardHeader
+            subheader={`${priceList.parent.adjustment.type} ${priceList.parent.adjustment.value}% | ${priceList.fixedPricesCount} Fixed price`}
+            title="Overall price adjustment"
+          />
         </Grid>
       </Grid>
 
@@ -97,7 +99,10 @@ const CatalogSelectedProduct = (props) => {
           handleClose={modalPopUp.handleClose}
         />
         <Grid lg={12} sx={{ mt: 2, position: "relative" }}>
-          <Backdrop sx={{zIndex: (theme) => theme.zIndex.drawer + 1 }} open={prodLoading ? true : false}>
+          <Backdrop
+            sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}
+            open={prodLoading ? true : false}
+          >
             <CircularProgress color="inherit" />
           </Backdrop>
           <TableContainer>
@@ -119,7 +124,7 @@ const CatalogSelectedProduct = (props) => {
                 </TableRow>
               </TableHead>
               <TableBody sx={{ maxHeight: "500px" }}>
-                {prodList.newData.edges.map((item, i) => {
+                {productList.newData.edges.map((item, i) => {
                   const numberItem = page * productPerPage + i + 1;
                   const price =
                     item.node.priceRange.maxVariantPrice.amount ===
@@ -154,11 +159,9 @@ const CatalogSelectedProduct = (props) => {
                         </TableCell>
                         <TableCell>{item.node.variants.edges.length}</TableCell>
                         <TableCell>${price}</TableCell>
+                        <TableCell>${price}</TableCell>
                         <TableCell>{item.node.productType}</TableCell>
                         <TableCell>{item.node.vendor}</TableCell>
-                        <TableCell sx={{ textAlign: "center" }}>
-                          <DeleteForeverIcon sx={{ cursor: "pointer" }} />
-                        </TableCell>
                       </TableRow>
                     </Fragment>
                   );
@@ -168,7 +171,7 @@ const CatalogSelectedProduct = (props) => {
           </TableContainer>
           <TablePagination
             component="div"
-            count={prodList.newData.totalCount}
+            count={productList.newData.totalCount}
             onPageChange={handlePageChange}
             onRowsPerPageChange={handleRowsPerPageChange}
             page={page}

@@ -80,16 +80,7 @@ const CatalogProductList = (props) => {
     <Card sx={{mb:2}}>
       <Grid container alignItems="center">
       <Grid xl={6}>
-          <CardHeader subheader={`Add product for this catalog`} title="Selecte a Products" />
-        </Grid>
-        <Grid xl={6} justify="flex-end" sx={{
-                textAlign: "right",
-                paddingRight: "25px",
-              }}>
-          <Button variant="outlined" sx={{mt:2}} onClick={() => {
-            setEditStatus(false) 
-            productMutate()
-            }}>Done</Button>
+          <CardHeader subheader={`Add product for this catalog`} title="Selected Products" />
         </Grid>
       </Grid>
       <CardContent sx={{pt:0}}>

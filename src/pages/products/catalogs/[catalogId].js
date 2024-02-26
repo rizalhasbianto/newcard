@@ -44,6 +44,7 @@ import TableLoading from "src/components/table-loading";
 
 const Page = () => {
   const router = useRouter();
+  const [onSync, setOnSync] = useState(false);
   const [page, setPage] = useState(0);
   const [productPerPage, setProductPerPage] = useState(10);
   const [cursor, setCursor] = useState({ lastCursor: "" });
@@ -56,10 +57,11 @@ const Page = () => {
     data: mongoCatalog,
     isLoading: mongoLoading,
     isError: mongoError,
+    mutate: mongoCatalogmutate,
   } = GetCatalogSwr({
     page: 0,
     postPerPage: 1,
-    query: { ShopifyCatalogID: catalogId },
+    query: { shopifyCatalogID: catalogId },
   });
 
   const {
@@ -73,10 +75,12 @@ const Page = () => {
     cursor: cursor,
   });
 
-  const { 
-    data: shopifyCatalog, 
-    isLoading: shopifyCatalogLoading, 
-    isError: shopifyCatalogError 
+  const {
+    data: shopifyCatalog,
+    isLoading: shopifyCatalogLoading,
+    isError: shopifyCatalogError,
+    isValidating: shopifyCatalogValidating,
+    mutate: shopifyCatalogmutate,
   } = GetShopifyCatalog(catalogId);
 
   useEffect(() => {
@@ -99,36 +103,68 @@ const Page = () => {
         }}
       >
         <Container maxWidth="lg">
-          {
-            (shopifyCatalogError || mongoError ) &&  <Typography>Error loading data</Typography>
-          }
-          {shopifyCatalog && mongoCatalog && (
-            mongoCatalog.data.length > 0 ? (
-              <Box>
-                <CatalogInfo
-                  session={session}
-                  mongoCatalog={mongoCatalog.data[0]}
-                  shopifyCatalog={shopifyCatalog.newData.data.catalog}
-                />
-                <CatalogCompany
-                  session={session}
-                  mongoCatalog={mongoCatalog.data[0]}
-                  shopifyCatalog={shopifyCatalog.newData.data.catalog}
-                />
-                {!productList && <TableLoading />}
-                {/* <CatalogProductList
-                catalog={catalog.data[0]}
-                setEditStatus={setEditStatus}
-                productMutate={mutate}
-              /> */}
-              </Box>
-            ) : (
-              <Box>
-                <CatalogSync catalogId={catalogId} session={session} shopifyCatalog={shopifyCatalog} />
-              </Box>
-            )
-          ) 
-            }
+          {(shopifyCatalogError || mongoError || prodError) && (
+            <Typography>Error loading data</Typography>
+          )}
+          {(shopifyCatalogLoading || mongoLoading) && <TableLoading />}
+          <Box>
+            <Collapse in={!onSync}>
+              {shopifyCatalog &&
+                mongoCatalog &&
+                (mongoCatalog.data.length ? (
+                  <Box>
+                    <CatalogInfo
+                      session={session}
+                      mongoCatalog={mongoCatalog.data[0]}
+                      shopifyCatalog={shopifyCatalog.newData.data.catalog}
+                      setOnSync={setOnSync}
+                    />
+                    <CatalogCompany
+                      session={session}
+                      mongoCatalog={mongoCatalog.data[0]}
+                      shopifyCatalog={shopifyCatalog.newData.data.catalog}
+                      shopifyCatalogmutate={shopifyCatalogmutate}
+                    />
+                    {productList && (
+                      <CatalogSelectedProducts
+                        productList={productList}
+                        shopifyCatalog={shopifyCatalog.newData.data.catalog}
+                        productPerPage={productPerPage}
+                        page={page}
+                        prodLoading={prodLoading}
+                        setCursor={setCursor}
+                        setPage={setPage}
+                        setProductPerPage={setProductPerPage}
+                      />
+                    )}
+                  </Box>
+                ) : (
+                  <Stack
+                    spacing={1}
+                    direction={"row"}
+                    alignItems={"center"}
+                    justifyContent={"center"}
+                  >
+                    <Typography variant="subtitle1" textAlign={"center"}>
+                      This catalog is not synced with app yet!
+                    </Typography>
+                    <Button variant="outlined" onClick={() => setOnSync(true)}>
+                      Sync
+                    </Button>
+                  </Stack>
+                ))}
+            </Collapse>
+            <Collapse in={onSync}>
+              <CatalogSync
+                catalogId={catalogId}
+                session={session}
+                shopifyCatalog={shopifyCatalog}
+                mongoCatalogmutate={mongoCatalogmutate}
+                onSync={onSync}
+                setOnSync={setOnSync}
+              />
+            </Collapse>
+          </Box>
         </Container>
       </Box>
     </>
