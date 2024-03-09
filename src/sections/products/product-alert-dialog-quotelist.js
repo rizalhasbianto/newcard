@@ -1,3 +1,5 @@
+import { useCallback, useEffect, useState } from "react";
+import { GetQuotesData, GetCompanies } from "src/service/use-mongo";
 import {
   Box,
   Button,
@@ -21,17 +23,74 @@ import LoadingButton from "@mui/lab/LoadingButton";
 import SaveIcon from "@mui/icons-material/Save";
 
 import { quotesListHeadProduct } from "src/data/tableList";
-import { useRouter } from 'next/router'
+import { useRouter } from "next/router";
 
 export default function ProductAddToQuote(props) {
-  const { quoteList, openQuote, setOpenQuote } = props;
-  const router = useRouter()
+  const { session, openQuote, setOpenQuote } = props;
+  const [quoteList, setQuoteList] = useState([]);
+  const router = useRouter();
 
   const handleSelectQuote = (id) => {
-    const pathName = router.asPath.split("?")
-    router.push(`${pathName[0]}?quoteId=`+id)
-    setOpenQuote(false)
-  }
+    const pathName = router.asPath.split("?");
+    router.push(`${pathName[0]}?quoteId=` + id);
+    setOpenQuote(false);
+  };
+
+  const handleGetQuoteList = async () => {
+    let quoteQuery;
+    if (session?.user?.detail?.role === "customer") {
+      quoteQuery = {
+        $or: [{ status: "draft" }, { status: "new" }, { status: "open" }],
+        "createdBy.company": session?.user?.detail?.company.companyName,
+      };
+    } else if (session?.user?.detail?.role === "sales") {
+      const getCompanyBySales = await GetCompanies({
+        query: { "sales.id": session?.user?.detail?.id },
+      });
+      const companyBySales = getCompanyBySales.data.company.map((itm) => {
+        return { "createdBy.company": itm.name };
+      });
+      quoteQuery = {
+        $or: [
+          {
+            $or: [{ status: "draft" }, { status: "new" }, { status: "open" }],
+            "createdBy.name": session?.user?.detail?.name,
+          },
+          {
+            status: "open",
+            $or: companyBySales,
+          },
+        ],
+      };
+    } else {
+      quoteQuery = {
+        $or: [
+          {
+            $or: [{ status: "draft" }, { status: "new" }, { status: "open" }],
+            "createdBy.name": session?.user?.detail?.name,
+          },
+          {
+            status: "open",
+          },
+        ],
+      };
+    }
+    const sort = "DSC";
+    const resQuotes = await GetQuotesData(0, 50, quoteQuery, sort);
+    if (!resQuotes) {
+      console.log("resQuotes", resQuotes);
+      return;
+    }
+    setQuoteList(resQuotes.data.quote);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  };
+
+  useEffect(() => {
+    if(openQuote) {
+      handleGetQuoteList();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [openQuote]);
 
   return (
     <Dialog
@@ -39,9 +98,10 @@ export default function ProductAddToQuote(props) {
       onClose={() => setOpenQuote(false)}
       aria-labelledby="alert-dialog-title"
       aria-describedby="alert-dialog-description"
+      sx={{ maxWidth: "100%" }}
     >
       <DialogTitle id="alert-dialog-title">Please choose the quote</DialogTitle>
-      <DialogContent>
+      <DialogContent sx={{ width: "800px" }}>
         <Table>
           <TableHead>
             <TableRow>
@@ -51,7 +111,7 @@ export default function ProductAddToQuote(props) {
             </TableRow>
           </TableHead>
           <TableBody>
-            {quoteList &&
+            {quoteList.length > 0 &&
               quoteList.map((quote, i) => (
                 <TableRow hover selected={true} key={i + 1}>
                   <TableCell padding="checkbox">
@@ -68,6 +128,18 @@ export default function ProductAddToQuote(props) {
                     <Stack alignItems="right" direction="column" spacing={1}>
                       <Typography variant="subtitle2">
                         ( {quote.quoteInfo?.item} Item{quote.quoteInfo?.item > 1 ? "'s" : ""} )
+                      </Typography>
+                    </Stack>
+                  </TableCell>
+                  <TableCell>
+                    <Stack alignItems="right" direction="column" spacing={1}>
+                      <Typography variant="subtitle2">{quote.company.name}</Typography>
+                    </Stack>
+                  </TableCell>
+                  <TableCell>
+                    <Stack alignItems="right" direction="column" spacing={1}>
+                      <Typography variant="subtitle2">
+                        {quote.createdBy.name} / {quote.createdBy.role}
                       </Typography>
                     </Stack>
                   </TableCell>

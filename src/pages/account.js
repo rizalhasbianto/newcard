@@ -29,7 +29,7 @@ const Page = () => {
   const { data: userData } = useSession()
   const [value, setValue] = useState("1");
   const toastUp = useToast();
-  const { data, isLoading, isError, mutate, isValidating } = GetSingleCompaniesSwr(userData?.user?.detail?.company?.companyId, 0, 1);
+  const { data, isLoading, isError, mutate, isValidating } = GetSingleCompaniesSwr({id:userData?.user?.detail?.company?.companyId, page:0, postPerPage:1});
   const handleChange = (event, newValue) => {
     setValue(newValue);
   };

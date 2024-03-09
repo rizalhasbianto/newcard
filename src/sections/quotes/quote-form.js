@@ -23,6 +23,7 @@ import QuoteSelectCompany from "./quote-select-company";
 import AddCompany from "../companies/company-add";
 import LineItemQuotes from "./quotes-line-item";
 import { saveQuoteButton } from "src/data/save-quote-button";
+import SaveWarning from "src/components/save-warning"
 
 import { useToast } from "src/hooks/use-toast";
 import Toast from "src/components/toast";
@@ -284,6 +285,7 @@ const QuotesForm = (props) => {
         handleStatus={toastUp.handleStatus}
         toastMessage={toastUp.toastMessage}
       />
+      <SaveWarning unsavedChanges={false} />
       {tabContent && tabContent.status !== "new" && tabContent.status !== "draft" && (
         <Card sx={{ mb: 2 }}>
           <Grid

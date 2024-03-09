@@ -137,44 +137,47 @@ export const SendInvoice = async (quoteDataInvoice) => {
 };
 
 export const GetCompanies = async (props) => {
-  const { page, postPerPage, query } = props;
+  const { page = 0, postPerPage = 100, query, withQuote=false } = props;
   const queryData = JSON.stringify(query);
   const queryPath =
-    "withQuote=false&page=" +
-    page +
-    "&postPerPage=" +
-    postPerPage +
-    "&query=" +
-    queryData +
+    "withQuote=" + withQuote +
+    "&page=" + page +
+    "&postPerPage=" + postPerPage +
+    "&query=" + queryData +
     "&avatar=false";
   const fetchPath = "/api/company/get-companies?" + queryPath;
   const comapanyRes = await useDataService(fetchPath, "GET");
-
   return comapanyRes;
 };
 
 export const GetCompaniesSwr = (props) => {
-  const { page, postPerPage, query } = props;
+  const { page, postPerPage, query, withQuote=true } = props;
   const queryString = query ? JSON.stringify(query) : "";
   const queryPath =
-    "withQuote=true&page=" +
-    page +
-    "&postPerPage=" +
-    postPerPage +
-    "&query=" +
-    queryString +
+    "withQuote==" + withQuote + 
+    "&page=" +page +
+    "&postPerPage=" + postPerPage +
+    "&query=" + queryString +
     "&avatar=true";
   const comapanyRes = useSwrData("/api/company/get-companies", queryPath);
 
   return comapanyRes;
 };
 
-export const GetSingleCompaniesSwr = (id, quotePage, quotePostPerPage) => {
+export const GetCompanyCatalog = (props) => {
+  const { id, query } = props;
+  const queryPath = "?id=" + id + "&query=" + JSON.stringify(query)
+  const comapanyRes = useDataService("/api/company/get-company-catalog" + queryPath , "GET");
+  return comapanyRes;
+};
+
+export const GetSingleCompaniesSwr = (props) => {
+  const { id, page, postPerPage } = props
   const queryPath =
     "withQuote=true&quotePage=" +
-    quotePage +
+    page +
     "&quotePostPerPage=" +
-    quotePostPerPage +
+    postPerPage +
     "&avatar=true&id=" +
     id;
   const comapanyRes = useSwrData("/api/company/get-company", queryPath);
@@ -190,7 +193,7 @@ export const AddCompanyToMongo = async (
   const mongoRes = await useDataService("/api/company/create-company", "POST", {
     name: companyData.companyName,
     about: companyData.companyAbout,
-    catalogID: "",
+    catalogIDs: [],
     shopifyCompanyId: shopifyCompanyId,
     shopifyCompanyLocationId: shopifyCompanyLocationId,
     sales: {
@@ -253,7 +256,7 @@ export const UpdateCompanyInfoToMongo = async (companyData) => {
 };
 
 export const UpdateCompanyCatalog = async (props) => {
-  const { catalogID, catalogList, companyLocationID, selected } = props;
+  const { mongoCompanyID, catalogID, catalogList, companyLocationID, selected } = props;
   const companyLocationIds = (catalogList, companyLocationID, selected) => {
     if(selected) {
       const catalogData = catalogList.map((item) => item.node.id)
@@ -265,10 +268,12 @@ export const UpdateCompanyCatalog = async (props) => {
       return [...catalogData]
     }
   }
-  const mongoRes = await useDataService("/api/catalog/assign-company-catalog", "POST", {
+  const mongoRes = await useDataService("/api/catalog/assign-company-catalog", "POST", { 
     catalogID,
     updateData: {
-      companyLocationIds: companyLocationIds(catalogList, companyLocationID, selected)
+      companyLocationIds: companyLocationIds(catalogList, companyLocationID, selected),
+      mongoCompanyID: mongoCompanyID,
+      selected
     },
   });
   return mongoRes;
@@ -461,7 +466,10 @@ export const RegisterUser = async (userData, companyId, shopifyCustomerId) => {
     email: userData.contactEmail,
     phone: userData.contactPhone,
     password: userData.password,
-    companyId: companyId,
+    company: {
+      companyId:companyId,
+      companyName:userData.companyName
+    },
     status: userData.password ? "active" : "invited",
     role: userData.role ? userData.role : "customer",
     signUpDate: userData.password ? utcToZonedTime(new Date(), "America/Los_Angeles") : "",
@@ -575,10 +583,13 @@ export const CreateCatalog = async (props) => {
 };
 
 export const UpdateCatalog = async (props) => {
-  const { type, createdBy } = props;
+  const { shopifyCatalog, monoCatalogId } = props;
   const mongoRes = await useDataService("/api/catalog/update-catalog", "POST", {
-    id,
-    updateData,
+    id: monoCatalogId,
+    updateData: {
+      lastUpdateAt: today,
+      productsCount: shopifyCatalog.totalProducts,
+    },
   });
   return mongoRes;
 };

@@ -24,19 +24,20 @@ export const useDataService = async (url, method, body = null) => {
   }
 };
 
-export const useSwrData = (url, query) => {
+export const useSwrData = (url, query, runFetch=true) => {
   const fetcher = (url) => fetch(url).then((res) => res.json());
   const queryUrl = url + "?" + query;
-  const { data, isLoading, isError, mutate, isValidating } = useSWR(queryUrl, fetcher);
+  const { data, isLoading, isError, mutate, isValidating } = useSWR(runFetch ? queryUrl : null, fetcher);
 
   return { data, isLoading, isError, mutate, isValidating  };
 };
 
-export const useSWRInfiniteData = (url, query) => {
+export const useSWRInfiniteData = (url, query, runFetch=true) => {
   const fetcher = (url) => fetch(url).then((res) => res.json());
   const queryUrl = url + "?" + query;
   const { data, isLoading, isError, size, setSize } = useSWRInfinite(
     (pageIndex, previousPageData) => {
+      if(!runFetch) return null;
       if (previousPageData && !previousPageData.newData.pageInfo.hasNextPage) return null;
       if (pageIndex === 0) return queryUrl;
       return `${queryUrl}&lastCursor=${previousPageData.newData.pageInfo.endCursor}&pageIndex=${pageIndex}`;

@@ -5,7 +5,7 @@ export default async function getQuotes(req, res) {
   const client = await clientPromise;
   const db = client.db(process.env.DB_NAME);
   const collection = process.env.MONGODB_COLLECTION_QUOTES_TICKETS;
-  const bodyObject = req.body ? req.body : req.query;
+  const bodyObject = req.method === "POST" ? req.body : req.query;
   const skip = (parseInt(bodyObject.page) + 1) * bodyObject.postPerPage - bodyObject.postPerPage;
 
   let find = {};

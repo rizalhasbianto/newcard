@@ -85,7 +85,7 @@ const CatalogSelectedProduct = (props) => {
           }}
         >
           <CardHeader
-            subheader={`${priceList.parent.adjustment.type} ${priceList.parent.adjustment.value}% | ${priceList.fixedPricesCount} Fixed price`}
+            subheader={`${priceList.parent.adjustment.type} ${priceList.parent.adjustment.value}% | Fixed price: ${priceList.fixedPricesCount} Variants`}
             title="Overall price adjustment"
           />
         </Grid>
@@ -136,7 +136,7 @@ const CatalogSelectedProduct = (props) => {
                         "$" +
                         item.node.priceRange.maxVariantPrice.amount;
                   let overridePrice = "-";
-                  console.log("overridePrice", item.node.overridePrice)
+
                   if (item.node.overridePrice) {
                     overridePrice =
                       item.node.overridePrice.maxVariantPrice.amount ===
@@ -191,7 +191,7 @@ const CatalogSelectedProduct = (props) => {
             onRowsPerPageChange={handleRowsPerPageChange}
             page={page}
             rowsPerPage={productPerPage}
-            rowsPerPageOptions={[10, 20, 50]}
+            rowsPerPageOptions={[10, 15, 20]}
           />
         </Grid>
       </CardContent>

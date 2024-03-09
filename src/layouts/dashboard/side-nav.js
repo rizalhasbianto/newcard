@@ -82,8 +82,8 @@ export const SideNav = (props) => {
             <div>
               <Typography color="inherit" variant="subtitle1" sx={{ textTransform: "capitalize" }}>
                 {session?.user?.detail.role === "customer"
-                  ? session?.user?.detail.company.companyName
-                  : session?.user?.detail.role}
+                  ? session?.user?.detail?.company?.companyName
+                  : session?.user?.detail?.role}
               </Typography>
               <Typography color="neutral.400" variant="body2">
                 {session?.user?.detail.name}

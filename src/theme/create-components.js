@@ -49,6 +49,13 @@ export function createComponents(config) {
         }
       },
     },
+    MuiDialog: {
+      styleOverrides: {
+        paper: {
+          maxWidth:"100%"
+        }
+      },
+    },
     MuiButton: {
       styleOverrides: {
         root: {

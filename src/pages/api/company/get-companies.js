@@ -4,7 +4,7 @@ import { ObjectId } from "mongodb";
 export default async function getQuotes(req, res) {
   const client = await clientPromise;
   const db = client.db(process.env.DB_NAME);
-  const collection = process.env.MONGODB_COLLECTION_COMPANY;
+  const collectionCompany = process.env.MONGODB_COLLECTION_COMPANY;
   const collectionQuote = process.env.MONGODB_COLLECTION_QUOTES;
   const collectionUser = process.env.MONGODB_COLLECTION_USER;
   const bodyObject = req.method === "POST" ? req.body : req.query;
@@ -13,7 +13,7 @@ export default async function getQuotes(req, res) {
 
   const queryCompany = (filterData) => {
     if (!filterData || filterData === "undefined") return {};
-    const queryObj = JSON.parse(filterData)
+    const queryObj = JSON.parse(filterData);
     if (queryObj.id) {
       return { _id: new ObjectId(queryObj.id) };
     }
@@ -21,7 +21,7 @@ export default async function getQuotes(req, res) {
   };
 
   const data = await db
-    .collection(collection)
+    .collection(collectionCompany)
     .find(queryCompany(bodyObject.query))
     .project(!bodyObject.avatar ? { avatar: 0 } : "")
     .sort({ _id: -1 })
@@ -34,7 +34,7 @@ export default async function getQuotes(req, res) {
 
   const dataContact = await db
     .collection(collectionUser)
-    .find({ companyId: { $in: companyIds } })
+    .find({ "company.companyId": { $in: companyIds } })
     .project({ name: 1, email: 1, phone: 1, shopifyCustomerId: 1 })
     .limit(100)
     .toArray();
@@ -60,7 +60,9 @@ export default async function getQuotes(req, res) {
       .toArray();
   }
 
-  const numberOfDoc = await db.collection(collection).countDocuments(queryCompany(bodyObject.query));
+  const numberOfDoc = await db
+    .collection(collectionCompany)
+    .countDocuments(queryCompany(bodyObject.query));
 
   const resData = {
     company: data,

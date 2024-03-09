@@ -22,6 +22,7 @@ import QuotesForm from "src/sections/quotes/quote-form";
 import CardLoading from "src/components/grid-loading";
 
 
+
 const Page = () => {
   const [quotesData, setQuotesData] = useState([]);
   const [tabIndex, setTabIndex] = useState(0);
@@ -114,7 +115,7 @@ const Page = () => {
         <title>Add new quote | Skratch</title>
       </Head>
       <Box
-        component="main"
+        component="main" 
         sx={{
           flexGrow: 1,
           py: 8,

@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { CircularProgress, Stack } from "@mui/material";
+import { CircularProgress, Stack, Box } from "@mui/material";
 import { useEffect, useState, useRef } from "react";
 
 export const ImageComponent = (props) => {
@@ -7,18 +7,26 @@ export const ImageComponent = (props) => {
   const [loading, setLoading] = useState(true);
   const image = img ? img : "/assets/default.png";
   const alt = title ? title : "skratch b2b";
-  const imageLoad = useRef()
+  const imageLoad = useRef();
 
   useEffect(() => {
     setLoading(true);
   }, [img]);
 
   useEffect(() => {
-    if (imageLoad.current.complete) setLoading(false)
-}, [])
+    if (imageLoad.current.complete) setLoading(false);
+  }, []);
 
   return (
-    <>
+    <Box
+      sx={{
+        position: "absolute",
+        top: 0,
+        left: 0,
+        width: "100%",
+        height: "100%",
+      }}
+    >
       <Image
         ref={imageLoad}
         src={image}
@@ -45,6 +53,6 @@ export const ImageComponent = (props) => {
           <CircularProgress />
         </Stack>
       )}
-    </>
+    </Box>
   );
 };

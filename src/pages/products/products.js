@@ -1,6 +1,8 @@
+import { useCallback, useEffect, useState } from "react";
 import Head from "next/head";
 import { useRouter } from "next/router";
 import { useSession } from "next-auth/react";
+import Link from "next/link";
 
 import {
   Box,
@@ -22,13 +24,13 @@ import ProductsSearch from "src/sections/products/products-search";
 import ProductGrid from "src/sections/products/product-grid";
 import ProductTable from "src/sections/products/product-table";
 import ProductAlertDialogQuoteList from "src/sections/products/product-alert-dialog-quotelist";
+import ProductAlertDialogCompanyList from "src/sections/products/product-alert-dialog-companylist";
 
 import Toast from "src/components/toast";
 import { useToast } from "src/hooks/use-toast";
 
 import { GetProductsInfinite } from "src/service/use-shopify";
-import { GetQuotesData } from "src/service/use-mongo";
-import { useCallback, useEffect, useState } from "react";
+import { GetQuotesData, GetCompanyCatalog } from "src/service/use-mongo";
 import CardLoading from "src/components/grid-loading";
 
 const Products = () => {
@@ -44,7 +46,10 @@ const Products = () => {
   const [selectedVariantFilter, setSelectedVariantFilter] = useState([]);
   const [smartSearch, setSmartSearch] = useState();
   const [openQuote, setOpenQuote] = useState(false);
-  const [quoteList, setQuoteList] = useState(false);
+  const [catalogID, setCatalogID] = useState([]);
+  const [catalogCompany, setCatalogCompany] = useState([]);
+  const [openCompany, setOpenCompany] = useState(false);
+  const [runFetch, setRunFetch] = useState(false);
   const toastUp = useToast();
   const router = useRouter();
   const { data: session } = useSession();
@@ -55,33 +60,40 @@ const Products = () => {
     selectedFilter,
     selectedVariantFilter,
     smartSearch,
+    catalogId: catalogID,
+    catalogCompany,
     productPerPage,
+    runFetch,
   });
+console.log("data", data)
   const handleLoadMore = () => {
     setSize(size + 1);
   };
 
-  const handleOpenQuoteList = useCallback(async () => {
-    const quoteQuery = {
-      $or: [{ status: "draft" }, { status: "new" }],
-      createdBy: session?.user?.detail?.company.companyName,
-    };
-    const sort = "DSC";
-    const resQuotes = await GetQuotesData(0, 50, quoteQuery, sort);
-    if (!resQuotes) {
-      console.log("resQuotes", resQuotes);
-      return;
-    }
-    setQuoteList(resQuotes.data.quote);
+  const handleOpenQuoteList = useCallback(() => {
     setOpenQuote(true);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const catalogCustomer = useCallback(async (id) => {
+    const companyCatalogID = await GetCompanyCatalog({ id });
+    setRunFetch(true);
+    setCatalogCompany([{id:companyCatalogID.newData[0].shopifyCompanyLocationId}]);
+    setCatalogID(companyCatalogID.newData[0].catalogIDs);
   }, []);
 
   useEffect(() => {
     if (!data) return;
-    console.log("data", data);
     sethasNextPage(data.at(-1).newData?.pageInfo?.hasNextPage);
   }, [data]);
+
+  useEffect(() => {
+    if (session && session.user.detail.role === "customer") {
+      catalogCustomer(session.user.detail.company.companyId);
+    } else {
+      setRunFetch(true);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [session]);
 
   return (
     <>
@@ -99,7 +111,14 @@ const Products = () => {
           <ProductAlertDialogQuoteList
             openQuote={openQuote}
             setOpenQuote={setOpenQuote}
-            quoteList={quoteList}
+            session={session}
+          />
+          <ProductAlertDialogCompanyList
+            openCompany={openCompany}
+            setOpenCompany={setOpenCompany}
+            session={session}
+            catalogCompany={catalogCompany}
+            setCatalogCompany={setCatalogCompany}
           />
           <Toast
             toastStatus={toastUp.toastStatus}
@@ -131,21 +150,53 @@ const Products = () => {
               </Stack>
               <div>
                 {!quoteId ? (
-                  <Button
-                    startIcon={
-                      <SvgIcon fontSize="small">
-                        <PlusIcon />
-                      </SvgIcon>
-                    }
-                    variant="contained"
-                    onClick={handleOpenQuoteList}
-                  >
-                    Choose Quote
-                  </Button>
+                  <>
+                    <Button
+                      startIcon={
+                        <SvgIcon fontSize="small">
+                          <PlusIcon />
+                        </SvgIcon>
+                      }
+                      variant="contained"
+                      onClick={() => setOpenCompany(true)}
+                    >
+                      Choose Company Price
+                    </Button>
+                    <Button
+                      startIcon={
+                        <SvgIcon fontSize="small">
+                          <PlusIcon />
+                        </SvgIcon>
+                      }
+                      variant="contained"
+                      onClick={handleOpenQuoteList}
+                      sx={{ ml: 1 }}
+                    >
+                      Choose Quote
+                    </Button>
+                  </>
                 ) : (
-                  <Button variant="contained" onClick={handleOpenQuoteList}>
-                    Selected Quote #{quoteId.slice(-4)}
-                  </Button>
+                  <>
+                    <Button
+                      startIcon={
+                        <SvgIcon fontSize="small">
+                          <PlusIcon />
+                        </SvgIcon>
+                      }
+                      variant="contained"
+                      onClick={() => setOpenCompany(true)}
+                    >
+                      Choose Company Price
+                    </Button>
+                    <Button variant="contained" onClick={handleOpenQuoteList} sx={{ ml: 1 }}>
+                      Selected Quote #{quoteId.slice(-4)}
+                    </Button>
+                    <Link href={"/"}>
+                      <Button variant="contained" sx={{ ml: 1 }}>
+                        Open Quote #{quoteId.slice(-4)}
+                      </Button>
+                    </Link>
+                  </>
                 )}
               </div>
             </Stack>
@@ -158,6 +209,9 @@ const Products = () => {
               smartSearch={smartSearch}
               setSmartSearch={setSmartSearch}
               predictiveSearch={data?.at(-1).newData.predictiveSearch}
+              catalogID={catalogID}
+              setCatalogID={setCatalogID}
+              session={session}
             />
             {isLoading && <CardLoading count={4} />}
             {data && data[0]?.newData?.edges?.length === 0 && (
@@ -170,6 +224,7 @@ const Products = () => {
                   <ProductGrid
                     handleOpenQuoteList={handleOpenQuoteList}
                     data={data}
+                    catalogCompany={catalogCompany}
                     toastUp={toastUp}
                     quoteId={quoteId}
                   />
@@ -177,6 +232,7 @@ const Products = () => {
                   <ProductTable
                     handleOpenQuoteList={handleOpenQuoteList}
                     data={data}
+                    catalogCompany={catalogCompany}
                     toastUp={toastUp}
                     productPerPage={productPerPage}
                     quoteId={quoteId}

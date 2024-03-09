@@ -19,7 +19,7 @@ import { ImageComponent } from "src/components/image";
 import { UpdateQuoteItem } from "src/service/use-mongo";
 
 const ProductCard = (props) => {
-  const { product, handleOpenQuoteList, toastUp, quoteId } = props;
+  const { product, handleOpenQuoteList, catalogCompany, toastUp, quoteId } = props;
 
   const [buttonloading, setButtonloading] = useState(false);
   const [notAvilableOption, setNotAvilableOption] = useState(false);
@@ -107,7 +107,10 @@ const ProductCard = (props) => {
             marginBottom: "20px",
           }}
         >
-          <Link href={`/products/${product.node.handle}${quoteId ? `?quoteId=${quoteId}` : ""}`}>
+          <Link
+            href={`/products/${product.node.handle}${quoteId ? `?quoteId=${quoteId}` : ""}`}
+            sx={{ position: "relative" }}
+          >
             <ImageComponent img={img} title={product.node.title} />
           </Link>
         </Box>
@@ -127,6 +130,16 @@ const ProductCard = (props) => {
           <Typography variant="body2">
             Stock: {selectedVariant.currentlyNotInStock ? "Out of stock" : "In stock"}
           </Typography>
+          {catalogCompany &&
+            catalogCompany.length > 0 &&
+            catalogCompany.map((company, index) => {
+              const companyPrice = product.node.companyPrice[`company_${company.id}`]
+              return (
+                <Typography variant="body2" key={index + 1}>
+                  {company.name} Price: {companyPrice.priceRange.maxVariantPrice.amount}
+                </Typography>
+              );
+            })}
         </Stack>
       </CardContent>
       <Divider />
@@ -200,4 +213,4 @@ const ProductCard = (props) => {
   );
 };
 
-export default ProductCard
+export default ProductCard;

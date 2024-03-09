@@ -1,7 +1,7 @@
 import { callShopify } from "src/lib/shopify";
 
 export default async function getProducts(req, res) {
-  const bodyObject = req.body ? req.body : req.query;
+  const bodyObject = req.method === "POST" ? req.body : req.query;
   const cursor = bodyObject?.lastCursor ? `, after: "${bodyObject.lastCursor}"` : "";
   const productPerPage = bodyObject?.productPerPage ? bodyObject.productPerPage : 10;
   const pageIndex = bodyObject?.pageIndex ? bodyObject.pageIndex : 0;

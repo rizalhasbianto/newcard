@@ -20,7 +20,17 @@ export const quotesListHeadProduct = [
     { title: "ID" },
     { title: "TOTAL" },
     { title: "ITEMS" },
+    { title: "COMPANY" },
+    { title: "CREATEDBY" },
     { title: "ACTION"}
+]
+
+export const dialogComapnyListHead = [
+    { title: "" },
+    { title: "NAME" },
+    { title: "CONTACT" },
+    { title: "CATALOGS" },
+    { title: "SALES" },
 ]
 
 export const ordersListHead = [
@@ -45,7 +55,7 @@ export const catalogProductListHead = [
     { title: "No." },
     { title: "PRODUCT NAME" },
     { title: "VARIANT" },
-    { title: "ORIGINAL PRICE" },
+    { title: "PRICE" },
     { title: "OVERIDE PRICE" },
     { title: "TYPE" },
     { title: "VENDOR" },

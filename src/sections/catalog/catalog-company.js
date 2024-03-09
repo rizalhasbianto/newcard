@@ -46,7 +46,6 @@ import { positions } from "@mui/system";
 
 const CatalogPriceRule = (props) => {
   const { mongoCatalog, shopifyCatalog, session, shopifyCatalogmutate } = props;
-  console.log("shopifyCatalog", shopifyCatalog);
   const [saveLoading, setSaveLoading] = useState(false);
   const [selectedCompany, setSelectedCompany] = useState([]);
   const [page, setPage] = useState(0);
@@ -138,10 +137,12 @@ const CatalogPriceRule = (props) => {
 
   const handleSelectCompany = async (company, e) => {
     setSaveLoading(true);
-    const resUpdateCompanyCatalog = await UpdateCompanyCatalog({
+
+    const resUpdateCompanyCatalog = await UpdateCompanyCatalog({ 
       catalogID: shopifyCatalog.id,
       catalogList: shopifyCatalog.companyLocations.edges,
       companyLocationID: company.node.id,
+      mongoCompanyID: company.node.mongoCompany.id,
       selected:e.target.checked
     });
     if (!resUpdateCompanyCatalog) {
@@ -152,7 +153,7 @@ const CatalogPriceRule = (props) => {
     shopifyCatalogmutate()
     setSaveLoading(false);
   };
-  console.log("companyList", companyList);
+
   return (
     <Card sx={{ mb: 2 }}>
       <Grid container justify="flex-end" alignItems="center">
@@ -210,7 +211,7 @@ const CatalogPriceRule = (props) => {
                         (itm) =>
                           itm.node.id.replace("gid://shopify/CompanyLocation/", "") === item.node.id
                       );
-                      console.log()
+
                       return (
                         <Fragment key={i + 1}>
                           <Backdrop

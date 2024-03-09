@@ -24,7 +24,7 @@ export const authOptions = {
                 const client = await clientPromise;
                 const db = client.db(process.env.DB_NAME);
                 const userTable = process.env.MONGODB_COLLECTION_USER
-                console.log("call db again")
+
                 const response = await db.collection(userTable).find({ email: email }).limit(1).toArray();
                 
                 if (response.length === 0) {

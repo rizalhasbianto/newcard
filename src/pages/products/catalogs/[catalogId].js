@@ -69,6 +69,7 @@ const Page = () => {
 
   const gassignPricelistPrices = async (product, shopifyCatalog) => {
     const getPricelistPrices = await GetPricelistPrices(product);
+    console.log("getPricelistPrices", getPricelistPrices);
     const globalPrice = shopifyCatalog.newData.data.catalog.priceList.parent;
     product.newData.edges.forEach((item) => {
       const price =
@@ -78,7 +79,13 @@ const Page = () => {
       if (price) {
         const maxPrice = Math.max(...price.prices.edges.map((o) => o.node.price.amount));
         const minPrice = Math.min(...price.prices.edges.map((o) => o.node.price.amount));
-        item.node.overrideType = "fixed"
+        let type = "parent";
+        price.prices.edges.forEach((prc) => {
+          if (prc.node.originType === "FIXED") {
+            type = "fixed";
+          }
+        });
+        item.node.overrideType = type;
         item.node.overridePrice = {
           maxVariantPrice: { amount: parseFloat(maxPrice).toFixed(2) },
           minVariantPrice: { amount: parseFloat(minPrice).toFixed(2) },
@@ -88,9 +95,9 @@ const Page = () => {
           let maxPrice;
           let minPrice;
           const maxPriceGap =
-          item.node.priceRange.maxVariantPrice.amount * (globalPrice.adjustment.value * 0.01);
+            item.node.priceRange.maxVariantPrice.amount * (globalPrice.adjustment.value * 0.01);
           const minPriceGap =
-          item.node.priceRange.minVariantPrice.amount * (globalPrice.adjustment.value * 0.01);
+            item.node.priceRange.minVariantPrice.amount * (globalPrice.adjustment.value * 0.01);
           if (globalPrice.adjustment.type === "PERCENTAGE_DECREASE") {
             maxPrice = item.node.priceRange.maxVariantPrice.amount - maxPriceGap;
             minPrice = item.node.priceRange.minVariantPrice.amount - minPriceGap;
@@ -98,13 +105,13 @@ const Page = () => {
             maxPrice = item.node.priceRange.maxVariantPrice.amount + maxPriceGap;
             minPrice = item.node.priceRange.minVariantPrice.amount + minPriceGap;
           }
-          item.node.overrideType = "parent"
+          item.node.overrideType = "parent";
           item.node.overridePrice = {
             maxVariantPrice: { amount: parseFloat(maxPrice).toFixed(2) },
             minVariantPrice: { amount: parseFloat(minPrice).toFixed(2) },
           };
         } else {
-          item.node.overrideType = "parent"
+          item.node.overrideType = "parent";
           item.node.overridePrice = null;
         }
       }
@@ -133,7 +140,7 @@ const Page = () => {
             <Collapse in={!onSync}>
               {shopifyCatalog &&
                 mongoCatalog &&
-                (mongoCatalog.data.length ? (
+                (mongoCatalog.data.length > 0 ? (
                   <Box>
                     <CatalogInfo
                       session={session}
@@ -181,6 +188,7 @@ const Page = () => {
                 catalogId={catalogId}
                 session={session}
                 shopifyCatalog={shopifyCatalog}
+                mongoCatalog={mongoCatalog}
                 mongoCatalogmutate={mongoCatalogmutate}
                 onSync={onSync}
                 setOnSync={setOnSync}

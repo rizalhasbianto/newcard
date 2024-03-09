@@ -1,25 +1,25 @@
 import clientPromise from "src/lib/mongodb";
 import { ObjectId } from "mongodb";
 
-export default async function getQuotes(req, res) {
+export default async function mongo(req, res) {
   const client = await clientPromise;
   const db = client.db(process.env.DB_NAME);
-  const collection = process.env.MONGODB_COLLECTION_COMPANY;
-  const collectionUser = process.env.MONGODB_COLLECTION_USER;
-  const collectionQuote = process.env.MONGODB_COLLECTION_QUOTES;
+  const companyCOl = process.env.MONGODB_COLLECTION_COMPANY;
+  const userCOL = process.env.MONGODB_COLLECTION_USER;
+  const quotesCOL = process.env.MONGODB_COLLECTION_QUOTES;
   const bodyObject = req.method === "POST" ? req.body : req.query;
   const skip =
     (Number(bodyObject.quotePage) + 1) * bodyObject.quotePostPerPage - bodyObject.quotePostPerPage;
 
   const data = await db
-    .collection(collection)
+    .collection(companyCOl)
     .find({ _id: new ObjectId(bodyObject.id) })
     .limit(1)
     .toArray();
 
   const dataContact = await db
-    .collection(collectionUser)
-    .find({ companyId: new ObjectId(data[0]._id).toString() })
+    .collection(userCOL)
+    .find({ "company.companyId": new ObjectId(data[0]._id).toString() })
     .limit(100)
     .toArray();
 
@@ -35,7 +35,7 @@ export default async function getQuotes(req, res) {
   let relatedQuote;
   if (bodyObject.withQuote) {
     relatedQuote = await db
-      .collection(collectionQuote)
+      .collection(quotesCOL)
       .find({ "company.name": data[0].name })
       .sort({ _id: -1 })
       .skip(skip)

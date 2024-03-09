@@ -25,7 +25,7 @@ import CompanyDetailsEdit from "src/sections/companies/tab/company-details-edit"
 import CompanyUsers from "src/sections/companies/tab/company-users";
 import CompanyQuote from "src/sections/companies/tab/company-quote";
 
-import { GetCompaniesSwr } from "src/service/use-mongo";
+import { GetSingleCompaniesSwr } from "src/service/use-mongo";
 import { useToast } from "src/hooks/use-toast";
 import Toast from "src/components/toast";
 
@@ -35,10 +35,10 @@ const Page = () => {
   const toastUp = useToast();
   const router = useRouter();
 
-  const { data, isLoading, isError, mutate } = GetCompaniesSwr({
+  const { data, isLoading, isError, mutate } = GetSingleCompaniesSwr({
+    id:router.query.companyId,
     page: 0, 
-    postPerPage: 1, 
-    query: { id: router.query.companyId }
+    postPerPage: 1
   });
   const handleChange = (event, newValue) => {
     setValue(newValue);

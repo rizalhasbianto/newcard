@@ -15,4 +15,8 @@ export const topFilterList = [
         title:"Product Tag",
         id:"tag",
     },
+    {
+        title:"Catalog",
+        id:"Catalog"
+    }
 ]

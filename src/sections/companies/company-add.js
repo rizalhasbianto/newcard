@@ -163,7 +163,7 @@ const AddCompany = (props) => {
         const resCreateCompany = await CreateCompanyShopify(values);
         console.log("resCreateCompany", resCreateCompany)
         if (!resCreateCompany || resCreateCompany.data.userErrors.length > 0) {
-          const errorMessage = resCreateCompany && resCreateCompany?.data.userErrors.length > 0 ? `Shopify Error: ${resCreateCompany.data.userErrors[0].message}` : "Error sync with Shopify!";
+          const errorMessage = resCreateCompany && resCreateCompany?.data.userErrors.length > 0 ? `Error: ${resCreateCompany.data.userErrors[0].message}` : "Error sync with Shopify!";
           toastUp.handleStatus("error");
           toastUp.handleMessage(errorMessage);
           setLoadSave(false);

@@ -6,7 +6,6 @@ export default async function updateMongo(req, res) {
     const db = client.db(process.env.DB_NAME);
     const collection = process.env.MONGODB_COLLECTION_QUOTES_CATALOG
     const bodyObject = req.body;
-    
     if(bodyObject.updateData.contact?.length > 0) {
         bodyObject.updateData.contact.map((item) => {
             if (item.detail) {
@@ -15,5 +14,6 @@ export default async function updateMongo(req, res) {
           });
     }
     const resMongo = await db.collection(collection).updateOne({ _id: new ObjectId(bodyObject.id) }, { $set: bodyObject.updateData});
+    console.log(resMongo)
     res.json({ status: 200, data: resMongo });
 }

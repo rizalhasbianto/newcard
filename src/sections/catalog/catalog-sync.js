@@ -1,26 +1,28 @@
 import { useCallback, useRef, useState, useEffect } from "react";
 import CsvDownloadButton from "react-json-to-csv";
 import { GetSyncCatalogProducts, UpdateProductMetafield } from "src/service/use-shopify";
-import { CreateCatalog } from "src/service/use-mongo";
+import { CreateCatalog, UpdateCatalog } from "src/service/use-mongo";
 import {
   Box,
   Card,
   CardContent,
-  Container,
   Stack,
   Typography,
-  Tabs,
-  Tab,
-  Slide,
-  Collapse,
-  Unstable_Grid2 as Grid,
   Button,
   CircularProgress,
   LinearProgress,
 } from "@mui/material";
 
 const CatalogSync = (props) => {
-  const { catalogId, session, shopifyCatalog, mongoCatalogmutate, onSync, setOnSync } = props;
+  const {
+    catalogId,
+    session,
+    shopifyCatalog,
+    mongoCatalog,
+    mongoCatalogmutate,
+    onSync,
+    setOnSync,
+  } = props;
   const [syncStatus, setSyncStatus] = useState({
     createMongoCatalog: "no",
     getProducts: "no",
@@ -65,7 +67,7 @@ const CatalogSync = (props) => {
             getProducts: "done",
             syncProducts: "done",
           });
-          const resCreateMongoCatalog = await handleCreateMongoCatalog(getSyncData);
+          const resCreateMongoCatalog = await handleMongoCatalog(getSyncData);
           if (resCreateMongoCatalog) {
             setSyncStatus({
               createMongoCatalog: "done",
@@ -146,17 +148,24 @@ const CatalogSync = (props) => {
     }
   };
 
-  const handleCreateMongoCatalog = async (getSyncData) => {
-    const resMongo = await CreateCatalog({
-      shopifyCatalog: getSyncData.newData,
-      session,
-      catalogId,
-    });
+  const handleMongoCatalog = async (getSyncData) => {
+    let resMongo = false;
+    if (mongoCatalog.data.length > 0) {
+      resMongo = await UpdateCatalog({
+        shopifyCatalog: getSyncData.newData,
+        monoCatalogId: mongoCatalog.data[0]._id,
+      });
+    } else {
+      resMongo = await CreateCatalog({
+        shopifyCatalog: getSyncData.newData,
+        session,
+        catalogId,
+      });
+    }
     if (!resMongo) {
       setSyncStatus({ createMongoCatalog: "error", getProducts: "error", syncProducts: "no" });
       return false;
     }
-
     return true;
   };
 
@@ -196,8 +205,8 @@ const CatalogSync = (props) => {
                 size="small"
                 sx={{ mt: 2 }}
                 onClick={() => {
-                  mongoCatalogmutate()
-                  setOnSync(false)
+                  mongoCatalogmutate();
+                  setOnSync(false);
                 }}
               >
                 Continue to catalog detail
@@ -241,8 +250,8 @@ const CatalogSync = (props) => {
                 size="small"
                 sx={{ mt: 2 }}
                 onClick={() => {
-                  mongoCatalogmutate()
-                  setOnSync(false)
+                  mongoCatalogmutate();
+                  setOnSync(false);
                 }}
               >
                 Continue to catalog detail

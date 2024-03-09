@@ -55,9 +55,14 @@ const generateParams = (props) => {
     smartSearch,
     productPerPage,
     catalogId,
+    catalogCompany = [],
     cursor
   } = props;
 
+  let company = []
+  if(catalogCompany.length > 0) {
+    company = catalogCompany.map((item) => item?.id)
+  }
   const { productName, productType, tag, productVendor, collection } = selectedFilter;
   let paramQuery;
   let url;
@@ -94,21 +99,28 @@ const generateParams = (props) => {
       if (!selectedFilter.collection) {
         const paramNoTitle = selectedVariantFilter.filter((item) => !item["productName"]);
         if (catalogId) {
-          paramNoTitle.push({
-            productMetafield: { namespace: "b2b", key: "catalog", value: catalogId },
-          });
+          if(Array.isArray(catalogId)) {
+            catalogId.forEach((itm) => {
+              paramNoTitle.push({
+                productMetafield: { namespace: "b2b", key: "catalog", value: itm },
+              });
+            })
+          } else {
+            paramNoTitle.push({
+              productMetafield: { namespace: "b2b", key: "catalog", value: catalogId },
+            });
+          }
         }
         paramQuery =
           selectedVariantFilter.length > 0 || catalogId 
             ? `selectedFilter=${JSON.stringify(
                 paramNoTitle
-              )}&productPerPage=${productPerPage}&productName=${productName}${cursorId(cursor)}`
+              )}&productPerPage=${productPerPage}&productName=${productName}&company=${JSON.stringify(company)}${cursorId(cursor)}`
             : "";
         url = "/api/shopify/search-products";
       }
     }
   }
-
   return {
     paramQuery,
     url
@@ -116,8 +128,9 @@ const generateParams = (props) => {
 }
 
 export const GetProductsInfinite = (props) => {
+  const { runFetch } = props
   const param = generateParams(props)
-  const dataRes = useSWRInfiniteData(param.url, param.paramQuery);
+  const dataRes = useSWRInfiniteData(param.url, param.paramQuery, runFetch);
   return dataRes;
 };
 
@@ -165,6 +178,9 @@ export const GetProductsMeta = async (inputValue) => {
       break;
     case "prodTag":
       url = `/api/shopify/get-product-tag`;
+      break;
+    case "Catalog":
+      url = `/api/catalog/get-shopify-catalogs`;
       break;
     default:
       url = `/api/shopify/error`;
@@ -254,12 +270,12 @@ export const GetShopifyCatalog = (catalogId) => {
 };
 
 export const GetSyncCatalogProducts = async (catalogID) => {
-  console.log("catalogID", catalogID)
   const shopifyRes = useDataService(`/api/catalog/get-catalog-products-sync?catalogID=${catalogID}`, "GET");
   return shopifyRes;
 };
 
 export const GetPricelistPrices = async (prices) => {
-  const shopifyRes = useDataService(`/api/catalog/get-shopify-pricelist-prices`, "POST", prices);
+  const priceList = prices.newData.edges.map(item => {return ({ id: item.node.id.replace("gid://shopify/Product/", "") })})
+  const shopifyRes = useDataService(`/api/catalog/get-shopify-pricelist-prices`, "POST", priceList);
   return shopifyRes;
 };
