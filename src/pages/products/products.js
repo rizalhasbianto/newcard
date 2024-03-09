@@ -163,19 +163,21 @@ const Products = () => {
                 </Stack>
               </Stack>
               <div>
+                {session.user.detail.role !== "customer" && (
+                  <Button
+                    startIcon={
+                      <SvgIcon fontSize="small">
+                        <PlusIcon />
+                      </SvgIcon>
+                    }
+                    variant="contained"
+                    onClick={() => setOpenCompany(true)}
+                  >
+                    Check Company Price
+                  </Button>
+                )}
                 {!quoteId ? (
                   <>
-                    <Button
-                      startIcon={
-                        <SvgIcon fontSize="small">
-                          <PlusIcon />
-                        </SvgIcon>
-                      }
-                      variant="contained"
-                      onClick={() => setOpenCompany(true)}
-                    >
-                      Check Company Price
-                    </Button>
                     <Button
                       startIcon={
                         <SvgIcon fontSize="small">
@@ -191,17 +193,6 @@ const Products = () => {
                   </>
                 ) : (
                   <>
-                    <Button
-                      startIcon={
-                        <SvgIcon fontSize="small">
-                          <PlusIcon />
-                        </SvgIcon>
-                      }
-                      variant="contained"
-                      onClick={() => setOpenCompany(true)}
-                    >
-                      Check Company Price
-                    </Button>
                     <Button variant="contained" onClick={handleOpenQuoteList} sx={{ ml: 1 }}>
                       Selected Quote #{quoteId.slice(-4)}
                     </Button>
