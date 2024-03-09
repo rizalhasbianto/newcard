@@ -14,7 +14,7 @@ import { quotesQuickAddHead } from "src/data/tableList";
 import { Scrollbar } from "src/components/scrollbar";
 
 const ProductTable = (props) => {
-  const { handleOpenQuoteList, data, toastUp, productPerPage, quoteId } = props;
+  const { handleOpenQuoteList, data, catalogCompany, toastUp, productPerPage, quoteId } = props;
 
   return (
     data && (
@@ -43,6 +43,7 @@ const ProductTable = (props) => {
                     toastUp={toastUp}
                     noUrut={idx * productPerPage + (i + 1)}
                     quoteId={quoteId}
+                    catalogCompany={catalogCompany}
                     key={i + 1}
                   />
                 ));

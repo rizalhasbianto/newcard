@@ -3,7 +3,7 @@ import { Box, Grid } from "@mui/material";
 import ProductCard from "./product-card";
 
 const ProductGrid = (props) => {
-  const { handleOpenQuoteList, data, catalogCompany, toastUp, quoteId } = props;
+  const { handleOpenQuoteList, data, catalogCompany, toastUp, quoteId, session } = props;
   return (
     data &&
     data.map((dt) => {
@@ -21,6 +21,7 @@ const ProductGrid = (props) => {
             catalogCompany={catalogCompany}
             toastUp={toastUp}
             quoteId={quoteId}
+            session={session}
           />
         </Grid>
       ));

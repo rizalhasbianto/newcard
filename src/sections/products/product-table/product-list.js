@@ -18,9 +18,7 @@ import { ImageComponent } from "src/components/image";
 import { UpdateQuoteItem } from "src/service/use-mongo";
 
 const Productlist = (props) => {
-  const { product, handleOpenQuoteList, toastUp, noUrut, quoteId } = props;
-
-
+  const { product, handleOpenQuoteList, catalogCompany, toastUp, noUrut, quoteId } = props;
   const [buttonloading, setButtonloading] = useState(false);
   const [notAvilableOption, setNotAvilableOption] = useState(false);
   const [selectedVariant, setSelectedVariant] = useState(product.node.variants.edges[0].node);
@@ -135,8 +133,28 @@ const Productlist = (props) => {
           </Grid>
         </Grid>
       </TableCell>
-      <TableCell align="right">
-        <Typography variant="body2">${selectedVariant.price?.amount}</Typography>
+      <TableCell align="left" sx={{whiteSpace:"nowrap"}}>
+      {catalogCompany && catalogCompany.length === 0 ?
+        <Typography variant="body2">
+          ${selectedVariant.price?.amount}
+        </Typography>
+        :
+        <>
+        <Typography variant="body2">
+          Original: ${selectedVariant.price?.amount}
+        </Typography>
+        {catalogCompany &&
+            catalogCompany.length > 0 &&
+            catalogCompany.map((company, index) => {
+              const companyPrice = product.node.companyPrice[`company_${company.id}`];
+              return (
+                <Typography variant="body2" key={index + 1} sx={{fontWeight:600,textTransform:"capitalize"}}>
+                  {company.name} Price: ${companyPrice.priceRange.maxVariantPrice.amount}
+                </Typography>
+              );
+            })}
+        </>
+      }
       </TableCell>
       <TableCell sx={{minWidth:"150px"}} align="center">
         <Typography variant="body2">

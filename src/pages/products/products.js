@@ -174,7 +174,7 @@ const Products = () => {
                       variant="contained"
                       onClick={() => setOpenCompany(true)}
                     >
-                      Choose Company Price
+                      Check Company Price
                     </Button>
                     <Button
                       startIcon={
@@ -200,7 +200,7 @@ const Products = () => {
                       variant="contained"
                       onClick={() => setOpenCompany(true)}
                     >
-                      Choose Company Price
+                      Check Company Price
                     </Button>
                     <Button variant="contained" onClick={handleOpenQuoteList} sx={{ ml: 1 }}>
                       Selected Quote #{quoteId.slice(-4)}
@@ -242,6 +242,7 @@ const Products = () => {
                     catalogCompany={catalogCompany}
                     toastUp={toastUp}
                     quoteId={quoteId}
+                    session={session}
                   />
                 ) : (
                   <ProductTable
