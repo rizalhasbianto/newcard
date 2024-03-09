@@ -162,7 +162,7 @@ const Products = () => {
                   </ButtonGroup>
                 </Stack>
               </Stack>
-              <div>
+              <Box>
                 {session.user.detail.role !== "customer" && (
                   <Button
                     startIcon={
@@ -172,6 +172,7 @@ const Products = () => {
                     }
                     variant="contained"
                     onClick={() => setOpenCompany(true)}
+                    size="medium"
                   >
                     Check Company Price
                   </Button>
@@ -203,7 +204,7 @@ const Products = () => {
                     </Link>
                   </>
                 )}
-              </div>
+              </Box>
             </Stack>
             <ProductsSearch
               selectedFilter={selectedFilter}

@@ -274,8 +274,11 @@ export const GetSyncCatalogProducts = async (catalogID) => {
   return shopifyRes;
 };
 
-export const GetPricelistPrices = async (prices) => {
-  const priceList = prices.newData.edges.map(item => {return ({ id: item.node.id.replace("gid://shopify/Product/", "") })})
-  const shopifyRes = useDataService(`/api/catalog/get-shopify-pricelist-prices`, "POST", priceList);
+export const GetPricelistPrices = async (products, shopifyCatalog) => {
+  const productsList = products.newData.edges.map(item => {return ({ id: item.node.id.replace("gid://shopify/Product/", "") })})
+  const shopifyRes = useDataService(`/api/catalog/get-shopify-pricelist-prices`, "POST", {
+    productsList,
+    priceListID: shopifyCatalog.newData.data.catalog.priceList.id
+  });
   return shopifyRes;
 };

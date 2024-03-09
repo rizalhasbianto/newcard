@@ -1,10 +1,10 @@
 import { adminAPi } from "src/lib/shopify";
 
 export default async function shopify(req, res) {
-  const bodyObject = req.body ? req.body : req.query;
-  const queryMap = bodyObject.map(
+  const bodyObject = req.method === "POST" ? req.body : req.query;
+  const queryMap = bodyObject.productsList.map(
     (item) => `
-      prod_${item.id}: priceList(id:"gid://shopify/PriceList/20011974884") {
+      prod_${item.id}: priceList(id:"${bodyObject.priceListID}") {
         prices(first:100, query: "product_id:${item.id}") {
           edges {
             node {

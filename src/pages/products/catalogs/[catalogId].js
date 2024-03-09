@@ -51,7 +51,7 @@ const Page = () => {
     catalogId,
     cursor: cursor,
   });
-
+console.log("product", product)
   const {
     data: shopifyCatalog,
     isLoading: shopifyCatalogLoading,
@@ -68,8 +68,7 @@ const Page = () => {
   }, [product, shopifyCatalog]);
 
   const gassignPricelistPrices = async (product, shopifyCatalog) => {
-    const getPricelistPrices = await GetPricelistPrices(product);
-    console.log("getPricelistPrices", getPricelistPrices);
+    const getPricelistPrices = await GetPricelistPrices(product, shopifyCatalog);
     const globalPrice = shopifyCatalog.newData.data.catalog.priceList.parent;
     product.newData.edges.forEach((item) => {
       const price =
