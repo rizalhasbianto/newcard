@@ -12,7 +12,7 @@ const ProductGrid = (props) => {
           item 
           xs={12} 
           md={4} 
-          lg={3} 
+          lg={4} 
           key={i + 1}
         >
           <ProductCard

@@ -30,10 +30,10 @@ export default function ProductAddToQuote(props) {
   const [quoteList, setQuoteList] = useState([]);
   const router = useRouter();
 
-  const handleSelectQuote = (id) => {
+  const handleSelectQuote = (id,companyName) => {
     setOpenQuote(false);
     const pathName = router.asPath.split("?");
-    router.push(`${pathName[0]}?quoteId=` + id);
+    router.push(`${pathName[0]}?quoteId=${id}&companyName=${companyName}`);
   };
 
   const handleGetQuoteList = async () => {
@@ -146,7 +146,7 @@ console.log("quoteList", quoteList)
                   <TableCell>
                     <LoadingButton
                       color="primary"
-                      onClick={() => handleSelectQuote(quote._id)}
+                      onClick={() => handleSelectQuote(quote._id, quote.company.name)}
                       loading={false}
                       loadingPosition="start"
                       startIcon={<SaveIcon />}

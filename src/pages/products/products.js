@@ -54,6 +54,7 @@ const Products = () => {
   const router = useRouter();
   const { data: session } = useSession();
   const quoteId = router.query?.quoteId;
+  const quoteCompanyName = router.query?.companyName;
 
   const productPerPage = 12;
   const { data, isLoading, isError, size, setSize } = GetProductsInfinite({
@@ -65,7 +66,7 @@ const Products = () => {
     productPerPage,
     runFetch,
   });
-console.log("data", data)
+
   const handleLoadMore = () => {
     setSize(size + 1);
   };
@@ -76,9 +77,18 @@ console.log("data", data)
 
   const catalogCustomer = useCallback(async (id) => {
     const companyCatalogID = await GetCompanyCatalog({ id });
-    setRunFetch(true);
-    setCatalogCompany([{id:companyCatalogID.newData[0].shopifyCompanyLocationId}]);
+    setCatalogCompany([{ id: companyCatalogID.newData[0].shopifyCompanyLocationId }]);
     setCatalogID(companyCatalogID.newData[0].catalogIDs);
+    setRunFetch(true);
+  }, []);
+
+  const productByQuote = useCallback(async (quoteCompanyName) => {
+    const companyCatalogID = await GetCompanyCatalog({ query: { name: quoteCompanyName } });
+    setCatalogCompany([
+      { id: companyCatalogID.newData[0].shopifyCompanyLocationId, name: quoteCompanyName },
+    ]);
+    setCatalogID(companyCatalogID.newData[0].catalogIDs);
+    setRunFetch(true);
   }, []);
 
   useEffect(() => {
@@ -90,10 +100,14 @@ console.log("data", data)
     if (session && session.user.detail.role === "customer") {
       catalogCustomer(session.user.detail.company.companyId);
     } else {
-      setRunFetch(true);
+      if (quoteCompanyName) {
+        productByQuote(quoteCompanyName);
+      } else {
+        setRunFetch(true);
+      }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [session]);
+  }, [session, quoteCompanyName]);
 
   return (
     <>
@@ -212,6 +226,7 @@ console.log("data", data)
               catalogID={catalogID}
               setCatalogID={setCatalogID}
               session={session}
+              quoteCompanyName={quoteCompanyName}
             />
             {isLoading && <CardLoading count={4} />}
             {data && data[0]?.newData?.edges?.length === 0 && (

@@ -130,17 +130,20 @@ const ProductCard = (props) => {
           <Typography variant="body2">
             Stock: {selectedVariant.currentlyNotInStock ? "Out of stock" : "In stock"}
           </Typography>
+        </Stack>
+        {catalogCompany && catalogCompany.length > 0 && <Divider sx={{ mt: 1, mb: 1 }} />}
+        <Box>
           {catalogCompany &&
             catalogCompany.length > 0 &&
             catalogCompany.map((company, index) => {
-              const companyPrice = product.node.companyPrice[`company_${company.id}`]
+              const companyPrice = product.node.companyPrice[`company_${company.id}`];
               return (
-                <Typography variant="body2" key={index + 1}>
-                  {company.name} Price: {companyPrice.priceRange.maxVariantPrice.amount}
+                <Typography variant="body2" key={index + 1} sx={{fontWeight:600,textTransform:"capitalize"}}>
+                  {company.name} Price: ${companyPrice.priceRange.maxVariantPrice.amount}
                 </Typography>
               );
             })}
-        </Stack>
+        </Box>
       </CardContent>
       <Divider />
       <Stack

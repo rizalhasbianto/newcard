@@ -33,6 +33,7 @@ const ProductsSearch = (props) => {
     setSmartSearch,
     predictiveSearch,
     session,
+    quoteCompanyName,
   } = props;
 
   const [filterOpt, setFilterOpt] = useState();
@@ -281,39 +282,41 @@ const ProductsSearch = (props) => {
         <Collapse in={isVariantFilters}>
           <Box sx={{ display: "block", overflow: "auto" }}>
             <Box sx={{ display: "block", width: "max-content" }}>
-              {session?.user.detail.role !== "customer" && filterOpt?.Catalog?.length > 0 && (
-                <FormControl sx={{ m: 3 }} component="fieldset" variant="standard">
-                  <FormLabel component="legend">Catalog</FormLabel>
-                  <FormGroup
-                    sx={{
-                      display: "block",
-                      maxHeight: "300px",
-                      maxWidth: "200px",
-                      overflow: "auto",
-                    }}
-                  >
-                    {filterOpt?.Catalog?.map((itm, idx) => {
-                      return (
-                        <FormControlLabel
-                          control={
-                            <Checkbox
-                              onChange={handleCatalogFilterChange}
-                              name={itm.id}
-                              disabled={itm.count > 0 ? false : true}
-                            />
-                          }
-                          label={`${itm.label} (${itm.count})`}
-                          sx={{
-                            display: "block",
-                            width: "max-content",
-                          }}
-                          key={idx + 1}
-                        />
-                      );
-                    })}
-                  </FormGroup>
-                </FormControl>
-              )}
+              {session?.user.detail.role !== "customer" &&
+                filterOpt?.Catalog?.length > 0 &&
+                !quoteCompanyName && (
+                  <FormControl sx={{ m: 3 }} component="fieldset" variant="standard">
+                    <FormLabel component="legend">Catalog</FormLabel>
+                    <FormGroup
+                      sx={{
+                        display: "block",
+                        maxHeight: "300px",
+                        maxWidth: "200px",
+                        overflow: "auto",
+                      }}
+                    >
+                      {filterOpt?.Catalog?.map((itm, idx) => {
+                        return (
+                          <FormControlLabel
+                            control={
+                              <Checkbox
+                                onChange={handleCatalogFilterChange}
+                                name={itm.id}
+                                disabled={itm.count > 0 ? false : true}
+                              />
+                            }
+                            label={`${itm.label} (${itm.count})`}
+                            sx={{
+                              display: "block",
+                              width: "max-content",
+                            }}
+                            key={idx + 1}
+                          />
+                        );
+                      })}
+                    </FormGroup>
+                  </FormControl>
+                )}
               {variantFilterOpt &&
                 variantFilterOpt.map((variant, idx) => {
                   if (
