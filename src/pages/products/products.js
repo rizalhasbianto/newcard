@@ -97,8 +97,8 @@ const Products = () => {
   }, [data]);
 
   useEffect(() => {
-    if (session && session.user.detail.role === "customer") {
-      catalogCustomer(session.user.detail.company.companyId);
+    if (session && session?.user.detail.role === "customer") {
+      catalogCustomer(session?.user.detail.company.companyId);
     } else {
       if (quoteCompanyName) {
         productByQuote(quoteCompanyName);
@@ -163,7 +163,7 @@ const Products = () => {
                 </Stack>
               </Stack>
               <Box>
-                {session.user.detail.role !== "customer" && (
+                {session?.user.detail.role !== "customer" && (
                   <Button
                     startIcon={
                       <SvgIcon fontSize="small">
