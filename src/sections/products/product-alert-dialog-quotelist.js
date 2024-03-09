@@ -31,9 +31,9 @@ export default function ProductAddToQuote(props) {
   const router = useRouter();
 
   const handleSelectQuote = (id) => {
+    setOpenQuote(false);
     const pathName = router.asPath.split("?");
     router.push(`${pathName[0]}?quoteId=` + id);
-    setOpenQuote(false);
   };
 
   const handleGetQuoteList = async () => {
@@ -91,7 +91,7 @@ export default function ProductAddToQuote(props) {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [openQuote]);
-
+console.log("quoteList", quoteList)
   return (
     <Dialog
       open={openQuote}
