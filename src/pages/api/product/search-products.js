@@ -5,7 +5,6 @@ export default async function getProducts(req, res) {
   const productPerPage = req.query.productPerPage ? req.query.productPerPage : 12;
   const productName = req.query.productName ? req.query.productName : "";
   const company = JSON.parse(req.query.company);
-  console.log("company", company)
   const cursor = (cursor, productPerPage) => {
     if (cursor?.lastCursor) {
       return `, first:${productPerPage}, after: "${req.query.lastCursor}"`;
@@ -99,18 +98,20 @@ export default async function getProducts(req, res) {
       prod_${prod}: product(id: "gid://shopify/Product/${prod}") {
         ${company.map(
           (comp) => `
-          company_${comp}: contextualPricing(
-            context: { companyLocationId: "gid://shopify/CompanyLocation/${comp}" }
-          ) {
-              priceRange {
-                maxVariantPrice {
-                  amount
-                }
-                minVariantPrice {
-                  amount
-                }
+          variants(first: 100) {
+            edges {
+              node {
+                id
+                company_${comp}: contextualPricing(
+                  context: { companyLocationId: "gid://shopify/CompanyLocation/${comp}" }
+                ) {
+                    price {
+                      amount
+                    }
+                  }
               }
             }
+          }
         `
         )}
       }
@@ -119,14 +120,17 @@ export default async function getProducts(req, res) {
     const query = `{
       ${companyPriceQuery}
     }`;
-    const resShopify = await adminAPi(query)
+    const resShopify = await adminAPi(query);
+
     resGetData.data.search.edges.forEach((itm) => {
-      const price =
-        resShopify.data[
-          `prod_${itm.node.id.replace("gid://shopify/Product/", "")}`
-        ];
-        itm.node.companyPrice = price
-    })
+      const prodPrice = resShopify.data[`prod_${itm.node.id.replace("gid://shopify/Product/", "")}`];
+      itm.node.variants.edges.forEach((varItm) => {
+        const varPrice = prodPrice.variants.edges.find(
+          (varPriceItm) => varPriceItm.node.id === varItm.node.id
+        );
+        varItm.node.companyPrice = varPrice;
+      });
+    });
   }
   res.status(200).json({ newData: resGetData.data.search });
 }

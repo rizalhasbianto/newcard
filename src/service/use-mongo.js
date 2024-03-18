@@ -34,8 +34,7 @@ export const GetQuotesDataSwr = (page, rowsPerPage, query, sort, type) => {
 };
 
 export const SaveQuoteToMongoDb = async (
-  companyName,
-  companySales,
+  selectedCompany,
   shipTo,
   quotesList,
   discount,
@@ -51,9 +50,10 @@ export const SaveQuoteToMongoDb = async (
     quoteId: quoteId,
     data: {
       company: {
-        name: companyName,
-        shipTo: shipTo,
-        sales: companySales,
+        id:selectedCompany._id,
+        name: selectedCompany.name,
+        shipTo: shipTo.locationName,
+        sales: selectedCompany.sales,
       },
       quotesList: quotesList || [],
       quoteInfo: {
@@ -193,7 +193,7 @@ export const AddCompanyToMongo = async (
   const mongoRes = await useDataService("/api/company/create-company", "POST", {
     name: companyData.companyName,
     about: companyData.companyAbout,
-    catalogIDs: [],
+    catalogIDs: companyData.catalog,
     shopifyCompanyId: shopifyCompanyId,
     shopifyCompanyLocationId: shopifyCompanyLocationId,
     sales: {
@@ -567,9 +567,10 @@ export const UpdateTicket = async (props) => {
 };
 
 export const CreateCatalog = async (props) => {
-  const { shopifyCatalog, session, catalogId } = props;
+  const { shopifyCatalog, catalogName, session, catalogId } = props;
   const createData = {
-    shopifyCatalogID: catalogId,
+    shopifyCatalogID: catalogId, 
+    shopifyCatalogName: catalogName,
     productsCount: shopifyCatalog.totalProducts,
     createdAt: today,
     createdBy: {

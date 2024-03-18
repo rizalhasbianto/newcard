@@ -54,7 +54,7 @@ const generateParams = (props) => {
     selectedVariantFilter = [],
     smartSearch,
     productPerPage,
-    catalogId,
+    catalogId = [],
     catalogCompany = [],
     cursor
   } = props;
@@ -111,13 +111,10 @@ const generateParams = (props) => {
             });
           }
         }
-        paramQuery =
-          selectedVariantFilter.length > 0 || catalogId 
-            ? `selectedFilter=${JSON.stringify(
-                paramNoTitle
-              )}&productPerPage=${productPerPage}&productName=${productName}&company=${JSON.stringify(company)}${cursorId(cursor)}`
-            : "";
-        url = "/api/shopify/search-products";
+        paramQuery = `selectedFilter=${JSON.stringify(
+          paramNoTitle
+        )}&productPerPage=${productPerPage}&productName=${productName}&company=${JSON.stringify(company)}${cursorId(cursor)}`
+        url = "/api/product/search-products";
       }
     }
   }
@@ -135,8 +132,9 @@ export const GetProductsInfinite = (props) => {
 };
 
 export const GetProductsPaginate = (props) => {
+  const { runFetch } = props
   const param = generateParams(props)
-  const dataRes = useSwrData(param.url, param.paramQuery);
+  const dataRes = useSwrData(param.url, param.paramQuery, runFetch);
   return dataRes;
 };
 

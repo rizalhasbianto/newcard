@@ -1,4 +1,4 @@
-import { useCallback } from "react";
+import { useCallback, useState } from "react";
 import {
   TextField,
   MenuItem,
@@ -10,43 +10,39 @@ import {
 export default function QuoteSelectCompany(props) {
   const {
     companies,
-    location,
     shipToList,
     shipTo,
-    companyName,
-    companyContact,
-    companySales,
     setShipToList,
-    setLocation,
     setShipTo,
-    setCompanyName,
-    setCompanyContact,
-    setCompanySales,
+    selectedCompany,
+    setSelectedCompany,
+    handleSubmit
   } = props;
 
+  const selectedContact = selectedCompany?.contact.find((contact) => contact.default)
   const handleChange = useCallback(
     (event, data) => {
+      let selectedCompany
+      let selectedShipping
       if (event.target.name === "companyName") {
-        setCompanyName(event.target.value);
         if (!event.target.value) {
           setShipToList([]);
           setShipTo("");
-          setLocation("");
+          setSelectedCompany();
           return;
         }
-        const selectedCompany = companies.find((company) => company.name === event.target.value);
-        setShipTo(selectedCompany.shipTo[0].locationName);
+        selectedCompany = companies.find((company) => company.name === event.target.value);
+        selectedShipping = selectedCompany.shipTo.find((ship) => ship.default)
+        setShipTo(selectedShipping);
         setShipToList(selectedCompany.shipTo);
-        setLocation(selectedCompany.shipTo[0].location);
-        setCompanySales(selectedCompany.sales);
+        setSelectedCompany(selectedCompany)
       } else {
-        const locationList = data.find((ship) => ship.locationName === event.target.value);
-        setShipTo(event.target.value);
-        setLocation(locationList.location);
+        selectedShipping = data.find((ship) => ship.locationName === event.target.value);
+        setShipTo(selectedShipping);
       }
+      handleSubmit({company:selectedCompany, shipToAddress: selectedShipping})
     },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [companies, setCompanyContact, setCompanyName, setLocation, setShipTo, setShipToList]
+    [companies, handleSubmit, setSelectedCompany, setShipTo, setShipToList]
   );
 
   return (
@@ -58,7 +54,7 @@ export default function QuoteSelectCompany(props) {
             name="companyName"
             label="Company"
             variant="outlined"
-            value={companyName}
+            value={selectedCompany?.name ?? ""}
             select
             fullWidth
             required
@@ -83,16 +79,16 @@ export default function QuoteSelectCompany(props) {
             onChange={(e) => handleChange(e, shipToList)}
             required
             select
-            value={shipTo ?? " "}
-            defaultValue={shipTo ?? ""}
+            value={shipTo?.locationName ?? ""}
+            defaultValue={shipTo?.locationName ?? ""}
           >
-            {!companyName && (
+            {!selectedCompany && (
               <MenuItem value="">
                 <em>Please select company first</em>
               </MenuItem>
             )}
-            {shipToList.map((option) => (
-              <MenuItem key={option.locationName} value={option.locationName}>
+            {shipToList.map((option, idx) => (
+              <MenuItem key={idx+1} value={option.locationName}>
                 {option.locationName}
               </MenuItem>
             ))}
@@ -101,18 +97,18 @@ export default function QuoteSelectCompany(props) {
       </Grid>
       <Grid container spacing={1}>
         <Grid xs={12} md={6}>
-          {companyName && (
+          {selectedCompany && (
             <Grid container spacing={1}>
               <Grid xs={12} md={6}>
-                <ListItemText primary="Email" secondary={companyContact?.detail.email} />
+                <ListItemText primary="Email" secondary={selectedContact?.detail.email} />
               </Grid>
               <Grid xs={12} md={6}>
-                <ListItemText primary="Name" secondary={companyContact?.detail.name} />
+                <ListItemText primary="Name" secondary={selectedContact?.detail.name} />
               </Grid>
             </Grid>
           )}
         </Grid>
-        {location && (
+        {shipTo && (
           <Grid container spacing={3}>
             <Grid xs={12} md={12}>
               <ListItemText
@@ -125,7 +121,7 @@ export default function QuoteSelectCompany(props) {
                       variant="body2"
                       color="text.primary"
                     >
-                      {location.address + " "}
+                      {shipTo?.location.address + " "}
                     </Typography>
                     <Typography
                       sx={{ display: "inline" }}
@@ -133,7 +129,7 @@ export default function QuoteSelectCompany(props) {
                       variant="body2"
                       color="text.primary"
                     >
-                      {location.city} {location.state}, {location.zip + " "}
+                      {shipTo.location.city} {shipTo.location.state}, {shipTo.location.zip + " "}
                     </Typography>
                     <Typography
                       sx={{ display: "inline" }}

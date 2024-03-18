@@ -12,7 +12,6 @@ export default async function getData(req, res) {
 
   const queryCompany = (filterData) => {
     if (!filterData || filterData === "undefined") return {};
-
     const queryObj = JSON.parse(filterData);
     if (queryObj.id) {
       return { _id: new ObjectId(queryObj.id) };

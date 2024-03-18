@@ -1,5 +1,4 @@
 import { useCallback, useEffect, useState, Fragment } from "react";
-
 import {
   Box,
   Table,
@@ -15,135 +14,55 @@ import {
   SvgIcon,
   Skeleton,
   Unstable_Grid2 as Grid,
+  Collapse,
+  TablePagination,
 } from "@mui/material";
 import LoadingButton from "@mui/lab/LoadingButton";
 import AutorenewIcon from "@mui/icons-material/Autorenew";
 import AlertDialog from "src/components/alert-dialog";
 import TableLoading from "src/components/table-loading";
+import { ImageComponent } from "src/components/image";
+import ProductsSearch from "src/sections/products/products-search";
 
 import { Scrollbar } from "src/components/scrollbar";
 import { quotesQuickAddHead } from "src/data/tableList";
 import { GetProductsMeta } from "src/service/use-shopify";
 import { topFilterList } from "src/data/quickAddFilterList";
-import { GetProductsShopify } from "src/service/use-shopify";
+import { GetProductsShopify, GetProductsPaginate } from "src/service/use-shopify";
 import { addQuote } from "src/helper/handleAddQuote";
 import { usePopover } from "src/hooks/use-popover";
 
 import PlaylistAddIcon from "@mui/icons-material/PlaylistAdd";
 import PlaylistAddCheckIcon from "@mui/icons-material/PlaylistAddCheck";
+import { Stack } from "@mui/system";
 
-export const QuickAddProducts = ({ quotesList, setQuotesList }) => {
+export const QuickAddProducts = ({ quotesList, setQuotesList, selectedCompany, session }) => {
   const [selectedFilter, setSelectedFilter] = useState({
     productName: "",
-    collection: "",
+    catalog: "",
     productType: "",
     productVendor: "",
     tag: "",
   });
-  const [filterOpt, setFilterOpt] = useState();
-  const [prodList, setProdList] = useState([]);
-  const [lastCursor, setLastCursor] = useState();
-  const [pageIndex, setPageIndex] = useState(0);
-  const [loadMoreLoading, setLoadMoreLoading] = useState(false);
+  const [selectedVariantFilter, setSelectedVariantFilter] = useState([]);
+  const [cursor, setCursor] = useState({ lastCursor: "" })
+  const [page, setPage] = useState(0);
+  const [totalProducts, setTotalProducts] = useState(0);
   const [qtyList, setQtyList] = useState([]);
   const [addQuoteLoading, setAddQuoteLoading] = useState();
+  const catalogCompany = selectedCompany ? [{ id: selectedCompany.shopifyCompanyLocationId }] : [];
   const productPerPage = 5;
   const modalPopUp = usePopover();
+  const [catalogID, setCatalogID] = useState([]);
 
-  //initial load prod data
-  useEffect(() => {
-    handleFilterChange();
-    getFilterOpt();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  const handleFilterChange = useCallback(
-    async (event) => {
-      let newSelectedFilter = selectedFilter;
-      if (event) {
-        newSelectedFilter = {
-          ...selectedFilter,
-          [event.target.name]: event.target.value,
-        };
-      }
-
-      setSelectedFilter(newSelectedFilter);
-      const filterData = { ...newSelectedFilter };
-      filterData.productName = `${newSelectedFilter.productName}*`;
-      const resData = await GetProductsShopify(filterData, productPerPage);
-      if (resData) {
-        setProdList(resData.newData.edges);
-        if (resData.newData.pageInfo.hasNextPage) {
-          setLastCursor(resData?.newData?.edges?.at(-1)?.cursor);
-        } else {
-          setLastCursor();
-        }
-      }
-    },
-    [selectedFilter]
-  );
-
-  const handleLoadMore = useCallback(async () => {
-    setLoadMoreLoading(true);
-    const nextPageIndex = pageIndex + 1;
-    const resData = await GetProductsShopify(
-      selectedFilter,
-      productPerPage,
-      lastCursor,
-      nextPageIndex
-    );
-    if (resData) {
-      setProdList([...prodList, ...resData.newData.edges]);
-      setLoadMoreLoading(false);
-      if (resData.newData.pageInfo.hasNextPage) {
-        setLastCursor(resData?.newData?.edges?.at(-1)?.cursor);
-        setPageIndex(nextPageIndex);
-      } else {
-        setLastCursor();
-      }
-    }
-  }, [lastCursor, pageIndex, prodList, selectedFilter]);
-
-  async function getFilterOpt() {
-    const newFilterOpt = {
-      collection: [],
-      productType: [],
-      productVendor: [],
-      tag: [],
-    };
-
-    const resCollection = await GetProductsMeta("collections");
-    const resProdType = await GetProductsMeta("prodType");
-    const resProdVendor = await GetProductsMeta("prodVendor");
-    const resProdTag = await GetProductsMeta("prodTag");
-
-    if (resCollection) {
-      const orderedCollection = resCollection.newData.data.collections.edges.map(
-        (collection) => collection.node.handle
-      );
-      newFilterOpt.collection = orderedCollection;
-    }
-    if (resProdType) {
-      const orderedProdType = resProdType.newData.data.productTypes.edges.map(
-        (prodType) => prodType.node && prodType.node
-      );
-      newFilterOpt.productType = orderedProdType;
-    }
-    if (resProdVendor) {
-      const orderedProdVendor = resProdVendor.newData.data.shop.productVendors.edges.map(
-        (prodVendor) => prodVendor.node && prodVendor.node
-      );
-      newFilterOpt.productVendor = orderedProdVendor;
-    }
-    if (resProdTag) {
-      const orderedProdTag = resProdTag.newData.data.productTags.edges.map(
-        (prodTag) => prodTag.node && prodTag.node
-      );
-      newFilterOpt.tag = orderedProdTag;
-    }
-    setFilterOpt(newFilterOpt);
-  }
-
+  const { data, isLoading, isError } = GetProductsPaginate({
+    selectedFilter,
+    selectedVariantFilter,
+    catalogId: selectedCompany?.catalogIDs,
+    catalogCompany,
+    productPerPage,
+    cursor: cursor,
+  });
   const handleAddQty = (qty, id) => {
     const checkQtyList = qtyList.findIndex((item) => item.id === id);
     const qtyNum = !qty || qty <= 0 ? 1 : qty;
@@ -181,6 +100,26 @@ export const QuickAddProducts = ({ quotesList, setQuotesList }) => {
     }, 3000);
   };
 
+  const handlePageChange = useCallback(
+    async (event, value) => {
+      if (value > page) {
+        // go to next page
+        setCursor({ lastCursor: data.newData.pageInfo.endCursor });
+      } else {
+        // go to prev page
+        setCursor({ firstCursor: data.newData.pageInfo.startCursor });
+      }
+      setPage(value);
+    },
+    [page, data]
+  );
+
+  useEffect(() => {
+    if (data) {
+      setTotalProducts(data?.newData.totalCount)
+    }
+  }, [data]);
+
   return (
     <Box
       sx={{
@@ -194,59 +133,22 @@ export const QuickAddProducts = ({ quotesList, setQuotesList }) => {
         open={modalPopUp.open}
         handleClose={modalPopUp.handleClose}
       />
-      <Grid container>
-        <Grid lg={4}>
-          <TextField
-            id="productName"
-            name="productName"
-            label="Product Name"
-            value={selectedFilter.productName}
-            fullWidth
-            onChange={handleFilterChange}
-          />
-        </Grid>
-        {!filterOpt ? (
-          <Skeleton
-            variant="rectangular"
-            width={162}
-            height={55}
-            sx={{ marginTop: "12px", borderRadius: "5px" }}
-          />
-        ) : (
-          topFilterList.map((filter) => {
-            return (
-              filterOpt && (
-                <Grid lg={2} key={filter.id}>
-                  <TextField
-                    id={filter.id}
-                    name={filter.id}
-                    label={filter.title}
-                    value={selectedFilter[filter.id]}
-                    select
-                    fullWidth
-                    onChange={handleFilterChange}
-                    sx={{ maxHeight: 250 }}
-                  >
-                    <MenuItem value="">
-                      <em>None</em>
-                    </MenuItem>
-                    {filterOpt[filter.id]?.map((option) => (
-                      <MenuItem key={option} value={option}>
-                        {option}
-                      </MenuItem>
-                    ))}
-                  </TextField>
-                </Grid>
-              )
-            );
-          })
-        )}
-      </Grid>
-      <Grid lg={12}>
-        {!prodList ? (
+      <ProductsSearch
+        selectedFilter={selectedFilter}
+        setSelectedFilter={setSelectedFilter}
+        selectedVariantFilter={selectedVariantFilter}
+        setSelectedVariantFilter={setSelectedVariantFilter}
+        filterList={data?.newData.productFilters}
+        catalogID={catalogID}
+        setCatalogID={setCatalogID}
+        session={session}
+        quoteCompanyName={catalogCompany}
+      />
+      <Grid lg={12} sx={{ height: 600 }}>
+        {!data || isLoading ? (
           <TableLoading />
         ) : (
-          <TableContainer sx={{ maxHeight: 600 }}>
+          <TableContainer sx={{ height: 600 }}>
             <Table stickyHeader aria-label="sticky table">
               <TableHead>
                 <TableRow>
@@ -264,39 +166,87 @@ export const QuickAddProducts = ({ quotesList, setQuotesList }) => {
                   })}
                 </TableRow>
               </TableHead>
-              <TableBody sx={{ maxHeight: "500px" }}>
-                {prodList.map((item, i) => (
+              <TableBody sx={{ height: "500px" }}>
+                {data?.newData?.edges.map((item, i) => (
                   <Fragment key={item.node.id}>
                     <TableRow sx={{ backgroundColor: "#ececec" }}>
-                      <TableCell padding="checkbox">
-                        <Typography sx={{ fontWeight: "bold" }}>{i + 1}</Typography>
+                      <TableCell padding="checkbox" sx={{ padding: "5px 16px" }}>
+                        <Typography sx={{ fontWeight: "bold" }} variant="body2">
+                          {(page * 5) + i + 1}
+                        </Typography>
                       </TableCell>
-                      <TableCell>
-                        <Typography sx={{ fontWeight: "bold" }}>{item.node.title}</Typography>
+                      <TableCell sx={{ maxWidth: "600px", padding: "5px 16px" }}>
+                        <Stack direction={"row"} alignItems={"center"}>
+                          <Box sx={{ position: "relative", width: "50px", height: "50px", mr: 1 }}>
+                            <ImageComponent
+                              img={item?.node?.variants?.edges[0]?.node?.image?.url}
+                              title={item.node.title}
+                            />
+                          </Box>
+                          <Typography variant="body2" sx={{ fontWeight: "bold" }}>
+                            {item.node.title}
+                          </Typography>
+                        </Stack>
                       </TableCell>
-                      <TableCell></TableCell>
-                      <TableCell></TableCell>
-                      <TableCell></TableCell>
-                      <TableCell></TableCell>
+                      <TableCell sx={{ padding: "0 16px" }}></TableCell>
+                      <TableCell sx={{ padding: "0 16px" }}></TableCell>
+                      <TableCell sx={{ padding: "0 16px" }}></TableCell>
+                      <TableCell sx={{ padding: "0 16px" }}></TableCell>
                     </TableRow>
                     {item.node.variants?.edges.map((varItem, idx) => {
                       const findQty = qtyList.findIndex(
                         (qtyItem) => qtyItem.id === varItem.node.id
                       );
                       const qty = findQty >= 0 ? qtyList[findQty].qty : 1;
+                      const selectedCompanyPrice =
+                        varItem.node.companyPrice?.node[
+                          `company_${selectedCompany.shopifyCompanyLocationId}`
+                        ].price.amount;
                       return (
                         <TableRow key={varItem.node.id}>
-                          <TableCell padding="checkbox" sx={{ minWidth: "70px" }}>
-                            <Typography display={"inline-block"} sx={{ fontWeight: "bold" }}>
-                              {i + 1}.
+                          <TableCell
+                            padding="checkbox"
+                            sx={{ minWidth: "70px", padding: "0 16px" }}
+                          >
+                            <Typography
+                              variant="body2"
+                              display={"inline-block"}
+                              sx={{ fontWeight: "bold" }}
+                            >
+                              {(page * 5) + i + 1}.
                             </Typography>
-                            <Typography display={"inline-block"}>{idx + 1}</Typography>
+                            <Typography variant="body2" display={"inline-block"}>
+                              {idx + 1}
+                            </Typography>
                           </TableCell>
                           <TableCell sx={{ padding: "0 0px 0 40px" }}>
-                            -- {varItem.node.title}
+                            <Typography variant="body2" display={"inline-block"}>
+                              -- {varItem.node.title}
+                            </Typography>
                           </TableCell>
                           <TableCell sx={{ padding: "0 16px" }}>
-                            ${varItem.node.price.amount}
+                            {selectedCompanyPrice === varItem.node.price.amount ? (
+                              <Typography variant="body2" display={"inline-block"}>
+                                ${varItem.node.price.amount}
+                              </Typography>
+                            ) : (
+                              <>
+                                <Typography
+                                  variant="body2"
+                                  display={"inline-block"}
+                                  color="#bdbdbd"
+                                  sx={{ textDecoration: "line-through" }}
+                                >
+                                  ${varItem.node.price.amount}
+                                </Typography>
+                                <Typography variant="body2" display={"inline-block"}>
+                                  /
+                                </Typography>
+                                <Typography variant="body2" display={"inline-block"}>
+                                  ${selectedCompanyPrice}
+                                </Typography>
+                              </>
+                            )}
                           </TableCell>
                           <TableCell sx={{ padding: "0 16px" }}>
                             {!varItem.node.currentlyNotInStock ? "In stock" : "Out of stock"}
@@ -343,34 +293,18 @@ export const QuickAddProducts = ({ quotesList, setQuotesList }) => {
                   </Fragment>
                 ))}
               </TableBody>
-              {lastCursor && (
-                <TableFooter>
-                  <TableRow>
-                    <TableCell
-                      sx={{
-                        textAlign: "center",
-                      }}
-                      variant="footer"
-                      colSpan="6"
-                    >
-                      <LoadingButton
-                        color="primary"
-                        onClick={() => handleLoadMore()}
-                        loading={loadMoreLoading}
-                        loadingPosition="start"
-                        startIcon={<AutorenewIcon />}
-                        variant="contained"
-                      >
-                        LOAD MORE
-                      </LoadingButton>
-                    </TableCell>
-                  </TableRow>
-                </TableFooter>
-              )}
             </Table>
           </TableContainer>
         )}
       </Grid>
+      <TablePagination
+        component="div"
+        count={totalProducts}
+        onPageChange={handlePageChange}
+        page={page}
+        rowsPerPage={5}
+        rowsPerPageOptions={[5]}
+      />
     </Box>
   );
 };

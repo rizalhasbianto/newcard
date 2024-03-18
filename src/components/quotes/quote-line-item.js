@@ -14,6 +14,7 @@ import EyeIcon from "@heroicons/react/24/solid/EyeIcon";
 
 export default function QuoteLineItem(props) {
   const { quote, handleOpenProd, handleEditLineitem, handleDeleteProd, index } = props;
+  const price = quote.variant.price.amount !== quote.variant.companyPrice.node
   return (
     <TableRow 
         hover 

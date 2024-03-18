@@ -3,60 +3,72 @@ import { useEffect, useState, useCallback } from "react";
 import Autocomplete from "@mui/material/Autocomplete";
 import Link from "next/link";
 import Image from "next/image";
-import { ImageComponent } from "src/components/image"
-import { Box, Button, TextField, Typography, Unstable_Grid2 as Grid } from "@mui/material";
-import { GetProductsShopify } from "src/service/use-shopify";
+import { ImageComponent } from "src/components/image";
+import {
+  Box,
+  Button,
+  TextField,
+  Typography,
+  Unstable_Grid2 as Grid,
+  Collapse,
+} from "@mui/material";
+import { GetProductsShopify, GetProductsInfinite } from "src/service/use-shopify";
 import { SearchProduct } from "./quotes-search-product";
-import { QuickAddProducts } from "./quotes-quick-add"
-import { QuoteCollections } from "./quote-collections"
+import { QuickAddProducts } from "./quotes-quick-add";
+import { QuoteCollections } from "./quote-collections";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import ExpandLessIcon from "@mui/icons-material/ExpandLess";
 
-export const SelectProducts = ({ quotesList, setQuotesList, quoteId }) => {
+export const SelectProducts = ({
+  quotesList,
+  setQuotesList,
+  quoteId,
+  selectedCompany,
+  session,
+}) => {
+  const [searchResultStatus, setSearchResultStatus] = useState("Start type for search!");
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [inputValue, setInputValue] = useState("");
-  const [productSearch, setProductSearch] = useState([]); 
-  const [activeTab, setActiveTab] = useState("search");
-
-  const getOptions = async (active, selectedProduct) => {
-    if (active) {
-      const resData = await GetProductsShopify({productName:`${inputValue}*`});
-
-      let newOptions = [];
-
-      if (selectedProduct) {
-        newOptions = [selectedProduct];
-      }
-
-      if (resData) { 
-        const dataProd = resData.newData.edges;
-        if (dataProd.length > 0) {
-          newOptions = [...newOptions, ...dataProd];
-        }
-      }
-
-      setProductSearch(newOptions);
-    }
-  };
+  const [productSearch, setProductSearch] = useState([]);
+  const [activeTab, setActiveTab] = useState("");
+  const [runFetch, setRunFetch] = useState(false);
+  const productPerPage = 10;
+  const catalogCompany = selectedCompany ? [{ id: selectedCompany.shopifyCompanyLocationId }] : [];
+  const {
+    data: products,
+    isLoading,
+    isError,
+    size,
+    setSize,
+  } = GetProductsInfinite({
+    selectedFilter: {
+      productName: inputValue,
+    },
+    catalogId: selectedCompany?.catalogIDs,
+    catalogCompany,
+    productPerPage,
+    runFetch,
+  });
 
   useEffect(() => {
-    let active = true;
     if (inputValue === "") {
+      setSearchResultStatus("Start type for search!");
+    } else {
+      setSearchResultStatus("No products found!");
+    }
+    if (inputValue === "" || !products) {
       setProductSearch(selectedProduct ? [selectedProduct] : []);
       return undefined;
     }
-
-    getOptions(active, selectedProduct);
-
-    return () => {
-      active = false;
-    };
-  }, [inputValue]);
+    setProductSearch(products[0].newData.edges ?? []);
+  }, [products]);
 
   return (
     <Box>
       <Grid container>
         <Grid md={6}>
           <Autocomplete
-            id="google-map-demo"
+            id="skratch-search"
             sx={{ width: "100%", mb: "20px", mt: "5px" }}
             getOptionLabel={(option) =>
               typeof option.node.title === "string" ? option.node.title : option.node.title
@@ -67,14 +79,15 @@ export const SelectProducts = ({ quotesList, setQuotesList, quoteId }) => {
             includeInputInList
             filterSelectedOptions
             value={selectedProduct}
-            noOptionsText="No product found!"
+            noOptionsText={searchResultStatus}
             onChange={(event, newValue) => {
               setProductSearch(newValue ? [newValue, ...productSearch] : productSearch);
               setSelectedProduct(newValue);
               setActiveTab("search");
             }}
             onInputChange={(event, newInputValue) => {
-              if(newInputValue.length > 2) {
+              if (newInputValue.length > 2) {
+                setRunFetch(true);
                 setInputValue(newInputValue);
               }
             }}
@@ -97,7 +110,10 @@ export const SelectProducts = ({ quotesList, setQuotesList, quoteId }) => {
                         position: "relative",
                       }}
                     >
-                      <ImageComponent img={option.node.variants.edges[0].node?.image?.url} title={option.node.title} />
+                      <ImageComponent
+                        img={option.node.variants.edges[0].node?.image?.url}
+                        title={option.node.title}
+                      />
                     </Grid>
                     <Grid md={10}>
                       <Typography variant="body2" color="text.secondary">
@@ -119,9 +135,10 @@ export const SelectProducts = ({ quotesList, setQuotesList, quoteId }) => {
               position: "relative",
               top: "5px",
             }}
-            onClick={() => setActiveTab("quick")}
+            onClick={() => (activeTab === "quick" ? setActiveTab() : setActiveTab("quick"))}
           >
             Bulk Add
+            {activeTab === "quick" ? <ExpandLessIcon /> : <ExpandMoreIcon />}
           </Button>
         </Grid>
         <Grid md={2}>
@@ -140,39 +157,42 @@ export const SelectProducts = ({ quotesList, setQuotesList, quoteId }) => {
           </Link>
         </Grid>
         <Grid md={2}>
-            <Button
-              variant="outlined"
-              fullWidth
-              sx={{
-                height: "54px",
-                position: "relative",
-                top: "5px",
-              }}
-              onClick={() => setActiveTab("collection")}
-            >
-              Collection
-            </Button>
+          <Button
+            variant="outlined"
+            fullWidth
+            sx={{
+              height: "54px",
+              position: "relative",
+              top: "5px",
+            }}
+            onClick={() => setActiveTab("collection")}
+          >
+            Collection
+          </Button>
         </Grid>
       </Grid>
-      {selectedProduct && activeTab === "search" && (
-        <SearchProduct
-          quotesList={quotesList}
-          setQuotesList={setQuotesList}
-          selectedProduct={selectedProduct}
-        />
-      )}
-      {activeTab === "quick" && (
-        <QuickAddProducts
-          quotesList={quotesList}
-          setQuotesList={setQuotesList}
-        />
-      )}
-      {activeTab === "collection" && (
-        <QuoteCollections
-          quotesList={quotesList}
-          setQuotesList={setQuotesList}
-        />
-      )}
+      <Collapse in={selectedProduct && activeTab === "search" ? true : false}>
+        {selectedProduct && (
+          <SearchProduct
+            quotesList={quotesList}
+            setQuotesList={setQuotesList}
+            selectedProduct={selectedProduct}
+          />
+        )}
+      </Collapse>
+      <Collapse in={activeTab === "quick" ? true : false}>
+        {activeTab === "quick" && (
+          <QuickAddProducts
+            quotesList={quotesList}
+            setQuotesList={setQuotesList}
+            selectedCompany={selectedCompany}
+            session={session}
+          />
+        )}
+      </Collapse>
+      <Collapse in={activeTab === "collection" ? true : false}>
+        <QuoteCollections quotesList={quotesList} setQuotesList={setQuotesList} />
+      </Collapse>
     </Box>
   );
 };

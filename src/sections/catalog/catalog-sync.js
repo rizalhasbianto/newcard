@@ -149,6 +149,7 @@ const CatalogSync = (props) => {
   };
 
   const handleMongoCatalog = async (getSyncData) => {
+    console.log("getSyncData", getSyncData)
     let resMongo = false;
     if (mongoCatalog.data.length > 0) {
       resMongo = await UpdateCatalog({
@@ -158,6 +159,7 @@ const CatalogSync = (props) => {
     } else {
       resMongo = await CreateCatalog({
         shopifyCatalog: getSyncData.newData,
+        catalogName: shopifyCatalog?.newData.data.catalog.title,
         session,
         catalogId,
       });

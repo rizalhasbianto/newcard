@@ -23,7 +23,7 @@ import QuoteSelectCompany from "./quote-select-company";
 import AddCompany from "../companies/company-add";
 import LineItemQuotes from "./quotes-line-item";
 import { saveQuoteButton } from "src/data/save-quote-button";
-import SaveWarning from "src/components/save-warning"
+import SaveWarning from "src/components/save-warning";
 
 import { useToast } from "src/hooks/use-toast";
 import Toast from "src/components/toast";
@@ -38,13 +38,11 @@ import { SyncQuoteToShopify } from "src/service/use-shopify";
 
 const QuotesForm = (props) => {
   const { tabContent, reqQuotesData, tabIndex, session } = props;
+
   const [companies, setCompanies] = useState([]);
-  const [companyName, setCompanyName] = useState("");
-  const [shipTo, setShipTo] = useState("");
+  const [selectedCompany, setSelectedCompany] = useState();
   const [shipToList, setShipToList] = useState([]);
-  const [companyContact, setCompanyContact] = useState([]);
-  const [companySales, setCompanySales] = useState();
-  const [location, setLocation] = useState();
+  const [shipTo, setShipTo] = useState();
   const [quotesList, setQuotesList] = useState([]);
   const [buttonloading, setButtonLoading] = useState();
   const [addNewCompany, setAddNewCompany] = useState(false);
@@ -57,18 +55,27 @@ const QuotesForm = (props) => {
   const toastUp = useToast();
 
   const handleSubmit = useCallback(
-    async (type) => {
+    async (props) => {
+      const {
+        type = "draft",
+        company = selectedCompany,
+        shipToAddress = shipTo,
+        quotesListData = quotesList,
+        finalDiscount = discount,
+        selectedQuoteId = quoteId,
+        selectedPayment = payment,
+        currentTabContent = tabContent
+      } = props;
       setButtonLoading(type);
-
+      console.log("tabContent", tabContent)
       const mongoReponse = await SaveQuoteToMongoDb(
-        companyName,
-        companySales,
-        shipTo,
-        quotesList,
-        discount,
+        company,
+        shipToAddress,
+        quotesListData,
+        finalDiscount,
         type,
-        quoteId,
-        payment
+        selectedQuoteId,
+        selectedPayment
       );
       if (!mongoReponse) {
         // error when save data to mongo
@@ -79,26 +86,28 @@ const QuotesForm = (props) => {
       }
 
       if (type === "draft") {
+        const draftMessage = type === currentTabContent.status ? "Quote updated!!!" : "Quote saved as draft!!!"
         toastUp.handleStatus("success");
-        toastUp.handleMessage("Quote saved as draft!!!");
+        toastUp.handleMessage(draftMessage);
         reqQuotesData(0, 50, tabIndex);
         setButtonLoading(false);
         return;
       }
 
+      const defaultContact = company.contact.find((itm) => itm.default);
       const companyBill = {
-        name: companyName,
-        contact: companyContact,
-        location: location,
+        name: company.name,
+        contact: defaultContact,
+        location: shipToAddress,
       };
 
       const shopifyResponse = await SyncQuoteToShopify(
-        quoteId,
-        quotesList,
+        selectedQuoteId,
+        quotesListData,
         companyBill,
-        discount,
-        payment,
-        tabContent.draftOrderId
+        finalDiscount,
+        selectedPayment,
+        currentTabContent.draftOrderId
       );
 
       if (
@@ -132,7 +141,7 @@ const QuotesForm = (props) => {
       };
 
       const updateQuoteAtMongoRes = await UpdateOrderIdQuoteToMongoDb(
-        quoteId,
+        selectedQuoteId,
         draftOrderId,
         checkoutUrl
       );
@@ -158,9 +167,9 @@ const QuotesForm = (props) => {
         email: companyContact.email,
         companyName: companyName,
         orderNumber: draftOrderId.name,
-        poNumber: "#" + quoteId,
+        poNumber: "#" + selectedQuoteId,
         checkoutUrl: checkoutUrl.url,
-        quoteId: quoteId,
+        quoteId: selectedQuoteId,
       };
       const sendInvoiceRes = await SendInvoice(quoteDataInvoice);
       if (!sendInvoiceRes) {
@@ -177,19 +186,8 @@ const QuotesForm = (props) => {
       toastUp.handleMessage("Invoice sent!!!");
     },
 
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [
-      companyContact,
-      companyName,
-      discount,
-      location,
-      quoteId,
-      quotesList,
-      reqQuotesData,
-      shipTo,
-      tabContent.draftOrderId,
-      toastUp,
-    ]
+   
+    [selectedCompany, shipTo, quotesList, discount, quoteId, payment, tabContent, reqQuotesData, toastUp, tabIndex]
   );
 
   const companyQuery = (role) => {
@@ -209,9 +207,9 @@ const QuotesForm = (props) => {
       if (companies.length === 0) {
         const resGetCompanyList = await Promise.resolve(
           GetCompanies({
-            page: page, 
-            postPerPage: rowsPerPage, 
-            query: companyQuery(session.user.detail.role)
+            page: page,
+            postPerPage: rowsPerPage,
+            query: companyQuery(session.user.detail.role),
           })
         );
         if (!resGetCompanyList) {
@@ -232,21 +230,15 @@ const QuotesForm = (props) => {
           const selectedLocation = selectedCompany?.shipTo.find(
             (ship) => ship.locationName === tabContent.company.shipTo
           );
-          const defaultContact = selectedCompany?.contact.find(
-            (contact) => contact.default === true
-          )
+          setSelectedCompany(selectedCompany);
           setShipToList(selectedCompany?.shipTo);
-          setLocation(selectedLocation?.location);
-          setCompanyContact(defaultContact);
-          setCompanySales(selectedCompany?.sales)
+          setShipTo(selectedLocation);
         } else {
           setShipToList([]);
-          setCompanyContact();
-          setLocation();
+          setShipTo();
+          setSelectedCompany();
         }
 
-        setCompanyName(tabContent.company.name);
-        setShipTo(tabContent.company.shipTo);
         setQuotesList(tabContent.quotesList);
         setQuoteId(tabContent._id);
         setDiscount(tabContent.discount);
@@ -352,40 +344,20 @@ const QuotesForm = (props) => {
             <Collapse in={!addNewCompany}>
               <QuoteSelectCompany
                 companies={companies}
-                location={location}
                 shipToList={shipToList}
                 shipTo={shipTo}
-                companyName={companyName}
-                companyContact={companyContact}
-                companySales={companySales}
                 setShipToList={setShipToList}
-                setLocation={setLocation}
                 setShipTo={setShipTo}
-                setCompanyName={setCompanyName}
-                setCompanyContact={setCompanyContact}
-                setCompanySales={setCompanySales}
+                selectedCompany={selectedCompany}
+                setSelectedCompany={setSelectedCompany}
+                handleSubmit={handleSubmit}
               />
             </Collapse>
-            <Collapse in={addNewCompany}>
-              <AddCompany
-                setAddNewCompany={setAddNewCompany}
-                toastUp={toastUp}
-                getSelectedVal={true}
-                setCompanies={setCompanies}
-                setShipToList={setShipToList}
-                setLocation={setLocation}
-                setShipTo={setShipTo}
-                setCompanyName={setCompanyName}
-                GetCompanies={GetCompanies}
-                setCompanyContact={setCompanyContact}
-                setCompanySales={setCompanySales}
-                session={session}
-              />
-            </Collapse>
+            <Collapse in={addNewCompany}></Collapse>
           </Box>
         </CardContent>
       </Card>
-      <Collapse in={companyName ? true : false}>
+      <Collapse in={selectedCompany ? true : false}>
         <Card sx={{ mb: 2 }}>
           <CardHeader subheader="Product search" title="Add products" />
           <CardContent sx={{ pt: 0, pb: 0 }}>
@@ -394,12 +366,14 @@ const QuotesForm = (props) => {
                 quotesList={quotesList}
                 setQuotesList={setQuotesList}
                 quoteId={quoteId}
+                selectedCompany={selectedCompany}
+                session={session}
               />
             </Box>
           </CardContent>
         </Card>
       </Collapse>
-      <Collapse in={companyName && quotesList.length > 0 ? true : false}>
+      <Collapse in={selectedCompany && quotesList.length > 0 ? true : false}>
         <Card>
           <Grid container justify="flex-end" alignItems="center">
             <Grid xs={6} md={6}>
@@ -475,7 +449,7 @@ const QuotesForm = (props) => {
                 return (
                   <LoadingButton
                     color="primary"
-                    onClick={() => handleSubmit(button.action)}
+                    onClick={() => handleSubmit({type:button.action})}
                     loading={buttonloading === button.action ? true : false}
                     loadingPosition="start"
                     startIcon={<SaveIcon />}
@@ -496,4 +470,4 @@ const QuotesForm = (props) => {
   );
 };
 
-export default QuotesForm
+export default QuotesForm;

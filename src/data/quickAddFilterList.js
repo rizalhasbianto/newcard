@@ -1,9 +1,5 @@
 export const topFilterList = [
     {
-        title:"Collection",
-        id:"collection",
-    },
-    {
         title:"Product Type",
         id:"productType",
     },

@@ -23,7 +23,7 @@ export const addQuote = (props) => {
     quotesList[findProdOnList].qty = totalQty;
     quotesList[findProdOnList].total = (totalQty * quotesList[findProdOnList].variant.price.amount).toFixed(2);
     const updatedQuote = [...quotesList];
-    setQuotesList(updatedQuote);
+    setQuotesList(updatedQuote);0
     return;
   }
 

@@ -19,12 +19,13 @@ import {
   Typography,
 } from "@mui/material";
 import { topFilterList } from "src/data/quickAddFilterList";
+import { Stack } from "@mui/system";
 
 const ProductsSearch = (props) => {
   const {
     selectedFilter,
     setSelectedFilter,
-    selectedVariantFilter,
+    selectedVariantFilter = [],
     catalogID,
     setSelectedVariantFilter,
     filterList,
@@ -201,122 +202,77 @@ const ProductsSearch = (props) => {
           zIndex: "3",
         }}
       >
-        <Grid container spacing={2} alignItems="center">
-          <Grid lg={1} justifyItems="flex-end">
-            <Button
-              startIcon={
-                <SvgIcon fontSize="small">
-                  <MagnifyingGlassIcon />
-                </SvgIcon>
-              }
-              variant="contained"
-              size="small"
-              sx={{ width: "100%" }}
-              onClick={() => setIsVariantFilters(!isVariantFilters)}
-              disabled={selectedFilter.collection ? true : false}
-            >
-              Variant
-            </Button>
-          </Grid>
-          <Grid lg={3}>
-            <TextField
-              id="productName"
-              name="productName"
-              label="Product Name"
-              value={selectedFilter.selectedProdName}
-              fullWidth
-              onChange={handleFilterChange}
-              disabled={
-                selectedVariantFilter.filter((e) => e["variantOption"]).length > 0 ? true : false
-              }
-            />
-          </Grid>
-          {!filterOpt ? (
-            <Skeleton
-              variant="rectangular"
-              width={162}
-              height={55}
-              sx={{ marginTop: "12px", borderRadius: "5px" }}
-            />
-          ) : (
-            topFilterList.map((filter) => {
-              return (
-                filterOpt &&
-                filter.id !== "Catalog" && (
-                  <Grid lg={2} key={filter.id}>
-                    <TextField
-                      id={filter.id}
-                      name={filter.id}
-                      label={filter.title}
-                      value={selectedFilter[filter.id]}
-                      select
-                      fullWidth
-                      onChange={handleFilterChange}
-                      sx={{ maxHeight: 250 }}
-                      disabled={
-                        filter.id === "collection" &&
-                        selectedVariantFilter.filter((e) => e["variantOption"]).length > 0
-                          ? true
-                          : false
-                      }
-                    >
-                      <MenuItem value="">
-                        <em>None</em>
-                      </MenuItem>
-                      {filterOpt[filter.id]?.map((option) => (
-                        <MenuItem
-                          key={option.label}
-                          value={option.label}
-                          disabled={!smartSearch && option.count ? false : true}
-                        >
-                          {option.label}
-                        </MenuItem>
-                      ))}
-                    </TextField>
-                  </Grid>
-                )
-              );
-            })
-          )}
-        </Grid>
+        <Stack direction={"row"} justifyContent={"space-between"} alignItems={"center"}>
+          <Button
+            startIcon={
+              <SvgIcon fontSize="small">
+                <MagnifyingGlassIcon />
+              </SvgIcon>
+            }
+            variant="contained"
+            size="small"
+            onClick={() => setIsVariantFilters(!isVariantFilters)}
+            disabled={selectedFilter.collection ? true : false}
+          >
+            Variant
+          </Button>
+          <TextField
+            id="productName"
+            name="productName"
+            label="Product Name"
+            value={selectedFilter.selectedProdName}
+            onChange={handleFilterChange}
+            disabled={
+              selectedVariantFilter.filter((e) => e["variantOption"]).length > 0 ? true : false
+            }
+            sx={{ width: "35%" }}
+          />
+          {topFilterList.map((filter, idx) => {
+            if(filter.id !== "Catalog") 
+            return filterOpt ? (
+              <TextField
+                key={idx+1}
+                id={filter.id}
+                name={filter.id}
+                label={filter.title}
+                value={selectedFilter[filter.id]}
+                select
+                onChange={handleFilterChange}
+                sx={{ maxHeight: 250, width: "17%" }}
+                disabled={
+                  filter.id === "collection" &&
+                  selectedVariantFilter.filter((e) => e["variantOption"]).length > 0
+                    ? true
+                    : false
+                }
+              >
+                <MenuItem value="">
+                  <em>None</em>
+                </MenuItem>
+                {filterOpt[filter.id]?.map((option) => (
+                  <MenuItem
+                    key={option.label}
+                    value={option.label}
+                    disabled={!smartSearch && option.count ? false : true}
+                  >
+                    {option.label}
+                  </MenuItem>
+                ))}
+              </TextField>
+            ) : (
+              <Skeleton
+                variant="rectangular"
+                width={162}
+                height={55}
+                sx={{ borderRadius: "5px" }}
+                key={idx+1}
+              />
+            );
+          })}
+        </Stack>
         <Collapse in={isVariantFilters}>
           <Box sx={{ display: "block", overflow: "auto" }}>
             <Box sx={{ display: "block", width: "max-content" }}>
-              {session?.user.detail.role !== "customer" &&
-                filterOpt?.Catalog?.length > 0 &&
-                !quoteCompanyName && (
-                  <FormControl sx={{ m: 3 }} component="fieldset" variant="standard">
-                    <FormLabel component="legend">Catalog</FormLabel>
-                    <FormGroup
-                      sx={{
-                        display: "block",
-                        maxHeight: "300px",
-                        maxWidth: "200px",
-                        overflow: "auto",
-                      }}
-                    >
-                      {filterOpt?.Catalog?.map((itm, idx) => {
-                        return (
-                          <FormControlLabel
-                            control={
-                              <Checkbox
-                                onChange={handleCatalogFilterChange}
-                                name={itm.id}
-                                disabled={itm.count > 0 ? false : true}
-                              />
-                            }
-                            label={`${itm.label} (${itm.count})`}
-                            sx={{
-                              display: "block",
-                              width: "max-content",
-                            }}
-                            key={idx + 1}
-                          />
-                        );
-                      })}
-                    </FormGroup>
-                  </FormControl>
-                )}
               {variantFilterOpt &&
                 variantFilterOpt.map((variant, idx) => {
                   if (

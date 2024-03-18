@@ -36,11 +36,9 @@ const Page = () => {
   const handleChange = useCallback(
     (event, newValue) => {
       setLoading(true);
-      setTimeout(() => {
         setTabIndex(newValue);
         setTabContent(quotesData[newValue]);
         setLoading(false);
-      }, 300);
     },
     [quotesData]
   );
@@ -79,7 +77,7 @@ const Page = () => {
       createdBy:{
         name: session.user.detail.name,
         role: session.user.detail.role,
-        company: session.user.detail.company.companyName
+        company: session.user.detail?.company?.companyName
       },
       createdAt:utcToZonedTime(new Date(), "America/Los_Angeles")
     });
@@ -108,7 +106,7 @@ const Page = () => {
       return () => window.removeEventListener("scroll", onScroll);
     }
   }, []);
-
+console.log("quotesData", quotesData)
   return (
     <>
       <Head>

@@ -51,7 +51,7 @@ const Page = () => {
     catalogId,
     cursor: cursor,
   });
-console.log("product", product)
+
   const {
     data: shopifyCatalog,
     isLoading: shopifyCatalogLoading,

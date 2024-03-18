@@ -4,7 +4,7 @@ export default async function shopify(req, res) {
   const bodyObject = req.body;
 
   const query = ` 
-  mutation {
+    mutation {
       companyCreate (
           input: {
               company: {
@@ -73,26 +73,53 @@ export default async function shopify(req, res) {
               message
           }
       }
-  }
+    }
 `;
 
   const resCreateCompany = await adminAPi(query);
   if (resCreateCompany.data.companyCreate.userErrors.length === 0) {
-    console.log("resCreateCompany.data.companyCreate.company.id", resCreateCompany.data.companyCreate.company.id)
-    const searchTerm = `query:"company_id:${resCreateCompany.data.companyCreate.company.id.replace("gid://shopify/Company/", "")}"`;
+    const searchTerm = `query:"company_id:${resCreateCompany.data.companyCreate.company.id.replace(
+      "gid://shopify/Company/",
+      ""
+    )}"`;
     const query = `{
-    companyLocations(first:1, ${searchTerm}) {
+      companyLocations(first:1, ${searchTerm}) {
           edges {
             node {
                 id
             }
           }
-        }
-      }`;
+        } 
+      }
+    `;
 
     const getCompanyLocation = await adminAPi(query);
-    console.log("getCompanyLocation.data.companyLocations", getCompanyLocation.data.companyLocations)
-    resCreateCompany.data.companyCreate.company.locationID = getCompanyLocation.data.companyLocations.edges[0].node.id
+    resCreateCompany.data.companyCreate.company.locationID =
+      getCompanyLocation.data.companyLocations.edges[0].node.id;
+    const locationIDs = JSON.stringify([getCompanyLocation.data.companyLocations.edges[0].node.id]);
+    const queryCatalog = bodyObject.catalog.map(
+      (catalog) => `
+      catalog_${catalog}: catalogContextUpdate (
+        catalogId:"gid://shopify/CompanyLocationCatalog/${catalog}"
+        contextsToAdd: {
+          companyLocationIds: ${locationIDs}
+        }
+      ) {
+          catalog {
+              id
+          }
+          userErrors {
+              field
+              message
+          }
+      }`
+    );
+    const assignCompanyToCatalog = ` 
+      mutation {
+          ${queryCatalog}
+      }
+    `;
+    await adminAPi(assignCompanyToCatalog);
   }
   res.json({ status: 200, data: resCreateCompany.data.companyCreate });
 }

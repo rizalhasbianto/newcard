@@ -48,6 +48,7 @@ const CatalogSelectedProduct = (props) => {
   } = props;
   const modalPopUp = usePopover();
   const priceList = shopifyCatalog.priceList;
+  
   const handlePageChange = useCallback(
     async (event, value) => {
       if (value > page) {

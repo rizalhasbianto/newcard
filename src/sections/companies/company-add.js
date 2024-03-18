@@ -3,6 +3,9 @@ import { GetUsers } from "src/service/use-mongo";
 import {
   Box,
   TextField,
+  FormLabel,
+  FormControlLabel,
+  FormHelperText,
   Checkbox,
   Divider,
   MenuItem,
@@ -11,6 +14,7 @@ import {
   CardActions,
   Collapse,
   Stack,
+  Typography,
 } from "@mui/material";
 import LoadingButton from "@mui/lab/LoadingButton";
 import CancelIcon from "@mui/icons-material/Cancel";
@@ -29,10 +33,11 @@ import {
   CheckUserEmail,
   RegisterUser,
   InviteUser,
-  AddNewUserToCompanyMongo
+  AddNewUserToCompanyMongo,
+  GetCatalogSwr,
 } from "src/service/use-mongo";
 
-import { CreateCompanyShopify } from "src/service/use-shopify";
+import { CreateCompanyShopify, GetShopifyCatalogs } from "src/service/use-shopify";
 
 const AddCompany = (props) => {
   const {
@@ -61,7 +66,7 @@ const AddCompany = (props) => {
       name: st.abbreviation,
     };
   });
- 
+
   const formik = useFormik({
     initialValues: {
       companyName: "",
@@ -83,6 +88,7 @@ const AddCompany = (props) => {
       contactEmail: "",
       contactPhone: "",
       sales: "",
+      catalog: [],
       submit: null,
     },
     validationSchema: Yup.object({
@@ -94,24 +100,24 @@ const AddCompany = (props) => {
       cityLocation: Yup.string().max(255).required("This field is required"),
       postalLocation: Yup.number().required("This field is required"),
       companyShippingName: Yup.string().when("useAsShipping", {
-        is:"no",
-        then:() => Yup.string().max(255).required("This field is required")
+        is: "no",
+        then: () => Yup.string().max(255).required("This field is required"),
       }),
       stateNameShipping: Yup.object().when("useAsShipping", {
-        is:"no",
-        then:() => Yup.object().required("This field is required")
+        is: "no",
+        then: () => Yup.object().required("This field is required"),
       }),
       addressShipping: Yup.string().when("useAsShipping", {
-        is:"no",
-        then:() => Yup.string().max(1000).required("This field is required")
+        is: "no",
+        then: () => Yup.string().max(1000).required("This field is required"),
       }),
       cityShipping: Yup.string().when("useAsShipping", {
-        is:"no",
-        then:() => Yup.string().max(255).required("This field is required")
+        is: "no",
+        then: () => Yup.string().max(255).required("This field is required"),
       }),
       postalShipping: Yup.string().when("useAsShipping", {
-        is:"no",
-        then:() => Yup.number().required("This field is required")
+        is: "no",
+        then: () => Yup.number().required("This field is required"),
       }),
       contactFirstName: Yup.string().max(255).required("This field is required"),
       contactLastName: Yup.string().max(255).required("This field is required"),
@@ -120,12 +126,13 @@ const AddCompany = (props) => {
         .max(255)
         .required("Email is required"),
       contactPhone: Yup.string()
-      .matches(phoneRegExp, "Phone number is not valid")
-      .required("This field is required"),
+        .matches(phoneRegExp, "Phone number is not valid")
+        .required("This field is required"),
       sales: Yup.object().required("This field is required"),
+      catalog: Yup.array().min(1, "This field is required"),
     }),
     onSubmit: async (values, helpers) => {
-      console.log("save run", values)
+      console.log("save run", values);
       setLoadSave(true);
       if (file) {
         values.companyPhoto = file.base64File;
@@ -169,7 +176,6 @@ const AddCompany = (props) => {
           setLoadSave(false);
           return
         } else {
-
           shopifyCompanyId = resCreateCompany.data.company.id.replace("gid://shopify/Company/","")
           shopifyCompanyLocationId = resCreateCompany.data.company.locationID.replace("gid://shopify/CompanyLocation/","")
           shopifyCustomerId = resCreateCompany.data.company.mainContact.customer.id.replace("gid://shopify/Customer/","")
@@ -213,9 +219,12 @@ const AddCompany = (props) => {
         }
       }
 
+      mutate()
       toastUp.handleStatus("success");
       toastUp.handleMessage("New Company added, user has been invited!");
       setLoadSave(false);
+      setAddNewCompany(false)
+      formik.resetForm()
     },
   });
 
@@ -251,7 +260,16 @@ const AddCompany = (props) => {
   const page = 0;
   const postPerPage = 50;
   const query = { role: "sales" };
-  const { data: users, isLoading } = GetUsers({page, postPerPage, query});
+  const { data: users, isLoading } = GetUsers({ page, postPerPage, query });
+  const {
+    data: mongoCatalog,
+    isLoading: mongoLoading,
+    isError: mongoError,
+    mutate: mongoCatalogmutate,
+  } = GetCatalogSwr({
+    page: 0,
+    postPerPage: 50,
+  });
 
   return (
     <form noValidate onSubmit={formik.handleSubmit}>
@@ -344,16 +362,16 @@ const AddCompany = (props) => {
         // Company Address
       }
       <Stack
-      sx={{
-        marginBottom: "30px",
-      }}
+        sx={{
+          marginBottom: "30px",
+        }}
       >
         <Grid container spacing={2}>
           <Grid xs={12} md={12}>
             <Divider textAlign="left">Company Address</Divider>
           </Grid>
           <Grid xs={12} md={4}>
-          <TextField
+            <TextField
               id="use-as-shipping"
               name="useAsShipping"
               label="Use as shipping address"
@@ -362,7 +380,7 @@ const AddCompany = (props) => {
               select
               fullWidth
               required
-              onChange={(e) => formik.setFieldValue( "useAsShipping",e.target.value )}
+              onChange={(e) => formik.setFieldValue("useAsShipping", e.target.value)}
             >
               <MenuItem value="yes">
                 <em>Yes</em>
@@ -467,123 +485,121 @@ const AddCompany = (props) => {
         // Company Shipping
       }
       <Collapse in={formik.values.useAsShipping === "yes" ? false : true}>
-      <Stack sx={{
-          marginBottom: "30px",
-        }}>
-        <Grid container spacing={2}>
-          <Grid xs={12} md={12}>
-            <Divider textAlign="left">Shipping</Divider>
+        <Stack
+          sx={{
+            marginBottom: "30px",
+          }}
+        >
+          <Grid container spacing={2}>
+            <Grid xs={12} md={12}>
+              <Divider textAlign="left">Shipping</Divider>
+            </Grid>
+            <Grid xs={12} md={4}>
+              <TextField
+                id="company-shipping-location"
+                name="companyShippingName"
+                label="Shipping Location Name"
+                variant="outlined"
+                fullWidth
+                onBlur={formik.handleBlur}
+                onChange={formik.handleChange}
+                value={formik.values.companyShippingName}
+                error={!!(formik.touched.companyShippingName && formik.errors.companyShippingName)}
+                helperText={formik.touched.companyShippingName && formik.errors.companyShippingName}
+              />
+            </Grid>
+            <Grid xs={12} md={6}>
+              <TextField
+                id="address-location"
+                name="addressShipping"
+                label="Address"
+                variant="outlined"
+                fullWidth
+                onBlur={formik.handleBlur}
+                onChange={formik.handleChange}
+                value={formik.values.addressShipping}
+                error={!!(formik.touched.addressShipping && formik.errors.addressShipping)}
+                helperText={formik.touched.addressShipping && formik.errors.addressShipping}
+              />
+            </Grid>
+            <Grid xs={12} md={2}>
+              <TextField
+                id="country-name-Shipping"
+                name="countryName"
+                label="Country"
+                variant="outlined"
+                value={formik.values.countryName}
+                select
+                fullWidth
+                required
+                onChange={(e) => formik.setValues({ countryName: e.target.value })}
+              >
+                <MenuItem value="USA">
+                  <em>USA</em>
+                </MenuItem>
+              </TextField>
+            </Grid>
+            <Grid xs={12} md={3}>
+              <Autocomplete
+                disablePortal
+                id="state-Shipping"
+                name="stateNameShipping"
+                options={newUsaState}
+                fullWidth
+                isOptionEqualToValue={() => {
+                  return true;
+                }}
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    label="State"
+                    variant="outlined"
+                    error={!!(formik.touched.stateNameShipping && formik.errors.stateNameShipping)}
+                    helperText={formik.touched.stateNameShipping && formik.errors.stateNameShipping}
+                  />
+                )}
+                onChange={(event, newValue) => {
+                  formik.setFieldValue("stateNameShipping", newValue);
+                }}
+                onBlur={() => formik.setTouched({ ["stateNameShipping"]: true })}
+                value={formik.values.stateNameShipping}
+              />
+            </Grid>
+            <Grid xs={12} md={3}>
+              <TextField
+                id="city-Shipping"
+                name="cityShipping"
+                label="City"
+                variant="outlined"
+                fullWidth
+                onBlur={formik.handleBlur}
+                onChange={formik.handleChange}
+                value={formik.values.cityShipping}
+                error={!!(formik.touched.cityShipping && formik.errors.cityShipping)}
+                helperText={formik.touched.cityShipping && formik.errors.cityShipping}
+              />
+            </Grid>
+            <Grid xs={12} md={3}>
+              <TextField
+                id="postal-Shipping"
+                name="postalShipping"
+                label="Postal"
+                variant="outlined"
+                fullWidth
+                onBlur={formik.handleBlur}
+                onChange={formik.handleChange}
+                value={formik.values.postalShipping}
+                error={!!(formik.touched.postalShipping && formik.errors.postalShipping)}
+                helperText={formik.touched.postalShipping && formik.errors.postalShipping}
+              />
+            </Grid>
           </Grid>
-          <Grid xs={12} md={4}>
-            <TextField
-              id="company-shipping-location"
-              name="companyShippingName"
-              label="Shipping Location Name"
-              variant="outlined"
-              fullWidth
-              onBlur={formik.handleBlur}
-              onChange={formik.handleChange}
-              value={formik.values.companyShippingName}
-              error={
-                !!(formik.touched.companyShippingName && formik.errors.companyShippingName)
-              }
-              helperText={
-                formik.touched.companyShippingName && formik.errors.companyShippingName
-              }
-            />
-          </Grid>
-          <Grid xs={12} md={6}>
-            <TextField
-              id="address-location"
-              name="addressShipping"
-              label="Address"
-              variant="outlined"
-              fullWidth
-              onBlur={formik.handleBlur}
-              onChange={formik.handleChange}
-              value={formik.values.addressShipping}
-              error={!!(formik.touched.addressShipping && formik.errors.addressShipping)}
-              helperText={formik.touched.addressShipping && formik.errors.addressShipping}
-            />
-          </Grid>
-          <Grid xs={12} md={2}>
-            <TextField
-              id="country-name-Shipping"
-              name="countryName"
-              label="Country"
-              variant="outlined"
-              value={formik.values.countryName}
-              select
-              fullWidth
-              required
-              onChange={(e) => formik.setValues({ countryName: e.target.value })}
-            >
-              <MenuItem value="USA">
-                <em>USA</em>
-              </MenuItem>
-            </TextField>
-          </Grid>
-          <Grid xs={12} md={3}>
-            <Autocomplete
-              disablePortal
-              id="state-Shipping"
-              name="stateNameShipping"
-              options={newUsaState}
-              fullWidth
-              isOptionEqualToValue={() => {
-                return true;
-              }}
-              renderInput={(params) => (
-                <TextField
-                  {...params}
-                  label="State"
-                  variant="outlined"
-                  error={!!(formik.touched.stateNameShipping && formik.errors.stateNameShipping)}
-                  helperText={formik.touched.stateNameShipping && formik.errors.stateNameShipping}
-                />
-              )}
-              onChange={(event, newValue) => {
-                formik.setFieldValue("stateNameShipping", newValue);
-              }}
-              onBlur={() => formik.setTouched({ ["stateNameShipping"]: true })}
-              value={formik.values.stateNameShipping}
-            />
-          </Grid>
-          <Grid xs={12} md={3}>
-            <TextField
-              id="city-Shipping"
-              name="cityShipping"
-              label="City"
-              variant="outlined"
-              fullWidth
-              onBlur={formik.handleBlur}
-              onChange={formik.handleChange}
-              value={formik.values.cityShipping}
-              error={!!(formik.touched.cityShipping && formik.errors.cityShipping)}
-              helperText={formik.touched.cityShipping && formik.errors.cityShipping}
-            />
-          </Grid>
-          <Grid xs={12} md={3}>
-            <TextField
-              id="postal-Shipping"
-              name="postalShipping"
-              label="Postal"
-              variant="outlined"
-              fullWidth
-              onBlur={formik.handleBlur}
-              onChange={formik.handleChange}
-              value={formik.values.postalShipping}
-              error={!!(formik.touched.postalShipping && formik.errors.postalShipping)}
-              helperText={formik.touched.postalShipping && formik.errors.postalShipping}
-            />
-          </Grid>
-        </Grid>
-      </Stack>
+        </Stack>
       </Collapse>
       {
         // Contact
       }
-      <Stack >
+      <Stack>
         <Grid container spacing={2}>
           <Grid xs={12} md={12}>
             <Divider textAlign="left">Contact</Divider>
@@ -649,7 +665,7 @@ const AddCompany = (props) => {
           {session && session.user.detail.role === "admin" && (
             <>
               <Grid xs={12} md={12}>
-                <Divider textAlign="left">Sales</Divider>
+                <Divider textAlign="left">B2B</Divider>
               </Grid>
               <Grid xs={12} md={type === "register" ? 6 : 3}>
                 <TextField
@@ -678,9 +694,31 @@ const AddCompany = (props) => {
                     ))}
                 </TextField>
               </Grid>
-              <Grid xs={12} md={12}></Grid>
             </>
           )}
+          <Grid xs={12} md={4}>
+            <Stack direction={"row"} alignItems={"end"}>
+              <FormLabel error={!!(formik.touched.catalog && formik.errors.catalog)} sx={{ mr: 1 }}>
+                Catalogs
+              </FormLabel>
+              {formik.errors.catalog && <FormHelperText>At least choose 1</FormHelperText>}
+            </Stack>
+            {mongoCatalog?.data.map((catalog, idx) => (
+              <FormControlLabel
+                key={idx + 1}
+                control={
+                  <Checkbox
+                    checked={formik.values.catalog.includes(catalog.shopifyCatalogID)}
+                    value={catalog.shopifyCatalogID}
+                    onChange={formik.handleChange}
+                    name="catalog"
+                  />
+                }
+                label={catalog.shopifyCatalogName}
+              />
+            ))}
+          </Grid>
+          <Grid xs={12} md={12}></Grid>
           <CardActions sx={{ justifyContent: "flex-end" }}>
             <LoadingButton
               color="primary"
@@ -708,6 +746,6 @@ const AddCompany = (props) => {
       </Stack>
     </form>
   );
-}
+};
 
-export default AddCompany
+export default AddCompany;

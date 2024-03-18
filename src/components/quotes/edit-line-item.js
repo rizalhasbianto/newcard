@@ -32,7 +32,6 @@ export default function EditProductItem(props) {
     const [selectedOptions, setSelectedOptions] = useState(quote.variant.selectedOptions.reduce((acc, curr) => (acc[curr.name] = curr.value, acc), {}));
     const [selectedQuantity, setSelectedQuantity] = useState(quote.qty);
     const [total, setTotal] = useState(quote.total);
-    console.log("selectedOptions", selectedOptions)
     const handleChangeOptions = useCallback(
         (event, newSingleOption) => {
             const getSelectedOption = newSingleOption.split(":")
@@ -137,7 +136,7 @@ export default function EditProductItem(props) {
                     value={selectedQuantity}
                     onChange={(event) => {
                         setSelectedQuantity(event.target.value);
-                        setTotal((event.target.value * quote.variant.price.amount).toFixed(2))
+                        setTotal(100)
                     }}
                 />
             </TableCell>
