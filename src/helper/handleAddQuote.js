@@ -6,6 +6,7 @@ export const addQuote = (props) => {
     selectedVariant,
     selectedQuantity,
     modalPopUp,
+    handleSubmit
   } = props;
 
   if (selectedVariant.currentlyNotInStock) {
@@ -21,19 +22,20 @@ export const addQuote = (props) => {
   if (findProdOnList >= 0) {
     const totalQty = parseInt(quotesList[findProdOnList].qty) + parseInt(selectedQuantity);
     quotesList[findProdOnList].qty = totalQty;
-    quotesList[findProdOnList].total = (totalQty * quotesList[findProdOnList].variant.price.amount).toFixed(2);
     const updatedQuote = [...quotesList];
-    setQuotesList(updatedQuote);0
+    setQuotesList(updatedQuote);
+    handleSubmit({quotesListData:updatedQuote})
     return;
   }
 
   const currentQuote = [...quotesList];
   const newQuote = {
+    productID: selectedProduct.node.id,
     productName: selectedProduct.node.title,
     variant: selectedVariant,
     qty: selectedQuantity,
-    total: (selectedQuantity * selectedVariant.price.amount).toFixed(2),
   };
   currentQuote.push(newQuote);
   setQuotesList(currentQuote);
+  handleSubmit({quotesListData:currentQuote})
 };

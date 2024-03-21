@@ -21,24 +21,22 @@ import { Layout as DashboardLayout } from "src/layouts/dashboard/layout";
 import QuotesForm from "src/sections/quotes/quote-form";
 import CardLoading from "src/components/grid-loading";
 
-
-
 const Page = () => {
   const [quotesData, setQuotesData] = useState([]);
   const [tabIndex, setTabIndex] = useState(0);
   const [loading, setLoading] = useState(false);
   const [isDataLoading, setDataLoading] = useState(false);
   const [tabContent, setTabContent] = useState();
-  const [offset, setOffset] = useState(0);
+  const [offset, setOffset] = useState(false);
   const { data: session } = useSession();
   const slideRef = useRef(null);
 
   const handleChange = useCallback(
     (event, newValue) => {
       setLoading(true);
-        setTabIndex(newValue);
-        setTabContent(quotesData[newValue]);
-        setLoading(false);
+      setTabIndex(newValue);
+      setTabContent(quotesData[newValue]);
+      setLoading(false);
     },
     [quotesData]
   );
@@ -47,7 +45,7 @@ const Page = () => {
     const quoteQuery = {
       $or: [{ status: "draft" }, { status: "new" }],
       "createdBy.name": session.user.detail.name,
-      }
+    };
     const sort = "DSC";
     const resQuotes = await GetQuotesData(page, rowsPerPage, quoteQuery, sort);
 
@@ -74,12 +72,12 @@ const Page = () => {
   const handleAddQuote = useCallback(async () => {
     setLoading(true);
     const resCreateQuote = await AddNewQuoteToMongoDb({
-      createdBy:{
+      createdBy: {
         name: session.user.detail.name,
         role: session.user.detail.role,
-        company: session.user.detail?.company?.companyName
+        company: session.user.detail?.company?.companyName,
       },
-      createdAt:utcToZonedTime(new Date(), "America/Los_Angeles")
+      createdAt: utcToZonedTime(new Date(), "America/Los_Angeles"),
     });
     if (!resCreateQuote) {
       setLoading(false);
@@ -100,20 +98,26 @@ const Page = () => {
 
   useEffect(() => {
     if (typeof window !== "undefined") {
-      const onScroll = () => setOffset(window.scrollY);
+      const onScroll = () => {
+        if (window.scrollY > 100) {
+          setOffset(true);
+        } else {
+          setOffset(false);
+        }
+      };
       window.removeEventListener("scroll", onScroll);
       window.addEventListener("scroll", onScroll, { passive: true });
       return () => window.removeEventListener("scroll", onScroll);
     }
   }, []);
-console.log("quotesData", quotesData)
+  console.log("quotesData", quotesData);
   return (
     <>
       <Head>
         <title>Add new quote | Skratch</title>
       </Head>
       <Box
-        component="main" 
+        component="main"
         sx={{
           flexGrow: 1,
           py: 8,
@@ -151,9 +155,9 @@ console.log("quotesData", quotesData)
                     sx={{
                       position: "sticky",
                       top: "0px",
-                      zIndex: "3",
+                      zIndex: "4",
                     }}
-                    className={offset > 100 ? "onScroll" : ""}
+                    className={offset ? "onScroll" : ""}
                   >
                     <LoadingButton
                       color="primary"
@@ -190,12 +194,11 @@ console.log("quotesData", quotesData)
                                   <Typography variant="subtitle1">
                                     {quote.company.name || "New Quote"}
                                   </Typography>
-                                  {
-                                    offset < 70 &&
+                                  {!offset && (
                                     <Typography variant="subtitle1">
-                                    #{quote._id.slice(-4)}
-                                  </Typography>
-                                  }
+                                      #{quote._id.slice(-4)}
+                                    </Typography>
+                                  )}
                                 </Grid>
                               </Grid>
                             }
@@ -208,18 +211,18 @@ console.log("quotesData", quotesData)
                     </Tabs>
                   </Stack>
                   <Stack>
-                  <Grid container spacing={3}>
-                    <Grid xs={12} md={12} lg={12}>
-                      {tabContent && (
-                        <QuotesForm
-                          tabContent={tabContent}
-                          reqQuotesData={reqQuotesData}
-                          tabIndex={tabIndex}
-                          session={session}
-                        />
-                      )}
+                    <Grid container spacing={3}>
+                      <Grid xs={12} md={12} lg={12}>
+                        {tabContent && (
+                          <QuotesForm
+                            tabContent={tabContent}
+                            reqQuotesData={reqQuotesData}
+                            tabIndex={tabIndex}
+                            session={session}
+                          />
+                        )}
+                      </Grid>
                     </Grid>
-                  </Grid>
                   </Stack>
                 </Stack>
               )}

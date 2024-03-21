@@ -7,6 +7,8 @@ import {
   Unstable_Grid2 as Grid,
 } from "@mui/material";
 
+import { GetCompanyProductsPrice } from "src/service/use-shopify";
+
 export default function QuoteSelectCompany(props) {
   const {
     companies,
@@ -16,14 +18,16 @@ export default function QuoteSelectCompany(props) {
     setShipTo,
     selectedCompany,
     setSelectedCompany,
-    handleSubmit
+    quotesList,
+    handleSubmit,
   } = props;
 
-  const selectedContact = selectedCompany?.contact.find((contact) => contact.default)
+  const selectedContact = selectedCompany?.contact.find((contact) => contact.default);
+  
   const handleChange = useCallback(
-    (event, data) => {
-      let selectedCompany
-      let selectedShipping
+    async (event, data) => {
+      let selectedCompany;
+      let selectedShipping;
       if (event.target.name === "companyName") {
         if (!event.target.value) {
           setShipToList([]);
@@ -32,18 +36,47 @@ export default function QuoteSelectCompany(props) {
           return;
         }
         selectedCompany = companies.find((company) => company.name === event.target.value);
-        selectedShipping = selectedCompany.shipTo.find((ship) => ship.default)
+        selectedShipping = selectedCompany.shipTo.find((ship) => ship.default);
         setShipTo(selectedShipping);
         setShipToList(selectedCompany.shipTo);
-        setSelectedCompany(selectedCompany)
+        setSelectedCompany(selectedCompany);
+        if (quotesList.length > 0) {
+          const currentCompanyPrice =
+            quotesList[0].variant.companyPrice.node[
+              `company_${selectedCompany.shopifyCompanyLocationId}`
+            ];
+          if (!currentCompanyPrice) {
+            await getNewCompanyPrice(selectedCompany)
+          }
+        }
       } else {
         selectedShipping = data.find((ship) => ship.locationName === event.target.value);
         setShipTo(selectedShipping);
       }
-      handleSubmit({company:selectedCompany, shipToAddress: selectedShipping})
+
+      handleSubmit({ company: selectedCompany, shipToAddress: selectedShipping });
     },
-    [companies, handleSubmit, setSelectedCompany, setShipTo, setShipToList]
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [companies, handleSubmit, quotesList, setSelectedCompany, setShipTo, setShipToList]
   );
+
+  const getNewCompanyPrice = async (selectedCompany) => {
+    const reStructureQuote = quotesList.map((itm) => itm.productID);
+    const newCompanyPrices = await GetCompanyProductsPrice({
+      prodList: reStructureQuote,
+      selectedCompany: [selectedCompany.shopifyCompanyLocationId],
+    });
+    quotesList.forEach((itm) => {
+      const productID = itm.productID.replace("gid://shopify/Product/", "");
+      const newVariantPrice = newCompanyPrices.newData.data[`prod_${productID}`].variants.edges;
+      const variantData = newVariantPrice.find((item) => item.node.id === itm.variant.id);
+      itm.variant.companyPrice.node = {
+        ...itm.variant.companyPrice.node,
+        [`company_${selectedCompany.shopifyCompanyLocationId}`]:
+          variantData.node[`company_${selectedCompany.shopifyCompanyLocationId}`],
+      };
+    });
+  };
 
   return (
     <>
@@ -88,7 +121,7 @@ export default function QuoteSelectCompany(props) {
               </MenuItem>
             )}
             {shipToList.map((option, idx) => (
-              <MenuItem key={idx+1} value={option.locationName}>
+              <MenuItem key={idx + 1} value={option.locationName}>
                 {option.locationName}
               </MenuItem>
             ))}

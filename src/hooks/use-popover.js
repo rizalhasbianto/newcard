@@ -32,13 +32,14 @@ export function usePopover() {
     setAgree(agree)
   }, []);
 
-  const handleGetProduct = useCallback( async(productId, index) => {
+  const handleGetProduct = useCallback( async(productId, shopifyCompanyLocationID, index) => {
     // eslint-disable-next-line react-hooks/rules-of-hooks
     const res = await useDataService(
-      "/api/shopify/get-single-product",
+      "/api/product/get-single-product",
       "POST",
       {
         id: productId,
+        shopifyCompanyLocationID: shopifyCompanyLocationID
       }
     )
     

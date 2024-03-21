@@ -25,6 +25,7 @@ export const SelectProducts = ({
   quoteId,
   selectedCompany,
   session,
+  handleSubmit
 }) => {
   const [searchResultStatus, setSearchResultStatus] = useState("Start type for search!");
   const [selectedProduct, setSelectedProduct] = useState(null);
@@ -177,6 +178,7 @@ export const SelectProducts = ({
             quotesList={quotesList}
             setQuotesList={setQuotesList}
             selectedProduct={selectedProduct}
+            handleSubmit={handleSubmit}
           />
         )}
       </Collapse>
@@ -187,6 +189,7 @@ export const SelectProducts = ({
             setQuotesList={setQuotesList}
             selectedCompany={selectedCompany}
             session={session}
+            handleSubmit={handleSubmit}
           />
         )}
       </Collapse>

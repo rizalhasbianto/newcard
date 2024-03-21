@@ -51,7 +51,7 @@ const QuotesForm = (props) => {
   const [payment, setPayment] = useState(tabContent.payment);
   const [newCollection, setNewCollection] = useState(false);
   const [collectionName, setCollectionName] = useState();
-  const [total, setTotal] = useState(10);
+  const [total, setTotal] = useState();
   const toastUp = useToast();
 
   const handleSubmit = useCallback(
@@ -67,7 +67,6 @@ const QuotesForm = (props) => {
         currentTabContent = tabContent
       } = props;
       setButtonLoading(type);
-      console.log("tabContent", tabContent)
       const mongoReponse = await SaveQuoteToMongoDb(
         company,
         shipToAddress,
@@ -268,7 +267,7 @@ const QuotesForm = (props) => {
   useEffect(() => {
     GetCompaniesData(0, 50);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [tabContent]);
+  }, [tabContent]);quotesList
 
   return (
     <>
@@ -350,6 +349,8 @@ const QuotesForm = (props) => {
                 setShipTo={setShipTo}
                 selectedCompany={selectedCompany}
                 setSelectedCompany={setSelectedCompany}
+                quotesList={quotesList}
+                setQuotesList={setQuotesList}
                 handleSubmit={handleSubmit}
               />
             </Collapse>
@@ -368,6 +369,7 @@ const QuotesForm = (props) => {
                 quoteId={quoteId}
                 selectedCompany={selectedCompany}
                 session={session}
+                handleSubmit={handleSubmit}
               />
             </Box>
           </CardContent>
@@ -378,7 +380,7 @@ const QuotesForm = (props) => {
           <Grid container justify="flex-end" alignItems="center">
             <Grid xs={6} md={6}>
               <CardHeader
-                subheader={`${quotesList.length} item's (${total.countQty}Qty) at $${total.subTotal}`}
+                subheader={`${quotesList.length} item's (${total?.countQty}Qty) at $${total?.subTotal}`}
                 title="Selected Products"
               />
             </Grid>
@@ -439,6 +441,7 @@ const QuotesForm = (props) => {
               setPayment={setPayment}
               total={total}
               setTotal={setTotal}
+              shopifyCompanyLocationID={selectedCompany?.shopifyCompanyLocationId}
             />
           </CardContent>
           <Divider />

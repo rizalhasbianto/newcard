@@ -26,7 +26,7 @@ import DiscountLine from "./quote-discount";
 import PaymentOptions from "./quote-payment";
 
 export default function LineItemQuotes(props) {
-  const { quotesList, setQuotesList, discount, setDiscount, setTotal, payment, setPayment, layout, total } = props;
+  const { quotesList, setQuotesList, discount, setDiscount, setTotal, payment, setPayment, layout, total, shopifyCompanyLocationID } = props;
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [editProductIndex, setEditProductIndex] = useState("");
@@ -34,7 +34,7 @@ export default function LineItemQuotes(props) {
   const modalPopUp = usePopover();
 
   useEffect(() => {
-    const countSubtotal = quotesList.reduce((n, { total }) => n + Number(total), 0).toFixed(2);
+    const countSubtotal = quotesList.reduce((n, { variant, qty }) => n + Number(variant.companyPrice.node[`company_${shopifyCompanyLocationID}`]?.price.amount * qty), 0).toFixed(2);
     const countQty = quotesList.reduce((n, { qty }) => n + Number(qty), 0);
     let discountCalc = 0;
     if (discount) {
@@ -53,7 +53,8 @@ export default function LineItemQuotes(props) {
       total,
       countQty
     });
-  }, [quotesList, discount]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [quotesList, discount, setTotal]);
 
   const handleChangePage = useCallback((event, value) => {
     setPage(value);
@@ -67,7 +68,7 @@ export default function LineItemQuotes(props) {
   const handleOpenProd = useCallback(
     (item) => {
       const productId = item.product.id;
-      modalPopUp.handleGetProduct(productId);
+      modalPopUp.handleGetProduct(productId, shopifyCompanyLocationID);
       modalPopUp.handleOpen();
     },
     [modalPopUp]
@@ -76,7 +77,7 @@ export default function LineItemQuotes(props) {
   const handleEditLineitem = useCallback(
     (item, index) => {
       const productId = item.product.id;
-      modalPopUp.handleGetProduct(productId);
+      modalPopUp.handleGetProduct(productId, shopifyCompanyLocationID);
       setEditProductIndex(index);
     },
     [modalPopUp]
@@ -140,6 +141,7 @@ export default function LineItemQuotes(props) {
                     quotesList={quotesList}
                     setQuotesList={setQuotesList}
                     setEditProductIndex={setEditProductIndex}
+                    shopifyCompanyLocationID={shopifyCompanyLocationID}
                   />
                 ) : (
                   <Lineitem
@@ -149,6 +151,7 @@ export default function LineItemQuotes(props) {
                     handleDeleteProd={handleDeleteProd}
                     index={index}
                     key={index + 1}
+                    shopifyCompanyLocationID={shopifyCompanyLocationID}
                   />
                 );
               })}

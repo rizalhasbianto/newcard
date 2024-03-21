@@ -162,6 +162,15 @@ export const GetProductsShopify = async (selectedFilter, productPerPage, lastCur
   return sendToShopify;
 };
 
+export const GetCompanyProductsPrice = async (props) => {
+  const { prodList, selectedCompany } = props;
+  const prodListParam = JSON.stringify(prodList);
+  const companyParam = JSON.stringify(selectedCompany);
+  const queryUrl = `?selectedCompany=${companyParam}&prodList=${prodListParam}`
+  const productPriceList = await useDataService(`/api/company/get-shopify-company-products-price/${queryUrl}`, "GET")
+  return productPriceList
+}
+
 export const GetProductsMeta = async (inputValue) => {
   let url;
   switch (inputValue) {

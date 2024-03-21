@@ -36,7 +36,7 @@ import PlaylistAddIcon from "@mui/icons-material/PlaylistAdd";
 import PlaylistAddCheckIcon from "@mui/icons-material/PlaylistAddCheck";
 import { Stack } from "@mui/system";
 
-export const QuickAddProducts = ({ quotesList, setQuotesList, selectedCompany, session }) => {
+export const QuickAddProducts = ({ quotesList, setQuotesList, selectedCompany, session, handleSubmit }) => {
   const [selectedFilter, setSelectedFilter] = useState({
     productName: "",
     catalog: "",
@@ -93,6 +93,8 @@ export const QuickAddProducts = ({ quotesList, setQuotesList, selectedCompany, s
       selectedVariant,
       selectedQuantity,
       modalPopUp,
+      catalogCompany,
+      handleSubmit
     });
     setAddQuoteLoading(loadingIdx);
     setTimeout(() => {

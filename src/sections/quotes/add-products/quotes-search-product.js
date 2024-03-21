@@ -9,7 +9,7 @@ import { Box, Button, TextField, Typography, Unstable_Grid2 as Grid } from "@mui
 import { ImageComponent } from "src/components/image";
 
 export const SearchProduct = (props) => {
-  const { quotesList, setQuotesList, selectedProduct } = props;
+  const { quotesList, setQuotesList, selectedProduct, handleSubmit } = props;
   const [selectedVariant, setSelectedVariant] = useState("");
   const [selectedOptions, setSelectedOptions] = useState("");
   const [selectedQuantity, setSelectedQuantity] = useState(1);
@@ -116,7 +116,7 @@ export const SearchProduct = (props) => {
                     <Grid xs={12} md={8}>
                       <Button
                         variant="contained"
-                        onClick={() =>
+                        onClick={() => 
                           addQuote({
                             quotesList,
                             setQuotesList,
@@ -124,6 +124,7 @@ export const SearchProduct = (props) => {
                             selectedVariant,
                             selectedQuantity,
                             modalPopUp,
+                            handleSubmit
                           })
                         }
                         disabled={notAvilableOption}
