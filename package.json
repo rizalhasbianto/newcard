@@ -33,15 +33,15 @@
     "formik": "2.2.9",
     "handlebars": "^4.7.8",
     "mongodb": "^5.7.0",
-    "mui-file-input": "^3.0.0",
-    "next": "13.1.6",
-    "next-auth": "^4.22.4",
+    "mui-file-input": "^3.0.2",
+    "next": "^14.2.5",
+    "next-auth": "^4.24.7",
     "nodemailer": "^6.9.5",
     "nprogress": "0.2.0",
     "prop-types": "15.8.1",
-    "react": "18.2.0",
+    "react": "^18.3.1",
     "react-apexcharts": "1.4.0",
-    "react-dom": "18.2.0",
+    "react-dom": "^18.3.1",
     "react-json-to-csv": "^1.2.0",
     "simplebar-react": "^3.2.1",
     "socket.io": "^4.7.2",
@@ -56,6 +56,6 @@
     "@types/react": "18.0.28",
     "@types/react-dom": "18.0.11",
     "eslint": "8.34.0",
-    "eslint-config-next": "13.1.6"
+    "eslint-config-next": "^14.2.5"
   }
 }

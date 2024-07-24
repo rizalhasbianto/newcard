@@ -106,7 +106,7 @@ export default function LineItemQuotes(props) {
     },
     [setDiscount]
   );
-
+console.log("quotesList", quotesList)
   return (
     <Paper sx={{ width: "100%", overflow: "hidden" }}>
       <ProductModal

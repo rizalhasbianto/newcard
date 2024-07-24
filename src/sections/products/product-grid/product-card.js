@@ -137,14 +137,14 @@ const ProductCard = (props) => {
                 </Typography>
                 <Typography variant="body2"> / </Typography>
                 {catalogCompany.map((company, index) => {
-                  const companyPrice = product.node.companyPrice[`company_${company.id}`];
+                  const companyPrice = selectedVariant.companyPrice.node[`company_${company.id}`];
                   return (
                     <Typography
                       variant="body2"
                       key={index + 1}
                       sx={{ fontWeight: 600, textTransform: "capitalize" }}
                     >
-                      ${companyPrice.priceRange.maxVariantPrice.amount}
+                      ${companyPrice.price.amount}
                     </Typography>
                   );
                 })}
@@ -165,14 +165,14 @@ const ProductCard = (props) => {
             catalogCompany &&
             catalogCompany.length > 0 &&
             catalogCompany.map((company, index) => {
-              const companyPrice = product.node.companyPrice[`company_${company.id}`];
+              const companyPrice = selectedVariant.companyPrice.node[`company_${company.id}`];
               return (
                 <Typography
                   variant="body2"
                   key={index + 1}
                   sx={{ fontWeight: 600, textTransform: "capitalize" }}
                 >
-                  {company.name} Price: ${companyPrice.priceRange.maxVariantPrice.amount}
+                  {company.name} Price: ${companyPrice.price.amount}
                 </Typography>
               );
             })}

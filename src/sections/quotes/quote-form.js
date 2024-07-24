@@ -16,7 +16,7 @@ import {
   Typography,
   TextField,
   Stack,
-} from "@mui/material";
+} from "@mui/material"; 
 
 import { SelectProducts } from "./add-products";
 import QuoteSelectCompany from "./quote-select-company";
@@ -34,7 +34,7 @@ import {
   SendInvoice,
   SaveCollectionToMongoDb,
 } from "src/service/use-mongo";
-import { SyncQuoteToShopify } from "src/service/use-shopify";
+import { SyncQuoteToShopify, GetProductVariantsShopify } from "src/service/use-shopify";
 
 const QuotesForm = (props) => {
   const { tabContent, reqQuotesData, tabIndex, session } = props;
@@ -55,7 +55,7 @@ const QuotesForm = (props) => {
   const toastUp = useToast();
 
   const handleSubmit = useCallback(
-    async (props) => {
+    async (props) => { 
       const {
         type = "draft",
         company = selectedCompany,
@@ -202,7 +202,9 @@ const QuotesForm = (props) => {
 
   const GetCompaniesData = useCallback(
     async (page, rowsPerPage) => {
+      console.log("compaies get run", selectedCompany)
       let companyList;
+      let updatedVariantData
       if (companies.length === 0) {
         const resGetCompanyList = await Promise.resolve(
           GetCompanies({
@@ -229,16 +231,36 @@ const QuotesForm = (props) => {
           const selectedLocation = selectedCompany?.shipTo.find(
             (ship) => ship.locationName === tabContent.company.shipTo
           );
+
+          if(tabContent.quotesList && tabContent.quotesList.length > 0) {
+            console.log("tabContent.quotesList", tabContent.quotesList)
+  
+            const variantIDs = tabContent.quotesList.map((itm) => itm.variant.id)
+            console.log("variantIDs", variantIDs)
+            const variantUpdated = await GetProductVariantsShopify({variantIDs, shopifyCompanyLocationID:selectedCompany.shopifyCompanyLocationId})
+            console.log("variantUpdated", variantUpdated)
+            tabContent.quotesList.forEach((itm) => {
+              //const variant = itm.variant
+              const findVariant = variantUpdated.newData.data.nodes.find((variant) => variant.id === itm.variant.id);
+              console.log("findVariant", findVariant)
+              itm.variant.price.amount = findVariant.price
+              itm.variant.currentlyNotInStock = findVariant.inventoryQuantity > 0 ? false : true
+              itm.variant.quantityAvailable = findVariant.inventoryQuantity
+              itm.variant.companyPrice.node[`company_${selectedCompany.shopifyCompanyLocationId}`] = findVariant[`company_${selectedCompany.shopifyCompanyLocationId}`]
+            })
+            console.log("variantUpdated", variantUpdated)
+          }
+
           setSelectedCompany(selectedCompany);
           setShipToList(selectedCompany?.shipTo);
           setShipTo(selectedLocation);
+          setQuotesList(tabContent.quotesList);
         } else {
           setShipToList([]);
           setShipTo();
           setSelectedCompany();
         }
 
-        setQuotesList(tabContent.quotesList);
         setQuoteId(tabContent._id);
         setDiscount(tabContent.discount);
       }
@@ -267,7 +289,7 @@ const QuotesForm = (props) => {
   useEffect(() => {
     GetCompaniesData(0, 50);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [tabContent]);quotesList
+  }, [tabContent]);
 
   return (
     <>

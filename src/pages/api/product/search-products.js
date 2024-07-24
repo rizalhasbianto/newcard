@@ -117,11 +117,10 @@ export default async function getProducts(req, res) {
       }
     `
     );
-    const query = `{
-      ${companyPriceQuery}
-    }`;
-    const resShopify = await adminAPi(query);
 
+    const query = `{${companyPriceQuery}}`;
+    const resShopify = await adminAPi(query);
+      
     resGetData.data.search.edges.forEach((itm) => {
       const prodPrice = resShopify.data[`prod_${itm.node.id.replace("gid://shopify/Product/", "")}`];
       itm.node.variants.edges.forEach((varItm) => {

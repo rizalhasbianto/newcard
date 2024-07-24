@@ -12,12 +12,12 @@ import PencilIcon from "@heroicons/react/24/solid/PencilIcon";
 import TrashIcon from "@heroicons/react/24/solid/TrashIcon";
 import EyeIcon from "@heroicons/react/24/solid/EyeIcon";
 
-export default function QuoteLineItem(props) {
+export default function QuoteLineItem(props) { 
   const { quote, handleOpenProd, handleEditLineitem, handleDeleteProd, index, shopifyCompanyLocationID } = props;
-  const price = quote.variant.companyPrice.node[`company_${shopifyCompanyLocationID}`]?.price.amount
+  const companyPrice = quote.variant.companyPrice.node[`company_${shopifyCompanyLocationID}`]?.price.amount
+  const price = companyPrice ? companyPrice : quote.variant.price.amount
   const totalPerLine = (price * quote.qty).toFixed(2)
-console.log("quote", quote)
-console.log("shopifyCompanyLocationID", shopifyCompanyLocationID)
+
   return (
     <TableRow 
         hover 

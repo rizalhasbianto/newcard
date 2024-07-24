@@ -19,7 +19,7 @@ import AddIcon from "@mui/icons-material/Add";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { Layout as DashboardLayout } from "src/layouts/dashboard/layout";
 import QuotesForm from "src/sections/quotes/quote-form";
-import CardLoading from "src/components/grid-loading";
+import CardLoading from "src/components/grid-loading"; 
 
 const Page = () => {
   const [quotesData, setQuotesData] = useState([]);
@@ -48,7 +48,7 @@ const Page = () => {
     };
     const sort = "DSC";
     const resQuotes = await GetQuotesData(page, rowsPerPage, quoteQuery, sort);
-
+    console.log("resQuotes", resQuotes)
     if (!resQuotes) {
       console.log("error get quotes data!");
       setDataLoading(false);
