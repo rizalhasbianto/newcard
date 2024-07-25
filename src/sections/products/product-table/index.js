@@ -14,8 +14,8 @@ import { quotesQuickAddHead } from "src/data/tableList";
 import { Scrollbar } from "src/components/scrollbar";
 
 const ProductTable = (props) => {
-  const { handleOpenQuoteList, data, catalogCompany, toastUp, productPerPage, quoteId } = props;
-
+  const { handleOpenQuoteList, data, catalogCompany, toastUp, productPerPage, quoteId, session } = props;
+console.log("data prod", data)
   return (
     data && (
       <Grid 
@@ -45,6 +45,7 @@ const ProductTable = (props) => {
                     quoteId={quoteId}
                     catalogCompany={catalogCompany}
                     key={i + 1}
+                    session={session}
                   />
                 ));
               })}

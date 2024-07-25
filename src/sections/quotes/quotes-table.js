@@ -37,7 +37,7 @@ const QuotesTable = (props) => {
     rowsPerPage = 0,
     selected = [],
   } = props;
-
+console.log("items", items)
   const [deleteQuoteId, setDeleteQuoteId] = useState();
 
   const listNumber = page * 10;

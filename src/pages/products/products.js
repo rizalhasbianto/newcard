@@ -244,6 +244,7 @@ const Products = () => {
                     toastUp={toastUp}
                     productPerPage={productPerPage}
                     quoteId={quoteId}
+                    session={session}
                   />
                 )}
               </Grid>

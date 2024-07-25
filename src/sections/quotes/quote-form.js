@@ -202,7 +202,6 @@ const QuotesForm = (props) => {
 
   const GetCompaniesData = useCallback(
     async (page, rowsPerPage) => {
-      console.log("compaies get run", selectedCompany)
       let companyList;
       let updatedVariantData
       if (companies.length === 0) {
@@ -233,22 +232,23 @@ const QuotesForm = (props) => {
           );
 
           if(tabContent.quotesList && tabContent.quotesList.length > 0) {
-            console.log("tabContent.quotesList", tabContent.quotesList)
   
             const variantIDs = tabContent.quotesList.map((itm) => itm.variant.id)
-            console.log("variantIDs", variantIDs)
             const variantUpdated = await GetProductVariantsShopify({variantIDs, shopifyCompanyLocationID:selectedCompany.shopifyCompanyLocationId})
-            console.log("variantUpdated", variantUpdated)
             tabContent.quotesList.forEach((itm) => {
               //const variant = itm.variant
               const findVariant = variantUpdated.newData.data.nodes.find((variant) => variant.id === itm.variant.id);
-              console.log("findVariant", findVariant)
               itm.variant.price.amount = findVariant.price
               itm.variant.currentlyNotInStock = findVariant.inventoryQuantity > 0 ? false : true
               itm.variant.quantityAvailable = findVariant.inventoryQuantity
-              itm.variant.companyPrice.node[`company_${selectedCompany.shopifyCompanyLocationId}`] = findVariant[`company_${selectedCompany.shopifyCompanyLocationId}`]
+              if(findVariant[`company_${selectedCompany.shopifyCompanyLocationId}`]) {
+                itm.variant.companyPrice = {
+                  node: {
+                    [`company_${selectedCompany.shopifyCompanyLocationId}`] : findVariant[`company_${selectedCompany.shopifyCompanyLocationId}`]
+                  }
+                }
+              }
             })
-            console.log("variantUpdated", variantUpdated)
           }
 
           setSelectedCompany(selectedCompany);

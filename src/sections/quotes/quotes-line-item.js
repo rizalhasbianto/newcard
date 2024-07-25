@@ -26,7 +26,18 @@ import DiscountLine from "./quote-discount";
 import PaymentOptions from "./quote-payment";
 
 export default function LineItemQuotes(props) {
-  const { quotesList, setQuotesList, discount, setDiscount, setTotal, payment, setPayment, layout, total, shopifyCompanyLocationID } = props;
+  const {
+    quotesList,
+    setQuotesList,
+    discount,
+    setDiscount,
+    setTotal,
+    payment,
+    setPayment,
+    layout,
+    total,
+    shopifyCompanyLocationID,
+  } = props;
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [editProductIndex, setEditProductIndex] = useState("");
@@ -34,7 +45,19 @@ export default function LineItemQuotes(props) {
   const modalPopUp = usePopover();
 
   useEffect(() => {
-    const countSubtotal = quotesList.reduce((n, { variant, qty }) => n + Number(variant.companyPrice.node[`company_${shopifyCompanyLocationID}`]?.price.amount * qty), 0).toFixed(2);
+    console.log("quotesList", quotesList);
+    const countSubtotal = quotesList
+      .reduce(
+        (n, { variant, qty }) =>
+          n +
+          Number(
+            ( variant.companyPrice
+              ? variant.companyPrice.node[`company_${shopifyCompanyLocationID}`]?.price.amount
+              : variant.price.amount ) * qty
+          ),
+        0
+      )
+      .toFixed(2);
     const countQty = quotesList.reduce((n, { qty }) => n + Number(qty), 0);
     let discountCalc = 0;
     if (discount) {
@@ -51,9 +74,9 @@ export default function LineItemQuotes(props) {
       subTotal: countSubtotal,
       tax,
       total,
-      countQty
+      countQty,
     });
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [quotesList, discount, setTotal]);
 
   const handleChangePage = useCallback((event, value) => {
@@ -106,7 +129,7 @@ export default function LineItemQuotes(props) {
     },
     [setDiscount]
   );
-console.log("quotesList", quotesList)
+  console.log("quotesList", quotesList);
   return (
     <Paper sx={{ width: "100%", overflow: "hidden" }}>
       <ProductModal
@@ -183,20 +206,16 @@ console.log("quotesList", quotesList)
             }}
           >
             <Collapse in={onDiscount}>
-            <DiscountLine handleDiscount={handleDiscount} setOnDiscount={setOnDiscount}/>
+              <DiscountLine handleDiscount={handleDiscount} setOnDiscount={setOnDiscount} />
             </Collapse>
           </Box>
           <Box
             sx={{
               width: "600px",
-              mt: "20px"
+              mt: "20px",
             }}
           >
-            <Typography
-                  variant="subtitle1"
-                >
-                  Summary
-                </Typography>
+            <Typography variant="subtitle1">Summary</Typography>
             <Grid container>
               <Grid xs={12} md={4}>
                 <Typography>Subtotal:</Typography>
@@ -226,7 +245,9 @@ console.log("quotesList", quotesList)
                     </Typography>
                   </Tooltip>
                 ) : (
-                  <Typography sx={{cursor:"pointer"}} onClick={() => setOnDiscount(true)} >Add Discount?</Typography>
+                  <Typography sx={{ cursor: "pointer" }} onClick={() => setOnDiscount(true)}>
+                    Add Discount?
+                  </Typography>
                 )}
                 <Typography>count later</Typography>
                 <Typography>${total.tax}</Typography>
@@ -239,7 +260,7 @@ console.log("quotesList", quotesList)
                   ${total.total}
                 </Typography>
               </Grid>
-              <PaymentOptions setPayment={setPayment} payment={payment}/>
+              <PaymentOptions setPayment={setPayment} payment={payment} />
             </Grid>
           </Box>
         </Container>

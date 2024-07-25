@@ -179,6 +179,7 @@ export const SelectProducts = ({
             setQuotesList={setQuotesList}
             selectedProduct={selectedProduct}
             handleSubmit={handleSubmit}
+            selectedCompany={selectedCompany}
           />
         )}
       </Collapse>

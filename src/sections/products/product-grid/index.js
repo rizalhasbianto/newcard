@@ -4,6 +4,7 @@ import ProductCard from "./product-card";
 
 const ProductGrid = (props) => {
   const { handleOpenQuoteList, data, catalogCompany, toastUp, quoteId, session } = props;
+  console.log("data grid", data)
   return (
     data &&
     data.map((dt) => {

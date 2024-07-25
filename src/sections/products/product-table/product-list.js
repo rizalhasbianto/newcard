@@ -9,6 +9,7 @@ import {
   TextField,
   TableCell,
   TableRow,
+  Divider,
   Unstable_Grid2 as Grid,
 } from "@mui/material";
 import LoadingButton from "@mui/lab/LoadingButton";
@@ -18,7 +19,7 @@ import { ImageComponent } from "src/components/image";
 import { UpdateQuoteItem } from "src/service/use-mongo";
 
 const Productlist = (props) => {
-  const { product, handleOpenQuoteList, catalogCompany, toastUp, noUrut, quoteId } = props;
+  const { product, handleOpenQuoteList, catalogCompany, toastUp, noUrut, quoteId, session } = props;
   const [buttonloading, setButtonloading] = useState(false);
   const [notAvilableOption, setNotAvilableOption] = useState(false);
   const [selectedVariant, setSelectedVariant] = useState(product.node.variants.edges[0].node);
@@ -101,16 +102,18 @@ const Productlist = (props) => {
                 marginBottom: "20px",
               }}
             >
-              <Link href={`/products/${product.node.handle}${quoteId ? `?quoteId=${quoteId}` : ""}`}>
-              <ImageComponent img={img} title={product.node.title} />
+              <Link
+                href={`/products/${product.node.handle}${quoteId ? `?quoteId=${quoteId}` : ""}`}
+              >
+                <ImageComponent img={img} title={product.node.title} />
               </Link>
             </Box>
           </Grid>
           <Grid lg={8}>
-          <Link href={`/products/${product.node.handle}${quoteId ? `?quoteId=${quoteId}` : ""}`}>
-            <Typography align="left" gutterBottom variant="h6">
-              {product.node.title}
-            </Typography>
+            <Link href={`/products/${product.node.handle}${quoteId ? `?quoteId=${quoteId}` : ""}`}>
+              <Typography align="left" gutterBottom variant="h6">
+                {product.node.title}
+              </Typography>
             </Link>
             <Stack
               alignItems="center"
@@ -133,30 +136,50 @@ const Productlist = (props) => {
           </Grid>
         </Grid>
       </TableCell>
-      <TableCell align="left" sx={{whiteSpace:"nowrap"}}>
-      {catalogCompany && catalogCompany.length === 0 ?
-        <Typography variant="body2">
-          ${selectedVariant.price?.amount}
-        </Typography>
-        :
-        <>
-        <Typography variant="body2">
-          Original: ${selectedVariant.price?.amount}
-        </Typography>
-        {catalogCompany &&
-            catalogCompany.length > 0 &&
-            catalogCompany.map((company, index) => {
-              const companyPrice = product.node.companyPrice[`company_${company.id}`];
+      <TableCell align="left" sx={{ whiteSpace: "nowrap" }}>
+        {session.user.detail.role === "customer" && catalogCompany && catalogCompany.length > 0 ? (
+          <>
+            <Typography variant="body2">Price: </Typography>
+            <Typography variant="body2" sx={{ textDecoration: "line-through" }}>
+              ${selectedVariant.price?.amount}
+            </Typography>
+            <Typography variant="body2"> / </Typography>
+            {catalogCompany.map((company, index) => {
+              const companyPrice = selectedVariant.companyPrice.node[`company_${company.id}`];
               return (
-                <Typography variant="body2" key={index + 1} sx={{fontWeight:600,textTransform:"capitalize"}}>
-                  {company.name} Price: ${companyPrice.priceRange.maxVariantPrice.amount}
+                <Typography
+                  variant="body2"
+                  key={index + 1}
+                  sx={{ fontWeight: 600, textTransform: "capitalize" }}
+                >
+                  ${companyPrice.price.amount}
                 </Typography>
               );
             })}
-        </>
-      }
+          </>
+        ) : (
+          <Typography variant="body2">Price: ${selectedVariant.price?.amount}</Typography>
+        )}
+        {session.user.detail.role !== "customer" && catalogCompany && catalogCompany.length > 0 && (
+          <Divider sx={{ mt: 1, mb: 1 }} />
+        )}
+        {session.user.detail.role !== "customer" &&
+            catalogCompany &&
+            catalogCompany.length > 0 &&
+            catalogCompany.map((company, index) => {
+              const companyPrice = selectedVariant.companyPrice.node[`company_${company.id}`];
+              return (
+                <Typography
+                  variant="body2"
+                  key={index + 1}
+                  sx={{ fontWeight: 600, textTransform: "capitalize" }}
+                >
+                  {company.name} Price: ${companyPrice.price.amount}
+                </Typography>
+              );
+            })}
       </TableCell>
-      <TableCell sx={{minWidth:"150px"}} align="center">
+      <TableCell sx={{ minWidth: "150px" }} align="center">
         <Typography variant="body2">
           {selectedVariant.currentlyNotInStock ? "Out of stock" : "In stock"}
         </Typography>
@@ -178,7 +201,7 @@ const Productlist = (props) => {
           }}
         />
       </TableCell>
-      <TableCell sx={{minWidth:"250px"}} align="center">
+      <TableCell sx={{ minWidth: "250px" }} align="center">
         {!quoteId ? (
           <Button variant="contained" onClick={() => handleOpenQuoteList()}>
             Choose Quote
@@ -201,4 +224,4 @@ const Productlist = (props) => {
   );
 };
 
-export default Productlist
+export default Productlist;

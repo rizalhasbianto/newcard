@@ -9,12 +9,13 @@ import { Box, Button, TextField, Typography, Unstable_Grid2 as Grid } from "@mui
 import { ImageComponent } from "src/components/image";
 
 export const SearchProduct = (props) => {
-  const { quotesList, setQuotesList, selectedProduct, handleSubmit } = props;
+  const { quotesList, setQuotesList, selectedProduct, handleSubmit, selectedCompany } = props;
   const [selectedVariant, setSelectedVariant] = useState("");
   const [selectedOptions, setSelectedOptions] = useState("");
   const [selectedQuantity, setSelectedQuantity] = useState(1);
   const [notAvilableOption, setNotAvilableOption] = useState(false);
   const modalPopUp = usePopover();
+  const companyPrice = selectedVariant.companyPrice.node[`company_${selectedCompany?.shopifyCompanyLocationId}`]
 
   useEffect(() => {
     if (!selectedProduct) return undefined;
@@ -86,7 +87,7 @@ export const SearchProduct = (props) => {
                   ) : (
                     <>
                       <Typography variant="body2">
-                        Price: ${selectedVariant.price.amount}
+                        Price: ${companyPrice ? companyPrice.price.amount : selectedVariant.price.amount}
                       </Typography>
                       <Typography variant="body2">
                         Stock: {selectedVariant.currentlyNotInStock ? "Out of stock" : "In stock"}
