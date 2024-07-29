@@ -67,6 +67,7 @@ const QuotesForm = (props) => {
         currentTabContent = tabContent
       } = props;
       setButtonLoading(type);
+      console.log("total", total)
       const mongoReponse = await SaveQuoteToMongoDb(
         company,
         shipToAddress,
@@ -74,7 +75,8 @@ const QuotesForm = (props) => {
         finalDiscount,
         type,
         selectedQuoteId,
-        selectedPayment
+        selectedPayment,
+        total
       );
       if (!mongoReponse) {
         // error when save data to mongo

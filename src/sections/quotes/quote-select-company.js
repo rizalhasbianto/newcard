@@ -22,7 +22,7 @@ export default function QuoteSelectCompany(props) {
     handleSubmit,
   } = props;
 
-  const selectedContact = selectedCompany?.contact.find((contact) => contact.default);
+  const selectedContact = selectedCompany?.contacts.find((contact) => contact.default);
   
   const handleChange = useCallback(
     async (event, data) => {

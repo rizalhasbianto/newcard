@@ -120,7 +120,7 @@ console.log("quoteList", quoteList)
                   <TableCell>
                     <Stack alignItems="right" direction="column" spacing={1}>
                       <Typography variant="subtitle2">
-                        ${new Intl.NumberFormat("en-US").format(quote.quoteInfo?.total)}
+                        ${new Intl.NumberFormat("en-US").format(quote.quoteInfo?.total.total)}
                       </Typography>
                     </Stack>
                   </TableCell>

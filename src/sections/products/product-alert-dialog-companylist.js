@@ -81,7 +81,7 @@ export default function ProductAddToQuote(props) {
           <TableBody>
             {dialogCompanyList.length > 0 &&
               dialogCompanyList.map((company, i) => {
-                const contact = company.contact.find((itm) => itm.default);
+                const contact = company.contacts.find((itm) => itm.default);
                 const checkStatus = catalogCompany.findIndex((itm) => itm.id === company.shopifyCompanyLocationId)
                 return (
                   <TableRow hover selected={true} key={i + 1}>

@@ -40,17 +40,14 @@ export const SaveQuoteToMongoDb = async (
   discount,
   status,
   quoteId,
-  payment
+  payment,
+  total
 ) => {
-  const countSubtotal = quotesList.reduce((n, { total }) => n + Number(total), 0).toFixed(2);
-  const tax = (Number(countSubtotal) * 0.1).toFixed(2);
-  const total = (Number(countSubtotal) + Number(tax)).toFixed(2);
-
   const mongoRes = await useDataService("/api/quotes/update-quote", "POST", {
     quoteId: quoteId,
     data: {
       company: {
-        id:selectedCompany._id,
+        id: selectedCompany._id,
         name: selectedCompany.name,
         shipTo: shipTo.locationName,
         sales: selectedCompany.sales,
@@ -137,13 +134,17 @@ export const SendInvoice = async (quoteDataInvoice) => {
 };
 
 export const GetCompanies = async (props) => {
-  const { page = 0, postPerPage = 100, query, withQuote=false } = props;
+  const { page = 0, postPerPage = 100, query, withQuote = false } = props;
   const queryData = JSON.stringify(query);
   const queryPath =
-    "withQuote=" + withQuote +
-    "&page=" + page +
-    "&postPerPage=" + postPerPage +
-    "&query=" + queryData +
+    "withQuote=" +
+    withQuote +
+    "&page=" +
+    page +
+    "&postPerPage=" +
+    postPerPage +
+    "&query=" +
+    queryData +
     "&avatar=false";
   const fetchPath = "/api/company/get-companies?" + queryPath;
   const comapanyRes = await useDataService(fetchPath, "GET");
@@ -151,13 +152,17 @@ export const GetCompanies = async (props) => {
 };
 
 export const GetCompaniesSwr = (props) => {
-  const { page, postPerPage, query, withQuote=true } = props;
+  const { page, postPerPage, query, withQuote = true } = props;
   const queryString = query ? JSON.stringify(query) : "";
   const queryPath =
-    "withQuote==" + withQuote + 
-    "&page=" +page +
-    "&postPerPage=" + postPerPage +
-    "&query=" + queryString +
+    "withQuote==" +
+    withQuote +
+    "&page=" +
+    page +
+    "&postPerPage=" +
+    postPerPage +
+    "&query=" +
+    queryString +
     "&avatar=true";
   const comapanyRes = useSwrData("/api/company/get-companies", queryPath);
 
@@ -166,13 +171,13 @@ export const GetCompaniesSwr = (props) => {
 
 export const GetCompanyCatalog = (props) => {
   const { id, query } = props;
-  const queryPath = "?id=" + id + "&query=" + JSON.stringify(query)
-  const comapanyRes = useDataService("/api/company/get-company-catalog" + queryPath , "GET");
+  const queryPath = "?id=" + id + "&query=" + JSON.stringify(query);
+  const comapanyRes = useDataService("/api/company/get-company-catalog" + queryPath, "GET");
   return comapanyRes;
 };
 
 export const GetSingleCompaniesSwr = (props) => {
-  const { id, page, postPerPage } = props
+  const { id, page, postPerPage } = props;
   const queryPath =
     "withQuote=true&quotePage=" +
     page +
@@ -201,7 +206,8 @@ export const AddCompanyToMongo = async (
       name: companyData.sales.name,
     },
     marked: companyData.marked ? true : false,
-    defaultpaymentTypeChange: "No",
+    defaultpaymentTypeChange: companyData.defaultpaymentTypeChange,
+    defaultpaymentType: companyData.defaultpaymentType,
     location: {
       address: companyData.addressLocation,
       city: companyData.cityLocation,
@@ -209,21 +215,30 @@ export const AddCompanyToMongo = async (
       zip: companyData.postalLocation,
     },
     avatar: companyData.companyPhoto,
-    contact: [],
+    contacts: [],
     shipTo: [
       {
-        locationName: companyData.useAsShipping
-          ? "Company Location"
-          : companyData.companyShippingName,
+        locationName:
+          companyData.useAsShipping === "yes"
+            ? "Company Location"
+            : companyData.companyShippingName,
         location: {
-          address: companyData.useAsShipping
-            ? companyData.addressLocation
-            : companyData.addressShipping,
-          city: companyData.useAsShipping ? companyData.cityLocation : companyData.cityShipping,
-          state: companyData.useAsShipping
-            ? companyData.stateNameLocation.name
-            : companyData.stateNameShipping.name,
-          zip: companyData.useAsShipping ? companyData.postalLocation : companyData.postalShipping,
+          address:
+            companyData.useAsShipping === "yes"
+              ? companyData.addressLocation
+              : companyData.addressShipping,
+          city:
+            companyData.useAsShipping === "yes"
+              ? companyData.cityLocation
+              : companyData.cityShipping,
+          state:
+            companyData.useAsShipping === "yes"
+              ? companyData.stateNameLocation.name
+              : companyData.stateNameShipping.name,
+          zip:
+            companyData.useAsShipping === "yes"
+              ? companyData.postalLocation
+              : companyData.postalShipping,
         },
         default: true,
       },
@@ -245,7 +260,7 @@ export const UpdateCompanyInfoToMongo = async (companyData) => {
         state: companyData.state,
         zip: companyData.postal,
       },
-      contact: companyData.contact,
+      contacts: companyData.contact,
       sales: companyData.newSales,
       defaultBilling: companyData.billing,
       defaultpaymentType: companyData.paymentType,
@@ -258,22 +273,24 @@ export const UpdateCompanyInfoToMongo = async (companyData) => {
 export const UpdateCompanyCatalog = async (props) => {
   const { mongoCompanyID, catalogID, catalogList, companyLocationID, selected } = props;
   const companyLocationIds = (catalogList, companyLocationID, selected) => {
-    if(selected) {
-      const catalogData = catalogList.map((item) => item.node.id)
-      return [...catalogData, `gid://shopify/CompanyLocation/${companyLocationID}`]
+    if (selected) {
+      const catalogData = catalogList.map((item) => item.node.id);
+      return [...catalogData, `gid://shopify/CompanyLocation/${companyLocationID}`];
     } else {
-      const findCatalog = catalogList.findIndex((item) => item.node.id.replace("gid://shopify/CompanyLocation/", "") === companyLocationID)
-      catalogList.splice(findCatalog, "1")
-      const catalogData = catalogList.map((item) => item.node.id)
-      return [...catalogData]
+      const findCatalog = catalogList.findIndex(
+        (item) => item.node.id.replace("gid://shopify/CompanyLocation/", "") === companyLocationID
+      );
+      catalogList.splice(findCatalog, "1");
+      const catalogData = catalogList.map((item) => item.node.id);
+      return [...catalogData];
     }
-  }
-  const mongoRes = await useDataService("/api/catalog/assign-company-catalog", "POST", { 
+  };
+  const mongoRes = await useDataService("/api/catalog/assign-company-catalog", "POST", {
     catalogID,
     updateData: {
       companyLocationIds: companyLocationIds(catalogList, companyLocationID, selected),
       mongoCompanyID: mongoCompanyID,
-      selected
+      selected,
     },
   });
   return mongoRes;
@@ -298,7 +315,7 @@ export const AddNewUserToCompanyMongo = async (props) => {
   const mongoRes = await useDataService("/api/company/update-company", "POST", {
     id: companyId,
     updateData: {
-      contact: userDataNew,
+      contacts: userDataNew,
     },
   });
   return mongoRes;
@@ -467,8 +484,8 @@ export const RegisterUser = async (userData, companyId, shopifyCustomerId) => {
     phone: userData.contactPhone,
     password: userData.password,
     company: {
-      companyId:companyId,
-      companyName:userData.companyName
+      companyId: companyId,
+      companyName: userData.companyName,
     },
     status: userData.password ? "active" : "invited",
     role: userData.role ? userData.role : "customer",
@@ -569,7 +586,7 @@ export const UpdateTicket = async (props) => {
 export const CreateCatalog = async (props) => {
   const { shopifyCatalog, catalogName, session, catalogId } = props;
   const createData = {
-    shopifyCatalogID: catalogId, 
+    shopifyCatalogID: catalogId,
     shopifyCatalogName: catalogName,
     productsCount: shopifyCatalog.totalProducts,
     createdAt: today,
@@ -577,7 +594,7 @@ export const CreateCatalog = async (props) => {
       name: session.user.detail.name,
       role: session.user.detail.role,
     },
-    lastUpdateAt:"",
+    lastUpdateAt: "",
   };
   const mongoRes = await useDataService("/api/catalog/create-catalog", "POST", createData);
   return mongoRes;

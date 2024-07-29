@@ -35,8 +35,8 @@ const Page = () => {
   const toastUp = useToast();
   const router = useRouter();
 
-  const { data, isLoading, isError, mutate } = GetSingleCompaniesSwr({
-    id:router.query.companyId,
+  const { data, isLoading, isError, mutate } = GetSingleCompaniesSwr({ 
+    id:router.query?.companyId,
     page: 0, 
     postPerPage: 1
   });

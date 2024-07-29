@@ -1,10 +1,12 @@
 import { Box, Button, Divider, Unstable_Grid2 as Grid, Typography } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import { Stack } from "@mui/system";
+import { paymentOptions } from "src/data/payment-options";
 
 const CompanyDetails = (props) => {
   const { data, toastUp, setSwitchEditDetails } = props;
-
+  const defaultPayment = paymentOptions.find((itm) => itm.id === data?.defaultpaymentType)
+  console.log("defaultPayment", defaultPayment)
   return (
     <Box sx={{ m: -1.5 }}>
       <Grid container spacing={1} alignItems={"flex-start"} justifyItems={"flex-start"}>
@@ -48,7 +50,7 @@ const CompanyDetails = (props) => {
         </Grid>
         <Grid item xs={8} md={9}>
           <Typography variant="subtitle2">
-            : {data?.contact.find((item) => item.default).detail.name}
+            : {data?.contacts.find((item) => item.default).detail.name}
           </Typography>
         </Grid>
         <Grid item xs={4} md={3}>
@@ -86,7 +88,7 @@ const CompanyDetails = (props) => {
         </Grid>
         <Grid item xs={8} md={9}>
           <Typography variant="subtitle2" color={data.defaultpaymentType ? "#000" : "neutral.500"}>
-            : {data.defaultpaymentType ? data.defaultpaymentType : "Default payment term not set"}
+            : {defaultPayment? `${defaultPayment.name} (${defaultPayment.description})` : "Default payment term not set"}
           </Typography>
         </Grid>
         <Grid item xs={4} md={3}>

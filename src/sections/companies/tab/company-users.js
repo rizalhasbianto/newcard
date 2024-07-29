@@ -37,8 +37,8 @@ const CompanyUsers = (props) => {
   const [loadSave, setLoadSave] = useState(false);
   const [loadSaveContact, setLoadSaveContact] = useState(false);
   const [newUser, setNewUser] = useState(false);
-  const [defaultContact, setDefaultContact] = useState(data?.contact.find((item) => item.default));
-  const initialDefaultDataContact = data?.contact.find((item) => item.default);
+  const [defaultContact, setDefaultContact] = useState(data?.contacts.find((item) => item.default));
+  const initialDefaultDataContact = data?.contacts.find((item) => item.default);
   const splitName = (name) => {
     if (!name) return [];
     return name.split(" ");
@@ -46,15 +46,15 @@ const CompanyUsers = (props) => {
 
   const formik = useFormik({
     initialValues: {
-      email: data?.contact[0].detail?.email,
-      firstName: splitName(data?.contact[0].detail?.name)[0],
+      email: data?.contacts[0].detail?.email,
+      firstName: splitName(data?.contacts[0].detail?.name)[0],
       lastName:
-        splitName(data?.contact[0].detail?.name)[1] +
-        (splitName(data?.contact[0].detail?.name)[2]
+        splitName(data?.contacts[0].detail?.name)[1] +
+        (splitName(data?.contacts[0].detail?.name)[2]
           ? " " + splitName(data?.contact[0].detail?.name)[2]
           : ""),
-      phone: data?.contact[0].detail?.phone,
-      default: data?.contact[0].detail?.default,
+      phone: data?.contacts[0].detail?.phone,
+      default: data?.contacts[0].detail?.default,
       submit: null,
     },
     validationSchema: Yup.object({
@@ -253,10 +253,10 @@ const CompanyUsers = (props) => {
               fullWidth
               required
               onChange={(event) =>
-                setDefaultContact(data?.contact.find((item) => item.userId === event.target.value))
+                setDefaultContact(data?.contacts.find((item) => item.userId === event.target.value))
               }
             >
-              {data.contact.map((item, i) => (
+              {data.contacts.map((item, i) => (
                 <MenuItem value={item.userId} key={i + 1}>
                   <em>{item.detail?.name}</em>
                 </MenuItem>
@@ -293,10 +293,10 @@ const CompanyUsers = (props) => {
             sx={{ borderRight: 1, borderColor: "divider", height: "100%" }}
           >
             {data &&
-              data.contact.map((contact, i) => (
+              data.contacts.map((contact, i) => (
                 <Tab label={contact.detail?.name} value={i + 1} key={i + 1} sx={{ pr: 1 }} />
               ))}
-            <Tab label="Add user" value={data.contact.length + 1} sx={{ pr: 1 }} />
+            <Tab label="Add user" value={data.contacts.length + 1} sx={{ pr: 1 }} />
           </Tabs>
         </Box>
         <TabPanel value="2" sx={{ padding: "0 24px" }}>

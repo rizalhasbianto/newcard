@@ -40,7 +40,7 @@ export default async function getQuotes(req, res) {
     .toArray();
 
   data.map((company) => {
-    company.contact.map((item) => {
+    company.contacts.map((item) => {
       const matchContactData = dataContact.find(
         (contact) => new ObjectId(contact._id).toString() === item.userId
       );
@@ -69,6 +69,6 @@ export default async function getQuotes(req, res) {
     relatedQuote: relatedQuote,
     count: numberOfDoc,
   };
-
+console.log()
   res.json({ status: 200, data: resData });
 }

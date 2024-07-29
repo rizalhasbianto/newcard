@@ -1,5 +1,6 @@
 import React, { useState, useRef } from "react";
 import { GetUsers } from "src/service/use-mongo";
+import { paymentOptions } from "src/data/payment-options";
 import {
   Box,
   TextField,
@@ -40,21 +41,7 @@ import {
 import { CreateCompanyShopify, GetShopifyCatalogs } from "src/service/use-shopify";
 
 const AddCompany = (props) => {
-  const {
-    setAddNewCompany,
-    toastUp,
-    getSelectedVal,
-    setCompanies,
-    setShipToList,
-    setLocation,
-    setShipTo,
-    setCompanyName,
-    GetCompanies,
-    setCompanyContact,
-    type,
-    session,
-    mutate,
-  } = props;
+  const { setAddNewCompany, toastUp, type, session, mutate } = props;
 
   const [file, setFile] = useState();
   const [preview, setPreview] = useState();
@@ -89,6 +76,8 @@ const AddCompany = (props) => {
       contactPhone: "",
       sales: "",
       catalog: [],
+      defaultpaymentType: "",
+      defaultpaymentTypeChange: "",
       submit: null,
     },
     validationSchema: Yup.object({
@@ -129,6 +118,8 @@ const AddCompany = (props) => {
         .matches(phoneRegExp, "Phone number is not valid")
         .required("This field is required"),
       sales: Yup.object().required("This field is required"),
+      defaultpaymentType: Yup.string().required("This field is required"),
+      defaultpaymentTypeChange: Yup.string().required("This field is required"),
       catalog: Yup.array().min(1, "This field is required"),
     }),
     onSubmit: async (values, helpers) => {
@@ -163,25 +154,37 @@ const AddCompany = (props) => {
         formik.setErrors(errorFields);
         setLoadSave(false);
         return;
-      } 
+      }
 
       if (submitCondition) {
-        let shopifyCompanyId, shopifyCompanyLocationId, shopifyCustomerId
+        let shopifyCompanyId, shopifyCompanyLocationId, shopifyCustomerId;
         const resCreateCompany = await CreateCompanyShopify(values);
-        console.log("resCreateCompany", resCreateCompany)
         if (!resCreateCompany || resCreateCompany.data.userErrors.length > 0) {
-          const errorMessage = resCreateCompany && resCreateCompany?.data.userErrors.length > 0 ? `Error: ${resCreateCompany.data.userErrors[0].message}` : "Error sync with Shopify!";
+          const errorMessage =
+            resCreateCompany && resCreateCompany?.data.userErrors.length > 0
+              ? `Error: ${resCreateCompany.data.userErrors[0].message}`
+              : "Error sync with Shopify!";
           toastUp.handleStatus("error");
           toastUp.handleMessage(errorMessage);
           setLoadSave(false);
-          return
+          return;
         } else {
-          shopifyCompanyId = resCreateCompany.data.company.id.replace("gid://shopify/Company/","")
-          shopifyCompanyLocationId = resCreateCompany.data.company.locationID.replace("gid://shopify/CompanyLocation/","")
-          shopifyCustomerId = resCreateCompany.data.company.mainContact.customer.id.replace("gid://shopify/Customer/","")
+          shopifyCompanyId = resCreateCompany.data.company.id.replace("gid://shopify/Company/", "");
+          shopifyCompanyLocationId = resCreateCompany.data.company.locationID.replace(
+            "gid://shopify/CompanyLocation/",
+            ""
+          );
+          shopifyCustomerId = resCreateCompany.data.company.mainContact.customer.id.replace(
+            "gid://shopify/Customer/",
+            ""
+          );
         }
 
-        const resSaveCompany = await AddCompanyToMongo(values, shopifyCompanyId, shopifyCompanyLocationId);
+        const resSaveCompany = await AddCompanyToMongo(
+          values,
+          shopifyCompanyId,
+          shopifyCompanyLocationId
+        );
         if (!resSaveCompany) {
           toastUp.handleStatus("error");
           toastUp.handleMessage("Error when create company!");
@@ -189,7 +192,11 @@ const AddCompany = (props) => {
           return;
         }
 
-        const resAddUser = await RegisterUser(values, resSaveCompany.data.insertedId, shopifyCustomerId);
+        const resAddUser = await RegisterUser(
+          values,
+          resSaveCompany.data.insertedId,
+          shopifyCustomerId
+        );
         if (!resAddUser) {
           toastUp.handleStatus("error");
           toastUp.handleMessage("Error when create user!");
@@ -206,9 +213,9 @@ const AddCompany = (props) => {
         }
 
         const resAddUserToCompany = await AddNewUserToCompanyMongo({
-          companyId:resSaveCompany.data.insertedId,
-          newUserData: {id:resAddUser.data.insertedId, default:true},
-          shopifyCustomerId: shopifyCustomerId
+          companyId: resSaveCompany.data.insertedId,
+          newUserData: { id: resAddUser.data.insertedId, default: true },
+          shopifyCustomerId: shopifyCustomerId,
         });
 
         if (!resAddUserToCompany) {
@@ -219,12 +226,12 @@ const AddCompany = (props) => {
         }
       }
 
-      mutate()
+      mutate();
       toastUp.handleStatus("success");
       toastUp.handleMessage("New Company added, user has been invited!");
       setLoadSave(false);
-      setAddNewCompany(false)
-      formik.resetForm()
+      setAddNewCompany(false);
+      formik.resetForm();
     },
   });
 
@@ -696,6 +703,69 @@ const AddCompany = (props) => {
               </Grid>
             </>
           )}
+          {session &&
+            (session.user.detail.role === "admin" || session.user.detail.role === "sales") && (
+              <>
+                <Grid xs={12} md={type === "register" ? 6 : 3}>
+                  <TextField
+                    id="defaultpaymentType"
+                    name="defaultpaymentType"
+                    label="Default payment Type"
+                    variant="outlined"
+                    fullWidth
+                    select
+                    onBlur={formik.handleBlur}
+                    onChange={formik.handleChange}
+                    value={formik.values.defaultpaymentType}
+                    error={
+                      !!(formik.touched.defaultpaymentType && formik.errors.defaultpaymentType)
+                    }
+                    helperText={
+                      formik.touched.defaultpaymentType && formik.errors.defaultpaymentType
+                    }
+                  >
+                    <MenuItem value="">
+                      <em>No payment plan</em>
+                    </MenuItem>
+                    {paymentOptions.map((item, i) => (
+                      <MenuItem value={item.id} key={i + 1}>
+                        <em>{item.description}</em>
+                      </MenuItem>
+                    ))}
+                  </TextField>
+                </Grid>
+                <Grid xs={12} md={type === "register" ? 3 : 3}>
+                  <TextField
+                    id="defaultpaymentTypeChange"
+                    name="defaultpaymentTypeChange"
+                    label="Allow customer change payment term?"
+                    variant="outlined"
+                    fullWidth
+                    select
+                    onBlur={formik.handleBlur}
+                    onChange={formik.handleChange}
+                    value={formik.values.defaultpaymentTypeChange}
+                    error={
+                      !!(
+                        formik.touched.defaultpaymentTypeChange &&
+                        formik.errors.defaultpaymentTypeChange
+                      )
+                    }
+                    helperText={
+                      formik.touched.defaultpaymentTypeChange &&
+                      formik.errors.defaultpaymentTypeChange
+                    }
+                  >
+                    <MenuItem value={"Yes"}>
+                      <em>Yes</em>
+                    </MenuItem>
+                    <MenuItem value={"No"}>
+                      <em>No</em>
+                    </MenuItem>
+                  </TextField>
+                </Grid>
+              </>
+            )}
           <Grid xs={12} md={4}>
             <Stack direction={"row"} alignItems={"end"}>
               <FormLabel error={!!(formik.touched.catalog && formik.errors.catalog)} sx={{ mr: 1 }}>

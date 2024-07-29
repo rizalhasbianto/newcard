@@ -15,7 +15,7 @@ export const SearchProduct = (props) => {
   const [selectedQuantity, setSelectedQuantity] = useState(1);
   const [notAvilableOption, setNotAvilableOption] = useState(false);
   const modalPopUp = usePopover();
-  const companyPrice = selectedVariant.companyPrice.node[`company_${selectedCompany?.shopifyCompanyLocationId}`]
+  const companyPrice = selectedVariant.companyPrice?.node[`company_${selectedCompany?.shopifyCompanyLocationId}`]
 
   useEffect(() => {
     if (!selectedProduct) return undefined;

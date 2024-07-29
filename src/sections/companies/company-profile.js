@@ -68,7 +68,7 @@ const CompanyProfile = ({ company, toastUp }) => {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [file]);
 
-  const contact = company.contact.find((item) => item.default === true)
+  const contact = company.contacts.find((item) => item.default === true)
 
   return (
     <Card>

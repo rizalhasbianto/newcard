@@ -23,7 +23,7 @@ export default async function mongo(req, res) {
     .limit(100)
     .toArray();
 
-  data[0].contact.map((item) => {
+  data[0].contacts.map((item) => {
     const matchContactData = dataContact.find(
       (contact) => new ObjectId(contact._id).toString() === item.userId
     );

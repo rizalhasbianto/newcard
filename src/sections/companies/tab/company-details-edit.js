@@ -39,7 +39,7 @@ const CompanyDetailsEdit = (props) => {
   const query = { role: "sales" };
   const { data: users, isLoading } = GetUsers(page, postPerPage, "admin", query);
 
-  const defaultContact = data?.contact.find((item) => item.default).detail;
+  const defaultContact = data?.contacts.find((item) => item.default).detail;
   const formik = useFormik({
     initialValues: {
       id: data?._id,
@@ -278,7 +278,7 @@ const CompanyDetailsEdit = (props) => {
               error={!!(formik.touched.contact && formik.errors.contact)}
               helperText={formik.touched.contact && formik.errors.contact}
             >
-              {data.contact.map((item, i) => (
+              {data?.contacts.map((item, i) => (
                 <MenuItem value={item.detail.email} key={i + 1}>
                   <em>{item.detail.name}</em>
                 </MenuItem>
@@ -372,7 +372,7 @@ const CompanyDetailsEdit = (props) => {
                 <em>No payment plan</em>
               </MenuItem>
               {paymentOptions.map((item, i) => (
-                <MenuItem value={item.description} key={i + 1}>
+                <MenuItem value={item.id} key={i + 1}>
                   <em>{item.description}</em>
                 </MenuItem>
               ))}
