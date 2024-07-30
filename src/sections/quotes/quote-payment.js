@@ -9,18 +9,19 @@ import {
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { add, formatISO, format } from "date-fns";
 import { paymentOptions } from "src/data/payment-options";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 export default function PaymentOptions(props) {
   const { setPayment, payment } = props;
+
   const [date, setDate] = useState();
   const [isNeedDate, setNeedDate] = useState(false);
   const [isFlexibleDate, setFlexibleDate] = useState(false);
 
   const handleChangeType = useCallback((event) => {
-    if(event.target.value) {
+    if(event?.target?.value ) {
       let dateForShopify
-      const getPaymentTerm = paymentOptions.find((item) => item.id === event.target.value);
+      const getPaymentTerm = paymentOptions.find((item) => item.id === event?.target?.value );
       if (getPaymentTerm.dueInDays || getPaymentTerm.paymentTermsType === "FIXED") {
         setNeedDate(true);
         setFlexibleDate(true);

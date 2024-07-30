@@ -4,9 +4,10 @@ import { Stack } from "@mui/system";
 import { paymentOptions } from "src/data/payment-options";
 
 const CompanyDetails = (props) => {
-  const { data, toastUp, setSwitchEditDetails } = props;
+  const { data, catalogs, toastUp, setSwitchEditDetails } = props;
   const defaultPayment = paymentOptions.find((itm) => itm.id === data?.defaultpaymentType)
-  console.log("defaultPayment", defaultPayment)
+  const selectedCatalog = catalogs.newData.filter((itm) => data.catalogIDs.some((catalog) => itm.node.id.includes(catalog)))
+
   return (
     <Box sx={{ m: -1.5 }}>
       <Grid container spacing={1} alignItems={"flex-start"} justifyItems={"flex-start"}>
@@ -79,7 +80,7 @@ const CompanyDetails = (props) => {
           </Typography>
         </Grid>
         <Grid item xs={8} md={9}>
-          <Typography variant="subtitle2">: No Catalog</Typography>
+          <Typography variant="subtitle2">: {selectedCatalog.map((itm, index) => index === 0 ? `${itm.node.title}` : `, ${itm.node.title}`)}</Typography>
         </Grid>
         <Grid item xs={4} md={3}>
           <Typography variant="subtitle2" color="neutral.500">

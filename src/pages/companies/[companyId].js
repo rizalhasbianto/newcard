@@ -25,6 +25,7 @@ import CompanyDetailsEdit from "src/sections/companies/tab/company-details-edit"
 import CompanyUsers from "src/sections/companies/tab/company-users";
 import CompanyQuote from "src/sections/companies/tab/company-quote";
 
+import { GetShopifyCatalogs } from "src/service/use-shopify"
 import { GetSingleCompaniesSwr } from "src/service/use-mongo";
 import { useToast } from "src/hooks/use-toast";
 import Toast from "src/components/toast";
@@ -43,7 +44,10 @@ const Page = () => {
   const handleChange = (event, newValue) => {
     setValue(newValue);
   };
-console.log("data", data)
+
+  const { data: catalogs } = GetShopifyCatalogs()
+
+
   return (
     <>
       <Head>
@@ -86,6 +90,7 @@ console.log("data", data)
                               <Collapse in={switchEditDetails}>
                                 <CompanyDetails
                                   data={data && data.data.company[0]}
+                                  catalogs={catalogs}
                                   toastUp={toastUp}
                                   setSwitchEditDetails={setSwitchEditDetails}
                                 />

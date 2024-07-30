@@ -67,7 +67,7 @@ const QuotesForm = (props) => {
         currentTabContent = tabContent
       } = props;
       setButtonLoading(type);
-      console.log("total", total)
+
       const mongoReponse = await SaveQuoteToMongoDb(
         company,
         shipToAddress,
@@ -261,10 +261,12 @@ const QuotesForm = (props) => {
           setShipToList([]);
           setShipTo();
           setSelectedCompany();
+          setQuotesList([]);
         }
 
         setQuoteId(tabContent._id);
         setDiscount(tabContent.discount);
+        setPayment(tabContent.payment)
       }
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -465,7 +467,7 @@ const QuotesForm = (props) => {
               setPayment={setPayment}
               total={total}
               setTotal={setTotal}
-              shopifyCompanyLocationID={selectedCompany?.shopifyCompanyLocationId}
+              selectedCompany={selectedCompany}
             />
           </CardContent>
           <Divider />

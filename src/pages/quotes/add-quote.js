@@ -48,7 +48,7 @@ const Page = () => {
     };
     const sort = "DSC";
     const resQuotes = await GetQuotesData(page, rowsPerPage, quoteQuery, sort);
-    console.log("resQuotes", resQuotes)
+
     if (!resQuotes) {
       console.log("error get quotes data!");
       setDataLoading(false);
@@ -71,7 +71,7 @@ const Page = () => {
 
   const handleAddQuote = useCallback(async () => {
     setLoading(true);
-    const resCreateQuote = await AddNewQuoteToMongoDb({
+    const resCreateQuote = await AddNewQuoteToMongoDb({ 
       createdBy: {
         name: session.user.detail.name,
         role: session.user.detail.role,
@@ -110,7 +110,7 @@ const Page = () => {
       return () => window.removeEventListener("scroll", onScroll);
     }
   }, []);
-  console.log("quotesData", quotesData);
+
   return (
     <>
       <Head>

@@ -6,8 +6,10 @@ import {
   Typography,
   Unstable_Grid2 as Grid,
 } from "@mui/material";
+import { add, formatISO, format } from "date-fns";
 
 import { GetCompanyProductsPrice } from "src/service/use-shopify";
+import { paymentOptions } from "src/data/payment-options";
 
 export default function QuoteSelectCompany(props) {
   const {
@@ -53,8 +55,24 @@ export default function QuoteSelectCompany(props) {
         selectedShipping = data.find((ship) => ship.locationName === event.target.value);
         setShipTo(selectedShipping);
       }
-
-      handleSubmit({ company: selectedCompany, shipToAddress: selectedShipping });
+      let defaultPayment = {
+        id: "",
+            date: "",
+            description: "",
+            viewDate: ""
+      }
+      const getPaymentTerm = paymentOptions.find((item) => item.id === selectedCompany.defaultpaymentType );
+      if (getPaymentTerm && getPaymentTerm.dueInDays) {
+          const targetDate = add(new Date(), { days: getPaymentTerm.dueInDays });
+          const dateForShopify = formatISO(targetDate)
+          defaultPayment = {
+            id: getPaymentTerm.id,
+            date: dateForShopify,
+            description: getPaymentTerm.description,
+            viewDate: dateForShopify && format(new Date(dateForShopify), "MMMM dd yyyy"),
+          };
+      } 
+      handleSubmit({ company: selectedCompany, shipToAddress: selectedShipping, selectedPayment:defaultPayment });
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [companies, handleSubmit, quotesList, setSelectedCompany, setShipTo, setShipToList]

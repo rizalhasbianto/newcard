@@ -36,16 +36,16 @@ export default function LineItemQuotes(props) {
     setPayment,
     layout,
     total,
-    shopifyCompanyLocationID,
+    selectedCompany
   } = props;
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [editProductIndex, setEditProductIndex] = useState("");
   const [onDiscount, setOnDiscount] = useState(false);
   const modalPopUp = usePopover();
+  const shopifyCompanyLocationID = selectedCompany?.shopifyCompanyLocationId
 
   useEffect(() => {
-    console.log("quotesList", quotesList);
     const countSubtotal = quotesList
       .reduce(
         (n, { variant, qty }) =>
@@ -129,7 +129,7 @@ export default function LineItemQuotes(props) {
     },
     [setDiscount]
   );
-  console.log("quotesList", quotesList);
+
   return (
     <Paper sx={{ width: "100%", overflow: "hidden" }}>
       <ProductModal

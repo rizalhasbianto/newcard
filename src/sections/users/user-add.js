@@ -290,9 +290,13 @@ export default function UsersAdd(props) {
               <MenuItem value="">
                 <em>None</em>
               </MenuItem>
-              <MenuItem value="sales">
-                <em>Sales</em>
-              </MenuItem>
+              {session.user.detail.role === "admin" ? (
+                <MenuItem value="sales">
+                  <em>Sales</em>
+                </MenuItem>
+              ) : (
+                ""
+              )}
               <MenuItem value="customer">
                 <em>Customer</em>
               </MenuItem>
