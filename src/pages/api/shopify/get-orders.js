@@ -29,6 +29,10 @@ export default async function getOrders(req, res) {
     if(req.query?.session === "customer") {
       querySession = `AND email:${req.query?.sessionId}`
     }
+
+    if(req.query?.search && req.query?.search !== "undefined") {
+      querySession = `AND (name:${req.query?.search} OR default:${req.query?.search})`
+    }
     
     const query = `{
         orders(${param}: 10, reverse:true, query:"(tag:b2b) ${querySession}" ${cursor}) {

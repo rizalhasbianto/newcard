@@ -6,6 +6,7 @@ import { GetOrdersDataSwr } from "src/service/use-shopify";
 
 import { Box, Container, Stack, Typography } from "@mui/material";
 import OrdersTable from "src/sections/orders/orders-table";
+import OrdersSearch from "src/sections/orders/orders-search";
 import TableLoading from "src/components/table-loading";
 
 const Orders = () => {
@@ -17,6 +18,7 @@ const Orders = () => {
   const [pageNumber, setPageNumber] = useState(0);
   const [hasPrev, setHasPrev] = useState(false);
   const [hasNext, setHasNext] = useState(false);
+  const [search, setSearch] = useState();
   const { data: session } = useSession();
 
   const orderSession = (session) => {
@@ -38,7 +40,7 @@ const Orders = () => {
     }
   }
 
-  const { data, isLoading, isError } = GetOrdersDataSwr(fetchData, orderSession(session));
+  const { data, isLoading, isError } = GetOrdersDataSwr({fetchData, session:orderSession(session), search:search});
 
   const handlePageChange = useCallback(
     async (value) => {
@@ -82,9 +84,9 @@ const Orders = () => {
                 <Typography variant="h4">Orders</Typography>
               </Stack>
             </Stack>
-            {
-              //<QuotesSearch />
-            }
+              <Box sx={{ mb: 2 }}>
+              <OrdersSearch setSearch={setSearch}/>
+            </Box>
             {isLoading && <TableLoading />}
             {isError && <h2>Error loading data</h2>}
             {data && (

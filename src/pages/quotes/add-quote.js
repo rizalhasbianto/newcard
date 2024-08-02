@@ -47,7 +47,7 @@ const Page = () => {
       "createdBy.name": session.user.detail.name,
     };
     const sort = "DSC";
-    const resQuotes = await GetQuotesData(page, rowsPerPage, quoteQuery, sort);
+    const resQuotes = await GetQuotesData({page, rowsPerPage, quoteQuery, sort});
 
     if (!resQuotes) {
       console.log("error get quotes data!");

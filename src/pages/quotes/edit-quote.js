@@ -30,7 +30,7 @@ const Page = () => {
     const sort = "DSC"
     const type = "id"
     
-    const resQuotes = await GetQuotesData(page, rowsPerPage, query, sort, type)
+    const resQuotes = await GetQuotesData({page, rowsPerPage, query, sort, type})
     if (!resQuotes) {
       console.log("error get quotes data!")
       setLoading(false)

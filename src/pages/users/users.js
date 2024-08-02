@@ -32,6 +32,7 @@ const Users = () => {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [addNewUser, setAddNewUser] = useState(false); 
+  const [search, setSearch] = useState();
   const toastUp = useToast();
   const { data: session } = useSession();
   const sessionRole = {
@@ -39,8 +40,7 @@ const Users = () => {
     id:session?.user.detail.id
   }
 
-  const { data: users, isLoading, isError, mutate, isValidating } = GetUsers({page, rowsPerPage, sessionRole});
-  console.log("users", users)
+  const { data: users, isLoading, isError, mutate, isValidating } = GetUsers({page, rowsPerPage, sessionRole, search});
 
   const handlePageChange = useCallback((event, value) => {
     setPage(value);
@@ -115,7 +115,9 @@ const Users = () => {
                 </Button>
               </div>
             </Stack>
-
+            <Box sx={{ mb: 2 }}>
+                      <UsersSearch setSearch={setSearch}/>
+                    </Box>
             {isLoading && <TableLoading />}
 
             {(isError || (users && users.data.user.length === 0)) && (
@@ -128,9 +130,6 @@ const Users = () => {
               <Box>
                 {users.data.user.length > 0 && (
                   <Collapse in={!addNewUser}>
-                    <Box sx={{ mb: 2 }}>
-                      <UsersSearch />
-                    </Box>
                     <UsersTable
                       count={users.data.count}
                       items={users.data.user}

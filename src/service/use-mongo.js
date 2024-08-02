@@ -3,7 +3,8 @@ import { utcToZonedTime } from "date-fns-tz";
 
 const today = utcToZonedTime(new Date(), "America/Los_Angeles");
 
-export const GetQuotesData = async (page, rowsPerPage, query, sort, type) => {
+export const GetQuotesData = async (props) => {
+  const { page, rowsPerPage, query, sort, type } = props;
   const quotesRes = await useDataService("/api/quotes/get-quotes", "POST", {
     page: page,
     postPerPage: rowsPerPage,
@@ -15,7 +16,8 @@ export const GetQuotesData = async (page, rowsPerPage, query, sort, type) => {
   return quotesRes;
 };
 
-export const GetQuotesDataSwr = (page, rowsPerPage, query, sort, type) => {
+export const GetQuotesDataSwr = (props) => {
+  const { page, rowsPerPage, session, sort, type, search } = props;
   const theType = type ? type : "any";
   const queryPath =
     "page=" +
@@ -23,7 +25,9 @@ export const GetQuotesDataSwr = (page, rowsPerPage, query, sort, type) => {
     "&postPerPage=" +
     rowsPerPage +
     "&query=" +
-    JSON.stringify(query) +
+    JSON.stringify(session) +
+    "&search=" +
+    search +
     "&sort=" +
     sort +
     "&type=" +
@@ -152,7 +156,8 @@ export const GetCompanies = async (props) => {
 };
 
 export const GetCompaniesSwr = (props) => {
-  const { page, postPerPage, query, withQuote = true } = props;
+  const { page, postPerPage, query, withQuote = true, search } = props;
+  console.log("search2", search)
   const queryString = query ? JSON.stringify(query) : "";
   const queryPath =
     "withQuote==" +
@@ -163,6 +168,8 @@ export const GetCompaniesSwr = (props) => {
     postPerPage +
     "&query=" +
     queryString +
+    "&search=" +
+    search +
     "&avatar=true";
   const comapanyRes = useSwrData("/api/company/get-companies", queryPath);
 
@@ -458,7 +465,7 @@ export const FindUserById = async (userId) => {
 };
 
 export const GetUsers = (props) => {
-  const { page, rowsPerPage, sessionRole, query, type } = props;
+  const { page, rowsPerPage, sessionRole, query, type, search } = props;
   const theType = type ? type : "any";
   const queryString = query ? JSON.stringify(query) : "";
   const querySessionRole = sessionRole ? JSON.stringify(sessionRole) : "";
@@ -471,6 +478,8 @@ export const GetUsers = (props) => {
     querySessionRole +
     "&query=" +
     queryString +
+    "&search=" +
+    search +
     "&type=" +
     theType;
   const mongoRes = useSwrData("/api/auth/get-users", queryPath);

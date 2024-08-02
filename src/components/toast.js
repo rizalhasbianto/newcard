@@ -5,7 +5,7 @@ export default function Toast(props) {
   const { toastStatus, handleStatus, toastMessage } = props;
   return (
     <Stack variant={"alert"} spacing={2} onClick={() => handleStatus("")}>
-      <Slide direction="left" in={toastStatus ? true : false} mountOnEnter unmountOnExit>
+      <Slide direction="up" in={toastStatus ? true : false} mountOnEnter unmountOnExit>
         {toastStatus === "loading" ? (
           <Alert
             severity={"info"}

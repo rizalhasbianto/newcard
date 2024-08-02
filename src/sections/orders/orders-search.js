@@ -1,15 +1,21 @@
-import MagnifyingGlassIcon from '@heroicons/react/24/solid/MagnifyingGlassIcon';
-import { Card, InputAdornment, OutlinedInput, SvgIcon } from '@mui/material';
+import { useCallback, useState, useEffect } from "react";
 
-const QuotesSearch = ({setSearch}) => {
+import MagnifyingGlassIcon from '@heroicons/react/24/solid/MagnifyingGlassIcon';
+import { Card, InputAdornment, OutlinedInput, SvgIcon, Box, Stack } from '@mui/material';
+
+
+const OrdersSearch = ({setSearch}) => {
+  const [value, setValue] = useState([0, 3000]);
   const handleChange = (event) => {
     setSearch(event.target.value)
   };
-return (
-  <Card sx={{ p: 2 }}>
+  return (
+  <Card sx={{ p: 2 }} >
+    <Stack direction="row" spacing={2}>
     <OutlinedInput
       defaultValue=""
-      placeholder="Search quote by id or company"
+      fullWidth
+      placeholder="Search by id or customer"
       startAdornment={(
         <InputAdornment position="start">
           <SvgIcon
@@ -20,10 +26,11 @@ return (
           </SvgIcon>
         </InputAdornment>
       )}
-      sx={{ maxWidth: 500, minWidth: 300 }}
+      sx={{ maxWidth: 300 }}
       onChange={handleChange}
     />
+    </Stack>
   </Card>
 )};
 
-export default QuotesSearch
+export default OrdersSearch

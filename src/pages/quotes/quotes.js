@@ -15,33 +15,35 @@ import { useToast } from "src/hooks/use-toast";
 const Quotes = () => {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [search, setSearch] = useState();
   const toastUp = useToast();
   const { data: session } = useSession();
 
   const quoteQuery = (session) => {
-    switch(session?.user.detail.role) {
+    switch (session?.user.detail.role) {
       case "admin":
         return {
           status: { $nin: ["new", "draft"] },
-        }
+        };
       case "sales":
         return {
           status: { $nin: ["new", "draft"] },
-          "company.sales.id":session?.user.detail.id,
-        }
+          "company.sales.id": session?.user.detail.id,
+        };
       default:
         return {
           status: { $nin: ["new", "draft"] },
-          "company.name":session?.user.detail.company.companyName
-        }
+          "company.name": session?.user.detail.company.companyName,
+        };
     }
-  }
+  };
 
-  const { data, isLoading, isError, mutate, isValidating } = GetQuotesDataSwr( 
+  const { data, isLoading, isError, mutate, isValidating } = GetQuotesDataSwr({
     page,
     rowsPerPage,
-    quoteQuery(session)
-  );
+    session: quoteQuery(session),
+    search,
+  });
 
   useEffect(() => {
     if (isValidating) {
@@ -98,9 +100,7 @@ const Quotes = () => {
                 </Link>
               </div>
             </Stack>
-            {
-              //<QuotesSearch />
-            }
+            {<QuotesSearch setSearch={setSearch} />}
             {isLoading && <TableLoading />}
             {(isError || (data && data.data.quote.length === 0)) && (
               <Typography variant="h5" textAlign={"center"}>

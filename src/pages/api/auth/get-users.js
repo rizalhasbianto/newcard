@@ -11,6 +11,7 @@ export default async function getUsers(req, res) {
   const sessionRole = bodyObject.sessionRole ? JSON.parse(bodyObject.sessionRole) : {};
   const postPerPage = bodyObject.postPerPage ? Number(bodyObject.postPerPage) : 10;
   const skip = (Number(bodyObject.page) + 1) * bodyObject.postPerPage - bodyObject.postPerPage;
+  const search = bodyObject.search && bodyObject.search !== "undefined" ? bodyObject.search : "";
 
   const companyList = [];
   if (sessionRole.role === "sales") {
@@ -28,8 +29,18 @@ export default async function getUsers(req, res) {
     ? { ...queryObjectParse }
     : { ...queryObjectParse, role: { $nin: ["admin"] } };
   const queryUsers = {
-    ...queryObject,
-    ...queryRole,
+    $and: [
+      {
+        ...queryObject,
+        ...queryRole,
+      },
+      {
+        $or: [
+          { name: { $regex: search, $options: "i" } },
+          { email: { $regex: search, $options: "i" } },
+        ],
+      },
+    ],
   };
 
   const data = await db
@@ -41,17 +52,17 @@ export default async function getUsers(req, res) {
     .limit(postPerPage)
     .toArray();
 
-  data.map(async(item) => {
-    if(item.companyId) {
+  data.map(async (item) => {
+    if (item.companyId) {
       const data = await db
-      .collection(collectionCompany)
-      .find({ _id: new ObjectId(item.companyId)})
-      .project({ name: 1, marked: 1 })
-      .limit(1)
-      .toArray();
-      item.companyData = data[0]
+        .collection(collectionCompany)
+        .find({ _id: new ObjectId(item.companyId) })
+        .project({ name: 1, marked: 1 })
+        .limit(1)
+        .toArray();
+      item.companyData = data[0];
     }
-  })
+  });
 
   const numberOfDoc = await db.collection(collection).countDocuments(queryUsers);
   const resData = {

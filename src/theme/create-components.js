@@ -30,8 +30,9 @@ export function createComponents(config) {
           props: { variant: "alert" },
           style: {
             position: "fixed",
-            top: "20%",
-            right: "0",
+            bottom: "20px",
+            left: "50%",
+            transform: "translateX(0%)",
             maxWidth: "500px",
             zIndex: "3",
             cursor: "pointer",

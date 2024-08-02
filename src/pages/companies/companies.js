@@ -35,6 +35,7 @@ const Companies = () => {
   const [shipTo, setShipTo] = useState();
   const [companyName, setCompanyName] = useState();
   const [companyContact, setCompanyContact] = useState();
+  const [search, setSearch] = useState();
 
   const { data: session } = useSession();
   const toastUp = useToast();
@@ -49,11 +50,12 @@ const Companies = () => {
         return;
     }
   };
-
+console.log("search 1", search)
   const { data, isLoading, isError, mutate } = GetCompaniesSwr({
     page: page - 1, 
     postPerPage: postPerPage, 
-    query: companyQuery(session)
+    query: companyQuery(session),
+    search
   });
 
   const [count, setCount] = useState(0);
@@ -104,9 +106,7 @@ const Companies = () => {
                 </Button>
               </div>
             </Stack>
-            {
-              //<CompaniesSearch />
-            }
+            <CompaniesSearch setSearch={setSearch}/>
             <Collapse in={addNewCompany}>
               <Card>
                 <CardContent>

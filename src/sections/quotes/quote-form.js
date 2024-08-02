@@ -95,7 +95,7 @@ const QuotesForm = (props) => {
         return;
       }
 
-      const defaultContact = company.contact.find((itm) => itm.default);
+      const defaultContact = company.contacts.find((itm) => itm.default);
       const companyBill = {
         name: company.name,
         contact: defaultContact,

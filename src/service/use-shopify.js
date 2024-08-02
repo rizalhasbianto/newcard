@@ -204,18 +204,21 @@ export const GetProductsMeta = async (inputValue) => {
   return sendToShopify;
 };
 
-export const GetOrdersDataSwr = (page, session) => {
+export const GetOrdersDataSwr = (props) => {
+  const {fetchData, session, search} = props
   const queryPath =
     "page=" +
-    page.direction +
+    fetchData.direction +
     "&startCursor=" +
-    page.startCursor +
+    fetchData.startCursor +
     "&endCursor=" +
-    page.endCursor +
+    fetchData.endCursor +
     "&session=" +
     session.session +
     "&sessionId=" +
-    session.id;
+    session.id +
+    "&search=" +
+    search;
   const quotesRes = useSwrData("/api/shopify/get-orders", queryPath);
 
   return quotesRes;

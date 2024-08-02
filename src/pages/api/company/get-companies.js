@@ -11,18 +11,24 @@ export default async function getQuotes(req, res) {
   const postPerPage = bodyObject.postPerPage ? Number(bodyObject.postPerPage) : 10;
   const skip = (Number(bodyObject.page) + 1) * bodyObject.postPerPage - bodyObject.postPerPage;
 
-  const queryCompany = (filterData) => {
-    if (!filterData || filterData === "undefined") return {};
-    const queryObj = JSON.parse(filterData);
+  const queryCompany = (filterData, search) => {
+    const query = []
+    const queryObj = !filterData || filterData === "undefined" ? {} : JSON.parse(filterData);
     if (queryObj.id) {
-      return { _id: new ObjectId(queryObj.id) };
+      query.push( { _id: new ObjectId(queryObj.id) });
+    } else {
+      query.push( queryObj );
     }
-    return queryObj;
+    if (search && search !== "undefined") {
+      query.push( {name:{$regex:search,$options:'i'}} )
+    }
+
+    return {$and: query};
   };
 
   const data = await db
     .collection(collectionCompany)
-    .find(queryCompany(bodyObject.query))
+    .find(queryCompany(bodyObject.query, bodyObject.search))
     .project(!bodyObject.avatar ? { avatar: 0 } : "")
     .sort({ _id: -1 })
     .skip(skip)
