@@ -319,7 +319,7 @@ const QuotesForm = (props) => {
       })
     );
     if (!resGetCompanyList) return;
-    
+
     companyList = resGetCompanyList.data.company;
     const selectedCompany = companyList.find(
       (company) => company._id === companyID
@@ -429,7 +429,7 @@ const QuotesForm = (props) => {
                 toastUp={toastUp}
                 session={session}
                 type="quote"
-                mutate={handleSetNewCompany}
+                handleSetNewCompany={handleSetNewCompany}
               />
             </Collapse>
           </Box>

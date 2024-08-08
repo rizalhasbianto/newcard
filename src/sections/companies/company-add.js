@@ -42,7 +42,7 @@ import {
 import { CreateCompanyShopify, GetShopifyCatalogs } from "src/service/use-shopify";
 
 const AddCompany = (props) => {
-  const { setAddNewCompany, toastUp, type, session, mutate } = props;
+  const { setAddNewCompany, toastUp, type, session, mutate, handleSetNewCompany } = props;
 
   const [file, setFile] = useState();
   const [preview, setPreview] = useState();
@@ -225,7 +225,12 @@ const AddCompany = (props) => {
           setLoadSave(false);
           return;
         }
-        mutate({companyID:resSaveCompany.data.insertedId});
+        if(handleSetNewCompany) {
+          handleSetNewCompany({companyID:resSaveCompany.data.insertedId})
+        } else {
+          mutate()
+        }
+        
       }
 
       toastUp.handleStatus("success");

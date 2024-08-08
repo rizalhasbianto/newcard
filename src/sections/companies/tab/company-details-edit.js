@@ -39,7 +39,7 @@ const CompanyDetailsEdit = (props) => {
   const query = { role: "sales" };
   const { data: users, isLoading } = GetUsers(page, postPerPage, "admin", query);
 
-  const defaultContact = data?.contacts.find((item) => item.default).detail;
+  const defaultContact = data?.contacts.find((item) => item.default);
   const formik = useFormik({
     initialValues: {
       id: data?._id,
@@ -50,7 +50,7 @@ const CompanyDetailsEdit = (props) => {
       state: data?.location.state,
       city: data?.location.city,
       postal: data?.location.zip,
-      contact: defaultContact.email,
+      contact: defaultContact?.detail.email,
       sales: data?.sales.id,
       shipping: data?.shipTo.find((item) => item.default).locationName,
       billing: data?.defaultBilling || "",
@@ -96,6 +96,7 @@ const CompanyDetailsEdit = (props) => {
       }
 
       if (submitCondition) {
+        console.log("run edit data")
         if (values.sales !== data.sales.id) {
           const newSalesDefault = users.data.user.find((item) => item._id === values.sales);
           values.newSales = {
@@ -105,11 +106,10 @@ const CompanyDetailsEdit = (props) => {
         } else {
           values.newSales = data.sales;
         }
-
-        if (defaultContact.email !== values.email) {
-          const newContactDefault = [...data.contact];
+        if (defaultContact.detail.email !== values.contact) {
+          const newContactDefault = [...data.contacts];
           newContactDefault.map((item, i) => {
-            if (item.email === values.contact) {
+            if (item.detail.email === values.contact) {
               item.default = true;
             } else {
               item.default = false;
@@ -117,9 +117,8 @@ const CompanyDetailsEdit = (props) => {
           });
           values.contact = newContactDefault;
         } else {
-          values.contact = data.contact;
+          values.contact = data.contacts;
         }
-
         const resSaveCompany = await UpdateCompanyInfoToMongo(values);
         if (!resSaveCompany) {
           toastUp.handleStatus("error");
@@ -127,6 +126,7 @@ const CompanyDetailsEdit = (props) => {
           setLoadSave(false);
           return;
         }
+        console.log("run edit data 3")
         mutate();
         setLoadSave(false);
         toastUp.handleStatus("success");

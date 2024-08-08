@@ -51,7 +51,7 @@ const CompanyUsers = (props) => {
       lastName:
         splitName(data?.contacts[0].detail?.name)[1] +
         (splitName(data?.contacts[0].detail?.name)[2]
-          ? " " + splitName(data?.contact[0].detail?.name)[2]
+          ? " " + splitName(data?.contacts[0].detail?.name)[2]
           : ""),
       phone: data?.contacts[0].detail?.phone,
       default: data?.contacts[0].detail?.default,
@@ -67,7 +67,7 @@ const CompanyUsers = (props) => {
     }),
     onSubmit: async (values, helpers) => {
       setLoadSave(true);
-      if (newUser || values.email !== data?.contact[value - 1].detail.email) {
+      if (newUser || values.email !== data?.contacts[value - 1].detail.email) {
         const checkUser = await CheckUserEmail(values.email);
         if (!checkUser) {
           helpers.setStatus({ success: false });
@@ -148,7 +148,7 @@ const CompanyUsers = (props) => {
         const addNewUser = await AddNewUserToCompanyMongo({
           companyId: data._id,
           newUserData: { id: resAddUser.data.insertedId, default: false },
-          userData: data.contact,
+          userData: data.contacts,
           shopifyCustomerId,
         });
         if (!addNewUser) {
@@ -181,7 +181,7 @@ const CompanyUsers = (props) => {
   const handleTabChange = useCallback(
     (event, newValue) => {
       setValue(newValue);
-      if (newValue > data?.contact.length) {
+      if (newValue > data?.contacts.length) {
         setNewUser(true);
         formik.setValues({
           email: "",
@@ -192,7 +192,7 @@ const CompanyUsers = (props) => {
         });
       } else {
         setNewUser(false);
-        const selectedUser = data?.contact[newValue - 1].detail;
+        const selectedUser = data?.contacts[newValue - 1].detail;
         formik.setValues({
           email: selectedUser.email,
           firstName: splitName(selectedUser.name)[0],
@@ -214,7 +214,7 @@ const CompanyUsers = (props) => {
     const resSaveData = await UpdateCompanyContactDefault({
       companyId: data._id,
       defaultContact: defaultContact.userId,
-      userData: data.contact,
+      userData: data.contacts,
     });
 
     if (!resSaveData) {

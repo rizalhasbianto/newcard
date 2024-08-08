@@ -50,23 +50,23 @@ const Companies = () => {
         return;
     }
   };
-console.log("search 1", search)
-  const { data, isLoading, isError, mutate } = GetCompaniesSwr({
+
+  const { data:companiesData, isLoading, isError, mutate } = GetCompaniesSwr({
     page: page - 1, 
     postPerPage: postPerPage, 
     query: companyQuery(session),
     search
   });
-
+console.log("data return", companiesData)
   const [count, setCount] = useState(0);
   const handleChange = (event, value) => {
     setPage(value);
   };
 
   useEffect(() => {
-    if (!data) return;
-    setCount(Math.ceil(data.data.count / 6));
-  }, [data]);
+    if (!companiesData) return;
+    setCount(Math.ceil(companiesData.data.count / 6));
+  }, [companiesData]);
 
   return (
     <>
@@ -113,15 +113,8 @@ console.log("search 1", search)
                   <AddCompany
                     setAddNewCompany={setAddNewCompany}
                     toastUp={toastUp}
-                    getSelectedVal={true}
-                    setCompanies={setCompanies}
-                    setShipToList={setShipToList}
-                    setLocation={setLocation}
-                    setShipTo={setShipTo}
-                    setCompanyName={setCompanyName}
-                    GetCompanies={GetCompanies}
-                    setCompanyContact={setCompanyContact}
                     session={session}
+                    type="companies"
                     mutate={mutate}
                   />
                 </CardContent>
@@ -130,16 +123,16 @@ console.log("search 1", search)
             <Collapse in={!addNewCompany}>
               {isLoading && <CardLoading count={3} />}
               <Grid container spacing={3}>
-                {(isError || (data && data.data.company.length === 0)) && (
+                {(isError || (companiesData && companiesData?.data?.company?.length === 0)) && (
                   <Grid xl={12} justifyItems={"center"} alignItems={"center"}>
                     <Typography variant="h5" textAlign={"center"}>
                       No data found!
                     </Typography>
                   </Grid>
                 )}
-                {data &&
-                  data.data.company.map((company, i) => {
-                    const getCurrentQuote = data.data.relatedQuote.filter(
+                {companiesData &&
+                  companiesData?.data?.company.map((company, i) => {
+                    const getCurrentQuote = companiesData?.data?.relatedQuote.filter(
                       (item) => item.company.name === company.name
                     );
                     return (
