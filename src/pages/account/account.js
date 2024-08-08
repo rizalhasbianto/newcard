@@ -56,13 +56,13 @@ const Account = () => {
               <Grid container spacing={3}>
                 <Grid xs={12} md={6} lg={4}>
                 <Stack spacing={3}>
-                  <AccountProfile userData={userData.user} />
+                  <AccountProfile userData={userData?.user} />
                   </Stack>
                 </Grid>
                 <Grid xs={12} md={6} lg={8}>
                   <Stack spacing={3}>
                     <SettingsNotifications />
-                    <SettingsPassword userData={userData.user}/>
+                    <SettingsPassword userData={userData?.user}/>
                   </Stack>
                 </Grid>
               </Grid>
