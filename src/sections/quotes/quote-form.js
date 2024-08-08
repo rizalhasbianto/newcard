@@ -16,7 +16,7 @@ import {
   Typography,
   TextField,
   Stack,
-} from "@mui/material"; 
+} from "@mui/material";
 
 import { SelectProducts } from "./add-products";
 import QuoteSelectCompany from "./quote-select-company";
@@ -55,7 +55,7 @@ const QuotesForm = (props) => {
   const toastUp = useToast();
 
   const handleSubmit = useCallback(
-    async (props) => { 
+    async (props) => {
       const {
         type = "draft",
         company = selectedCompany,
@@ -64,7 +64,7 @@ const QuotesForm = (props) => {
         finalDiscount = discount,
         selectedQuoteId = quoteId,
         selectedPayment = payment,
-        currentTabContent = tabContent
+        currentTabContent = tabContent,
       } = props;
       setButtonLoading(type);
 
@@ -87,7 +87,8 @@ const QuotesForm = (props) => {
       }
 
       if (type === "draft") {
-        const draftMessage = type === currentTabContent.status ? "Quote updated!!!" : "Quote saved as draft!!!"
+        const draftMessage =
+          type === currentTabContent.status ? "Quote updated!!!" : "Quote saved as draft!!!";
         toastUp.handleStatus("success");
         toastUp.handleMessage(draftMessage);
         reqQuotesData(0, 50, tabIndex);
@@ -187,8 +188,18 @@ const QuotesForm = (props) => {
       toastUp.handleMessage("Invoice sent!!!");
     },
 
-   
-    [selectedCompany, shipTo, quotesList, discount, quoteId, payment, tabContent, reqQuotesData, toastUp, tabIndex]
+    [
+      selectedCompany,
+      shipTo,
+      quotesList,
+      discount,
+      quoteId,
+      payment,
+      tabContent,
+      reqQuotesData,
+      toastUp,
+      tabIndex,
+    ]
   );
 
   const companyQuery = (role) => {
@@ -205,7 +216,7 @@ const QuotesForm = (props) => {
   const GetCompaniesData = useCallback(
     async (page, rowsPerPage) => {
       let companyList;
-      let updatedVariantData
+      let updatedVariantData;
       if (companies.length === 0) {
         const resGetCompanyList = await Promise.resolve(
           GetCompanies({
@@ -229,28 +240,35 @@ const QuotesForm = (props) => {
           const selectedCompany = companyList.find(
             (company) => company.name === tabContent.company.name
           );
+          console.log("companyList", companyList)
+          console.log("selectedCompany", selectedCompany)
           const selectedLocation = selectedCompany?.shipTo.find(
             (ship) => ship.locationName === tabContent.company.shipTo
           );
 
-          if(tabContent.quotesList && tabContent.quotesList.length > 0) {
-  
-            const variantIDs = tabContent.quotesList.map((itm) => itm.variant.id)
-            const variantUpdated = await GetProductVariantsShopify({variantIDs, shopifyCompanyLocationID:selectedCompany.shopifyCompanyLocationId})
+          if (tabContent.quotesList && tabContent.quotesList.length > 0) {
+            const variantIDs = tabContent.quotesList.map((itm) => itm.variant.id);
+            const variantUpdated = await GetProductVariantsShopify({
+              variantIDs,
+              shopifyCompanyLocationID: selectedCompany.shopifyCompanyLocationId,
+            });
             tabContent.quotesList.forEach((itm) => {
               //const variant = itm.variant
-              const findVariant = variantUpdated.newData.data.nodes.find((variant) => variant.id === itm.variant.id);
-              itm.variant.price.amount = findVariant.price
-              itm.variant.currentlyNotInStock = findVariant.inventoryQuantity > 0 ? false : true
-              itm.variant.quantityAvailable = findVariant.inventoryQuantity
-              if(findVariant[`company_${selectedCompany.shopifyCompanyLocationId}`]) {
+              const findVariant = variantUpdated.newData.data.nodes.find(
+                (variant) => variant.id === itm.variant.id
+              );
+              itm.variant.price.amount = findVariant.price;
+              itm.variant.currentlyNotInStock = findVariant.inventoryQuantity > 0 ? false : true;
+              itm.variant.quantityAvailable = findVariant.inventoryQuantity;
+              if (findVariant[`company_${selectedCompany.shopifyCompanyLocationId}`]) {
                 itm.variant.companyPrice = {
                   node: {
-                    [`company_${selectedCompany.shopifyCompanyLocationId}`] : findVariant[`company_${selectedCompany.shopifyCompanyLocationId}`]
-                  }
-                }
+                    [`company_${selectedCompany.shopifyCompanyLocationId}`]:
+                      findVariant[`company_${selectedCompany.shopifyCompanyLocationId}`],
+                  },
+                };
               }
-            })
+            });
           }
 
           setSelectedCompany(selectedCompany);
@@ -266,7 +284,7 @@ const QuotesForm = (props) => {
 
         setQuoteId(tabContent._id);
         setDiscount(tabContent.discount);
-        setPayment(tabContent.payment)
+        setPayment(tabContent.payment);
       }
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -289,6 +307,31 @@ const QuotesForm = (props) => {
     toastUp.handleStatus("error");
     toastUp.handleMessage("Failed save collection!!!");
   }, [collectionName, quotesList, toastUp]);
+
+  const handleSetNewCompany = async(props) => {
+    const { companyID } = props
+    let companyList;
+    const resGetCompanyList = await Promise.resolve(
+      GetCompanies({
+        page: 0,
+        postPerPage: 50,
+        query: companyQuery(session.user.detail.role),
+      })
+    );
+    if (!resGetCompanyList) return;
+    
+    companyList = resGetCompanyList.data.company;
+    const selectedCompany = companyList.find(
+      (company) => company._id === companyID
+    );
+    const selectedLocation = selectedCompany?.shipTo.find(
+      (ship) => ship.default
+    );
+    setCompanies(companyList);
+    setSelectedCompany(selectedCompany);
+    setShipToList(selectedCompany?.shipTo);
+    setShipTo(selectedLocation);
+  }
 
   useEffect(() => {
     GetCompaniesData(0, 50);
@@ -380,7 +423,15 @@ const QuotesForm = (props) => {
                 handleSubmit={handleSubmit}
               />
             </Collapse>
-            <Collapse in={addNewCompany}></Collapse>
+            <Collapse in={addNewCompany}>
+              <AddCompany
+                setAddNewCompany={setAddNewCompany}
+                toastUp={toastUp}
+                session={session}
+                type="quote"
+                mutate={handleSetNewCompany}
+              />
+            </Collapse>
           </Box>
         </CardContent>
       </Card>
@@ -478,7 +529,7 @@ const QuotesForm = (props) => {
                 return (
                   <LoadingButton
                     color="primary"
-                    onClick={() => handleSubmit({type:button.action})}
+                    onClick={() => handleSubmit({ type: button.action })}
                     loading={buttonloading === button.action ? true : false}
                     loadingPosition="start"
                     startIcon={<SaveIcon />}

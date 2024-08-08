@@ -6,64 +6,41 @@ import {
   CardActions,
   CardContent,
   Divider,
-  Typography
-} from '@mui/material';
+  Typography,
+} from "@mui/material";
+import Link from "next/link";
+import { stringAvatar } from "src/helper/handelCompanyAvatar";
 
-const user = {
-  avatar: '/assets/avatars/avatar-anika-visser.png',
-  city: 'Los Angeles',
-  country: 'USA',
-  jobTitle: 'Senior Developer',
-  name: 'Anika Visser',
-  timezone: 'GTM-7'
-};
+export const AccountProfile = (props) => {
+  const { userData } = props;
 
-export const AccountProfile = () => (
-  <Card>
-    <CardContent>
-      <Box
-        sx={{
-          alignItems: 'center',
-          display: 'flex',
-          flexDirection: 'column'
-        }}
-      >
-        <Avatar
-          src={user.avatar}
+  return (
+    <Card>
+      <CardContent>
+        <Box
           sx={{
-            height: 80,
-            mb: 2,
-            width: 80
+            alignItems: "center",
+            display: "flex",
+            flexDirection: "column",
           }}
-        />
-        <Typography
-          gutterBottom
-          variant="h5"
         >
-          {user.name}
-        </Typography>
-        <Typography
-          color="text.secondary"
-          variant="body2"
-        >
-          {user.city} {user.country}
-        </Typography>
-        <Typography
-          color="text.secondary"
-          variant="body2"
-        >
-          {user.timezone}
-        </Typography>
-      </Box>
-    </CardContent>
-    <Divider />
-    <CardActions>
-      <Button
-        fullWidth
-        variant="text"
-      >
-        Upload picture
-      </Button>
-    </CardActions>
-  </Card>
-);
+          <Avatar {...stringAvatar(userData.name, "large")}/>
+          <Typography gutterBottom variant="h5" sx={{ textTransform: "capitalize", mt:2 }}>
+            {userData.name}
+          </Typography>
+          <Typography color="text.secondary" variant="body2">
+            {userData.email} | {userData?.detail.company?.companyName}
+          </Typography>
+        </Box>
+      </CardContent>
+      <Divider />
+      <CardActions>
+        <Button fullWidth variant="text">
+          <Link href={`account/company/${userData?.detail.company?.companyId}`} passHref>
+            Edit company
+          </Link>
+        </Button>
+      </CardActions>
+    </Card>
+  );
+};

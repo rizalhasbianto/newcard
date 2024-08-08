@@ -279,7 +279,7 @@ export const GetCatalogProducts = async (props) => {
 export const GetShopifyCatalogs = (props) => {
   const shopifyRes = useSwrData(`/api/catalog/get-shopify-catalogs`);
   return shopifyRes;
-};
+}; 
 
 export const GetShopifyCatalog = (catalogId) => {
   const queryPath = `catalogID=${catalogId}`

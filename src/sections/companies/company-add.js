@@ -16,6 +16,7 @@ import {
   Collapse,
   Stack,
   Typography,
+  Chip
 } from "@mui/material";
 import LoadingButton from "@mui/lab/LoadingButton";
 import CancelIcon from "@mui/icons-material/Cancel";
@@ -224,9 +225,9 @@ const AddCompany = (props) => {
           setLoadSave(false);
           return;
         }
+        mutate({companyID:resSaveCompany.data.insertedId});
       }
 
-      mutate();
       toastUp.handleStatus("success");
       toastUp.handleMessage("New Company added, user has been invited!");
       setLoadSave(false);
@@ -439,12 +440,13 @@ const AddCompany = (props) => {
               isOptionEqualToValue={() => {
                 return true;
               }}
-              renderInput={(params) => (
+              renderInput={(params, index) => (
                 <TextField
                   {...params}
                   label="State"
                   variant="outlined"
                   required
+                  key={index+1}
                   error={!!(formik.touched.stateNameLocation && formik.errors.stateNameLocation)}
                   helperText={formik.touched.stateNameLocation && formik.errors.stateNameLocation}
                 />
@@ -766,7 +768,7 @@ const AddCompany = (props) => {
                 </Grid>
               </>
             )}
-          <Grid xs={12} md={4}>
+          <Grid xs={12} md={6}>
             <Stack direction={"row"} alignItems={"end"}>
               <FormLabel error={!!(formik.touched.catalog && formik.errors.catalog)} sx={{ mr: 1 }}>
                 Catalogs

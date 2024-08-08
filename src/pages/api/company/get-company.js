@@ -17,30 +17,31 @@ export default async function mongo(req, res) {
     .limit(1)
     .toArray();
 
-  const dataContact = await db
-    .collection(userCOL)
-    .find({ "company.companyId": new ObjectId(data[0]._id).toString() })
-    .limit(100)
-    .toArray();
-
-  data[0].contacts.map((item) => {
-    const matchContactData = dataContact.find(
-      (contact) => new ObjectId(contact._id).toString() === item.userId
-    );
-    if (matchContactData) {
-      item.detail = matchContactData;
-    }
-  });
-
   let relatedQuote;
-  if (bodyObject.withQuote) {
-    relatedQuote = await db
-      .collection(quotesCOL)
-      .find({ "company.name": data[0].name })
-      .sort({ _id: -1 })
-      .skip(skip)
-      .limit(10)
+  if (data.length > 0) {
+    const dataContact = await db
+      .collection(userCOL)
+      .find({ "company.companyId": new ObjectId(data[0]._id).toString() })
+      .limit(100)
       .toArray();
+
+    data[0].contacts.map((item) => {
+      const matchContactData = dataContact.find(
+        (contact) => new ObjectId(contact._id).toString() === item.userId
+      );
+      if (matchContactData) {
+        item.detail = matchContactData;
+      }
+    });
+    if (bodyObject.withQuote) {
+      relatedQuote = await db
+        .collection(quotesCOL)
+        .find({ "company.name": data[0].name })
+        .sort({ _id: -1 })
+        .skip(skip)
+        .limit(10)
+        .toArray();
+    }
   }
 
   const resData = {

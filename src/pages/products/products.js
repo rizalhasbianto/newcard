@@ -77,8 +77,10 @@ const Products = () => {
 
   const catalogCustomer = useCallback(async (id) => {
     const companyCatalogID = await GetCompanyCatalog({ id });
-    setCatalogCompany([{ id: companyCatalogID.newData[0].shopifyCompanyLocationId }]);
-    setCatalogID(companyCatalogID.newData[0].catalogIDs);
+    if(companyCatalogID.newData && companyCatalogID.newData.length > 0) {
+      setCatalogCompany([{ id: companyCatalogID.newData[0].shopifyCompanyLocationId }]);
+      setCatalogID(companyCatalogID.newData[0].catalogIDs);
+    }
     setRunFetch(true);
   }, []);
 

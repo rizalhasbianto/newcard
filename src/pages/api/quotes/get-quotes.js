@@ -8,7 +8,7 @@ export default async function getQuotes(req, res) {
   const bodyObject = req.method === "POST" ? req.body : req.query;
   const skip = (parseInt(bodyObject.page) + 1) * bodyObject.postPerPage - bodyObject.postPerPage;
   const sort = bodyObject.sort === "ASC" ? {} : { _id: -1 };
-  const search = bodyObject.search !== "undefined" ? bodyObject.search : ""
+  const search = bodyObject.search !== "undefined" ? bodyObject.search : null;
 
   let dataQuotes;
   let find = {};
@@ -28,34 +28,43 @@ export default async function getQuotes(req, res) {
     } else {
       find = bodyObject.query ? JSON.parse(bodyObject.query) : {};
     }
-    console.log("search", search);
-    dataQuotes = await db
-      .collection(collection)
-      .aggregate([
-        {
-          $addFields: {
-            _id: { $toString: "$_id" },
+    if (search) {
+      dataQuotes = await db
+        .collection(collection)
+        .aggregate([
+          {
+            $addFields: {
+              _id: { $toString: "$_id" },
+            },
           },
-        },
-        {
-          $match: {
-            $and: [
-              find,
-              {
-                $or: [
-                  { _id: { $regex: search,$options:'i' } },
-                  { draftOrderNumber: { $regex: search,$options:'i' } },
-                  { "company.name": { $regex: search,$options:'i' } },
-                ],
-              },
-            ],
+          {
+            $match: {
+              $and: [
+                find,
+                {
+                  $or: [
+                    { _id: { $regex: search, $options: "i" } },
+                    { draftOrderNumber: { $regex: search, $options: "i" } },
+                    { "company.name": { $regex: search, $options: "i" } },
+                  ],
+                },
+              ],
+            },
           },
-        },
-      ])
-      .sort(sort)
-      .skip(skip)
-      .limit(parseInt(bodyObject.postPerPage) || 10)
-      .toArray();
+        ])
+        .sort(sort)
+        .skip(skip)
+        .limit(parseInt(bodyObject.postPerPage) || 10)
+        .toArray();
+    } else {
+      dataQuotes = await db
+        .collection(collection)
+        .find(find)
+        .sort(sort)
+        .skip(skip)
+        .limit(parseInt(bodyObject.postPerPage) || 10)
+        .toArray();
+    }
   }
 
   const numberOfDoc = await db.collection(collection).countDocuments(find);

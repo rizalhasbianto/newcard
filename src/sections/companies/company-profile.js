@@ -69,7 +69,8 @@ const CompanyProfile = ({ company, toastUp }) => {
   }, [file]);
 
   const contact = company.contacts.find((item) => item.default === true)
-
+console.log("company.contacts", company.contacts)
+console.log("contact", contact)
   return (
     <Card>
       <CardContent>
@@ -109,7 +110,7 @@ const CompanyProfile = ({ company, toastUp }) => {
             {company.name}
           </Typography>
           <Typography color="text.secondary" variant="body2">
-            {contact.name} / {contact.email}
+            {contact?.detail.name} / {contact?.detail.email}
           </Typography>
         </Box>
       </CardContent>

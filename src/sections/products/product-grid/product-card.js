@@ -88,6 +88,10 @@ const ProductCard = (props) => {
     );
   }, [product]);
 
+  const isSingleOptions = product.node.options.find((itm) =>
+    itm.values.includes("Default Title")
+  );
+
   return (
     <Card
       sx={{
@@ -190,6 +194,7 @@ const ProductCard = (props) => {
           options={product.node.options}
           handleChange={handleChange}
           selectedOpt={selectedOptions}
+          isSingleOptions={isSingleOptions}
         />
       </Stack>
       <Box sx={{ flexGrow: 1 }} />
