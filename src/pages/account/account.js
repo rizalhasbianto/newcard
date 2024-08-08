@@ -52,21 +52,23 @@ const Account = () => {
             <div>
               <Typography variant="h4">Account Details</Typography>
             </div>
-            <div>
-              <Grid container spacing={3}>
-                <Grid xs={12} md={6} lg={4}>
-                <Stack spacing={3}>
-                  <AccountProfile userData={userData?.user} />
-                  </Stack>
+            {userData && (
+              <div>
+                <Grid container spacing={3}>
+                  <Grid xs={12} md={6} lg={4}>
+                    <Stack spacing={3}>
+                      <AccountProfile userData={userData?.user} />
+                    </Stack>
+                  </Grid>
+                  <Grid xs={12} md={6} lg={8}>
+                    <Stack spacing={3}>
+                      <SettingsNotifications />
+                      <SettingsPassword userData={userData?.user} />
+                    </Stack>
+                  </Grid>
                 </Grid>
-                <Grid xs={12} md={6} lg={8}>
-                  <Stack spacing={3}>
-                    <SettingsNotifications />
-                    <SettingsPassword userData={userData?.user}/>
-                  </Stack>
-                </Grid>
-              </Grid>
-            </div>
+              </div>
+            )}
           </Stack>
         </Container>
       </Box>
