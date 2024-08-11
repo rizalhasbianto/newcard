@@ -42,6 +42,9 @@ export default async function getInventory(req, res) {
                         displayName
                         price
                         sku
+                        product {
+                            handle
+                        }
                     }
                 }
             }

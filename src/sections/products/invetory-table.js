@@ -1,3 +1,5 @@
+import { useRouter } from 'next/router'
+
 import {
   Avatar,
   Box,
@@ -22,12 +24,14 @@ import { inventoryHead } from "src/data/tableList";
 
 const InventoryTable = (props) => {
   const { items = [], handlePageChange, pageNumber = 0, hasPrev, hasNext } = props;
+  const router = useRouter()
   const listNumber = pageNumber * 10;
 
   const InvenotryQty = ({ data, selected }) => {
     const qty = data.find((item) => item.name === selected);
     return qty.quantity;
   };
+  console.log("items", items)
   return (
     <Card>
       <Box sx={{ minWidth: 800 }}>
@@ -36,15 +40,17 @@ const InventoryTable = (props) => {
             <TableRow>
               <TableCell padding="checkbox"></TableCell>
               {inventoryHead.map((item, i) => (
-                <TableCell key={i + 1}>{item.title}</TableCell>
+                <TableCell key={i + 1}>
+                  {item.title}
+                </TableCell>
               ))}
             </TableRow>
           </TableHead>
           <TableBody>
             {items.map((item, i) => (
-              <TableRow key={i + 1}>
+              <TableRow hover key={i + 1} sx={{cursor:"pointer"}} onClick={() => router.push(`/products/${item.node.variant.product.handle}/?inventory=yes`)}>
                 <TableCell padding="checkbox">{i + listNumber + 1}</TableCell>
-                <TableCell>{item.node.variant.displayName}</TableCell>
+                <TableCell>{item.node.variant.displayName.replace("- Default Title","")}</TableCell>
                 <TableCell>{item.node.variant.sku}</TableCell>
                 <TableCell>
                   {item.node.inventoryLevels.edges.map((edge, idx) => (

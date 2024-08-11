@@ -47,7 +47,7 @@ export default async function getUsers(req, res) {
     .collection(collection)
     .find(queryUsers)
     .project({ password: 0 })
-    .sort({ _id: -1 })
+    .sort({ signUpDate: -1 })
     .skip(skip)
     .limit(postPerPage)
     .toArray();

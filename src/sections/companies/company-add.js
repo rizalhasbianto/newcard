@@ -213,7 +213,7 @@ const AddCompany = (props) => {
           return;
         }
 
-        const resAddUserToCompany = await AddNewUserToCompanyMongo({
+        const resAddUserToCompany = await AddNewUserToCompanyMongo({ 
           companyId: resSaveCompany.data.insertedId,
           newUserData: { id: resAddUser.data.insertedId, default: true },
           shopifyCustomerId: shopifyCustomerId,

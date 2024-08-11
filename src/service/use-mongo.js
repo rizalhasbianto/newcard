@@ -498,7 +498,7 @@ export const RegisterUser = async (userData, companyId, shopifyCustomerId) => {
     },
     status: userData.password ? "active" : "invited",
     role: userData.role ? userData.role : "customer",
-    signUpDate: userData.password ? utcToZonedTime(new Date(), "America/Los_Angeles") : "",
+    signUpDate: utcToZonedTime(new Date(), "America/Los_Angeles"),
     shopifyCustomerId: shopifyCustomerId,
   });
 

@@ -49,7 +49,7 @@ const UsersTable = (props) => {
               {items.map((customer, index) => {
                 const createdAt = customer.signUpDate ? format(new Date(customer.signUpDate), "dd/MM/yyyy") : "";
                 return (
-                  <TableRow hover key={customer._id} sx={{ cursor: "pointer" }}>
+                  <TableRow hover key={customer._id}>
                     <TableCell padding="checkbox">{index + listNumber + 1}</TableCell>
                     <TableCell>
                       <Stack alignItems="center" direction="row" spacing={2}>
@@ -58,7 +58,7 @@ const UsersTable = (props) => {
                       </Stack>
                     </TableCell>
                     <TableCell>{customer.email}</TableCell>
-                    <TableCell>{customer.companyData?.name}</TableCell>
+                    <TableCell>{customer.company?.companyName}</TableCell>
                     <TableCell>{customer.phone}</TableCell>
                     <TableCell>{createdAt}</TableCell>
                     <TableCell>{customer.role}</TableCell>
