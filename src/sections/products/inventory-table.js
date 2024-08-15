@@ -61,14 +61,16 @@ const InventoryTable = (props) => {
   };
 
   const InvenotryQty = ({ data, selected }) => {
+    if(!data) return
     const qty = data.find((item) => item.name === selected);
     return qty.quantity;
   };
 
-  const InvenotryProductQty = ({ data, selected }) => {
+  const InventoryProductQty = ({ data, selected }) => {
+    if(!data) return
     let qtySum = 0;
     data.forEach((x) => {
-      const qty = x.node.inventoryItem.inventoryLevel.quantities.find(
+      const qty = x.node.inventoryItem.inventoryLevel?.quantities.find(
         (item) => item.name === selected
       );
       qtySum += qty?.quantity ? qty.quantity : 0;
@@ -116,7 +118,7 @@ const InventoryTable = (props) => {
                       </TableCell>
                       <TableCell sx={{ maxWidth: "600px", padding: "5px 16px" }}>
                       <Link href={`/products/${item.node.handle}?inventory=yes`}>
-                        <Stack direction={"row"} alignItems={"center"}>
+                        <Stack direction={"row"} alignItems={"center"} sx={{display:"inline-flex"}}>
                           <Box sx={{ position: "relative", width: "50px", height: "50px", mr: 1 }}>
                             <ImageComponent
                               img={item.node.featuredImage?.url}
@@ -133,7 +135,7 @@ const InventoryTable = (props) => {
                       <TableCell sx={{ padding: "0 16px" }}>
                         <Collapse in={expand === i ? false : true}>
                           <Typography variant="body2" sx={{ textAlign: "center" }}>
-                            <InvenotryProductQty
+                            <InventoryProductQty
                               data={item.node.variants?.edges}
                               selected="committed"
                             />
@@ -143,7 +145,7 @@ const InventoryTable = (props) => {
                       <TableCell sx={{ padding: "0 16px" }}>
                         <Collapse in={expand === i ? false : true}>
                           <Typography variant="body2" sx={{ textAlign: "center" }}>
-                            <InvenotryProductQty
+                            <InventoryProductQty
                               data={item.node.variants?.edges}
                               selected="available"
                             />
@@ -153,7 +155,7 @@ const InventoryTable = (props) => {
                       <TableCell sx={{ padding: "0 16px" }}>
                         <Collapse in={expand === i ? false : true}>
                           <Typography variant="body2" sx={{ textAlign: "center" }}>
-                            <InvenotryProductQty
+                            <InventoryProductQty
                               data={item.node.variants?.edges}
                               selected="on_hand"
                             />
@@ -163,9 +165,9 @@ const InventoryTable = (props) => {
                       <TableCell sx={{ padding: "0 16px" }}>
                         <Collapse in={expand === i ? false : true}>
                           <Typography variant="body2" sx={{ textAlign: "center" }}>
-                            <InvenotryProductQty
+                            <InventoryProductQty
                               data={item.node.variants?.edges}
-                              selected="incomming"
+                              selected="incoming"
                             />
                           </Typography>
                         </Collapse>
@@ -266,7 +268,7 @@ const InventoryTable = (props) => {
                               <Collapse in={expand === i ? true : false}>
                                 <Typography variant="body2" sx={{ textAlign: "center" }}>
                                   <InvenotryQty
-                                    data={varItem.node.inventoryItem.inventoryLevel.quantities}
+                                    data={varItem.node.inventoryItem.inventoryLevel?.quantities}
                                     selected="committed"
                                   />
                                 </Typography>
@@ -276,7 +278,7 @@ const InventoryTable = (props) => {
                               <Collapse in={expand === i ? true : false}>
                                 <Typography variant="body2" sx={{ textAlign: "center" }}>
                                   <InvenotryQty
-                                    data={varItem.node.inventoryItem.inventoryLevel.quantities}
+                                    data={varItem.node.inventoryItem.inventoryLevel?.quantities}
                                     selected="available"
                                   />
                                 </Typography>
@@ -286,7 +288,7 @@ const InventoryTable = (props) => {
                               <Collapse in={expand === i ? true : false}>
                                 <Typography variant="body2" sx={{ textAlign: "center" }}>
                                   <InvenotryQty
-                                    data={varItem.node.inventoryItem.inventoryLevel.quantities}
+                                    data={varItem.node.inventoryItem.inventoryLevel?.quantities}
                                     selected="on_hand"
                                   />
                                 </Typography>
@@ -295,9 +297,9 @@ const InventoryTable = (props) => {
                             <TableCell sx={childRowStyle(i)}>
                               <Collapse in={expand === i ? true : false}>
                                 <Typography variant="body2" sx={{ textAlign: "center" }}>
-                                  {varItem.node.inventoryItem.inventoryLevel.scheduledChanges.nodes
+                                  {varItem.node.inventoryItem.inventoryLevel?.scheduledChanges.nodes
                                     .length > 0
-                                    ? varItem.node.inventoryItem.inventoryLevel.scheduledChanges.nodes.map(
+                                    ? varItem.node.inventoryItem.inventoryLevel?.scheduledChanges.nodes.map(
                                         (qty) =>
                                           `${qty.quantity} at ${format(
                                             new Date(qty.expectedAt),

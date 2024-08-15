@@ -16,6 +16,7 @@ export const ProductInventory = (props) => {
   const { inventoryData } = props;
   const items = inventoryData.newData.data.productByHandle.variants.edges
   const InventoryQty = ({ data, selected }) => {
+    if(!data) return 
     const qty = data.find((item) => item.name === selected);
     return qty.quantity;
   };
@@ -40,30 +41,30 @@ export const ProductInventory = (props) => {
                 <TableCell>
                     <Box>
                       <Typography variant="subtitle2">
-                        <InventoryQty data={item.node.inventoryItem.inventoryLevel.quantities} selected="committed" />
+                        <InventoryQty data={item.node.inventoryItem.inventoryLevel?.quantities} selected="committed" />
                       </Typography>
                     </Box>
                 </TableCell>
                 <TableCell>
                     <Box>
                       <Typography variant="subtitle2">
-                        <InventoryQty data={item.node.inventoryItem.inventoryLevel.quantities} selected="available" />
+                        <InventoryQty data={item.node.inventoryItem.inventoryLevel?.quantities} selected="available" />
                       </Typography>
                     </Box>
                 </TableCell>
                 <TableCell>
                     <Box>
                       <Typography variant="subtitle2">
-                        <InventoryQty data={item.node.inventoryItem.inventoryLevel.quantities} selected="on_hand" />
+                        <InventoryQty data={item.node.inventoryItem.inventoryLevel?.quantities} selected="on_hand" />
                       </Typography>
                     </Box>
                 </TableCell>
                 <TableCell>
                     <Box>
                       <Typography variant="subtitle2">
-                        <InventoryQty data={item.node.inventoryItem.inventoryLevel.quantities} selected="incoming" />
-                        {item.node.inventoryItem.inventoryLevel.scheduledChanges?.nodes.length > 0 
-                        ? ` at ${format(new Date(item.node.inventoryItem.inventoryLevel.scheduledChanges?.nodes[0].expectedAt), "dd/MM/yyyy")}`
+                        <InventoryQty data={item.node.inventoryItem.inventoryLevel?.quantities} selected="incoming" />
+                        {item.node.inventoryItem.inventoryLevel?.scheduledChanges?.nodes.length > 0 
+                        ? ` at ${format(new Date(item.node.inventoryItem.inventoryLevel?.scheduledChanges?.nodes[0].expectedAt), "dd/MM/yyyy")}`
                         : "" 
                       }
                       </Typography>

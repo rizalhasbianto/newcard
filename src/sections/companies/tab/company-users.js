@@ -84,13 +84,13 @@ const CompanyUsers = (props) => {
       }
 
       if (!newUser) {
-        // const resUpdateuser = await UpdateCompanyUserToMongo(data._id, values, data.contact);
-        // if (!resUpdateuser) {
-        //   toastUp.handleStatus("error");
-        //   toastUp.handleMessage("Error update contact!");
-        //   setLoadSave(false);
-        //   return;
-        // }
+         const resUpdateuser = await UpdateCompanyUserToMongo(data._id, values, data.contacts);
+         if (!resUpdateuser) {
+           toastUp.handleStatus("error");
+           toastUp.handleMessage("Error update contact!");
+           setLoadSave(false);
+           return;
+         }
         toastUp.handleStatus("success");
         toastUp.handleMessage("Success update contact!");
         setLoadSave(false);

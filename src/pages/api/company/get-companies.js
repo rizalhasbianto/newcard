@@ -58,6 +58,7 @@ export default async function getData(req, res) {
 
   let relatedQuote = [];
   if (bodyObject.withQuote === "true") {
+    console.log("run get companies with quote")
     relatedQuote = await db
       .collection(collectionQuote)
       .find({ "company.name": { $in: companyNames }, status: "open" })
@@ -75,6 +76,5 @@ export default async function getData(req, res) {
     relatedQuote: relatedQuote,
     count: numberOfDoc,
   };
-console.log()
   res.json({ status: 200, data: resData });
 }

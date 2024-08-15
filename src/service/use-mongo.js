@@ -305,8 +305,13 @@ export const UpdateCompanyCatalog = async (props) => {
 export const AddNewUserToCompanyMongo = async (props) => {
   const { companyId, newUserData, userData = [], shopifyCustomerId } = props;
 
-  if (newUserData.default && userData.length > 0) {
-    userData.map((item) => (item.default = false));
+  if (userData.length > 0) {
+    userData.map((itm) => {
+      delete itm.detail;
+    });
+    if (newUserData.default) {
+      userData.map((item) => (item.default = false));
+    }
   }
 
   const userDataNew = [
@@ -348,13 +353,13 @@ export const UpdateCompanyContactDefault = async (props) => {
 };
 
 export const UpdateCompanyUserToMongo = async (id, updatedData, userData) => {
-  const findUserTarget = userData.findIndex((item) => item.email === updatedData.email);
+  const findUserTarget = userData.findIndex((item) => item.detail.email === updatedData.email);
   const contactUpdate = [...userData];
   contactUpdate[findUserTarget] = {
     name: updatedData.firstName + " " + updatedData.lastName,
     email: updatedData.email,
     phone: updatedData.phone,
-    default: updatedData.default,
+    default: userData[findUserTarget].default,
   };
   const mongoRes = await useDataService("/api/company/update-company", "POST", {
     id: id,
@@ -379,7 +384,7 @@ export const UpdateCompanyShipToMongo = async (id, companyData, shipToData) => {
       state: companyData.stateName.name,
       zip: companyData.postalLocation,
     },
-    default: companyData.default,
+    default: shipToData[findShipTarget].default,
   };
   const mongoRes = await useDataService("/api/company/update-company", "POST", {
     id: id,
