@@ -88,6 +88,14 @@ export const inventoryHead = [
     { title: "Incoming" },
 ]
 
+export const singleInventoryHead = [
+    { title: "Variant" },
+    { title: "Committed" },
+    { title: "Available" },
+    { title: "On Hand" },
+    { title: "Incoming" },
+]
+
 export const catalogCompany = [
     { title: "Name" },
     { title: "contact" },

@@ -4,44 +4,50 @@ import { GetInventorySwr } from "src/service/use-shopify";
 import { Layout as DashboardLayout } from "src/layouts/dashboard/layout";
 import { Box, Container, Typography, Stack } from "@mui/material";
 import TableLoading from "src/components/table-loading";
-import InventoryTable from "src/sections/products/invetory-table";
+import InventoryTable from "src/sections/products/inventory-table";
+import ProductsSearch from "src/sections/products/products-search";
 
 const Page = () => {
-  const [fetchData, setFetchData] = useState({
-    direction: "",
-    startCursor: "",
-    endCursor: "",
+  const [selectedFilter, setSelectedFilter] = useState({
+    productName: "",
+    catalog: "",
+    productType: "",
+    productVendor: "",
+    tag: "",
   });
-  const [pageNumber, setPageNumber] = useState(0);
+  const [selectedVariantFilter, setSelectedVariantFilter] = useState([]);
+  const [cursor, setCursor] = useState({ lastCursor: "" });
+  const [page, setPage] = useState(0);
+  const [totalProducts, setTotalProducts] = useState(0);
+  const productPerPage = 10;
 
-  const [hasPrev, setHasPrev] = useState(false);
-  const [hasNext, setHasNext] = useState(false);
-
-  const { data, isLoading, isError } = GetInventorySwr(fetchData);
-
+  const { data, isLoading, isError } = GetInventorySwr({
+    selectedFilter,
+    selectedVariantFilter,
+    productPerPage,
+    cursor: cursor,
+  });
+  console.log("data", data);
   const handlePageChange = useCallback(
-    async (value) => {
-      setFetchData({
-        direction: value,
-        startCursor: data.newData.pageInfo.startCursor,
-        endCursor: data.newData.pageInfo.endCursor,
-      });
-
-      if (value === "next") {
-        setPageNumber(pageNumber + 1);
+    async (event, value) => {
+      if (value > page) {
+        // go to next page
+        setCursor({ lastCursor: data.newData.pageInfo.endCursor });
       } else {
-        setPageNumber(pageNumber - 1);
+        // go to prev page
+        setCursor({ firstCursor: data.newData.pageInfo.startCursor });
       }
+      setPage(value);
     },
-    [data, pageNumber]
+    [page, data]
   );
 
   useEffect(() => {
-    if (!data) return;
-    setHasPrev(data.newData.pageInfo.hasPreviousPage);
-    setHasNext(data.newData.pageInfo.hasNextPage);
+    if (data) {
+      setTotalProducts(data?.newData.totalCount);
+    }
   }, [data]);
-  
+
   return (
     <>
       <Head>
@@ -55,23 +61,34 @@ const Page = () => {
         }}
       >
         <Container maxWidth="xl">
-        <Stack spacing={3}>
-        <Stack direction="row" justifyContent="space-between" spacing={4}>
+          <Stack spacing={3}>
+            <Stack direction="row" justifyContent="space-between" spacing={4}>
               <Stack spacing={1}>
                 <Typography variant="h4">Inventory</Typography>
               </Stack>
             </Stack>
-          {isLoading && <TableLoading />}
-          {isError && <h2>Error loading data</h2>}
-          {data && (
-            <InventoryTable
-              items={data.newData.edges}
-              handlePageChange={handlePageChange}
-              hasPrev={hasPrev}
-              hasNext={hasNext}
-              pageNumber={pageNumber}
+            <ProductsSearch
+              selectedFilter={selectedFilter}
+              setSelectedFilter={setSelectedFilter}
+              selectedVariantFilter={selectedVariantFilter}
+              setSelectedVariantFilter={setSelectedVariantFilter}
+              filterList={data?.newData?.productFilters}
+              stiky={false}
             />
-          )}
+            {isLoading && <TableLoading />}
+            {isError && <h2>Error loading data</h2>}
+            {data && (
+              <InventoryTable
+                products={data.newData}
+                handlePageChange={handlePageChange}
+                setCursor={setCursor}
+                totalProducts={totalProducts}
+                page={page}
+                productPerPage={productPerPage}
+                isLoading={isLoading}
+                isError={isError}
+              />
+            )}
           </Stack>
         </Container>
       </Box>

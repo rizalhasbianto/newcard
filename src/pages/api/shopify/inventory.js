@@ -35,8 +35,14 @@ export default async function getInventory(req, res) {
                                 location {
                                     name
                                 }
+                                scheduledChanges(first:100) {
+                                    nodes {
+                                        expectedAt
+                                    }
+                                }
                             }
                         }    
+                    
                     }
                     variant {
                         displayName

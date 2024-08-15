@@ -5,6 +5,7 @@ export default async function getProducts(req, res) {
   const productPerPage = req.query.productPerPage ? req.query.productPerPage : 12;
   const productName = req.query.productName ? req.query.productName : "";
   const company = JSON.parse(req.query.company);
+
   const cursor = (cursor, productPerPage) => {
     if (cursor?.lastCursor) {
       return `, first:${productPerPage}, after: "${req.query.lastCursor}"`;
@@ -89,6 +90,7 @@ export default async function getProducts(req, res) {
     }`;
 
   const resGetData = await callShopify(query);
+
   if (resGetData && company && company.length > 0) {
     const prodList = resGetData.data.search.edges.map((prod) =>
       prod.node.id.replace("gid://shopify/Product/", "")
@@ -98,7 +100,7 @@ export default async function getProducts(req, res) {
       prod_${prod}: product(id: "gid://shopify/Product/${prod}") {
         ${company.map(
           (comp) => `
-          variants(first: 100) {
+          variants(first: 100) { 
             edges {
               node {
                 id
@@ -131,5 +133,6 @@ export default async function getProducts(req, res) {
       });
     });
   }
+
   res.status(200).json({ newData: resGetData.data.search });
 }

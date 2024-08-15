@@ -216,7 +216,6 @@ const QuotesForm = (props) => {
   const GetCompaniesData = useCallback(
     async (page, rowsPerPage) => {
       let companyList;
-      let updatedVariantData;
       if (companies.length === 0) {
         const resGetCompanyList = await Promise.resolve(
           GetCompanies({

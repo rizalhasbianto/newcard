@@ -226,7 +226,24 @@ export const GetOrdersDataSwr = (props) => {
 
 export const GetProductByhandleSwr = (handle) => {
   const queryPath = "productHandle=" + handle;
-  const productRes = useSwrData("/api/shopify/get-product-byhandle", queryPath);
+  const runFetch = handle ? true : false
+  const productRes = useSwrData("/api/product/get-product-byhandle", queryPath, runFetch);
+  return productRes;
+};
+
+export const GetInventorySwr = (props) => {
+  const { runFetch } = props
+  const param = generateParams(props)
+  const dataRes = useSwrData("/api/product/get-inventories", param.paramQuery, runFetch);
+  return dataRes;
+};
+
+export const GetSingleInventorySwr = (props) => {
+  const { handle, inventory} = props
+  const runFetch = inventory ? true : false
+  const queryPath = "productHandle=" + handle;
+  const productRes = useSwrData("/api/product/get-single-inventorybyproduct", queryPath, runFetch);
+
   return productRes;
 };
 
@@ -234,12 +251,6 @@ export const GetSingleOrderSwr = (id) => {
   const queryPath = "id=" + id;
   const productRes = useSwrData("/api/shopify/get-single-order", queryPath);
   return productRes;
-};
-export const GetInventorySwr = (page) => {
-  const queryPath =
-    "page=" + page.direction + "&startCursor=" + page.startCursor + "&endCursor=" + page.endCursor;
-  const dataRes = useSwrData("/api/shopify/inventory", queryPath);
-  return dataRes;
 };
 
 export const SyncUserShopify = async (userData) => {

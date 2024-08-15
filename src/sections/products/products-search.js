@@ -35,6 +35,7 @@ const ProductsSearch = (props) => {
     predictiveSearch,
     session,
     quoteCompanyName,
+    stiky=true
   } = props;
 
   const [filterOpt, setFilterOpt] = useState();
@@ -197,7 +198,7 @@ const ProductsSearch = (props) => {
       <Card
         sx={{
           p: 2,
-          position: "sticky",
+          position: stiky ? "sticky" : "relative",
           top: "20px",
           zIndex: "3",
         }}

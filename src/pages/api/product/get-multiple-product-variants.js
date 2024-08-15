@@ -2,8 +2,6 @@ import { adminAPi } from 'src/lib/shopify'
 
 export default async function getMultipleVariants(req, res) {
     const variantIDs = req.query?.variantIDs
-    const shopifyCompanyLocationID = req.query?.shopifyCompanyLocationID
-    console.log(variantIDs)
     const query = `{
       nodes(ids: ${variantIDs}) {
         ... on ProductVariant {

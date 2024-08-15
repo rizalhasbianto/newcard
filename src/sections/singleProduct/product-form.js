@@ -17,9 +17,10 @@ import ProductAlertDialogQuoteList from "src/sections/products/product-alert-dia
 
 import { GetQuotesData, UpdateQuoteItem } from "src/service/use-mongo";
 
+
+
 export const ProductFrom = (props) => {
-  const { selectedProduct, setSelectedImgVariant, setSelectedTab, quoteId, toastUp, session } =
-    props;
+  const { selectedProduct, setSelectedImgVariant, setSelectedTab, quoteId, toastUp, session } = props;
 
   const [buttonloading, setButtonloading] = useState(false);
   const [selectedVariant, setSelectedVariant] = useState("");
@@ -109,7 +110,6 @@ export const ProductFrom = (props) => {
   const isSingleOptions = selectedProduct?.options.find((itm) =>
     itm.values.includes("Default Title")
   );
-
   return (
     <Stack spacing={0} sx={{ mt: 2 }}>
       <ProductAlertDialogQuoteList
@@ -132,9 +132,14 @@ export const ProductFrom = (props) => {
         options={selectedProduct?.options}
         handleChange={handleChange}
         selectedOpt={selectedOptions}
-        isSingleOptions
+        isSingleOptions={isSingleOptions}
       />
       <Grid container justifyContent="center" alignItems="center">
+        <Grid md={12}>
+          <Typography variant="body2" sx={{ mb: 2 }}>
+            Available Quantity : {selectedVariant?.quantityAvailable}
+          </Typography>
+        </Grid>
         <Grid md={2}>
           <TextField
             id="qtySingle"

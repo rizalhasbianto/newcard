@@ -86,6 +86,10 @@ const Productlist = (props) => {
     );
   }, [product]);
 
+  const isSingleOptions = product.node.options.find((itm) =>
+    itm.values.includes("Default Title")
+  );
+
   return (
     <TableRow hover>
       <TableCell padding="checkbox">{noUrut}</TableCell>
@@ -131,6 +135,7 @@ const Productlist = (props) => {
                 options={product.node.options}
                 handleChange={handleChange}
                 selectedOpt={selectedOptions}
+                isSingleOptions={isSingleOptions}
               />
             </Stack>
           </Grid>

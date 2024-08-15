@@ -17,6 +17,7 @@ import {
 } from "@mui/material";
 
 export default function OptionsComponent(props) {
+
   return (
     <Grid container alignItems="center">
       {props?.options?.map((opt, i) => {

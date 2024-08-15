@@ -213,7 +213,7 @@ export const QuickAddProducts = ({ quotesList, setQuotesList, selectedCompany, s
                             <Typography
                               variant="body2"
                               display={"inline-block"}
-                              sx={{ fontWeight: "bold" }}
+                              sx={{ ml:1  }}
                             >
                               {(page * 5) + i + 1}.
                             </Typography>

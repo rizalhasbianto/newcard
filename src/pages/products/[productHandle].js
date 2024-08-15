@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import { useSession } from "next-auth/react";
-import { GetProductByhandleSwr } from "src/service/use-shopify";
+import { GetProductByhandleSwr, GetSingleInventorySwr } from "src/service/use-shopify";
 import Head from "next/head";
 import { Layout as DashboardLayout } from "src/layouts/dashboard/layout";
 import Toast from "src/components/toast";
@@ -12,14 +12,21 @@ import { Box, Card, CardContent, Container, Stack, Unstable_Grid2 as Grid } from
 import { ProductImage } from "src/sections/singleProduct/product-image";
 import { ProductInfo } from "src/sections/singleProduct/product-info";
 import { ProductFrom } from "src/sections/singleProduct/product-form";
+import { ProductInventory } from "src/sections/singleProduct/product-inventory";
 
 const Page = () => {
   const router = useRouter();
   const toastUp = useToast();
   const { data: session } = useSession();
+  const { quoteId, inventory, productHandle } = router.query;
 
-  const { data, isLoading, isError } = GetProductByhandleSwr(router.query.productHandle);
-  const quoteId = router.query?.quoteId;
+  const { data, isLoading, isError } = GetProductByhandleSwr(productHandle);
+  const {
+    data: inventoryData,
+    isLoading: isLoadingInventory,
+    isError: isErrorInventory,
+  } = GetSingleInventorySwr({ handle: router.query.productHandle, inventory: inventory });
+
   const [selectedImgVariant, setSelectedImgVariant] = useState();
   const [selectedTab, setSelectedTab] = useState(1);
   const imgGallery = data?.newData.images.edges;
@@ -58,15 +65,19 @@ const Page = () => {
                       />
                     </Grid>
                     <Grid md={6}>
-                      <ProductInfo productData={productData} />
-                      <ProductFrom
-                        selectedProduct={productData}
-                        setSelectedImgVariant={setSelectedImgVariant}
-                        setSelectedTab={setSelectedTab}
-                        quoteId={quoteId}
-                        toastUp={toastUp}
-                        session={session}
-                      />
+                      <ProductInfo productData={productData} inventory={inventory} />
+                      {inventory && inventoryData ? (
+                        <ProductInventory inventoryData={inventoryData} />
+                      ) :  (
+                        <ProductFrom
+                          selectedProduct={productData}
+                          setSelectedImgVariant={setSelectedImgVariant}
+                          setSelectedTab={setSelectedTab}
+                          quoteId={quoteId}
+                          toastUp={toastUp}
+                          session={session}
+                        />
+                      )}
                     </Grid>
                   </Grid>
                 </CardContent>
