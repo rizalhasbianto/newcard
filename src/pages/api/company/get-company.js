@@ -36,7 +36,7 @@ export default async function mongo(req, res) {
     if (bodyObject.withQuote) {
       relatedQuote = await db
         .collection(quotesCOL)
-        .find({ "company.name": data[0].name })
+        .find({ "company.name": data[0].name, status: "open" })
         .sort({ _id: -1 })
         .skip(skip)
         .limit(10)

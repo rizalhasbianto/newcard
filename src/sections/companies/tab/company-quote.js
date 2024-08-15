@@ -76,7 +76,7 @@ const CompanyQuote = (props) => {
                         <TableCell>
                           <Stack alignItems="left" direction="column" spacing={0}>
                             <Typography variant="subtitle2">
-                              ${new Intl.NumberFormat("en-US").format(quote.quoteInfo?.total)}
+                              ${new Intl.NumberFormat("en-US").format(quote.quoteInfo?.total.total)}
                             </Typography>
                             <Typography variant="subtitle2">
                               ( {quote.quoteInfo?.item} Item{quote.quoteInfo?.item > 1 ? "'s" : ""}{" "}
