@@ -4,12 +4,12 @@ import { utcToZonedTime } from "date-fns-tz";
 const today = utcToZonedTime(new Date(), "America/Los_Angeles");
 
 export const GetQuotesData = async (props) => {
-  const { page, rowsPerPage, query, sort, type } = props;
+  const { page, rowsPerPage, quoteQuery, sort, type } = props;
   const quotesRes = await useDataService("/api/quotes/get-quotes", "POST", {
     page: page,
     postPerPage: rowsPerPage,
-    query: query,
-    sort: sort,
+    query: quoteQuery,
+    sort: sort, 
     type: type ? type : "any",
   });
 
@@ -17,7 +17,7 @@ export const GetQuotesData = async (props) => {
 };
 
 export const GetQuotesDataSwr = (props) => {
-  const { page, rowsPerPage, session, sort, type, search } = props;
+  const { page, rowsPerPage, quoteQuery, sort, type, search } = props; 
   const theType = type ? type : "any";
   const queryPath =
     "page=" +
@@ -25,7 +25,7 @@ export const GetQuotesDataSwr = (props) => {
     "&postPerPage=" +
     rowsPerPage +
     "&query=" +
-    JSON.stringify(session) +
+    JSON.stringify(quoteQuery) +
     "&search=" +
     search +
     "&sort=" +
@@ -159,7 +159,7 @@ export const GetCompaniesSwr = (props) => {
   const { page, postPerPage, query, withQuote = true, search } = props;
   const queryString = query ? JSON.stringify(query) : "";
   const queryPath =
-    "withQuote==" +
+    "withQuote=" +
     withQuote +
     "&page=" +
     page +

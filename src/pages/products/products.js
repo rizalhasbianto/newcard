@@ -199,7 +199,7 @@ const Products = () => {
                     <Button variant="contained" onClick={handleOpenQuoteList} sx={{ ml: 1 }}>
                       Selected Quote #{quoteId.slice(-4)}
                     </Button>
-                    <Link href={"/"}>
+                    <Link href={`/quotes/add-quote?quoteID=${quoteId}`}>
                       <Button variant="contained" sx={{ ml: 1 }}>
                         Open Quote #{quoteId.slice(-4)}
                       </Button>

@@ -41,7 +41,7 @@ const Quotes = () => {
   const { data, isLoading, isError, mutate, isValidating } = GetQuotesDataSwr({
     page,
     rowsPerPage,
-    session: quoteQuery(session),
+    quoteQuery: quoteQuery(session),
     search,
   });
 
