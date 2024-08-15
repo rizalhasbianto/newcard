@@ -94,7 +94,6 @@ const CompanyShipping = (props) => {
     onSubmit: async (values, helpers) => {
       setLoadSave(true);
       let resSaveCompany;
-
       if (newAddress) {
         resSaveCompany = await AddNewShipToMongo(data._id, values, data.shipTo);
       } else {
@@ -110,7 +109,7 @@ const CompanyShipping = (props) => {
       mutate();
       setLoadSave(false);
       toastUp.handleStatus("success");
-      toastUp.handleMessage("Company added, sent user invite!");
+      toastUp.handleMessage("Shipping list is updated!");
     },
   });
 

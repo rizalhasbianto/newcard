@@ -124,7 +124,6 @@ const AddCompany = (props) => {
       catalog: Yup.array().min(1, "This field is required"),
     }),
     onSubmit: async (values, helpers) => {
-      console.log("save run", values);
       setLoadSave(true);
       if (file) {
         values.companyPhoto = file.base64File;

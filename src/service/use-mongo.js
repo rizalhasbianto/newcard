@@ -157,7 +157,6 @@ export const GetCompanies = async (props) => {
 
 export const GetCompaniesSwr = (props) => {
   const { page, postPerPage, query, withQuote = true, search } = props;
-  console.log("search2", search)
   const queryString = query ? JSON.stringify(query) : "";
   const queryPath =
     "withQuote==" +
@@ -385,7 +384,7 @@ export const UpdateCompanyShipToMongo = async (id, companyData, shipToData) => {
   const mongoRes = await useDataService("/api/company/update-company", "POST", {
     id: id,
     updateData: {
-      shipTo: shipToNew,
+      shipTo: shipToUpdate,
     },
   });
   return mongoRes;

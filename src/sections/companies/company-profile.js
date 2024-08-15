@@ -69,8 +69,7 @@ const CompanyProfile = ({ company, toastUp }) => {
   }, [file]);
 
   const contact = company.contacts.find((item) => item.default === true)
-console.log("company.contacts", company.contacts)
-console.log("contact", contact)
+
   return (
     <Card>
       <CardContent>

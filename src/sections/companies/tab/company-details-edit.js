@@ -96,7 +96,6 @@ const CompanyDetailsEdit = (props) => {
       }
 
       if (submitCondition) {
-        console.log("run edit data")
         if (values.sales !== data.sales.id) {
           const newSalesDefault = users.data.user.find((item) => item._id === values.sales);
           values.newSales = {
@@ -126,7 +125,6 @@ const CompanyDetailsEdit = (props) => {
           setLoadSave(false);
           return;
         }
-        console.log("run edit data 3")
         mutate();
         setLoadSave(false);
         toastUp.handleStatus("success");

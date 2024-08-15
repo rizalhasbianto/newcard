@@ -118,7 +118,6 @@ const CompanyUsers = (props) => {
               setLoadSave(false);
               return;
             }
-            console.log("resGetUser", resGetUser);
             shopifyCustomerId = resGetUser.newData.data.customers.edges[0].node.id.replace(
               "gid://shopify/Customer/",
               ""
