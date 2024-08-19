@@ -24,7 +24,7 @@ export const addQuote = (props) => {
     quotesList[findProdOnList].qty = totalQty;
     const updatedQuote = [...quotesList];
     setQuotesList(updatedQuote);
-    handleSubmit({quotesListData:updatedQuote})
+    //handleSubmit({quotesListData:updatedQuote})
     return;
   }
 

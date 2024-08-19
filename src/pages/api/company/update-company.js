@@ -7,13 +7,14 @@ export default async function updateMongo(req, res) {
     const collection = process.env.MONGODB_COLLECTION_COMPANY
     const bodyObject = req.body;
     
-    if(bodyObject.updateData.contact?.length > 0) {
-        bodyObject.updateData.contact.map((item) => {
+    if(bodyObject.updateData.contacts?.length > 0) {
+        bodyObject.updateData.contacts.map((item) => {
             if (item.detail) {
               delete item.detail;
             }
           });
     }
     const resMongo = await db.collection(collection).updateOne({ _id: new ObjectId(bodyObject.id) }, { $set: bodyObject.updateData});
+    console.log("resMongo", resMongo)
     res.json({ status: 200, data: resMongo });
 }

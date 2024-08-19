@@ -41,6 +41,6 @@ export default async function updateProductMetafield(req, res) {
     `;
 
   const updateMetafield = await adminAPi(query);
-  console.log(updateMetafield.data.productUpdate.userErrors)
+
   res.json({ status: 200, updateMetafield });
 }

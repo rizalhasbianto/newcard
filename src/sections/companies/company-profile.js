@@ -17,7 +17,7 @@ import { ImageComponent } from "src/components/image";
 import { stringAvatar } from "src/helper/handelCompanyAvatar";
 import { UpdateCompanyAvatarToMongo } from "src/service/use-mongo";
 
-const CompanyProfile = ({ company, toastUp }) => {
+const CompanyProfile = ({ company, toastUp }) => { 
   const [file, setFile] = useState();
   const [preview, setPreview] = useState();
   const [loadSave, setLoadSave] = useState(false);
@@ -109,7 +109,7 @@ const CompanyProfile = ({ company, toastUp }) => {
             {company.name}
           </Typography>
           <Typography color="text.secondary" variant="body2">
-            {contact?.detail.name} / {contact?.detail.email}
+            {contact?.detail?.name} / {contact?.detail?.email}
           </Typography>
         </Box>
       </CardContent>

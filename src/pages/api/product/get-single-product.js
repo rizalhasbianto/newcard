@@ -3,7 +3,7 @@ import { adminAPi } from 'src/lib/shopify'
 export default async function getSingleProduct(req, res) {
     const id = req.body?.id
     const company = req.body?.shopifyCompanyLocationID
-    console.log(req.body)
+    
     const query = `{
       product(id: "${id}") {
           title

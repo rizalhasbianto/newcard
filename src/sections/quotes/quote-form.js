@@ -57,7 +57,7 @@ const QuotesForm = (props) => {
   const handleSubmit = useCallback(
     async (props) => {
       const {
-        type = "draft",
+        type,
         company = selectedCompany,
         shipToAddress = shipTo,
         quotesListData = quotesList,
@@ -66,14 +66,19 @@ const QuotesForm = (props) => {
         selectedPayment = payment,
         currentTabContent = tabContent,
       } = props;
-      setButtonLoading(type);
+      let currentType = type ? type : tabContent.status;
+      if (type && type === "publish") {
+        currentType = "open";
+      }
+
+      setButtonLoading(currentType);
 
       const mongoReponse = await SaveQuoteToMongoDb(
         company,
         shipToAddress,
         quotesListData,
         finalDiscount,
-        type,
+        currentType,
         selectedQuoteId,
         selectedPayment,
         total
@@ -86,21 +91,20 @@ const QuotesForm = (props) => {
         return;
       }
 
-      if (type === "draft") {
-        const draftMessage =
-          type === currentTabContent.status ? "Quote updated!!!" : "Quote saved as draft!!!";
+      if (currentType === "new") {
         toastUp.handleStatus("success");
-        toastUp.handleMessage(draftMessage);
+        toastUp.handleMessage("Quote updated!!!");
         reqQuotesData(0, 50, tabIndex);
         setButtonLoading(false);
         return;
       }
 
       const defaultContact = company.contacts.find((itm) => itm.default);
+
       const companyBill = {
         name: company.name,
         contact: defaultContact,
-        location: shipToAddress,
+        location: shipToAddress.location,
       };
 
       const shopifyResponse = await SyncQuoteToShopify(
@@ -158,21 +162,22 @@ const QuotesForm = (props) => {
 
       if (type === "open") {
         toastUp.handleStatus("success");
-        toastUp.handleMessage("Quote has been published!!!");
+        toastUp.handleMessage("Quote has been updated!!!");
         reqQuotesData(0, 50);
         setButtonLoading(false);
         return;
       }
 
       const quoteDataInvoice = {
-        name: companyContact.name,
-        email: companyContact.email,
-        companyName: companyName,
+        name: defaultContact.detail.name,
+        email: defaultContact.detail.email,
+        companyName: company.name,
         orderNumber: draftOrderId.name,
         poNumber: "#" + selectedQuoteId,
         checkoutUrl: checkoutUrl.url,
         quoteId: selectedQuoteId,
       };
+
       const sendInvoiceRes = await SendInvoice(quoteDataInvoice);
       if (!sendInvoiceRes) {
         // error when send invoice
@@ -185,7 +190,7 @@ const QuotesForm = (props) => {
       reqQuotesData(0, 50);
       setButtonLoading();
       toastUp.handleStatus("success");
-      toastUp.handleMessage("Invoice sent!!!");
+      toastUp.handleMessage("Quote saved and Invoice sent!!!");
     },
 
     [
@@ -239,8 +244,7 @@ const QuotesForm = (props) => {
           const selectedCompany = companyList.find(
             (company) => company.name === tabContent.company.name
           );
-          console.log("companyList", companyList)
-          console.log("selectedCompany", selectedCompany)
+
           const selectedLocation = selectedCompany?.shipTo.find(
             (ship) => ship.locationName === tabContent.company.shipTo
           );
@@ -307,8 +311,8 @@ const QuotesForm = (props) => {
     toastUp.handleMessage("Failed save collection!!!");
   }, [collectionName, quotesList, toastUp]);
 
-  const handleSetNewCompany = async(props) => {
-    const { companyID } = props
+  const handleSetNewCompany = async (props) => {
+    const { companyID } = props;
     let companyList;
     const resGetCompanyList = await Promise.resolve(
       GetCompanies({
@@ -320,17 +324,13 @@ const QuotesForm = (props) => {
     if (!resGetCompanyList) return;
 
     companyList = resGetCompanyList.data.company;
-    const selectedCompany = companyList.find(
-      (company) => company._id === companyID
-    );
-    const selectedLocation = selectedCompany?.shipTo.find(
-      (ship) => ship.default
-    );
+    const selectedCompany = companyList.find((company) => company._id === companyID);
+    const selectedLocation = selectedCompany?.shipTo.find((ship) => ship.default);
     setCompanies(companyList);
     setSelectedCompany(selectedCompany);
     setShipToList(selectedCompany?.shipTo);
     setShipTo(selectedLocation);
-  }
+  };
 
   useEffect(() => {
     GetCompaniesData(0, 50);
@@ -379,61 +379,62 @@ const QuotesForm = (props) => {
           </Grid>
         </Card>
       )}
-
-      <Card sx={{ mb: 2 }}>
-        <Grid container justify="flex-end" alignItems="center">
-          <Grid
-            xs={6}
-            md={6}
-            sx={{
-              padding: 0,
-            }}
-          >
-            <CardHeader subheader="Please choose a company" title="Company Options" />
+      {companies.length > 0 && (
+        <Card sx={{ mb: 2 }}>
+          <Grid container justify="flex-end" alignItems="center">
+            <Grid
+              xs={6}
+              md={6}
+              sx={{
+                padding: 0,
+              }}
+            >
+              <CardHeader subheader="Please choose a company" title="Company Options" />
+            </Grid>
+            <Grid
+              xs={6}
+              md={6}
+              sx={{
+                textAlign: "right",
+                paddingRight: "25px",
+              }}
+            >
+              {(session.user.detail.role === "admin" || session.user.detail.role === "sales") && (
+                <Button variant="outlined" onClick={() => setAddNewCompany(true)}>
+                  Add New Company
+                </Button>
+              )}
+            </Grid>
           </Grid>
-          <Grid
-            xs={6}
-            md={6}
-            sx={{
-              textAlign: "right",
-              paddingRight: "25px",
-            }}
-          >
-            {(session.user.detail.role === "admin" || session.user.detail.role === "sales") && (
-              <Button variant="outlined" onClick={() => setAddNewCompany(true)}>
-                Add New Company
-              </Button>
-            )}
-          </Grid>
-        </Grid>
-        <CardContent sx={{ pt: 0 }}>
-          <Box sx={{ m: -1.5 }}>
-            <Collapse in={!addNewCompany}>
-              <QuoteSelectCompany
-                companies={companies}
-                shipToList={shipToList}
-                shipTo={shipTo}
-                setShipToList={setShipToList}
-                setShipTo={setShipTo}
-                selectedCompany={selectedCompany}
-                setSelectedCompany={setSelectedCompany}
-                quotesList={quotesList}
-                setQuotesList={setQuotesList}
-                handleSubmit={handleSubmit}
-              />
-            </Collapse>
-            <Collapse in={addNewCompany}>
-              <AddCompany
-                setAddNewCompany={setAddNewCompany}
-                toastUp={toastUp}
-                session={session}
-                type="quote"
-                handleSetNewCompany={handleSetNewCompany}
-              />
-            </Collapse>
-          </Box>
-        </CardContent>
-      </Card>
+          <CardContent sx={{ pt: 0 }}>
+            <Box sx={{ m: -1.5 }}>
+              <Collapse in={!addNewCompany}>
+                <QuoteSelectCompany
+                  companies={companies}
+                  shipToList={shipToList}
+                  shipTo={shipTo}
+                  setShipToList={setShipToList}
+                  setShipTo={setShipTo}
+                  selectedCompany={selectedCompany}
+                  setSelectedCompany={setSelectedCompany}
+                  quotesList={quotesList}
+                  setQuotesList={setQuotesList}
+                  handleSubmit={handleSubmit}
+                />
+              </Collapse>
+              <Collapse in={addNewCompany}>
+                <AddCompany
+                  setAddNewCompany={setAddNewCompany}
+                  toastUp={toastUp}
+                  session={session}
+                  type="quote"
+                  handleSetNewCompany={handleSetNewCompany}
+                />
+              </Collapse>
+            </Box>
+          </CardContent>
+        </Card>
+      )}
       <Collapse in={selectedCompany ? true : false}>
         <Card sx={{ mb: 2 }}>
           <CardHeader subheader="Product search" title="Add products" />
@@ -524,23 +525,18 @@ const QuotesForm = (props) => {
           <CardActions sx={{ justifyContent: "space-between", padding: "20px" }}>
             <Typography variant="body1">Current Status: {tabContent?.status}</Typography>
             <Stack direction="row" spacing={2} justifyContent={"flex-end"}>
-              {saveQuoteButton.map((button) => {
-                return (
-                  <LoadingButton
-                    color="primary"
-                    onClick={() => handleSubmit({ type: button.action })}
-                    loading={buttonloading === button.action ? true : false}
-                    loadingPosition="start"
-                    startIcon={<SaveIcon />}
-                    variant="contained"
-                    key={button.action}
-                  >
-                    {button.action === tabContent?.status && button.action !== "invoiced"
-                      ? "Save"
-                      : button.title}
-                  </LoadingButton>
-                );
-              })}
+              <LoadingButton
+                color="primary"
+                onClick={() =>
+                  handleSubmit({ type: tabContent?.status === "open" ? "open" : "publish" })
+                }
+                loading={buttonloading === "open" ? true : false}
+                loadingPosition="start"
+                startIcon={<SaveIcon />}
+                variant="contained"
+              >
+                {tabContent?.status === "open" ? "Save" : "Publish"}
+              </LoadingButton>
             </Stack>
           </CardActions>
         </Card>

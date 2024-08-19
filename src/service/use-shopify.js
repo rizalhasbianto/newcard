@@ -165,7 +165,6 @@ export const GetProductsShopify = async (selectedFilter, productPerPage, lastCur
 export const GetProductVariantsShopify = (props) => {
   const { variantIDs, shopifyCompanyLocationID } = props
   const variantQuery = `variantIDs=${JSON.stringify(variantIDs)}&shopifyCompanyLocationID=${shopifyCompanyLocationID}`
-  console.log("variantQuery", JSON.stringify(variantIDs))
   const dataRes = useDataService(`/api/product/get-multiple-product-variants?${variantQuery}`, "GET");
   return dataRes;
 }

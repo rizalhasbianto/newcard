@@ -22,17 +22,13 @@ const Quotes = () => {
   const quoteQuery = (session) => {
     switch (session?.user.detail.role) {
       case "admin":
-        return {
-          status: { $nin: ["new", "draft"] },
-        };
+        return {};
       case "sales":
         return {
-          status: { $nin: ["new", "draft"] },
           "company.sales.id": session?.user.detail.id,
         };
       default:
         return {
-          status: { $nin: ["new", "draft"] },
           "company.name": session?.user.detail.company.companyName,
         };
     }

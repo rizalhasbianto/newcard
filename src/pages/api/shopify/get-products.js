@@ -96,7 +96,7 @@ export default async function getProducts(req, res) {
         }
       }`;
       const resGetData = await callShopify(queryWithCollection);
-      console.log(resGetData)
+
       let resProdData = resGetData.data.collection.products.edges;
 
       if (bodyObject?.productName) {

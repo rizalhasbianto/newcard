@@ -1,7 +1,6 @@
 import { adminAPi } from "src/lib/shopify";
 
 export default async function getInventory(req, res) {
-    console.log("req.query.productHandle", req.query.productHandle)
     const query = `
         {
             productByHandle(handle: "${req.query.productHandle}") {

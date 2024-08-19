@@ -87,7 +87,7 @@ export default async function createDraftOrder(req, res) {
         mutation {
           draftOrderCreate(
             input: {
-              email: "${bodyObject.companyBill.contact.detail.email}",
+              email: "${bodyObject.companyBill.contact.detail.email}", 
               billingAddress: {
                 address1:"${bodyObject.companyBill.location.address}",
                 city:"${bodyObject.companyBill.location.city}",

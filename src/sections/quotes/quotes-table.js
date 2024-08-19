@@ -37,7 +37,7 @@ const QuotesTable = (props) => {
     rowsPerPage = 0,
     selected = [],
   } = props;
-console.log("items", items)
+
   const [deleteQuoteId, setDeleteQuoteId] = useState();
 
   const listNumber = page * 10;
@@ -49,9 +49,9 @@ console.log("items", items)
       modalPopUp.handleContent("Are you sure?", "This permanent delete, can not undo!");
       modalPopUp.handleOpen();
 
-      if (modalPopUp.agree) {
-        console.log("quoteId", quoteId);
-      }
+      //if (modalPopUp.agree) {
+      //  console.log("quoteId", quoteId);
+      //}
     },
     [modalPopUp]
   );
@@ -96,7 +96,7 @@ console.log("items", items)
                   const lastUpdate = format(new Date(2014, 1, 11), "dd/MM/yyyy");
 
                   return (
-                    <TableRow hover key={quote._id} selected={isSelected}>
+                    <TableRow hover key={quote._id} selected={isSelected} sx={{opacity:quote.status === "new" ? "0.5" : 1}}>
                       <TableCell padding="checkbox">
                         <Typography variant="subtitle2">{index + listNumber + 1}</Typography>
                       </TableCell>

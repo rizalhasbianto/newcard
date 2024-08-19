@@ -26,11 +26,10 @@ const Page = () => {
     setLoading(true)
     const page = 0
     const rowsPerPage = 1
-    const query = ({ quoteId: quoteId })
+    const quoteQuery = ({ quoteId: quoteId })
     const sort = "DSC"
     const type = "id"
-    
-    const resQuotes = await GetQuotesData({page, rowsPerPage, query, sort, type})
+    const resQuotes = await GetQuotesData({page, rowsPerPage, quoteQuery, sort, type})
     if (!resQuotes) {
       console.log("error get quotes data!")
       setLoading(false)

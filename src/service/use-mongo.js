@@ -346,7 +346,7 @@ export const UpdateCompanyContactDefault = async (props) => {
   const mongoRes = await useDataService("/api/company/update-company", "POST", {
     id: companyId,
     updateData: {
-      contact: newContactDefault,
+      contacts: newContactDefault,
     },
   });
   return mongoRes;
@@ -364,7 +364,7 @@ export const UpdateCompanyUserToMongo = async (id, updatedData, userData) => {
   const mongoRes = await useDataService("/api/company/update-company", "POST", {
     id: id,
     updateData: {
-      contact: contactUpdate,
+      contacts: contactUpdate,
     },
   });
   return mongoRes;
@@ -494,7 +494,7 @@ export const RegisterUser = async (userData, companyId, shopifyCustomerId) => {
   const mongoRes = await useDataService("/api/auth/register-user", "POST", {
     name: userData.contactFirstName + " " + userData.contactLastName,
     email: userData.contactEmail,
-    phone: userData.contactPhone,
+    phone: userData.phoneLocation,
     password: userData.password,
     company: {
       companyId: companyId,
