@@ -303,7 +303,7 @@ export const UpdateCompanyCatalog = async (props) => {
 };
 
 export const AddNewUserToCompanyMongo = async (props) => {
-  const { companyId, newUserData, userData = [], shopifyCustomerId } = props;
+  const { companyId, newUserData, userData = [], shopifyCustomerId, shopifyCompanyContactId } = props;
 
   if (userData.length > 0) {
     userData.map((itm) => {
@@ -319,6 +319,7 @@ export const AddNewUserToCompanyMongo = async (props) => {
     {
       userId: newUserData.id,
       shopifyCustomerId: shopifyCustomerId,
+      shopifyCompanyContactId: shopifyCompanyContactId,
       default: newUserData.default ? true : false,
     },
   ];
@@ -353,18 +354,13 @@ export const UpdateCompanyContactDefault = async (props) => {
 };
 
 export const UpdateCompanyUserToMongo = async (id, updatedData, userData) => {
-  const findUserTarget = userData.findIndex((item) => item.detail.email === updatedData.email);
-  const contactUpdate = [...userData];
-  contactUpdate[findUserTarget] = {
-    name: updatedData.firstName + " " + updatedData.lastName,
-    email: updatedData.email,
-    phone: updatedData.phone,
-    default: userData[findUserTarget].default,
-  };
-  const mongoRes = await useDataService("/api/company/update-company", "POST", {
-    id: id,
+  const findUserTarget = userData.find((item) => item.detail.email === updatedData.email);
+  const mongoRes = await useDataService("/api/auth/update-user", "POST", {
+    id: findUserTarget.userId,
     updateData: {
-      contacts: contactUpdate,
+      email:updatedData.email,
+      name:updatedData.firstName + " " + updatedData.lastName,
+      phone:updatedData.phone
     },
   });
   return mongoRes;
@@ -490,11 +486,12 @@ export const GetUsers = (props) => {
   return mongoRes;
 };
 
-export const RegisterUser = async (userData, companyId, shopifyCustomerId) => {
+export const RegisterUser = async (userData, companyId, shopifyCustomerId, shopifyCompanyContactId) => {
+
   const mongoRes = await useDataService("/api/auth/register-user", "POST", {
     name: userData.contactFirstName + " " + userData.contactLastName,
     email: userData.contactEmail,
-    phone: userData.phoneLocation,
+    phone: userData.contactPhone,
     password: userData.password,
     company: {
       companyId: companyId,
@@ -504,6 +501,7 @@ export const RegisterUser = async (userData, companyId, shopifyCustomerId) => {
     role: userData.role ? userData.role : "customer",
     signUpDate: utcToZonedTime(new Date(), "America/Los_Angeles"),
     shopifyCustomerId: shopifyCustomerId,
+    shopifyCompanyContactId: shopifyCompanyContactId
   });
 
   return mongoRes;

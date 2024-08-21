@@ -157,7 +157,7 @@ const AddCompany = (props) => {
       }
 
       if (submitCondition) {
-        let shopifyCompanyId, shopifyCompanyLocationId, shopifyCustomerId;
+        let shopifyCompanyId, shopifyCompanyLocationId, shopifyCustomerId, shopifyCompanyContactId;
         const resCreateCompany = await CreateCompanyShopify(values);
         if (!resCreateCompany || resCreateCompany.data.userErrors.length > 0) {
           const errorMessage =
@@ -178,9 +178,13 @@ const AddCompany = (props) => {
             "gid://shopify/Customer/",
             ""
           );
+          shopifyCompanyContactId = resCreateCompany.data.company.mainContact.id.replace(
+            "gid://shopify/CompanyContact/",
+            ""
+          );
         }
 
-        const resSaveCompany = await AddCompanyToMongo(
+        const resSaveCompany = await AddCompanyToMongo( 
           values,
           shopifyCompanyId,
           shopifyCompanyLocationId
@@ -195,7 +199,8 @@ const AddCompany = (props) => {
         const resAddUser = await RegisterUser(
           values,
           resSaveCompany.data.insertedId,
-          shopifyCustomerId
+          shopifyCustomerId,
+          shopifyCompanyContactId
         );
         if (!resAddUser) {
           toastUp.handleStatus("error");
@@ -216,6 +221,7 @@ const AddCompany = (props) => {
           companyId: resSaveCompany.data.insertedId,
           newUserData: { id: resAddUser.data.insertedId, default: true },
           shopifyCustomerId: shopifyCustomerId,
+          shopifyCompanyContactId
         });
 
         if (!resAddUserToCompany) {

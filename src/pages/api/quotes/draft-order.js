@@ -14,6 +14,13 @@ export default async function createDraftOrder(req, res) {
           id: "${bodyObject.draftOrderId}",
           input: {
             email: "${bodyObject.companyBill.contact.detail.email}",
+            purchasingEntity: {
+              purchasingCompany: {
+                companyContactId:"gid://shopify/CompanyContact/1618313522",
+                companyId:"gid://shopify/Company/2566357298",
+                companyLocationId:"gid://shopify/CompanyLocation/2627076402"
+              }
+            },
             billingAddress: {
               address1:"${bodyObject.companyBill.location.address}",
               city:"${bodyObject.companyBill.location.city}",
@@ -21,7 +28,7 @@ export default async function createDraftOrder(req, res) {
               countryCode:US,
               firstName:"${firstName}"
               lastName:"${lastName}",
-              phone:"${bodyObject.companyBill.contact.detail.phone}",
+              phone:"",
               provinceCode:"${bodyObject.companyBill.location.state}",
               zip:"${bodyObject.companyBill.location.zip}"
             },
@@ -32,7 +39,7 @@ export default async function createDraftOrder(req, res) {
               countryCode:US,
               firstName:"${firstName}"
               lastName:"${lastName}",
-              phone:"${bodyObject.companyBill.contact.detail.phone}",
+              phone:"",
               provinceCode:"${bodyObject.companyBill.location.state}",
               zip:"${bodyObject.companyBill.location.zip}"
             }
@@ -155,5 +162,6 @@ export default async function createDraftOrder(req, res) {
   }
 
   const createDraft = await adminAPi(query);
+  console.log("createDraft", createDraft)
   res.json({ status: 200, createDraft });
 }

@@ -5,6 +5,7 @@ import { paymentOptions } from "src/data/payment-options";
 
 const CompanyDetails = (props) => {
   const { data, catalogs, toastUp, setSwitchEditDetails } = props;
+  console.log("data", data)
   const defaultPayment = paymentOptions.find((itm) => itm.id === data?.defaultpaymentType)
   const selectedCatalog = catalogs && catalogs.newData.filter((itm) => data.catalogIDs.some((catalog) => itm.node.id.includes(catalog)))
 
@@ -51,7 +52,7 @@ const CompanyDetails = (props) => {
         </Grid>
         <Grid item xs={8} md={9}>
           <Typography variant="subtitle2">
-            : {data?.contacts.find((item) => item.default).detail.name}
+            : {data?.contacts.find((item) => item.default)?.detail?.name}
           </Typography>
         </Grid>
         <Grid item xs={4} md={3}>

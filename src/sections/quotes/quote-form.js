@@ -102,11 +102,15 @@ const QuotesForm = (props) => {
       const defaultContact = company.contacts.find((itm) => itm.default);
 
       const companyBill = {
-        name: company.name,
         contact: defaultContact,
         location: shipToAddress.location,
+        company: {
+          name: company.name,
+          shopifyCompanyId: company.shopifyCompanyId,
+          shopifyCompanyLocationId: company.shopifyCompanyLocationId
+        }
       };
-
+      console.log("companyBill", companyBill)
       const shopifyResponse = await SyncQuoteToShopify(
         selectedQuoteId,
         quotesListData,

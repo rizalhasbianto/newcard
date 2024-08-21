@@ -40,6 +40,7 @@ const CompanyDetailsEdit = (props) => {
   const { data: users, isLoading } = GetUsers(page, postPerPage, "admin", query);
 
   const defaultContact = data?.contacts.find((item) => item.default);
+  console.log("defaultContact edit", defaultContact)
   const formik = useFormik({
     initialValues: {
       id: data?._id,

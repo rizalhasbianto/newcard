@@ -49,7 +49,7 @@ const CatalogPriceRule = (props) => {
   const [saveLoading, setSaveLoading] = useState(false);
   const [selectedCompany, setSelectedCompany] = useState([]);
   const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(5);
+  const [rowsPerPage, setRowsPerPage] = useState(50);
   const [editCompany, setEditcompany] = useState(false);
   const [companyList, setCompanyList] = useState(shopifyCatalog.companyLocations.edges);
   const [companyListTotal, setCompanyListTotal] = useState(shopifyCatalog.companyLocationsCount);
@@ -83,6 +83,7 @@ const CatalogPriceRule = (props) => {
       postPerPage: rowsPerPage,
       query: queryJSON,
     });
+
     if (!resGetCompanyList) {
       console.log("error get company data!");
       return;
@@ -90,7 +91,7 @@ const CatalogPriceRule = (props) => {
 
     const companyData = [];
     resGetCompanyList.data.company.forEach((item) => {
-      const defaultContact = item.contact.find((dt) => dt.default === true);
+      const defaultContact = item.contacts.find((dt) => dt.default === true);
       const dataCompany = {
         node: {
           id: item.shopifyCompanyLocationId,

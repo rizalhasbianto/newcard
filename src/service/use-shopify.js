@@ -15,7 +15,7 @@ export const SyncQuoteToShopify = async (
             }`;
   });
 
-  const resSendToShopify = await useDataService("/api/shopify/draft-order", "POST", {
+  const resSendToShopify = await useDataService("/api/quotes/draft-order", "POST", {
     lineItems,
     poNumber: quoteId,
     companyBill,
@@ -131,7 +131,7 @@ export const GetProductsInfinite = (props) => {
   return dataRes;
 };
 
-export const GetProductsPaginate = (props) => {
+export const GetProductsPaginate = (props) => { 
   const { runFetch } = props
   const param = generateParams(props)
   const dataRes = useSwrData(param.url, param.paramQuery, runFetch);
@@ -252,11 +252,13 @@ export const GetSingleOrderSwr = (id) => {
   return productRes;
 };
 
-export const SyncUserShopify = async (userData) => {
+export const SyncUserShopify = async (userData, shopifyCompanyId) => {
   const shopifyRes = await useDataService("/api/auth/sync-customer", "POST", {
     firstName: userData.contactFirstName,
     lastName: userData.contactLastName,
     email: userData.contactEmail,
+    phone: userData.contactPhone,
+    shopifyCompanyId: userData.shopifyCompanyId
   });
   return shopifyRes;
 };

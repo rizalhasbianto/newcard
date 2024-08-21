@@ -50,6 +50,7 @@ const CatalogSync = (props) => {
   const handleSyncCatalog = async () => {
     setSyncStatus({ createMongoCatalog: "no", getProducts: "progress", syncProducts: "no" });
     const getSyncData = await GetSyncCatalogProducts(catalogId);
+    console.log("getSyncData", getSyncData)
     if (getSyncData) {
       setSyncStatus({ createMongoCatalog: "no", getProducts: "done", syncProducts: "progress" });
       const syncNewProductList = getSyncData.newData.newId;

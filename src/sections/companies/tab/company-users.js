@@ -77,7 +77,7 @@ const CompanyUsers = (props) => {
           return;
         }
         if (checkUser.data.length > 0) {
-          formik.setErrors({ email: "Is already taken" });
+          formik.setErrors({ email: "Is already been taken" });
           setLoadSave(false);
           return;
         }
@@ -99,11 +99,12 @@ const CompanyUsers = (props) => {
           contactFirstName: values.firstName,
           contactLastName: values.lastName,
           contactEmail: values.email,
-          phoneLocation: values.phone,
+          contactPhone: values.phone,
           companyName: data.name,
+          shopifyCompanyId: data.shopifyCompanyId
         };
 
-        let shopifyCustomerId;
+        let shopifyCustomerId, shopifyCompanyContactId;
         const resSyncUser = await SyncUserShopify(userData);
         const shopifyRes = resSyncUser.resSyncCustomer.data.customerCreate.userErrors;
         if (!resSyncUser || shopifyRes.length > 0) {
@@ -112,16 +113,16 @@ const CompanyUsers = (props) => {
 
           if (errorMessage === "Email has already been taken") {
             const resGetUser = await GetUserShopify(userData.contactEmail);
-            if (!resGetUser) {
+            if (!resGetUser) { 
               toastUp.handleStatus("error");
               toastUp.handleMessage("Error sync with Shopify!");
               setLoadSave(false);
               return;
             }
             shopifyCustomerId = resGetUser.newData.data.customers.edges[0].node.id.replace(
-              "gid://shopify/Customer/",
-              ""
+              "gid://shopify/Customer/", ""
             );
+            shopifyCompanyContactId = ""
           } else {
             toastUp.handleStatus("error");
             toastUp.handleMessage(errorMessage);
@@ -129,13 +130,15 @@ const CompanyUsers = (props) => {
             return;
           }
         } else {
-          shopifyCustomerId = resSyncUser.resSyncCustomer.data.customerCreate.customer.id.replace(
-            "gid://shopify/Customer/",
-            ""
+          shopifyCustomerId = resSyncUser.resSyncCustomer.data.companyContactCreate.companyContact.customer.id.replace(
+            "gid://shopify/Customer/", ""
+          );
+          shopifyCompanyContactId = resSyncUser.resSyncCustomer.data.companyContactCreate.companyContact.id.replace(
+            "gid://shopify/CompanyContact/", ""
           );
         }
 
-        const resAddUser = await RegisterUser(userData, data._id, shopifyCustomerId);
+        const resAddUser = await RegisterUser(userData, data._id, shopifyCustomerId, shopifyCompanyContactId);
         if (!resAddUser) {
           helpers.setStatus({ success: false });
           helpers.setErrors({ submit: "Error sync with database!" });
@@ -149,6 +152,7 @@ const CompanyUsers = (props) => {
           newUserData: { id: resAddUser.data.insertedId, default: false },
           userData: data.contacts,
           shopifyCustomerId,
+          shopifyCompanyContactId
         });
         if (!addNewUser) {
           helpers.setStatus({ success: false });

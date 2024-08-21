@@ -14,6 +14,7 @@ export default async function shopify(req, res) {
                 email:"${bodyObject.contactEmail}"
                 firstName:"${bodyObject.contactFirstName}"
                 lastName:"${bodyObject.contactLastName}"
+                phone:"${bodyObject.contactPhone}"
               }
               companyLocation: {
                 name:"${bodyObject.companyName}"
@@ -63,6 +64,7 @@ export default async function shopify(req, res) {
           company {
               id
               mainContact {
+                id
                 customer {
                     id
                 }

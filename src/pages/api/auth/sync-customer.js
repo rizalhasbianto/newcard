@@ -8,15 +8,20 @@ export default async function syncCustomer(req, res) {
   if (!bodyObject.shopifyCustomerId) {
     query = `
         mutation {
-            customerCreate (
+            companyContactCreate (
+                companyId:"gid://shopify/Company/${bodyObject.shopifyCompanyId}",
                 input: {
                     email:"${bodyObject.email}",
                     firstName:"${bodyObject.firstName}", 
                     lastName:"${bodyObject.lastName}",
+                    phone:"${bodyObject.phone}"
                 }
             ) {
-                customer {
+                companyContact {
                     id
+                    customer {
+                        id
+                    }
                 }
                 userErrors {
                     field
