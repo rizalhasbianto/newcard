@@ -12,7 +12,7 @@ import { OverviewTotalCustomers } from "src/sections/overview/overview-total-cus
 import { OverviewTotalProfit } from "src/sections/overview/overview-total-profit";
 import { OverviewTraffic } from "src/sections/overview/overview-traffic";
 
-import { GetTotalQuotes, GetTotalSales, syncSales } from "src/service/use-mongo";
+import { GetTotalQuotes, GetTotalSales, SyncSales } from "src/service/use-mongo";
 import { GetOrdersCount, GetTodayOrders } from "src/service/use-shopify";
 
 import { month } from "src/data/date-range";

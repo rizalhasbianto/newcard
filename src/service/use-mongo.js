@@ -644,7 +644,7 @@ export const GetTotalSales= () => {
   return mongoRes;
 };
 
-export const syncSales = async () => {
+export const SyncSales = async () => {
   const mongoRes = await useDataService("/api/dashboard/sync-sales", "GET");
   return mongoRes;
 };
