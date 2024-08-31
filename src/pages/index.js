@@ -1,6 +1,7 @@
 import Head from "next/head";
 import { useCallback, useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
+import Image from "next/image";
 import { subDays, subHours } from "date-fns";
 import { Box, Container, Typography, Unstable_Grid2 as Grid } from "@mui/material";
 import { Layout as DashboardLayout } from "src/layouts/dashboard/layout";
@@ -139,7 +140,16 @@ function Page() {
             )}
             {session.user.detail.role === "customer" ||
               (session.user.detail.role === "sales" && (
-                <Typography variant="h3">Welcome to Skratch B2B app</Typography>
+                <Grid container spacing={3} color={"rgb(92, 89, 172)"}>
+                  <Grid lg={12}>
+                    <Typography variant="h2" sx={{textAlign:"center"}}>Welcome</Typography>
+                    <Typography variant="h2" sx={{textAlign:"center"}}>to</Typography>
+                    <Typography variant="h2" sx={{textAlign:"center"}}>Skratch B2B App</Typography>
+                  </Grid>
+                  <Grid lg={12} sx={{ position: "relative", height:"50vh" }}>
+                    <Image src="/assets/b2b-bg-2.png" fill={true} objectFit="contain" alt="Picture of the author" />
+                  </Grid>
+                </Grid>
               ))}
           </Container>
         </Box>
