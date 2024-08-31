@@ -54,7 +54,7 @@ function Page() {
   }
   const handleSync = async () => {
     setSyncLoading(true);
-    const syncNewData = await syncSales();
+    const syncNewData = await SyncSales();
     if (syncNewData) {
       salesMutate();
     }
