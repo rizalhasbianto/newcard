@@ -312,3 +312,16 @@ export const GetPricelistPrices = async (products, shopifyCatalog) => {
   });
   return shopifyRes;
 };
+
+export const GetOrdersCount = (props) => {
+  const { query } = props;
+  const queryString = query ? JSON.stringify(query) : "";
+  const queryPath = "&status=" + queryString;
+  const mongoRes = useSwrData("/api/dashboard/get-orders-count", queryPath);
+  return mongoRes;
+};
+
+export const GetTodayOrders = () => {
+  const mongoRes = useSwrData("/api/dashboard/get-orders-today");
+  return mongoRes;
+};

@@ -630,3 +630,21 @@ export const GetCatalogSwr = (props) => {
   const mongoRes = useSwrData("/api/catalog/get-catalog", queryPath);
   return mongoRes;
 };
+
+export const GetTotalQuotes = (props) => {
+  const { query } = props;
+  const queryString = query ? JSON.stringify(query) : "";
+  const queryPath = "&query=" + queryString;
+  const mongoRes = useSwrData("/api/dashboard/get-total-quotes", queryPath);
+  return mongoRes;
+};
+
+export const GetTotalSales= () => {
+  const mongoRes = useSwrData("/api/dashboard/get-report");
+  return mongoRes;
+};
+
+export const syncSales = async () => {
+  const mongoRes = await useDataService("/api/dashboard/sync-sales", "GET");
+  return mongoRes;
+};

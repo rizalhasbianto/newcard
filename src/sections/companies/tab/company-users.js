@@ -106,7 +106,8 @@ const CompanyUsers = (props) => {
 
         let shopifyCustomerId, shopifyCompanyContactId;
         const resSyncUser = await SyncUserShopify(userData);
-        const shopifyRes = resSyncUser.resSyncCustomer.data.customerCreate.userErrors;
+        const shopifyRes = resSyncUser.resSyncCustomer.data.companyContactCreate.userErrors;
+        
         if (!resSyncUser || shopifyRes.length > 0) {
           const errorMessage =
             shopifyRes.length > 0 ? shopifyRes[0].message : "Error sync with Shopify!";

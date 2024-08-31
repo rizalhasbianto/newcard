@@ -10,7 +10,7 @@ export default async function getData(req, res) {
   const bodyObject = req.method === "POST" ? req.body : req.query;
   const postPerPage = bodyObject.postPerPage ? Number(bodyObject.postPerPage) : 10;
   const skip = (Number(bodyObject.page) + 1) * bodyObject.postPerPage - bodyObject.postPerPage;
-console.log("bodyObject", bodyObject)
+
   const queryCompany = (filterData, search) => {
     const query = []
     const queryObj = !filterData || filterData === "undefined" ? {} : JSON.parse(filterData);
@@ -58,7 +58,6 @@ console.log("bodyObject", bodyObject)
 
   let relatedQuote = [];
   if (bodyObject.withQuote === "true") {
-    console.log("run get companies with quote")
     relatedQuote = await db
       .collection(collectionQuote)
       .find({ "company.name": { $in: companyNames }, status: "open" })

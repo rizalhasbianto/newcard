@@ -16,15 +16,15 @@ export default async function createDraftOrder(req, res) {
             email: "${bodyObject.companyBill.contact.detail.email}",
             purchasingEntity: {
               purchasingCompany: {
-                companyContactId:"gid://shopify/CompanyContact/1618313522",
-                companyId:"gid://shopify/Company/2566357298",
-                companyLocationId:"gid://shopify/CompanyLocation/2627076402"
+                companyContactId:"gid://shopify/CompanyContact/${bodyObject.companyBill.contact.shopifyCompanyContactId}",
+                companyId:"gid://shopify/Company/${bodyObject.companyBill.company.shopifyCompanyId}",
+                companyLocationId:"gid://shopify/CompanyLocation/${bodyObject.companyBill.company.shopifyCompanyLocationId}"
               }
             },
             billingAddress: {
               address1:"${bodyObject.companyBill.location.address}",
               city:"${bodyObject.companyBill.location.city}",
-              company:"${bodyObject.companyBill.name}",
+              company:"${bodyObject.companyBill.company.name}",
               countryCode:US,
               firstName:"${firstName}"
               lastName:"${lastName}",
@@ -35,7 +35,7 @@ export default async function createDraftOrder(req, res) {
             shippingAddress: {
               address1:"${bodyObject.companyBill.location.address}",
               city:"${bodyObject.companyBill.location.city}",
-              company:"${bodyObject.companyBill.name}",
+              company:"${bodyObject.companyBill.company.name}",
               countryCode:US,
               firstName:"${firstName}"
               lastName:"${lastName}",
@@ -95,10 +95,17 @@ export default async function createDraftOrder(req, res) {
           draftOrderCreate(
             input: {
               email: "${bodyObject.companyBill.contact.detail.email}", 
+              purchasingEntity: {
+                purchasingCompany: {
+                  companyContactId:"gid://shopify/CompanyContact/${bodyObject.companyBill.contact.shopifyCompanyContactId}",
+                  companyId:"gid://shopify/Company/${bodyObject.companyBill.company.shopifyCompanyId}",
+                  companyLocationId:"gid://shopify/CompanyLocation/${bodyObject.companyBill.company.shopifyCompanyLocationId}"
+                }
+              },
               billingAddress: {
                 address1:"${bodyObject.companyBill.location.address}",
                 city:"${bodyObject.companyBill.location.city}",
-                company:"${bodyObject.companyBill.name}",
+                company:"${bodyObject.companyBill.company.name}",
                 countryCode:US,
                 firstName:"${firstName}"
                 lastName:"${lastName}",
@@ -109,7 +116,7 @@ export default async function createDraftOrder(req, res) {
               shippingAddress: {
                 address1:"${bodyObject.companyBill.location.address}",
                 city:"${bodyObject.companyBill.location.city}",
-                company:"${bodyObject.companyBill.name}",
+                company:"${bodyObject.companyBill.company.name}",
                 countryCode:US,
                 firstName:"${firstName}"
                 lastName:"${lastName}",

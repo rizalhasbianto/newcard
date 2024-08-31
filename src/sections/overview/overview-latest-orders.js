@@ -1,6 +1,6 @@
-import { format } from 'date-fns';
-import PropTypes from 'prop-types';
-import ArrowRightIcon from '@heroicons/react/24/solid/ArrowRightIcon';
+import { format } from "date-fns";
+import PropTypes from "prop-types";
+import ArrowRightIcon from "@heroicons/react/24/solid/ArrowRightIcon";
 import {
   Box,
   Button,
@@ -13,81 +13,63 @@ import {
   TableBody,
   TableCell,
   TableHead,
-  TableRow
-} from '@mui/material';
-import { Scrollbar } from 'src/components/scrollbar';
-import { SeverityPill } from 'src/components/severity-pill';
+  TableRow,
+  Typography,
+} from "@mui/material";
+import { Scrollbar } from "src/components/scrollbar";
+import { SeverityPill } from "src/components/severity-pill";
 
 const statusMap = {
-  pending: 'warning',
-  delivered: 'success',
-  refunded: 'error'
+  pending: "warning",
+  delivered: "success",
+  refunded: "error",
 };
 
 export const OverviewLatestOrders = (props) => {
-  const { orders = [], sx } = props;
+  const { todayOrders = [], sx } = props;
 
   return (
     <Card sx={sx}>
-      <CardHeader title="Latest Orders" />
+      <CardHeader title="Today Orders" />
       <Scrollbar sx={{ flexGrow: 1 }}>
-        <Box sx={{ minWidth: 800 }}>
-          <Table>
-            <TableHead>
-              <TableRow>
-                <TableCell>
-                  Order
-                </TableCell>
-                <TableCell>
-                  Customer
-                </TableCell>
-                <TableCell sortDirection="desc">
-                  Date
-                </TableCell>
-                <TableCell>
-                  Status
-                </TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {orders.map((order) => {
-                const createdAt = format(order.createdAt, 'dd/MM/yyyy');
-
-                return (
-                  <TableRow
-                    hover
-                    key={order.id}
-                  >
-                    <TableCell>
-                      {order.ref}
-                    </TableCell>
-                    <TableCell>
-                      {order.customer.name}
-                    </TableCell>
-                    <TableCell>
-                      {createdAt}
-                    </TableCell>
-                    <TableCell>
-                      <SeverityPill color={statusMap[order.status]}>
-                        {order.status}
-                      </SeverityPill>
-                    </TableCell>
-                  </TableRow>
-                );
-              })}
-            </TableBody>
-          </Table>
+        <Box>
+          {todayOrders.length > 0 ? (
+            <Table>
+              <TableHead>
+                <TableRow>
+                  <TableCell>Order</TableCell>
+                  <TableCell>Customer</TableCell>
+                  <TableCell>Total</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {todayOrders.map((order) => {
+                  return (
+                    <TableRow hover key={order.name}>
+                      <TableCell>{order.name}</TableCell>
+                      <TableCell>{order.customer.first_name} {order.customer.last_name} {order.company?.name && `| ${order.company.name}`}</TableCell>
+                      <TableCell>${order.current_subtotal_price}</TableCell>
+                    </TableRow>
+                  );
+                })}
+              </TableBody>
+            </Table>
+          ) : (
+            <Typography color="text.secondary" variant="body2" sx={{ textAlign: "center" }}>
+              No Order Found
+            </Typography>
+          )}
         </Box>
       </Scrollbar>
       <Divider />
-      <CardActions sx={{ justifyContent: 'flex-end' }}>
+      <CardActions sx={{ justifyContent: "flex-end" }}>
         <Button
           color="inherit"
-          endIcon={(
+          endIcon={
             <SvgIcon fontSize="small">
               <ArrowRightIcon />
             </SvgIcon>
-          )}
+          }
           size="small"
           variant="text"
         >
@@ -100,5 +82,5 @@ export const OverviewLatestOrders = (props) => {
 
 OverviewLatestOrders.prototype = {
   orders: PropTypes.array,
-  sx: PropTypes.object
+  sx: PropTypes.object,
 };

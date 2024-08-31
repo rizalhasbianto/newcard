@@ -44,3 +44,23 @@ export async function adminAPi(query) {
       throw new Error("error!");
     }
   }
+
+  export async function restAPi(endPoint, query, method="GET") {
+    const fetchUrl = `https://${domain}/admin/api/2024-01/${endPoint}?${method === "GET" ? query : ""}`;
+    console.log("fetchUrl", fetchUrl)
+    const fetchOptions = {
+      endpoint: fetchUrl,
+      method: method,
+      headers: {
+        "X-Shopify-Access-Token": apiPassword,
+        "Content-Type": "application/json"
+      },
+    };
+  
+    try {
+      const data = await fetch(fetchUrl, fetchOptions).then((response) => response.json());
+      return data;
+    } catch (error) {
+      throw new Error("error!");
+    }
+  }

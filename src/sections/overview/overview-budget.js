@@ -2,10 +2,13 @@ import PropTypes from 'prop-types';
 import ArrowDownIcon from '@heroicons/react/24/solid/ArrowDownIcon';
 import ArrowUpIcon from '@heroicons/react/24/solid/ArrowUpIcon';
 import CurrencyDollarIcon from '@heroicons/react/24/solid/CurrencyDollarIcon';
+import FileOpenIcon from '@mui/icons-material/FileOpen';
+import PendingActionsIcon from '@mui/icons-material/PendingActions';
+import EventBusyIcon from '@mui/icons-material/EventBusy';
 import { Avatar, Card, CardContent, Stack, SvgIcon, Typography } from '@mui/material';
 
 export const OverviewBudget = (props) => {
-  const { difference, positive = false, sx, value } = props;
+  const { difference, positive = false, sx, value, title, icon, color } = props;
 
   return (
     <Card sx={sx}>
@@ -21,21 +24,24 @@ export const OverviewBudget = (props) => {
               color="text.secondary"
               variant="overline"
             >
-              Open Quotes
+              {title}
             </Typography>
             <Typography variant="h4">
-              {value}
+              {value ? value : "-"}
             </Typography>
           </Stack>
           <Avatar
             sx={{
-              backgroundColor: 'error.main',
+              backgroundColor: color,
               height: 56,
               width: 56
             }}
           >
             <SvgIcon>
-              <CurrencyDollarIcon />
+              { icon === "open" && <FileOpenIcon />}
+              { icon === "pending" && <PendingActionsIcon />}
+              { icon === "paid" && <CurrencyDollarIcon />}
+              { icon === "over" && <EventBusyIcon />}
             </SvgIcon>
           </Avatar>
         </Stack>

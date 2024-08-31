@@ -10,6 +10,7 @@ import {
   Divider,
   SvgIcon
 } from '@mui/material';
+import LoadingButton from '@mui/lab/LoadingButton';
 import { alpha, useTheme } from '@mui/material/styles';
 import { Chart } from 'src/components/chart';
 
@@ -105,14 +106,14 @@ const useChartOptions = () => {
 };
 
 export const OverviewSales = (props) => {
-  const { chartSeries, sx } = props;
+  const { chartSeries, sx, handleSync, salesLoading, syncLoading } = props;
   const chartOptions = useChartOptions();
 
   return (
     <Card sx={sx}>
       <CardHeader
         action={(
-          <Button
+          <LoadingButton
             color="inherit"
             size="small"
             startIcon={(
@@ -120,9 +121,11 @@ export const OverviewSales = (props) => {
                 <ArrowPathIcon />
               </SvgIcon>
             )}
+            onClick={handleSync}
+            loading={salesLoading || syncLoading ? true : false}
           >
             Sync
-          </Button>
+          </LoadingButton>
         )}
         title="Sales"
       />
