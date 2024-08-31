@@ -26,6 +26,6 @@ export default async function syncSales(req, res) {
   const db = client.db(process.env.DB_NAME);
   const collection = "report"
   await db.collection(collection).insertOne({sales:salesPerMonth});
-  console.log("sync run")
+
   res.json({ status: 200, data:"success" }); 
 }

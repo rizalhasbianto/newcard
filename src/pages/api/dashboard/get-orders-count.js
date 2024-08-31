@@ -4,7 +4,6 @@ import clientPromise from "src/lib/mongodb";
 export default async function getOrders(req, res) {
   let querySession = "";
   let queryData = "";
-  console.log("req.query", req.query)
   const statusQuery = req.query?.status ? JSON.parse(req.query?.status) : null
   if (req.query?.session === "sales") { 
     const client = await clientPromise;
@@ -34,7 +33,6 @@ export default async function getOrders(req, res) {
   if (req.query?.status) {
     queryData = queryData + `AND (status:${statusQuery.status}) `;
   }
-  console.log("queryData", queryData)
   let hasNextPage = true;
   let totalOrders = 0;
   let cursor = "";
