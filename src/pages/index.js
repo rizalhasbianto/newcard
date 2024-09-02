@@ -138,7 +138,7 @@ function Page() {
                 </Grid>
               </Grid>
             )}
-            {session.user.detail.role === "customer" || session.user.detail.role === "sales" && (
+            {(session.user.detail.role === "customer" || session.user.detail.role === "sales") && (
                 <Grid container spacing={3} color={"rgb(92, 89, 172)"}>
                   <Grid lg={12}>
                     <Typography variant="h2" sx={{textAlign:"center"}}>Welcome</Typography>
