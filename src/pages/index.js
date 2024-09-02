@@ -45,7 +45,7 @@ function Page() {
   console.log("session", session);
 
   const salesData = [];
-  if (sales) {
+  if (sales && sales.newData.length > 0) {
     month.forEach((itm) => {
       const salesDataMonth = sales?.newData[0].sales.find((item) => item.month === itm.month);
       const salesTotal = Number((Number(salesDataMonth.sales) / 1000).toFixed(2));
@@ -138,8 +138,7 @@ function Page() {
                 </Grid>
               </Grid>
             )}
-            {session.user.detail.role === "customer" ||
-              (session.user.detail.role === "sales" && (
+            {session.user.detail.role === "customer" || session.user.detail.role === "sales" && (
                 <Grid container spacing={3} color={"rgb(92, 89, 172)"}>
                   <Grid lg={12}>
                     <Typography variant="h2" sx={{textAlign:"center"}}>Welcome</Typography>
@@ -150,7 +149,7 @@ function Page() {
                     <Image src="/assets/b2b-bg-2.png" fill={true} objectFit="contain" alt="Picture of the author" />
                   </Grid>
                 </Grid>
-              ))}
+              )}
           </Container>
         </Box>
       )}

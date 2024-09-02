@@ -18,6 +18,7 @@ import {
 } from "@mui/material";
 import { Scrollbar } from "src/components/scrollbar";
 import { SeverityPill } from "src/components/severity-pill";
+import Link from "next/link";
 
 const statusMap = {
   pending: "warning",
@@ -63,6 +64,7 @@ export const OverviewLatestOrders = (props) => {
       </Scrollbar>
       <Divider />
       <CardActions sx={{ justifyContent: "flex-end" }}>
+      <Link href={`/orders`} passHref>
         <Button
           color="inherit"
           endIcon={
@@ -75,6 +77,7 @@ export const OverviewLatestOrders = (props) => {
         >
           View all
         </Button>
+        </Link>
       </CardActions>
     </Card>
   );
