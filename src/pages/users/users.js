@@ -26,7 +26,7 @@ import UsersAdd from "src/sections/users/user-add";
 import TableLoading from "src/components/table-loading";
 import { useToast } from "src/hooks/use-toast";
 import Toast from "src/components/toast";
-import { GetUsers } from "src/service/use-mongo";
+import { GetUsersSwr } from "src/service/use-mongo";
 
 const Users = () => {
   const [page, setPage] = useState(0);
@@ -38,9 +38,9 @@ const Users = () => {
   const sessionRole = {
     role:session?.user.detail.role,
     id:session?.user.detail.id
-  }
+  } 
 
-  const { data: users, isLoading, isError, mutate, isValidating } = GetUsers({page, rowsPerPage, sessionRole, search});
+  const { data: users, isLoading, isError, mutate, isValidating } = GetUsersSwr({page, rowsPerPage, sessionRole, search});
 console.log("users", users)
   const handlePageChange = useCallback((event, value) => {
     setPage(value);
@@ -80,7 +80,7 @@ console.log("users", users)
             <Stack direction="row" justifyContent="space-between" spacing={4}>
               <Stack spacing={1}>
                 <Typography variant="h4">Users</Typography>
-                <Stack alignItems="center" direction="row" spacing={1}>
+                {/* <Stack alignItems="center" direction="row" spacing={1}>
                   <Button
                     color="inherit"
                     startIcon={
@@ -101,7 +101,7 @@ console.log("users", users)
                   >
                     Export
                   </Button>
-                </Stack>
+                </Stack> */}
               </Stack>
               <div>
                 <Button
@@ -137,6 +137,7 @@ console.log("users", users)
                       onRowsPerPageChange={handleRowsPerPageChange}
                       page={page}
                       rowsPerPage={rowsPerPage}
+                      mutate={mutate}
                     />
                   </Collapse>
                 )}

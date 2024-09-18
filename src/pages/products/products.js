@@ -57,6 +57,7 @@ const Products = () => {
   const quoteCompanyName = router.query?.companyName;
 
   const productPerPage = 12;
+
   const { data, isLoading, isError, size, setSize } = GetProductsInfinite({
     selectedFilter,
     selectedVariantFilter,
@@ -79,7 +80,7 @@ const Products = () => {
     const companyCatalogID = await GetCompanyCatalog({ id });
     if(companyCatalogID.newData && companyCatalogID.newData.length > 0) {
       setCatalogCompany([{ id: companyCatalogID.newData[0].shopifyCompanyLocationId }]);
-      setCatalogID(companyCatalogID.newData[0].catalogIDs);
+      //setCatalogID(companyCatalogID.newData[0].catalogIDs); 
     }
     setRunFetch(true);
   }, []);
@@ -214,7 +215,7 @@ const Products = () => {
               selectedVariantFilter={selectedVariantFilter}
               setSelectedVariantFilter={setSelectedVariantFilter}
               filterList={data?.at(-1).newData.productFilters}
-              smartSearch={smartSearch}
+              smartSearch={smartSearch} 
               setSmartSearch={setSmartSearch}
               predictiveSearch={data?.at(-1).newData.predictiveSearch}
               catalogID={catalogID}

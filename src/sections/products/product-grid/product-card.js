@@ -88,10 +88,8 @@ const ProductCard = (props) => {
     );
   }, [product]);
 
-  const isSingleOptions = product.node.options.find((itm) =>
-    itm.values.includes("Default Title")
-  );
-
+  const isSingleOptions = product.node.options.find((itm) => itm.values.includes("Default Title"));
+  
   return (
     <Card
       sx={{
@@ -135,21 +133,34 @@ const ProductCard = (props) => {
             catalogCompany &&
             catalogCompany.length > 0 ? (
               <>
-                <Typography variant="body2">Price: </Typography>
-                <Typography variant="body2" sx={{ textDecoration: "line-through" }}>
-                  ${selectedVariant.price?.amount}
-                </Typography>
-                <Typography variant="body2"> / </Typography>
                 {catalogCompany.map((company, index) => {
                   const companyPrice = selectedVariant.companyPrice.node[`company_${company.id}`];
                   return (
-                    <Typography
-                      variant="body2"
-                      key={index + 1}
-                      sx={{ fontWeight: 600, textTransform: "capitalize" }}
-                    >
-                      ${companyPrice.price.amount}
-                    </Typography>
+                    <>
+                      <Typography variant="body2">Price: </Typography>
+                      <Typography
+                        variant="body2"
+                        sx={
+                          Number(selectedVariant.price?.amount) >
+                            Number(companyPrice.price.amount) && { textDecoration: "line-through" }
+                        }
+                      >
+                        ${selectedVariant.price?.amount}
+                      </Typography>
+                      {Number(selectedVariant.price?.amount) >
+                        Number(companyPrice.price.amount) && (
+                        <>
+                          <Typography variant="body2"> - </Typography>
+                          <Typography
+                            variant="body2"
+                            key={index + 1}
+                            sx={{ fontWeight: 600, textTransform: "capitalize" }}
+                          >
+                            ${companyPrice.price.amount}
+                          </Typography>
+                        </>
+                      )}
+                    </>
                   );
                 })}
               </>

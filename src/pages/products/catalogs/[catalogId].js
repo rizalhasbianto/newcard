@@ -19,6 +19,9 @@ import CatalogCompany from "src/sections/catalog/catalog-company";
 import CatalogSync from "src/sections/catalog/catalog-sync";
 import TableLoading from "src/components/table-loading";
 
+import Toast from "src/components/toast";
+import { useToast } from "src/hooks/use-toast";
+
 const Page = () => {
   const router = useRouter();
   const [onSync, setOnSync] = useState(false);
@@ -29,6 +32,7 @@ const Page = () => {
   const [productList, setProductList] = useState();
   const { data: session } = useSession();
   const catalogId = router.query?.catalogId;
+  const toastUp = useToast();
 
   const {
     data: mongoCatalog,
@@ -130,6 +134,11 @@ const Page = () => {
           py: 8,
         }}
       >
+        <Toast
+            toastStatus={toastUp.toastStatus}
+            handleStatus={toastUp.handleStatus}
+            toastMessage={toastUp.toastMessage}
+          />
         <Container maxWidth="lg">
           {(shopifyCatalogError || mongoError || prodError) && (
             <Typography>Error loading data</Typography>
@@ -152,6 +161,7 @@ const Page = () => {
                       mongoCatalog={mongoCatalog.data[0]}
                       shopifyCatalog={shopifyCatalog.newData.data.catalog}
                       shopifyCatalogmutate={shopifyCatalogmutate}
+                      toastUp={toastUp}
                     />
                     {productList && (
                       <CatalogSelectedProducts
@@ -188,7 +198,7 @@ const Page = () => {
                 session={session}
                 shopifyCatalog={shopifyCatalog}
                 mongoCatalog={mongoCatalog}
-                mongoCatalogmutate={mongoCatalogmutate}
+                mongoCatalogmutate={mongoCatalogmutate} 
                 onSync={onSync}
                 setOnSync={setOnSync}
               />

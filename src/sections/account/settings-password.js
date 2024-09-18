@@ -62,7 +62,7 @@ export const SettingsPassword = (props) => {
               error={!!(formik.touched.password && formik.errors.password)}
               fullWidth
               helperText={formik.touched.password && formik.errors.password}
-              label="Password"
+              label="New Password"
               name="password"
               onBlur={formik.handleBlur}
               onChange={formik.handleChange}
@@ -87,7 +87,7 @@ export const SettingsPassword = (props) => {
               error={!!(formik.touched.confirm && formik.errors.confirm)}
               fullWidth
               helperText={formik.touched.confirm && formik.errors.confirm}
-              label="Password"
+              label="Confirm Password"
               name="confirm"
               onBlur={formik.handleBlur}
               onChange={formik.handleChange}

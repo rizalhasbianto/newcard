@@ -204,7 +204,8 @@ export const GetProductsMeta = async (inputValue) => {
 };
 
 export const GetOrdersDataSwr = (props) => {
-  const {fetchData, session, search} = props
+  const {fetchData, session, search, filter} = props
+  const filterString = filter ? JSON.stringify(filter) : "";
   const queryPath =
     "page=" +
     fetchData.direction +
@@ -214,10 +215,14 @@ export const GetOrdersDataSwr = (props) => {
     fetchData.endCursor +
     "&session=" +
     session.session +
-    "&sessionId=" +
-    session.id +
+    "&sessionSalesId=" +
+    session.salesId +
+    "&sessionEmail=" +
+    session.email +
     "&search=" +
-    search;
+    search +
+    "&filter=" +
+    filterString;
   const quotesRes = useSwrData("/api/shopify/get-orders", queryPath);
 
   return quotesRes;
@@ -252,13 +257,14 @@ export const GetSingleOrderSwr = (id) => {
   return productRes;
 };
 
-export const SyncUserShopify = async (userData, shopifyCompanyId) => {
+export const SyncUserShopify = async (userData) => {
   const shopifyRes = await useDataService("/api/auth/sync-customer", "POST", {
     firstName: userData.contactFirstName,
     lastName: userData.contactLastName,
     email: userData.contactEmail,
     phone: userData.contactPhone,
-    shopifyCompanyId: userData.shopifyCompanyId
+    shopifyCompanyId: userData.shopifyCompanyId,
+    shopifyCustomerId: userData.shopifyCustomerId
   });
   return shopifyRes;
 };

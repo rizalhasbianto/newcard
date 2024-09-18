@@ -17,7 +17,7 @@ export const GetQuotesData = async (props) => {
 };
 
 export const GetQuotesDataSwr = (props) => {
-  const { page, rowsPerPage, quoteQuery, sort, type, search } = props; 
+  const { page, rowsPerPage, quoteQuery, sort, type, search, runFetch } = props; 
   const theType = type ? type : "any";
   const queryPath =
     "page=" +
@@ -32,7 +32,7 @@ export const GetQuotesDataSwr = (props) => {
     sort +
     "&type=" +
     theType;
-  const quotesRes = useSwrData("/api/quotes/get-quotes", queryPath);
+  const quotesRes = useSwrData("/api/quotes/get-quotes", queryPath, runFetch);
 
   return quotesRes;
 };
@@ -353,15 +353,26 @@ export const UpdateCompanyContactDefault = async (props) => {
   return mongoRes;
 };
 
-export const UpdateCompanyUserToMongo = async (id, updatedData, userData) => {
-  const findUserTarget = userData.find((item) => item.detail.email === updatedData.email);
+export const UpdateCompanyUserToMongo = async (props) => {
+  const { id, userData } = props
   const mongoRes = await useDataService("/api/auth/update-user", "POST", {
-    id: findUserTarget.userId,
+    id: id,
     updateData: {
-      email:updatedData.email,
-      name:updatedData.firstName + " " + updatedData.lastName,
-      phone:updatedData.phone
+      email:userData.email,
+      name:userData.firstName + " " + userData.lastName,
+      phone:userData.phone
     },
+  });
+  return mongoRes;
+};
+
+export const UpdateUserStatus = async (props) => {
+  const { id, status } = props
+  const mongoRes = await useDataService("/api/auth/update-user", "POST", {
+    id: id,
+    updateData: {
+      status:status
+    }
   });
   return mongoRes;
 };
@@ -464,7 +475,7 @@ export const FindUserById = async (userId) => {
   return mongoRes;
 };
 
-export const GetUsers = (props) => {
+export const GetUsersSwr = (props) => {
   const { page, rowsPerPage, sessionRole, query, type, search } = props;
   const theType = type ? type : "any";
   const queryString = query ? JSON.stringify(query) : "";
@@ -483,6 +494,17 @@ export const GetUsers = (props) => {
     "&type=" +
     theType;
   const mongoRes = useSwrData("/api/auth/get-users", queryPath);
+  return mongoRes;
+};
+
+export const GetSingleUserSwr = (props) => {
+  const { userID, runFetch } = props;
+  const queryString = JSON.stringify({id:userID})
+  const queryPath =
+    "query=" + queryString +
+    "&type=id" 
+    console.log("queryPath", queryPath)
+  const mongoRes = useSwrData("/api/auth/check-user", queryPath, runFetch);
   return mongoRes;
 };
 

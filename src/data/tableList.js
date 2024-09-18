@@ -110,4 +110,4 @@ export const catalogTable = [
     { title: "Company" },
     { title: "Price overrides" },
     { title: "Overall adjustment" },
-]
+] 

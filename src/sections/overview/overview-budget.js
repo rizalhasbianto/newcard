@@ -1,3 +1,5 @@
+import Link from 'next/link';
+
 import PropTypes from 'prop-types';
 import ArrowDownIcon from '@heroicons/react/24/solid/ArrowDownIcon';
 import ArrowUpIcon from '@heroicons/react/24/solid/ArrowUpIcon';
@@ -8,16 +10,17 @@ import EventBusyIcon from '@mui/icons-material/EventBusy';
 import { Avatar, Card, CardContent, Stack, SvgIcon, Typography } from '@mui/material';
 
 export const OverviewBudget = (props) => {
-  const { difference, positive = false, sx, value, title, icon, color } = props;
+  const { difference, positive = false, sx, value, title, icon, color, url } = props;
 
   return (
     <Card sx={sx}>
+      <Link href={url ? url : "#"}>
       <CardContent>
         <Stack
           alignItems="flex-start"
           direction="row"
           justifyContent="space-between"
-          spacing={3}
+          spacing={3} 
         >
           <Stack spacing={1}>
             <Typography
@@ -79,6 +82,7 @@ export const OverviewBudget = (props) => {
           </Stack>
         )}
       </CardContent>
+      </Link>
     </Card>
   );
 };

@@ -25,7 +25,7 @@ import {
   InviteUser,
 } from "src/service/use-mongo";
 
-import { SyncUserShopify, GetUserShopify } from "src/service/use-shopify";
+import { SyncUserShopify, GetUsersSwrhopify } from "src/service/use-shopify";
 
 import { useFormik, ErrorMessage } from "formik";
 import * as Yup from "yup";
@@ -84,7 +84,8 @@ const CompanyUsers = (props) => {
       }
 
       if (!newUser) {
-         const resUpdateuser = await UpdateCompanyUserToMongo(data._id, values, data.contacts);
+          const findUserTarget = data.contacts.find((item) => item.detail.email === values.email);
+         const resUpdateuser = await UpdateCompanyUserToMongo({id:findUserTarget, userData:values});
          if (!resUpdateuser) {
            toastUp.handleStatus("error");
            toastUp.handleMessage("Error update contact!");
@@ -113,7 +114,7 @@ const CompanyUsers = (props) => {
             shopifyRes.length > 0 ? shopifyRes[0].message : "Error sync with Shopify!";
 
           if (errorMessage === "Email has already been taken") {
-            const resGetUser = await GetUserShopify(userData.contactEmail);
+            const resGetUser = await GetUsersSwrhopify(userData.contactEmail);
             if (!resGetUser) { 
               toastUp.handleStatus("error");
               toastUp.handleMessage("Error sync with Shopify!");

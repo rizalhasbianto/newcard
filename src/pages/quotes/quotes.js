@@ -2,6 +2,7 @@ import { useCallback, useState, useEffect } from "react";
 import Head from "next/head";
 import Link from "next/link";
 import { useSession } from "next-auth/react";
+import { useRouter } from "next/router";
 import { GetQuotesDataSwr } from "src/service/use-mongo";
 
 import { Box, Button, Container, Stack, SvgIcon, Typography } from "@mui/material";
@@ -13,13 +14,8 @@ import Toast from "src/components/toast";
 import { useToast } from "src/hooks/use-toast";
 
 const Quotes = () => {
-  const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(10);
-  const [search, setSearch] = useState();
-  const toastUp = useToast();
-  const { data: session } = useSession();
+  const querySession = useCallback((session) => {
 
-  const quoteQuery = (session) => {
     switch (session?.user.detail.role) {
       case "admin":
         return {};
@@ -32,13 +28,25 @@ const Quotes = () => {
           "company.name": session?.user.detail.company.companyName,
         };
     }
-  };
+  },[]);
+  
+  const router = useRouter();
+  const quoteStatus = router.query?.status;
+  const toastUp = useToast();
+  const { data: session } = useSession();
+
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [search, setSearch] = useState();
+  
+  const [query, setQuery] = useState();
 
   const { data, isLoading, isError, mutate, isValidating } = GetQuotesDataSwr({
     page,
     rowsPerPage,
-    quoteQuery: quoteQuery(session),
+    quoteQuery: query,
     search,
+    runFetch: query ? true : false,
   });
 
   useEffect(() => {
@@ -49,6 +57,18 @@ const Quotes = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isValidating]);
 
+  useEffect(() => {
+    if(session || quoteStatus) {
+      const queryData = querySession(session)
+      if(quoteStatus) {
+        setQuery({...queryData, status: quoteStatus});
+      } else {
+        setQuery(queryData)
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [session, quoteStatus]);
+
   const handlePageChange = useCallback(async (event, value) => {
     setPage(value);
   }, []);
@@ -57,6 +77,17 @@ const Quotes = () => {
     setPage(0);
     setRowsPerPage(event.target.value);
   }, []);
+
+  const handleQuoteQuery = useCallback(async (event, value) => {
+    const queryData = querySession(session)
+    if(event.target.value) {
+      setQuery({...queryData, status: event.target.value});
+    } else {
+      setQuery({...queryData});
+    }
+  }, [querySession, session]);
+
+
 
   return (
     <>
@@ -96,7 +127,7 @@ const Quotes = () => {
                 </Link>
               </div>
             </Stack>
-            {<QuotesSearch setSearch={setSearch} />}
+            {<QuotesSearch setSearch={setSearch} handleQuoteQuery={handleQuoteQuery} query={query}/>}
             {isLoading && <TableLoading />}
             {(isError || (data && data.data.quote.length === 0)) && (
               <Typography variant="h5" textAlign={"center"}>

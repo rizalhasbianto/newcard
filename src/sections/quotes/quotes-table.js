@@ -93,7 +93,10 @@ const QuotesTable = (props) => {
               {items &&
                 items.map((quote, index) => {
                   const isSelected = selected.includes(quote.id);
-                  const lastUpdate = format(new Date(2014, 1, 11), "dd/MM/yyyy");
+                  let lastUpdate
+                  if(quote?.updatedAt) {
+                    lastUpdate = format(new Date(quote?.updatedAt), "dd/MM/yyyy");
+                  }
 
                   return (
                     <TableRow hover key={quote._id} selected={isSelected} sx={{opacity:quote.status === "new" ? "0.5" : 1}}>

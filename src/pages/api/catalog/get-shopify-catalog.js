@@ -1,10 +1,11 @@
 import { adminAPi } from "src/lib/shopify";
 import clientPromise from "src/lib/mongodb";
+import { collectionName } from "src/data/db-collection"
 
 export default async function shopify(req, res) {
   const client = await clientPromise;
   const db = client.db(process.env.DB_NAME);
-  const companyCollection = process.env.MONGODB_COLLECTION_COMPANY;
+  const companyCollection = collectionName.companyTable;
   const bodyObject = req.method === "POST" ? req.body : req.query;
 
   const query = `{

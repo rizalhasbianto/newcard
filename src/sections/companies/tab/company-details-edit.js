@@ -15,7 +15,7 @@ import {
   UpdateCompanyInfoToMongo,
   CheckCompanyName,
   CheckUserEmail,
-  GetUsers,
+  GetUsersSwr,
 } from "src/service/use-mongo";
 
 import { usaState } from "src/data/state-usa";
@@ -37,7 +37,7 @@ const CompanyDetailsEdit = (props) => {
   const page = 0;
   const postPerPage = 50;
   const query = { role: "sales" };
-  const { data: users, isLoading } = GetUsers(page, postPerPage, "admin", query);
+  const { data: users, isLoading } = GetUsersSwr(page, postPerPage, "admin", query);
 
   const defaultContact = data?.contacts.find((item) => item.default);
   console.log("defaultContact edit", defaultContact)

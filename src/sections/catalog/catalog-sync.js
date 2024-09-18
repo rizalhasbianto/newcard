@@ -23,6 +23,7 @@ const CatalogSync = (props) => {
     onSync,
     setOnSync,
   } = props;
+
   const [syncStatus, setSyncStatus] = useState({
     createMongoCatalog: "no",
     getProducts: "no",
@@ -48,46 +49,63 @@ const CatalogSync = (props) => {
   }, [onSync]);
 
   const handleSyncCatalog = async () => {
+    let createMongoCatalogProgress = "no";
+    let syncProductsProgress = "no";
+
     setSyncStatus({ createMongoCatalog: "no", getProducts: "progress", syncProducts: "no" });
+
     const getSyncData = await GetSyncCatalogProducts(catalogId);
-    console.log("getSyncData", getSyncData)
     if (getSyncData) {
       setSyncStatus({ createMongoCatalog: "no", getProducts: "done", syncProducts: "progress" });
       const syncNewProductList = getSyncData.newData.newId;
       const syncRemovedProductList = getSyncData.newData.removeId;
       const totalSyncData = syncNewProductList.length + syncRemovedProductList.length;
       setSyncCount(totalSyncData);
+
       if (totalSyncData > 0) {
         const resSyncProducts = await handleSyncProducts(
           syncNewProductList,
           syncRemovedProductList
         );
         if (resSyncProducts) {
-          setSyncStatus({
-            createMongoCatalog: "progress",
-            getProducts: "done",
-            syncProducts: "done",
-          });
-          const resCreateMongoCatalog = await handleMongoCatalog(getSyncData);
-          if (resCreateMongoCatalog) {
-            setSyncStatus({
-              createMongoCatalog: "done",
-              getProducts: "done",
-              syncProducts: "done",
-            });
-          } else {
-            setSyncStatus({
-              createMongoCatalog: "error",
-              getProducts: "done",
-              syncProducts: "done",
-            });
-          }
+          syncProductsProgress = "done";
+        } else {
+          syncProductsProgress = "error";
         }
       } else {
-        setSyncStatus({ createMongoCatalog: "no", getProducts: "done", syncProducts: "noneed" });
+        syncProductsProgress = "done";
       }
+      setSyncStatus({
+        createMongoCatalog: "no",
+        getProducts: "done",
+        syncProducts: syncProductsProgress,
+      });
+
+      if (mongoCatalog.data.length === 0) {
+        setSyncStatus({
+          createMongoCatalog: "progress",
+          getProducts: "done",
+          syncProducts: syncProductsProgress,
+        });
+        const resCreateMongoCatalog = await handleMongoCatalog(getSyncData);
+        if (resCreateMongoCatalog) {
+          createMongoCatalogProgress = "done";
+        } else {
+          createMongoCatalogProgress = "error";
+        }
+      } else {
+        createMongoCatalogProgress = "done";
+      }
+
+      setSyncStatus({
+        createMongoCatalog: createMongoCatalogProgress,
+        getProducts: "done",
+        syncProducts: syncProductsProgress,
+      });
+      return;
     } else {
       setSyncStatus({ createMongoCatalog: "no", getProducts: "error", syncProducts: "no" });
+      return;
     }
   };
 
@@ -150,7 +168,6 @@ const CatalogSync = (props) => {
   };
 
   const handleMongoCatalog = async (getSyncData) => {
-    console.log("getSyncData", getSyncData)
     let resMongo = false;
     if (mongoCatalog.data.length > 0) {
       resMongo = await UpdateCatalog({
@@ -164,6 +181,7 @@ const CatalogSync = (props) => {
         session,
         catalogId,
       });
+      console.log("resMongo", resMongo);
     }
     if (!resMongo) {
       setSyncStatus({ createMongoCatalog: "error", getProducts: "error", syncProducts: "no" });
@@ -200,24 +218,7 @@ const CatalogSync = (props) => {
               <CircularProgress />
             </>
           )}
-          {syncStatus.syncProducts === "noneed" && (
-            <>
-              <Typography variant="subtitle1">No products need to be sync!</Typography>
-              <Button
-                variant="contained"
-                size="small"
-                sx={{ mt: 2 }}
-                onClick={() => {
-                  mongoCatalogmutate();
-                  setOnSync(false);
-                }}
-              >
-                Continue to catalog detail
-              </Button>
-            </>
-          )}
-          {(syncStatus.syncProducts === "progress" ||
-            syncStatus.createMongoCatalog === "progress") && (
+          {syncStatus.syncProducts === "progress" && (
             <Box>
               <Typography variant="subtitle1">
                 Sync was on progress please do not close the window!!!
@@ -232,13 +233,13 @@ const CatalogSync = (props) => {
               </Typography>
               <Typography variant="body2">Succes product sync : {syncMessage.success}</Typography>
               <Typography variant="body2">Error product sync : {syncMessage.error}</Typography>
-              {syncStatus.createMongoCatalog === "progress" && (
-                <>
-                  <Typography variant="subtitle1">Creating Catalog at app!</Typography>
-                  <CircularProgress />
-                </>
-              )}
             </Box>
+          )}
+          {syncStatus.createMongoCatalog === "progress" && (
+            <>
+              <Typography variant="subtitle1">Creating Catalog at app!</Typography>
+              <CircularProgress />
+            </>
           )}
           {syncStatus.createMongoCatalog === "done" && (
             <Box>

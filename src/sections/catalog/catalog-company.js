@@ -45,7 +45,7 @@ import { catalogCompany } from "src/data/tableList";
 import { positions } from "@mui/system";
 
 const CatalogPriceRule = (props) => {
-  const { mongoCatalog, shopifyCatalog, session, shopifyCatalogmutate } = props;
+  const { mongoCatalog, shopifyCatalog, session, shopifyCatalogmutate, toastUp } = props;
   const [saveLoading, setSaveLoading] = useState(false);
   const [selectedCompany, setSelectedCompany] = useState([]);
   const [page, setPage] = useState(0);
@@ -139,19 +139,29 @@ const CatalogPriceRule = (props) => {
   const handleSelectCompany = async (company, e) => {
     setSaveLoading(true);
 
-    const resUpdateCompanyCatalog = await UpdateCompanyCatalog({ 
+    const resUpdateCompanyCatalog = await UpdateCompanyCatalog({
       catalogID: shopifyCatalog.id,
       catalogList: shopifyCatalog.companyLocations.edges,
       companyLocationID: company.node.id,
       mongoCompanyID: company.node.mongoCompany.id,
-      selected:e.target.checked
+      selected: e.target.checked,
     });
     if (!resUpdateCompanyCatalog) {
-      console.log("error");
+      toastUp.handleStatus("error");
+      toastUp.handleMessage("Error sync company to catalog");
+      setSaveLoading(false);
+      return;
+    }
+    if (resUpdateCompanyCatalog?.data?.data?.catalogUpdate?.userErrors.length > 0) {
+      toastUp.handleStatus("error");
+      toastUp.handleMessage(
+        resUpdateCompanyCatalog?.data?.data?.catalogUpdate?.userErrors[0].message
+      );
+      setSaveLoading(false);
       return;
     }
 
-    shopifyCatalogmutate()
+    shopifyCatalogmutate();
     setSaveLoading(false);
   };
 
@@ -262,7 +272,7 @@ const CatalogPriceRule = (props) => {
                                     placement="right"
                                     arrow="true"
                                   >
-                                    <InfoOutlinedIcon fontSize="17px" color="success"/>
+                                    <InfoOutlinedIcon fontSize="17px" color="success" />
                                   </Tooltip>
                                 </Stack>
                               ) : (

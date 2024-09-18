@@ -220,11 +220,11 @@ export function createComponents(config) {
           [`&.${filledInputClasses.focused}`]: {
             backgroundColor: "transparent",
             borderColor: palette.primary.main,
-            boxShadow: `${palette.primary.main} 0 0 0 2px`,
+            boxShadow: `${palette.primary.main} 0 0 0 1px`,
           },
           [`&.${filledInputClasses.error}`]: {
             borderColor: palette.error.main,
-            boxShadow: `${palette.error.main} 0 0 0 2px`,
+            boxShadow: `${palette.error.main} 0 0 0 1px`,
           },
         },
         input: {
@@ -237,7 +237,7 @@ export function createComponents(config) {
     MuiSelect: {
       styleOverrides: {
         select: {
-          padding: "14px 32px 14px 12px",
+          padding: "24px 32px 5px 12px",
         },
         standard: {
           padding: "0px 32px 0px 12px",

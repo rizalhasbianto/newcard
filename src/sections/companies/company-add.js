@@ -1,5 +1,5 @@
 import React, { useState, useRef } from "react";
-import { GetUsers } from "src/service/use-mongo";
+import { GetUsersSwr } from "src/service/use-mongo";
 import { paymentOptions } from "src/data/payment-options";
 import {
   Box,
@@ -278,7 +278,7 @@ const AddCompany = (props) => {
   const page = 0;
   const postPerPage = 50;
   const query = { role: "sales" };
-  const { data: users, isLoading } = GetUsers({ page, postPerPage, query });
+  const { data: users, isLoading } = GetUsersSwr({ page, postPerPage, query });
   const {
     data: mongoCatalog,
     isLoading: mongoLoading,

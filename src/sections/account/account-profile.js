@@ -13,7 +13,7 @@ import { stringAvatar } from "src/helper/handelCompanyAvatar";
 
 export const AccountProfile = (props) => {
   const { userData } = props;
-
+console.log("userData profile", userData)
   return (
     <Card>
       <CardContent>

@@ -91,7 +91,7 @@ export default function ProductAddToQuote(props) {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [openQuote]);
-console.log("quoteList", quoteList)
+
   return (
     <Dialog
       open={openQuote}

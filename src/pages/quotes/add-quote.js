@@ -44,7 +44,7 @@ const Page = () => {
   const reqQuotesData = async (page, rowsPerPage, tabIdx) => {
     const quoteQuery = {
       $or: [{ status: "draft" }, { status: "new" }],
-      "createdBy.name": session.user.detail.name,
+      //"createdBy.name": session.user.detail.name,
     };
     const sort = "DSC";
     const resQuotes = await GetQuotesData({page, rowsPerPage, quoteQuery, sort});

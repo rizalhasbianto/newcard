@@ -1,10 +1,11 @@
 import clientPromise from "src/lib/mongodb";
 import { ObjectId } from "mongodb";
+import { collectionName } from "src/data/db-collection"
 
 export default async function getQuotes(req, res) {
   const client = await clientPromise;
   const db = client.db(process.env.DB_NAME);
-  const collection = process.env.MONGODB_COLLECTION_QUOTES;
+  const collection = collectionName.quotesTable;
   const bodyObject = req.method === "POST" ? req.body : req.query;
   const skip = (parseInt(bodyObject.page) + 1) * bodyObject.postPerPage - bodyObject.postPerPage;
   const sort = bodyObject.sort === "ASC" ? {} : { _id: -1 };

@@ -39,10 +39,10 @@ function Page() {
   } = GetTotalQuotes({ query: openQuotesQuery });
   const { data: pendingPayment } = GetOrdersCount({ query: pendingPaymentQuery });
   const { data: pendingPaid } = GetOrdersCount({ query: pendingPaidQuery });
+  const { data: overDue } = GetOrdersCount({ query: {paymentStatus:"overDue"} });
   const { data: sales, mutate: salesMutate, isLoading: salesLoading } = GetTotalSales();
   const { data: todayOrders } = GetTodayOrders();
   const { data: session } = useSession();
-  console.log("session", session);
 
   const salesData = [];
   if (sales && sales.newData.length > 0) {
@@ -79,20 +79,22 @@ function Page() {
               <Grid container spacing={3}>
                 <Grid xs={12} sm={6} lg={3}>
                   <OverviewBudget
-                    sx={{ height: "100%" }}
+                    sx={{ height: "100%" }} 
                     value={openQuotes ? openQuotes.data.count : ""}
                     title="Open quotes"
                     icon="open"
                     color="primary.main"
+                    url="/quotes?status=open"
                   />
                 </Grid>
                 <Grid xs={12} sm={6} lg={3}>
                   <OverviewBudget
                     sx={{ height: "100%" }}
                     value={pendingPayment ? pendingPayment.newData.orderCount : ""}
-                    title="order payment pending"
+                    title="order financial pending"
                     icon="pending"
                     color="warning.main"
+                    url="/orders?filter=financial-pending"
                   />
                 </Grid>
                 <Grid xs={12} sm={6} lg={3}>
@@ -102,15 +104,17 @@ function Page() {
                     title="order paid unfulfilled"
                     icon="paid"
                     color="info.main"
+                    url="/orders?filter=paid-unfulfilled"
                   />
                 </Grid>
                 <Grid xs={12} sm={6} lg={3}>
                   <OverviewBudget
                     sx={{ height: "100%" }}
-                    value="0"
+                    value={overDue ? overDue.newData.orderCount : ""}
                     title="order over due"
                     icon="over"
                     color="error.main"
+                    url="/orders?filter=Overdue"
                   />
                 </Grid>
                 <Grid xs={12} lg={8}>
@@ -139,17 +143,28 @@ function Page() {
               </Grid>
             )}
             {(session.user.detail.role === "customer" || session.user.detail.role === "sales") && (
-                <Grid container spacing={3} color={"rgb(92, 89, 172)"}>
-                  <Grid lg={12}>
-                    <Typography variant="h2" sx={{textAlign:"center"}}>Welcome</Typography>
-                    <Typography variant="h2" sx={{textAlign:"center"}}>to</Typography>
-                    <Typography variant="h2" sx={{textAlign:"center"}}>Skratch B2B App</Typography>
-                  </Grid>
-                  <Grid lg={12} sx={{ position: "relative", height:"50vh" }}>
-                    <Image src="/assets/b2b-bg-2.png" fill={true} objectFit="contain" alt="Picture of the author" />
-                  </Grid>
+              <Grid container spacing={3} color={"rgb(92, 89, 172)"}>
+                <Grid lg={12}>
+                  <Typography variant="h2" sx={{ textAlign: "center" }}>
+                    Welcome
+                  </Typography>
+                  <Typography variant="h2" sx={{ textAlign: "center" }}>
+                    to
+                  </Typography>
+                  <Typography variant="h2" sx={{ textAlign: "center" }}>
+                    Skratch B2B App
+                  </Typography>
                 </Grid>
-              )}
+                <Grid lg={12} sx={{ position: "relative", height: "50vh" }}>
+                  <Image
+                    src="/assets/b2b-bg-2.png"
+                    fill={true}
+                    objectFit="contain"
+                    alt="Picture of the author"
+                  />
+                </Grid>
+              </Grid>
+            )}
           </Container>
         </Box>
       )}

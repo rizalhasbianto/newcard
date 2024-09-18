@@ -38,7 +38,8 @@ export default async function syncCustomer(req, res) {
                     email:"${bodyObject.email}",
                     firstName:"${bodyObject.firstName}",
                     lastName:"${bodyObject.lastName}",
-                    id:"${bodyObject.shopifyCustomerId}"
+                    phone:"${bodyObject.phone}"
+                    id:"gid://shopify/Customer/${bodyObject.shopifyCustomerId}"
                 }
             ) {
                 customer {

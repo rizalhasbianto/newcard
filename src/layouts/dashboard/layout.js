@@ -47,8 +47,6 @@ export const Layout = (props) => {
   );
   useEffect(
     () => {
-      console.log("session", session)
-      console.log("status", status)
       if(session === null || session === undefined) {
         console.log("session empty")
       } else {

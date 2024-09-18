@@ -1,6 +1,7 @@
 import NextAuth from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import clientPromise from "src/lib/mongodb";
+import { collectionName } from "src/data/db-collection"
 
 const bcrypt = require('bcrypt');
 
@@ -23,7 +24,7 @@ export const authOptions = {
                 const { email, password } = credentials;
                 const client = await clientPromise;
                 const db = client.db(process.env.DB_NAME);
-                const userTable = process.env.MONGODB_COLLECTION_USER
+                const userTable = collectionName.userTable
 
                 const response = await db.collection(userTable).find({ email: email }).limit(1).toArray();
                 
