@@ -58,7 +58,6 @@ export const QuickAddProducts = ({ quotesList, setQuotesList, selectedCompany, s
   const { data, isLoading, isError } = GetProductsPaginate({
     selectedFilter,
     selectedVariantFilter,
-    catalogId: selectedCompany?.catalogIDs,
     catalogCompany,
     productPerPage,
     cursor: cursor,
@@ -137,7 +136,7 @@ export const QuickAddProducts = ({ quotesList, setQuotesList, selectedCompany, s
       />
       <ProductsSearch
         selectedFilter={selectedFilter}
-        setSelectedFilter={setSelectedFilter}
+        setSelectedFilter={setSelectedFilter} 
         selectedVariantFilter={selectedVariantFilter}
         setSelectedVariantFilter={setSelectedVariantFilter}
         filterList={data?.newData.productFilters}

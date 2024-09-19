@@ -31,7 +31,7 @@ export const QuoteCollections = ({ quotesList, setQuotesList }) => {
   const totalItem = useCallback(
     (item) => {
       const qty = item.quotesList.reduce((partialSum, a) => partialSum + a.qty, 0);
-      const totalPrice = item.quotesList.reduce((partialSum, a) => partialSum + Number(a.total), 0);
+      const totalPrice = item.quotesList.reduce((partialSum, a) => partialSum + Number(a.variant.price.amount), 0);
       return { items: item.quotesList.length, qty: qty, totalPrice: totalPrice };
     },
     [data]
