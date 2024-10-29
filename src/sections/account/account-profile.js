@@ -36,7 +36,7 @@ console.log("userData profile", userData)
       <Divider />
       <CardActions>
         <Button fullWidth variant="text">
-          <Link href={`account/company/${userData?.detail.company?.companyId}`} passHref>
+          <Link href={`/dashboard/account/company/${userData?.detail.company?.companyId}`} passHref>
             Edit company
           </Link>
         </Button>

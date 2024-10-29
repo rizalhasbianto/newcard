@@ -18,7 +18,7 @@ const CompanyCard = (props) => {
       }}
     >
       <CardContent>
-        <Link href={`/companies/${company._id}`}>
+        <Link href={`/dashboard/companies/${company._id}`}>
           <Box
             sx={{
               display: "flex",

@@ -88,7 +88,7 @@ export const Layout = (props) => {
                 sx={{ color: '#15B79E' }}
                 target="_blank"
               >
-                Certor
+                B2B Demo
               </Box>
             </Typography>
             <Typography
@@ -96,7 +96,7 @@ export const Layout = (props) => {
               sx={{ mb: 3 }}
               variant="subtitle1"
             >
-              Powered by SKRATCH
+              Powered by Rizal Hasbianto
             </Typography>
           </Box>
         </Grid>

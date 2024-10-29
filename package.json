@@ -28,6 +28,7 @@
     "apexcharts": "3.37.0",
     "autosuggest-highlight": "^3.3.4",
     "bcrypt": "^5.1.0",
+    "context-filter-polyfill": "^0.3.21",
     "date-fns": "2.29.3",
     "date-fns-tz": "^2.0.0",
     "formik": "2.2.9",

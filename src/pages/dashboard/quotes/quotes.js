@@ -113,7 +113,7 @@ const Quotes = () => {
                 <Typography variant="h4">Quotes</Typography>
               </Stack>
               <div>
-                <Link href="/quotes/add-quote" passHref>
+                <Link href="/dashboard/quotes/add-quote" passHref>
                   <Button
                     startIcon={
                       <SvgIcon fontSize="small">

@@ -89,7 +89,7 @@ const UsersTable = (props) => {
                     <TableCell>{customer.status}</TableCell>
                     <TableCell>
                       <Stack alignItems="flex-start" direction="row" spacing={1}>
-                        <Link href={`/users/${customer._id}`} passHref>
+                        <Link href={`/dashboard/users/${customer._id}`} passHref>
                           <SvgIcon className="action" color="action" fontSize="small">
                             <PencilIcon />
                           </SvgIcon>

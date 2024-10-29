@@ -107,14 +107,14 @@ const Productlist = (props) => {
               }}
             >
               <Link
-                href={`/products/${product.node.handle}${quoteId ? `?quoteId=${quoteId}` : ""}`}
+                href={`/dashboard/products/${product.node.handle}${quoteId ? `?quoteId=${quoteId}` : ""}`}
               >
                 <ImageComponent img={img} title={product.node.title} />
               </Link>
             </Box>
           </Grid>
           <Grid lg={8}>
-            <Link href={`/products/${product.node.handle}${quoteId ? `?quoteId=${quoteId}` : ""}`}>
+            <Link href={`/dashboard/products/${product.node.handle}${quoteId ? `?quoteId=${quoteId}` : ""}`}>
               <Typography align="left" gutterBottom variant="h6">
                 {product.node.title}
               </Typography>

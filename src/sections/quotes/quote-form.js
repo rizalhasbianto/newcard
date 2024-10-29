@@ -110,7 +110,7 @@ const QuotesForm = (props) => {
           shopifyCompanyLocationId: company.shopifyCompanyLocationId
         }
       };
-      console.log("companyBill", companyBill)
+
       const shopifyResponse = await SyncQuoteToShopify(
         selectedQuoteId,
         quotesListData,

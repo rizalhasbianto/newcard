@@ -64,7 +64,7 @@ export const OverviewLatestOrders = (props) => {
       </Scrollbar>
       <Divider />
       <CardActions sx={{ justifyContent: "flex-end" }}>
-      <Link href={`/orders`} passHref>
+      <Link href={`/dashboard/orders`} passHref>
         <Button
           color="inherit"
           endIcon={

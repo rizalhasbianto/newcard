@@ -17,7 +17,7 @@ import { SvgIcon } from '@mui/material';
 export const items = [
   {
     title: 'Overview',
-    path: '/',
+    path: '/dashboard',
     icon: (
       <SvgIcon fontSize="small">
         <ChartBarIcon />
@@ -26,7 +26,7 @@ export const items = [
   },
   {
     title: 'Qoutes',
-    path: '/quotes',
+    path: '/dashboard/quotes',
     icon: (
       <SvgIcon fontSize="small">
         <NewspaperIcon />
@@ -35,7 +35,7 @@ export const items = [
     subMenu: [
       {
         title: 'Add new quote',
-        path: '/quotes/add-quote',
+        path: '/dashboard/quotes/add-quote',
         icon: (
           <SvgIcon fontSize="small">
             <PencilSquareIcon />
@@ -44,7 +44,7 @@ export const items = [
       },
       {
         title: 'Quote collections',
-        path: '/quotes/collections',
+        path: '/dashboard/quotes/collections',
         icon: (
           <SvgIcon fontSize="small">
             <PuzzlePieceIcon />
@@ -55,7 +55,7 @@ export const items = [
   },
   {
     title: 'Orders',
-    path: '/orders',
+    path: '/dashboard/orders',
     icon: (
       <SvgIcon fontSize="small">
         <ShoppingBagIcon />
@@ -64,7 +64,7 @@ export const items = [
   },
   {
     title: 'Products',
-    path: '/products',
+    path: '/dashboard/products',
     icon: (
       <SvgIcon fontSize="small">
         <ClipboardDocumentIcon />
@@ -73,7 +73,7 @@ export const items = [
     subMenu: [
       {
         title: 'Inventory',
-        path: '/products/inventory',
+        path: '/dashboard/products/inventory',
         role: ['admin', 'sales'],
         icon: (
           <SvgIcon fontSize="small">
@@ -95,7 +95,7 @@ export const items = [
   },
   {
     title: 'Companies',
-    path: '/companies',
+    path: '/dashboard/companies',
     role: ['admin', 'sales'],
     icon: (
       <SvgIcon fontSize="small">
@@ -105,7 +105,7 @@ export const items = [
   },
   {
     title: 'Tickets',
-    path: '/tickets',
+    path: '/dashboard/tickets',
     icon: (
       <SvgIcon fontSize="small">
         <EmailIcon />
@@ -114,7 +114,7 @@ export const items = [
     subMenu: [
       {
         title: 'Create Ticket',
-        path: '/tickets/add-ticket',
+        path: '/dashboard/tickets/add-ticket',
         icon: (
           <SvgIcon fontSize="small">
             <PencilSquareIcon />
@@ -125,7 +125,7 @@ export const items = [
   },
   {
     title: 'Users',
-    path: '/users',
+    path: '/dashboard/users',
     role: ["admin", "sales"],
     icon: (
       <SvgIcon fontSize="small">
@@ -135,7 +135,7 @@ export const items = [
   },
   {
     title: 'Account',
-    path: '/account',
+    path: '/dashboard/account',
     role: ['customer'],
     icon: (
       <SvgIcon fontSize="small">

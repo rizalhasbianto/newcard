@@ -133,15 +133,55 @@ const ProductCard = (props) => {
           sx={{ p: 0 }}
         >
           <Box sx={{ display: "flex" }}>
-            <Typography variant="body2">Price: ${selectedVariant.price?.amount}</Typography>
+            {session.user.detail.role === "customer" &&
+            catalogCompany &&
+            catalogCompany.length > 0 ? (
+              <>
+                {catalogCompany.map((company, index) => {
+                  const companyPrice = selectedVariant.companyPrice.node[`company_${company.id}`];
+                  return (
+                    <>
+                      <Typography variant="body2">Price: </Typography>
+                      <Typography
+                        variant="body2"
+                        sx={
+                          Number(selectedVariant.price?.amount) >
+                            Number(companyPrice.price.amount) && { textDecoration: "line-through" }
+                        }
+                      >
+                        ${selectedVariant.price?.amount}
+                      </Typography>
+                      {Number(selectedVariant.price?.amount) >
+                        Number(companyPrice.price.amount) && (
+                        <>
+                          <Typography variant="body2"> - </Typography>
+                          <Typography
+                            variant="body2"
+                            key={index + 1}
+                            sx={{ fontWeight: 600, textTransform: "capitalize" }}
+                          >
+                            ${companyPrice.price.amount}
+                          </Typography>
+                        </>
+                      )}
+                    </>
+                  );
+                })}
+              </>
+            ) : (
+              <Typography variant="body2">Price: ${selectedVariant.price?.amount}</Typography>
+            )}
           </Box>
           <Typography variant="body2">
             Stock: {selectedVariant.currentlyNotInStock ? "Out of stock" : "In stock"}
           </Typography>
         </Stack>
-        {catalogCompany && catalogCompany.length > 0 && <Divider sx={{ mt: 1, mb: 1 }} />}
+        {session.user.detail.role !== "customer" && catalogCompany && catalogCompany.length > 0 && (
+          <Divider sx={{ mt: 1, mb: 1 }} />
+        )}
         <Box>
-          {catalogCompany &&
+          {session.user.detail.role !== "customer" &&
+            catalogCompany &&
             catalogCompany.length > 0 &&
             catalogCompany.map((company, index) => {
               const companyPrice = selectedVariant.companyPrice.node[`company_${company.id}`];

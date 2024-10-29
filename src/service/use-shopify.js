@@ -131,6 +131,12 @@ export const GetProductsInfinite = (props) => {
   return dataRes;
 };
 
+export const GetProductsInfiniteCompany= (props) => {
+  const { paramQuery, runFetch } = props
+  const dataRes = useSWRInfiniteData("/api/product/company-products", paramQuery, runFetch);
+  return dataRes;
+};
+
 export const GetProductsPaginate = (props) => { 
   const { runFetch } = props
   const param = generateParams(props)

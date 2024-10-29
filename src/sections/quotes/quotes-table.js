@@ -149,7 +149,7 @@ const QuotesTable = (props) => {
                       </TableCell>
                       <TableCell>
                         <Stack alignItems="flex-start" direction="row" spacing={1}>
-                          <Link href={`/quotes/edit-quote?quoteId=${quote._id}`} passHref>
+                          <Link href={`/dashboard/quotes/edit-quote?quoteId=${quote._id}`} passHref>
                             <SvgIcon className="action" color="action" fontSize="small">
                               <PencilIcon />
                             </SvgIcon>

@@ -143,7 +143,7 @@ export const SelectProducts = ({
           </Button>
         </Grid>
         <Grid md={2}>
-          <Link href={`/products?quoteId=${quoteId}`} passHref>
+          <Link href={`/dashboard/products?quoteId=${quoteId}`} passHref>
             <Button
               variant="outlined"
               fullWidth

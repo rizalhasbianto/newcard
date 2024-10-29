@@ -117,7 +117,7 @@ const InventoryTable = (props) => {
                         </Typography>
                       </TableCell>
                       <TableCell sx={{ maxWidth: "600px", padding: "5px 16px" }}>
-                      <Link href={`/products/${item.node.handle}?inventory=yes`}>
+                      <Link href={`/dashboard/products/${item.node.handle}?inventory=yes`}>
                         <Stack direction={"row"} alignItems={"center"} sx={{display:"inline-flex"}}>
                           <Box sx={{ position: "relative", width: "50px", height: "50px", mr: 1 }}>
                             <ImageComponent

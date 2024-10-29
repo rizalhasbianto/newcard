@@ -29,7 +29,7 @@ export const original = {
 };
 
 export const indigo = withAlphas({
-  lightest: 'red',
+  lightest: '#EBEEFE',
   light: '#EBEEFE',
   main: '#3b4d70',
   dark: '#293752',
